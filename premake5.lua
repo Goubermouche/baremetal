@@ -7,6 +7,10 @@ workspace "assembler"
     startproject "assembler"
     warnings "Extra"
 
+    buildoptions { "-fsanitize=address" }
+    linkoptions { "-fsanitize=address" }
+    debugformat "C7"
+
     flags {
         "MultiProcessorCompile"
     }
@@ -36,5 +40,5 @@ workspace "assembler"
 
         files { "source/assembler/**.cpp", "source/assembler/**.h" }
 
-        includedirs { "source/utility/" }
+        includedirs { "source", "source/utility/" }
         links { "utility" }
