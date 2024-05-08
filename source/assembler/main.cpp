@@ -12,6 +12,8 @@ auto compare_vector_and_segmented(const std::vector<i32>& vec, utility::segmente
 	u64 index = 0;
 
 	if(vec.size() != arr.size()) {
+		//std::cout << "#qn";
+
 		utility::iterator_print(vec.begin(), vec.end());
 		utility::iterator_print(arr.begin(), arr.end());
 		return false;
@@ -19,6 +21,8 @@ auto compare_vector_and_segmented(const std::vector<i32>& vec, utility::segmente
 
 	for(const i32 a : arr) {
 		if(vec[index++] != a) {
+			//std::cout << "#qn";
+
 			utility::iterator_print(vec.begin(), vec.end());
 			utility::iterator_print(arr.begin(), arr.end());
 			return false;
@@ -31,17 +35,17 @@ auto compare_vector_and_segmented(const std::vector<i32>& vec, utility::segmente
 void test_insert() {
 	constexpr i32 iteration_count = 10;
 
+	//i32 i = 0;
+	//i32 j = 1;
+	//i32 k = 1;
+
 	i32 i = 6;
-	i32 j = 3;
+	i32 j = 7;
 	i32 k = 6;
 
-	//i32 i = 6;
-	//i32 j = 5;
-	//i32 k = 6;
-
-	//for(i32 i = 0; i < iteration_count + 1; ++i) {
-	//	for(i32 j = 0; j < iteration_count; ++j) {
-	//		for(i32 k = 1; k < iteration_count; ++k) {
+	for(i32 i = 0; i < iteration_count + 1; ++i) {
+		for(i32 j = 0; j < iteration_count; ++j) {
+			for(i32 k = 1; k < iteration_count; ++k) {
 				// std baseline
 				std::vector<i32> std_destination(iteration_count);
 				std::vector<i32> std_source(j, 1000);
@@ -61,17 +65,16 @@ void test_insert() {
 					utility_destination.push_back(l);
 				}
 
-				utility::iterator_print(utility_destination.begin(), utility_destination.end());
 				utility_destination.insert(utility_destination.begin() + i, utility_source.begin(), utility_source.end());
-				utility::iterator_print(utility_destination.begin(), utility_destination.end());
 
 				if(!compare_vector_and_segmented(std_destination, utility_destination)) {
 					std::cout << '{' << i << ", " << j << ", " << k << "}\n";
-					//DEBUG_BREAK();
+					// DEBUG_BREAK();
+					return;
 				}
-	//		}
-	//	}
-	//}
+			}
+		}
+	}
 }
 
 int main() {
