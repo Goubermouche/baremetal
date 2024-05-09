@@ -34,47 +34,49 @@ auto compare_vector_and_segmented(const std::vector<i32>& vec, utility::segmente
 
 void test_insert() {
 	constexpr i32 iteration_count = 10;
+	constexpr i32 size = 10;
 
-	//i32 i = 0;
-	//i32 j = 1;
-	//i32 k = 1;
+	utility::timer std_timer;
+	utility::timer utility_timer;
 
-	i32 i = 6;
-	i32 j = 7;
-	i32 k = 6;
+	std_timer.reset();
+	utility_timer.reset();
 
+	for(i32 count = 0; count < 100; ++count)
 	for(i32 i = 0; i < iteration_count + 1; ++i) {
 		for(i32 j = 0; j < iteration_count; ++j) {
 			for(i32 k = 1; k < iteration_count; ++k) {
+				std::vector<i32> std_destination(size);
+
 				// std baseline
-				std::vector<i32> std_destination(iteration_count);
 				std::vector<i32> std_source(j, 1000);
 
-				std::iota(std_destination.begin(), std_destination.end(), 0);
+				//std::iota(std_destination.begin(), std_destination.end(), 0);
+				std_timer.resume();
 				std_destination.insert(std_destination.begin() + i, std_source.begin(), std_source.end());
+				std_timer.pause();
 
 				// utility
-				utility::segmented_array<i32> utility_destination(k);
-				utility::segmented_array<i32> utility_source(k);
+				utility::segmented_array<i32> utility_destination(k, size);
+				utility::segmented_array<i32> utility_source(k, j, 1000);
 
-				for(i32 l = 0; l < j; ++l) {
-					utility_source.push_back(1000);
-				}
+				//std::iota(utility_destination.begin(), utility_destination.end(), 0);
 
-				for(i32 l = 0; l < iteration_count; ++l) {
-					utility_destination.push_back(l);
-				}
-
+				utility_timer.resume();
 				utility_destination.insert(utility_destination.begin() + i, utility_source.begin(), utility_source.end());
+				utility_timer.pause();
 
-				if(!compare_vector_and_segmented(std_destination, utility_destination)) {
-					std::cout << '{' << i << ", " << j << ", " << k << "}\n";
-					// DEBUG_BREAK();
-					return;
-				}
+				//if(!compare_vector_and_segmented(std_destination, utility_destination)) {
+				//	std::cout << '{' << i << ", " << j << ", " << k << "}\n";
+				//	// DEBUG_BREAK();
+				//	return;
+				//}
 			}
 		}
 	}
+
+	std::cout << "std     took: " << std_timer.get_elapsed<std::chrono::milliseconds>() << "ms\n";
+	std::cout << "utility took: " << utility_timer.get_elapsed<std::chrono::milliseconds>() << "ms\n";
 }
 
 int main() {
