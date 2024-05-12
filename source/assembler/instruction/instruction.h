@@ -1,49 +1,22 @@
 #pragma once
-#include "assembler/instruction/memory.h"
-#include <utility/dynamic_array.h>
+#include "assembler/instruction/operand.h"
 
 namespace baremetal {
-	class instruction {
-	public:
-		class operand {
-		public:
-			enum type {
-				MEMORY,
-				IMMEDIATE,
-				REG
-			};
-
-			operand() = delete;
-
-			operand(const memory& memory);
-			operand(const u64& immediate);
-			operand(const reg& reg);
-
-			friend auto operator<<(std::ostream& stream, const operand& operand) -> std::ostream&;
-		protected:
-			union {
-				memory m_memory;
-				u64 m_immediate;
-				reg m_reg;
-			};
-
-			type m_type;
-		};
-
-		enum type {
-			NONE = 0,
+#pragma pack(push, 1)
+	struct instruction {
+		enum opcode : u16 {
 			MOV,
-			ADD,
+			ADD
 		};
 
-		using operand_type = utility::dynamic_array<operand, u8>;
+		instruction(opcode opcode, operand a);
+		instruction(opcode opcode, operand a, operand b);
+		instruction(opcode opcode, operand a, operand b, operand c);
 
-		instruction();
-		instruction(type type, const operand_type& operands);
-
-		friend auto operator<<(std::ostream& stream, const instruction& instruction) -> std::ostream&;
-	protected:
-		type m_type;
-		operand_type m_operands;
+		opcode opcode;
+		operand operands[3]; // expect up to 3 operands per instruction, this can technically be higher
+		                     // for AVX 512 instructions, but those operands aren't actually encoded in
+		                     // the instruction itself
 	};
+#pragma pack(pop)
 } // namespace baremetal
