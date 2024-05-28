@@ -1,114 +1,147 @@
 #pragma once
 #include "assembler/instruction/operand.h"
 
-#include <array>
-
 namespace baremetal {
 #pragma pack(push, 1)
-	struct instruction {
-		enum opcode : u16 {
-			MOV_RR,
-			MOV_R_I8,
-			MOV_R_I32,
-		};
+	//struct instruction {
+	//	enum opcode : u16 {
+	//		MOV_RR,
+	//		MOV_R_I8,
+	//		MOV_R_I32,
+	//	};
 
-		instruction(opcode opcode);
-		instruction(opcode opcode, operand a);
-		instruction(opcode opcode, operand a, operand b);
-		instruction(opcode opcode, operand a, operand b, operand c);
+	//	instruction(opcode opcode);
+	//	instruction(opcode opcode, operand a);
+	//	instruction(opcode opcode, operand a, operand b);
+	//	instruction(opcode opcode, operand a, operand b, operand c);
 
-		opcode opcode;
-		operand operands[3]; // expect up to 3 operands per instruction, this can technically be higher
-		                     // for AVX 512 instructions, but those operands aren't actually encoded in
-		                     // the instruction itself
+	//	opcode opcode;
+	//	operand operands[3]; // expect up to 3 operands per instruction, this can technically be higher
+	//	                     // for AVX 512 instructions, but those operands aren't actually encoded in
+	//	                     // the instruction itself
+	//};
+#pragma pack(pop)
+	enum extension : u8 {
+		EXT_NONE = 0b00000000,
+		EXT_0    = 0b00000001, // /0
+		EXT_1    = 0b00000010, // /1
+		EXT_2    = 0b00000011, // /2
+		EXT_3    = 0b00000100, // /3
+		EXT_4    = 0b00000101, // /4
+		EXT_5    = 0b00000110, // /5
+		EXT_6    = 0b00000111, // /6
+		EXT_7    = 0b00001000, // /7
+		EXT_R    = 0b00010000, // /r (mod rm byte exists, and any register can be used)
+
+		// flags
+		EXT_REXW = 0b00100000,
+
+		// opcode extensions
+		EXT_OP_R = 0b01000000, // opcode + r / opcode + i
+	};
+
+	/*inline auto operand_type_to_string(operand_type op) -> std::string_view {
+		switch(op) {
+			case OP_NONE: return "none";
+			case OP_R8:   return "r8";
+			case OP_R16:  return "r16";
+			case OP_R32:  return "r32";
+			case OP_R64:  return "r64";
+			case OP_M8:   return "m8";
+			case OP_M16:  return "m16";
+			case OP_M32:  return "m32";
+			case OP_M64:  return "m64";
+			case OP_I8:   return "i8";
+			case OP_I16:  return "i16";
+			case OP_I32:  return "i32";
+			case OP_I64:  return "i64";
+		}
+
+		return "unknown";
+	}*/
+
+#pragma pack(push, 1)
+	struct instruction_info {
+		constexpr auto is_rexw() const -> bool {
+			return extension & EXT_REXW;
+		}
+
+		constexpr auto is_r() const -> bool {
+			return extension & EXT_R;
+		}
+
+		constexpr auto is_opcode_ext() const -> bool {
+			return extension & EXT_OP_R;
+		}
+
+		constexpr auto is_ext() const -> bool {
+			return
+				extension & EXT_0 ||
+				extension & EXT_1 ||
+				extension & EXT_2 ||
+				extension & EXT_3 ||
+				extension & EXT_4 ||
+				extension & EXT_5 ||
+				extension & EXT_6 ||
+				extension & EXT_7;
+		}
+
+		constexpr auto get_operand_count() const -> u8 {
+			u8 count = 0;
+
+			if(op1 != operand::OP_NONE) { count++; }
+			if(op2 != operand::OP_NONE) { count++; }
+			if(op3 != operand::OP_NONE) { count++; }
+
+			return count;
+		}
+
+		auto has_imm_operands() const -> std::pair<bool, u8> {
+			if(is_operand_imm(op1)) {
+				return { true, 0 };
+			}
+
+			if(is_operand_imm(op2)) {
+				return { true, 1 };
+			}
+
+			if(is_operand_imm(op3)) {
+				return { true, 2 };
+			}
+
+			return { false, 0 };
+		}
+
+		const char* name;
+		u32 opcode; // 3 bytes
+		u8 extension;
+		enum operand::type op1;
+		enum operand::type op2;
+		enum operand::type op3;
 	};
 #pragma pack(pop)
 
-	enum operand_type : u8 {
-		NONE = 0,
-		// registers
-		REG, // any register
-		REG_8,
-		REG_16,
-		REG_32,
-		REG_64,
+#define INST_0(name, opcode, extension) { ###name, opcode, extension, operand::OP_NONE, operand::OP_NONE, operand::OP_NONE },
+#define INST_1(name, opcode, extension, op_1) { ###name, opcode, extension, operand::OP_ ## op_1, operand::OP_NONE, operand::OP_NONE },
+#define INST_2(name, opcode, extension, op_1, op_2) { ###name, opcode, extension, operand::OP_ ## op_1, operand::OP_ ## op_2, operand::OP_NONE },
+#define INST_3(name, opcode, extension, op_1, op_2, op_3) { ###name, opcode, extension, operand::OP_ ## op_1, operand::OP_ ## op_2, operand::OP_ ## op_3 },
 
-		// immediates
-		IMM_8,
-		IMM_16,
-		IMM_32,
-		IMM_64,
+#define INST_SELECT(count) CONCATENATE(INST_, count)
+#define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
 
-		// memory
-		MEM_8,
-		MEM_16,
-		MEM_32,
-		MEM_64,
+#define INST(index, name, opcode, extension, ...) INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extension, __VA_ARGS__)
+
+	static constexpr instruction_info instruction_db[] = {
+	 #include "assembler/instruction_database.inc"
 	};
 
-	inline auto is_imm(operand_type operand) -> bool {
-		switch(operand) {
-			case IMM_8:
-			case IMM_16:
-			case IMM_32:
-			case IMM_64: return true;
-			default: return false;
-		}
-	}
+#undef INST_0
+#undef INST_1
+#undef INST_2
+#undef INST_3
 
-	inline auto is_reg(operand_type operand) -> bool {
-		switch(operand) {
-			case REG: 
-			case REG_8:
-			case REG_16:
-			case REG_32:
-			case REG_64: return true;
-			default: return false;
-		}
-	}
+#undef INST_SELECT
+#undef INST_HELPER
 
-
-	inline auto is_multiple_reg(const operand_type* operands) -> bool {
-		u8 count = 0;
-
-		for(u8 i = 0; i < 3; ++i) {
-			count += is_reg(operands[i]);
-		}
-
-		return count > 1;
-	}
-
-	//struct instruction_info {
-	//	constexpr instruction_info() = default;
-	//	constexpr instruction_info(const char* name, bool rex_w, u8 opcode, operand_type operands[2])
-	//	: name(name), rex_w(rex_w), opcode(opcode), operands(operands) {}
-
-	//	const char* name;
-	//	bool rex_w;
-	//	u8 opcode;
-	//	operand_type operands[2];
-	//};
-
-	struct instruction_info {
-		const char* name;
-		operand_type operands[3];
-
-		u8 opcode;
-		bool wide_mode;
-		bool mod_rm;
-		bool rex_w;
-		bool multi; // additional opcode range
-	};
-
-	constexpr auto generate_instruction_db() -> std::array<instruction_info, 3> {
-		std::array<instruction_info, 3> result;
-
-		result[instruction::MOV_RR]    = instruction_info{ "mov", { REG_64, REG  }, 0x8B, true,  true,  true,  false };
-		result[instruction::MOV_R_I8]  = instruction_info{ "mov", { REG_8, IMM_8 }, 0xB0, false, false, false, true  };
-		result[instruction::MOV_R_I32] = instruction_info{ "mov", { REG, IMM_32  }, 0xC7, false, true,  true,  false };
-
-		return result;
-	}
-
-	constexpr static std::array<instruction_info, 3> instruction_db = generate_instruction_db();
+#undef INST
 } // namespace baremetal

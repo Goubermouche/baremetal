@@ -2,115 +2,129 @@
 #include <utility/assert.h>
 
 namespace baremetal {
-	assembler::assembler() : m_current_block(create_block()) {}
+	assembler::assembler() {}
 
-	void assembler::mov(gpr_reg destination, gpr_reg source) {
-		m_blocks[m_current_block].instructions.emplace_back(instruction::MOV_RR, destination, source);
+	auto assembler::get_bytes() const -> const utility::dynamic_array<utility::byte>& {
+		return m_bytes;
 	}
 
-	void assembler::mov(gpr_reg destination, byte immediate) {
-		m_blocks[m_current_block].instructions.emplace_back(instruction::MOV_R_I8, destination, static_cast<u64>(immediate));
-	}
+	auto assembler::find_rex_pair(const operand* operands) -> std::pair<u8, u8> {
+		// locate the first registers from the back
+		std::pair<u8, u8> result = { 0, 0 };
+		u8 i = 4;
 
-	void assembler::mov(gpr_reg destination, dword immediate) {
-		m_blocks[m_current_block].instructions.emplace_back(instruction::MOV_R_I32, destination, static_cast<u64>(immediate));
-	}
-	void assembler::neg(gpr_reg destination) {
-		// m_blocks[m_current_block].instructions.emplace_back(instruction::NEG, destination);
-	}
-
-	void assembler::jmp(u64 block) {
-		m_relocations.push_back(relocation{
-			.block_index = m_current_block,
-			.instruction_index = m_blocks[m_current_block].instructions.size(),
-			.target = block
-		});
-
-		// m_blocks[m_current_block].instructions.emplace_back(instruction::JMP);
-	}
-
-	auto assembler::create_block() -> u64 {
-		const u64 index = m_blocks.size();
-		m_blocks.emplace_back();
-		return index;
-	}
-
-	auto assembler::get_current_block() const -> u64 {
-		return m_current_block;
-	}
-
-	void assembler::set_current_block(u64 block) {
-		m_current_block = block;
-	}
-
-	void assembler::emit() {
-		for(const block& block : m_blocks) {
-			for(const instruction& instruction : block.instructions) {
-				emit_instruction(instruction);
+		while(i-- > 0) {
+			if(is_operand_reg(operands[i].type)) {
+				result.first = operands[i].reg;
+				result.second = operands[i].reg;
+				break;
 			}
 		}
+
+		while(i-- > 0) {
+			if(is_operand_reg(operands[i].type)) {
+				result.second = operands[i].reg;
+				break;
+			}
+		}
+
+		return result;
 	}
 
-	void assembler::emit_instruction(const instruction& instruction) {
-		const auto& info = instruction_db[instruction.opcode];
-		std::cout  << instruction_db[instruction.opcode].name << ":  ";
+	auto is_extended_register(operand op_1, operand op_2, operand op_3) -> bool {
+		bool result = false;
 
-		const byte destination = static_cast<u8>(instruction.operands[0].reg);
+		if(is_operand_reg(op_1.type)) {
+			result |= op_1.reg >= 8;
+		}
 
-		// +-----+--------+------------+---------------------------+
-		// | rex | opcode | r/m or s/b | displacement or immediate |
-		// +-----+--------+------------+---------------------------+
+		if(is_operand_reg(op_2.type)) {
+			result |= op_2.reg >= 8;
+		}
 
-		byte rx;
-		byte direct_reg;
+		if(is_operand_reg(op_2.type)) {
+			result |= op_2.reg >= 8;
+		}
 
-		bool imm = is_imm(info.operands[1]);
+		return result;
+	}
 
-		if(imm) {
+	void assembler::emit_instruction(u32 index, operand op_1, operand op_2, operand op_3) {
+		// TODO: operand types in operand are unnecessary since we can infer them from
+		//       the related instruction_info entry
+		const instruction_info& inst = instruction_db[index];
+
+		const bool is_rexw = inst.is_rexw();
+		const bool is_mod_rm = inst.is_r();
+		const bool is_extended_reg = is_extended_register(op_1, op_2, op_3);
+		const u8 operand_count = inst.get_operand_count(); // this could be inferred ig
+
+		ASSERT(operand_count == 2, "only instructions with 2 operands are supported");
+		const operand operands[3] = { op_1, op_2, op_3 };
+
+		const auto [is_imm, imm_index] = inst.has_imm_operands();
+		auto [rx, destination] = find_rex_pair(operands);
+
+		if(inst.extension & EXT_OP_R) {
 			rx = 0;
-			direct_reg = static_cast<u8>(instruction.operands[0].reg);
-		}
-		else {
-			rx = destination;
-			direct_reg = static_cast<u8>(instruction.operands[1].reg); // source
 		}
 
-		std::cout << std::hex;
-
-		if(info.rex_w) {
-			const byte rex_part = rex(true, rx, destination, 0); // 1B
-			std::cout << rex_part;
+		// opcode - rex prefix
+		if(is_rexw || is_extended_reg) {
+			const utility::byte rex_part = rex(is_rexw, rx, destination, 0);
+			m_bytes.push_back(rex_part);
 		}
 
-		byte opcode = info.opcode; // up to 4B
+		// opcode id
+		u64 opcode = inst.opcode;
 
-		if(info.multi) {
-			opcode = opcode + destination;
+		if(inst.is_opcode_ext()) {
+			// extract the 3 least significant bits 
+			opcode += destination & 0b00000111;
 		}
 
-		std::cout << opcode;
+		for(u8 i = 4; i-- > 0;) {
+			const u8 byte = (opcode >> (i * 8)) & 0xFF;
 
-		if(info.mod_rm) {
-			const byte extension = direct(rx, direct_reg); // 1B
-			std::cout << extension;
-		}
-
-		if(imm) {
-			switch(info.operands[1]) {
-				case IMM_8: {
-					const byte imm8 = static_cast<u8>(instruction.operands[1].immediate);
-					hex_print_reverse(std::cout, imm8);
-					break;
-				}
-				case IMM_32: {
-					const dword imm32 = static_cast<u32>(instruction.operands[1].immediate);
-					hex_print_reverse(std::cout, imm32);
-					break;
-				}
+			if(byte != 0) {
+				m_bytes.push_back(byte);
 			}
 		}
 
-		std::cout << std::dec << '\n';
+		// mod rm / sib
+		if(is_mod_rm) {
+			const utility::byte mod_rm_part = direct(rx, destination);
+			m_bytes.push_back(mod_rm_part);
+		}
+
+		// immediate operand 
+		if(is_imm) {
+			switch(operands[imm_index].type) {
+				case operand::OP_I8:  ASSERT(false, "not implemented");
+				case operand::OP_I16: ASSERT(false, "not implemented");
+				case operand::OP_I32: {
+					const u32 value = static_cast<u32>(operands[imm_index].imm);
+
+					for(int i = 0; i < 4; ++i) {
+						utility::byte b = (value >> (i * 8)) & 0xFF;
+						m_bytes.push_back(b);
+					}
+
+					break;
+				}
+				case operand::OP_I64: {
+					const u64 value = operands[imm_index].imm;
+
+					for(int i = 0; i < 8; ++i) {
+						utility::byte b = (value >> (i * 8)) & 0xFF;
+						m_bytes.push_back(b);
+					}
+
+					break;
+				}
+				default: ASSERT(false, "ivalid operand");
+			}
+		}
 	}
 
 	auto assembler::rex(bool w, u8 rx, u8 base, u8 index) -> u8 {
@@ -121,7 +135,8 @@ namespace baremetal {
 		// whenever a used register is larger than 3 bits we need to mark the extension bit
 		// the result will then be extended in mod R/M or the SIB byte.
 
-		// rex prefix + 64 bit mode (0x48)    [0100____]
+		//                                     rex WRXB
+		// rex prefix                         [0100____]
 		// w (64 bit mode)                    [____X___]
 		// r (mod R/M extension) (rx > RDI)   [_____X__]
 		// x (sib extension) (index > RDI)    [______X_]

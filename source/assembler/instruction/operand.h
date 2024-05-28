@@ -2,7 +2,7 @@
 #include <utility/types.h>
 
 namespace baremetal {
-	using namespace utility;
+	using namespace utility::types;
 
 	enum class gpr_reg : u8 {
 		RAX = 0,
@@ -23,87 +23,177 @@ namespace baremetal {
 		R15,
 	};
 
-	struct reg_base {};
+	struct operand {
+		constexpr operand() : type(OP_NONE), reg(0) {}
 
-	struct gp : reg_base {};
-	struct gp_64 : reg_base {};
-	struct gp_l32 : reg_base {};
-	struct gp_l16 : reg_base {};
-	struct gp_l8 : reg_base {};
-	struct gp_h8 : reg_base {};
+		enum type : u8 {
+			OP_NONE,
+			OP_R8,
+			OP_R16,
+			OP_R32,
+			OP_R64,
+			OP_M8,
+			OP_M16,
+			OP_M32,
+			OP_M64,
+			OP_I8,
+			OP_I16,
+			OP_I32,
+			OP_I64
+		};
 
-	static constexpr gp_64 rax = gp_64();
-	static constexpr gp_64 rbx = gp_64();
-	static constexpr gp_64 rcx = gp_64();
-	static constexpr gp_64 rdx = gp_64();
-	static constexpr gp_64 rsi = gp_64();
-	static constexpr gp_64 rdi = gp_64();
-	static constexpr gp_64 rbp = gp_64();
-	static constexpr gp_64 rsp = gp_64();
-	static constexpr gp_64 r8  = gp_64();
-	static constexpr gp_64 r9  = gp_64();
-	static constexpr gp_64 r10 = gp_64();
-	static constexpr gp_64 r11 = gp_64();
-	static constexpr gp_64 r12 = gp_64();
-	static constexpr gp_64 r13 = gp_64();
-	static constexpr gp_64 r14 = gp_64();
-	static constexpr gp_64 r15 = gp_64();
+		type type;
 
-	static constexpr gp_l32 eax  = gp_l32();
-	static constexpr gp_l32 ebx  = gp_l32();
-	static constexpr gp_l32 ecx  = gp_l32();
-	static constexpr gp_l32 edx  = gp_l32();
-	static constexpr gp_l32 esi  = gp_l32();
-	static constexpr gp_l32 edi  = gp_l32();
-	static constexpr gp_l32 ebp  = gp_l32();
-	static constexpr gp_l32 esp  = gp_l32();
-	static constexpr gp_l32 r8d  = gp_l32();
-	static constexpr gp_l32 r9d  = gp_l32();
-	static constexpr gp_l32 r10d = gp_l32();
-	static constexpr gp_l32 r11d = gp_l32();
-	static constexpr gp_l32 r12d = gp_l32();
-	static constexpr gp_l32 r13d = gp_l32();
-	static constexpr gp_l32 r14d = gp_l32();
-	static constexpr gp_l32 r15d = gp_l32();
+		union {
+			u8 reg;
+			u64 imm;
+		};
+	};
 
-	static constexpr gp_l16 ax   = gp_l16();
-	static constexpr gp_l16 bx   = gp_l16();
-	static constexpr gp_l16 cx   = gp_l16();
-	static constexpr gp_l16 dx   = gp_l16();
-	static constexpr gp_l16 si   = gp_l16();
-	static constexpr gp_l16 di   = gp_l16();
-	static constexpr gp_l16 bp   = gp_l16();
-	static constexpr gp_l16 sp   = gp_l16();
-	static constexpr gp_l16 r8w  = gp_l16();
-	static constexpr gp_l16 r9w  = gp_l16();
-	static constexpr gp_l16 r10w = gp_l16();
-	static constexpr gp_l16 r11w = gp_l16();
-	static constexpr gp_l16 r12w = gp_l16();
-	static constexpr gp_l16 r13w = gp_l16();
-	static constexpr gp_l16 r14w = gp_l16();
-	static constexpr gp_l16 r15w = gp_l16();
+	struct R8  : operand {
+		constexpr R8(u8 index) { reg = index; type = OP_R8; }
+	};
 
-	static constexpr gp_l8 al   = gp_l8();
-	static constexpr gp_l8 bl   = gp_l8();
-	static constexpr gp_l8 cl   = gp_l8();
-	static constexpr gp_l8 dl   = gp_l8();
-	static constexpr gp_l8 sil  = gp_l8();
-	static constexpr gp_l8 dil  = gp_l8();
-	static constexpr gp_l8 bpl  = gp_l8();
-	static constexpr gp_l8 spl  = gp_l8();
-	static constexpr gp_l8 r8b  = gp_l8();
-	static constexpr gp_l8 r9b  = gp_l8();
-	static constexpr gp_l8 r10b = gp_l8();
-	static constexpr gp_l8 r11b = gp_l8();
-	static constexpr gp_l8 r12b = gp_l8();
-	static constexpr gp_l8 r13b = gp_l8();
-	static constexpr gp_l8 r14b = gp_l8();
-	static constexpr gp_l8 r15b = gp_l8();
+	struct R16 : operand {
+		constexpr R16(u8 index) { reg = index; type = OP_R16; }
+	};
 
-	static constexpr gp_h8 ah = gp_h8();
-	static constexpr gp_h8 bh = gp_h8();
-	static constexpr gp_h8 ch = gp_h8();
-	static constexpr gp_h8 dh = gp_h8();
+	struct R32 : operand {
+		constexpr R32(u8 index) { reg = index; type = OP_R32; }
+	};
+
+	struct R64 : operand {
+		constexpr R64(u8 index) { reg = index; type = OP_R64; }
+	};
+
+	static constexpr R64 rax = R64(0);
+	static constexpr R64 rcx = R64(1);
+	static constexpr R64 rdx = R64(2);
+	static constexpr R64 rbx = R64(3);
+	static constexpr R64 rsp = R64(4);
+	static constexpr R64 rbp = R64(5);
+	static constexpr R64 rsi = R64(6);
+	static constexpr R64 rdi = R64(7);
+	static constexpr R64 r8  = R64(8);
+	static constexpr R64 r9  = R64(9);
+	static constexpr R64 r10 = R64(10);
+	static constexpr R64 r11 = R64(11);
+	static constexpr R64 r12 = R64(12);
+	static constexpr R64 r13 = R64(13);
+	static constexpr R64 r14 = R64(14);
+	static constexpr R64 r15 = R64(15);
+
+	static constexpr R32 eax  = R32(0);
+	static constexpr R32 ecx  = R32(1);
+	static constexpr R32 edx  = R32(2);
+	static constexpr R32 ebx  = R32(3);
+	static constexpr R32 esp  = R32(4);
+	static constexpr R32 ebp  = R32(5);
+	static constexpr R32 esi  = R32(6);
+	static constexpr R32 edi  = R32(7);
+	static constexpr R32 r8d  = R32(8);
+	static constexpr R32 r9d  = R32(9);
+	static constexpr R32 r10d = R32(10);
+	static constexpr R32 r11d = R32(11);
+	static constexpr R32 r12d = R32(12);
+	static constexpr R32 r13d = R32(13);
+	static constexpr R32 r14d = R32(14);
+	static constexpr R32 r15d = R32(15);
+
+	static constexpr R16 ax   = R16(0);
+	static constexpr R16 cx   = R16(1);
+	static constexpr R16 dx   = R16(2);
+	static constexpr R16 bx   = R16(3);
+	static constexpr R16 sp   = R16(4);
+	static constexpr R16 bp   = R16(5);
+	static constexpr R16 si   = R16(6);
+	static constexpr R16 di   = R16(7);
+	static constexpr R16 r8w  = R16(8);
+	static constexpr R16 r9w  = R16(9);
+	static constexpr R16 r10w = R16(10);
+	static constexpr R16 r11w = R16(11);
+	static constexpr R16 r12w = R16(12);
+	static constexpr R16 r13w = R16(13);
+	static constexpr R16 r14w = R16(14);
+	static constexpr R16 r15w = R16(15);
+
+	static constexpr R8 al   = R8(0);
+	static constexpr R8 cl   = R8(1);
+	static constexpr R8 dl   = R8(2);
+	static constexpr R8 bl   = R8(3);
+	static constexpr R8 ah   = R8(4);
+	static constexpr R8 ch   = R8(5);
+	static constexpr R8 dh   = R8(6);
+	static constexpr R8 bh   = R8(7);
+	// static constexpr R8 r8l  = R8(8);
+	// static constexpr R8 r9l  = R8(9);
+	// static constexpr R8 r10l = R8(10);
+	// static constexpr R8 r11l = R8(11);
+	// static constexpr R8 r12l = R8(12);
+	// static constexpr R8 r13l = R8(13);
+	// static constexpr R8 r14l = R8(14);
+	// static constexpr R8 r15l = R8(15);
+
+	struct I8  : operand {
+		I8(u8 value) { imm = value; type = OP_I8; }
+	};
+
+	struct I16 : operand {
+		I16(u16 value) { imm = value; type = OP_I16; }
+	};
+
+	struct I32 : operand {
+		I32(u32 value) { imm = value; type = OP_I32; }
+	};
+
+	struct I64 : operand {
+		I64(u64 value) { imm = value; type = OP_I64; }
+	};
+
+	struct M8 : operand {};
+	struct M16 : operand {};
+	struct M32 : operand {};
+	struct M64 : operand {};
+
+	inline auto is_operand_reg(enum operand::type op) -> bool {
+		switch(op) {
+			case operand::OP_R8:
+			case operand::OP_R16:
+			case operand::OP_R32:
+			case operand::OP_R64:  return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_imm(enum operand::type op) -> bool {
+		switch(op) {
+		case operand::OP_I8:
+		case operand::OP_I16:
+		case operand::OP_I32:
+		case operand::OP_I64:  return true;
+		default: return false;
+		}
+	}
+
+	inline auto operand_type_to_string(enum operand::type op) -> std::string_view {
+		switch(op) {
+			case operand::OP_NONE: return "none";
+			case operand::OP_R8:   return "r8";
+			case operand::OP_R16:  return "r16";
+			case operand::OP_R32:  return "r32";
+			case operand::OP_R64:  return "r64";
+			case operand::OP_M8:   return "m8";
+			case operand::OP_M16:  return "m16";
+			case operand::OP_M32:  return "m32";
+			case operand::OP_M64:  return "m64";
+			case operand::OP_I8:   return "i8";
+			case operand::OP_I16:  return "i16";
+			case operand::OP_I32:  return "i32";
+			case operand::OP_I64:  return "i64";
+		}
+
+		return "unknown";
+	}
 
 #pragma pack(push, 1)
 	/**
@@ -131,18 +221,18 @@ namespace baremetal {
 		// extra 6 bits for whatever
 	};
 
-	struct operand {
-		constexpr operand() = default;
+	//struct operand {
+	//	constexpr operand() = default;
 
-		constexpr operand(u64 immediate) : immediate(immediate) {}
-		constexpr operand(mem memory)  : memory(memory) {}
-		constexpr operand(gpr_reg reg) : reg(reg) {}
+	//	constexpr operand(u64 immediate) : immediate(immediate) {}
+	//	constexpr operand(mem memory)  : memory(memory) {}
+	//	constexpr operand(gpr_reg reg) : reg(reg) {}
 
-		union {
-			mem memory;
-			gpr_reg reg;
-			u64 immediate;
-		};
-	};
+	//	union {
+	//		mem memory;
+	//		gpr_reg reg;
+	//		u64 immediate;
+	//	};
+	//};
 #pragma pack(pop)
 } // namespace baremetal

@@ -4,7 +4,7 @@
 
 namespace baremetal {
 	struct block {
-		dynamic_array<instruction> instructions;
+		//dynamic_array<instruction> instructions;
 	};
 
 	struct relocation {
