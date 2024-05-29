@@ -100,8 +100,26 @@ namespace baremetal {
 		// immediate operand 
 		if(is_imm) {
 			switch(operands[imm_index].type) {
-				case operand::OP_I8:  ASSERT(false, "not implemented");
-				case operand::OP_I16: ASSERT(false, "not implemented");
+				case operand::OP_I8: {
+					const u8 value = static_cast<u8>(operands[imm_index].imm);
+
+					for(int i = 0; i < 1; ++i) {
+						utility::byte b = (value >> (i * 8)) & 0xFF;
+						m_bytes.push_back(b);
+					}
+
+					break;
+				}
+				case operand::OP_I16: {
+					const u16 value = static_cast<u16>(operands[imm_index].imm);
+
+					for(int i = 0; i < 2; ++i) {
+						utility::byte b = (value >> (i * 8)) & 0xFF;
+						m_bytes.push_back(b);
+					}
+
+					break;
+				}
 				case operand::OP_I32: {
 					const u32 value = static_cast<u32>(operands[imm_index].imm);
 
