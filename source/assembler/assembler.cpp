@@ -96,6 +96,10 @@ namespace baremetal {
 			const utility::byte mod_rm_part = direct(rx, destination);
 			m_bytes.push_back(mod_rm_part);
 		}
+		else if(inst.is_ext()) {
+			const utility::byte mod_rm_part = direct(inst.get_ext(), destination);
+			m_bytes.push_back(mod_rm_part);
+		}
 
 		// immediate operand 
 		if(is_imm) {

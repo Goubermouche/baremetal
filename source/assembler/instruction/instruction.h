@@ -74,6 +74,13 @@ namespace baremetal {
 			return extension & EXT_OP_R;
 		}
 
+		constexpr auto get_ext() const -> u8 {
+			// extract the ext_x bits and subtract one to convert them to the
+			// specific value
+			const u8 masked = extension & 0b00011111;
+			return masked - 1;
+		}
+
 		constexpr auto is_ext() const -> bool {
 			return
 				extension & EXT_0 ||

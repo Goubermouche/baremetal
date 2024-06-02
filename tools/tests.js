@@ -11,10 +11,10 @@ const translateOperands = (operands) => {
         "I16": "100",
         "I32": "100",
         "I64": "100",
-        "R8" : "al",
-        "R16": "ax",
-        "R32": "eax",
-        "R64": "rax"
+        "R8" : "cl",
+        "R16": "cx",
+        "R32": "ecx",
+        "R64": "rcx"
     };
 
     const regex = new RegExp(Object.keys(replacements).join("|"), "g");
@@ -27,10 +27,10 @@ const translateOperandsCPP = (operands) => {
         "I16": "I16(100)",
         "I32": "I32(100)",
         "I64": "I64(100)",
-        "R8" : "al",
-        "R16": "ax",
-        "R32": "eax",
-        "R64": "rax"
+        "R8" : "cl",
+        "R16": "cx",
+        "R32": "ecx",
+        "R64": "rcx"
     };
 
     const regex = new RegExp(Object.keys(replacements).join("|"), "g");
