@@ -117,6 +117,32 @@ function extractExtensions(inst) {
     return result.join(" | ");
 }
 
+function extractPrefix(inst) {
+    let result = [];
+
+    if(inst._67h || (inst.pp && inst.pp.includes("66"))) {
+        result.push("OPERAND_SIZE_OVERRIDE");
+    }
+    
+    if(inst.lock) {
+        result.push("LOCK");
+    }
+
+    if(inst.rep || inst.repz || (inst.pp && inst.pp.includes("F3"))) {
+        result.push("REP");
+    }
+
+    if(inst.repnz || (inst.pp && inst.pp.includes("F2"))) {
+        result.push("REPNE");
+    }
+
+    if (result.length === 0) {
+        return "PREFIX_NONE";
+    }
+
+    return result.join(" | ");
+}
+
 // validate an instruction instance, since we don't currently support every
 // instruction type
 function verifyInstruction(inst) {
@@ -164,7 +190,8 @@ function filterInstructions() {
                 opcode: extractOpcode(inst),
                 rm: inst.rm,
                 w: inst.w,
-                ri: inst.ri
+                ri: inst.ri,
+                pp: inst.pp
             });
         });
     })
@@ -185,5 +212,6 @@ module.exports = {
     extractExtensions,
     verifyInstruction,
     verifyOperands,
-    filterInstructions
+    filterInstructions,
+    extractPrefix
 };

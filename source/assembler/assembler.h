@@ -47,7 +47,7 @@ inline void name(op_1 operand_1, op_2 operand_2, op_3 operand_3) { \
  * \param extension Extension of the given instruction
  * \param operands Up to three operands for the given function
  */
-#define INST(index, name, opcode, extension, ...) INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), index, name, __VA_ARGS__)
+#define INST(index, name, opcode, extension, prefix, ...) INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), index, name, __VA_ARGS__)
 
 // generate instruction factory methods
 #include "assembler/instruction_database.inc"

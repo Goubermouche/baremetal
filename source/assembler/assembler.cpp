@@ -69,6 +69,42 @@ namespace baremetal {
 			rx = 0;
 		}
 
+		// prefix
+		if(inst.has_prefix()) {
+			const u8 prefix = inst.prefix;
+
+			// group 1
+			switch(prefix & 0b00000011) {
+				case LOCK:  m_bytes.push_back(0xF0); break;
+				case REPNE: m_bytes.push_back(0xF2); break;
+				case REP:   m_bytes.push_back(0xF3); break;
+				default: break;
+			}
+
+			// group 2
+			switch(prefix & 0b00111100) {
+				case CS_SEGMENT:       m_bytes.push_back(0x2E); break;
+				case SS_SEGMENT:       m_bytes.push_back(0x36); break;
+				case DS_SEGMENT:       m_bytes.push_back(0x3E); break;
+				case ES_SEGMENT:       m_bytes.push_back(0x26); break;
+				case FS_SEGMENT:       m_bytes.push_back(0x64); break;
+				case GS_SEGMENT:       m_bytes.push_back(0x65); break;
+				case BRANCH_NOT_TAKEN: m_bytes.push_back(0x2E); break;
+				case BRANCH_TAKEN:     m_bytes.push_back(0x3E); break;
+				default: break;
+			}
+
+			// group 3
+			if(prefix & OPERAND_SIZE_OVERRIDE) {
+				m_bytes.push_back(0x66);
+			}
+
+			// group 4
+			if(prefix & ADDRESS_SIZE_OVERRIDE) {
+				m_bytes.push_back(0x67);
+			}
+		}
+
 		// opcode - rex prefix
 		if(is_rexw || is_extended_reg) {
 			const utility::byte rex_part = rex(is_rexw, rx, destination, 0);

@@ -8,9 +8,9 @@ const tempBinaryPath = path.join(__dirname, "temp.bin")
 const translateOperands = (operands) => {
     const replacements = {
         "I8" : "100",
-        "I16": "100",
-        "I32": "100",
-        "I64": "100",
+        "I16": "1000",
+        "I32": "100000",
+        "I64": "10000000000",
         "R8" : "cl",
         "R16": "cx",
         "R32": "ecx",
@@ -24,9 +24,9 @@ const translateOperands = (operands) => {
 const translateOperandsCPP = (operands) => {
     const replacements = {
         "I8" : "I8(100)",
-        "I16": "I16(100)",
-        "I32": "I32(100)",
-        "I64": "I64(100)",
+        "I16": "I16(1000)",
+        "I32": "I32(100000)",
+        "I64": "I64(10000000000)",
         "R8" : "cl",
         "R16": "cx",
         "R32": "ecx",
