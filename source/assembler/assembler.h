@@ -79,6 +79,7 @@ inline void name(op_1 operand_1, op_2 operand_2, op_3 operand_3) { \
 		 * \param op_3 Third operand
 		 */
 		void emit_instruction(u32 index, operand op_1, operand op_2, operand op_3);
+		void emit_immediate_operand(operand op);
 
 		enum mod_mode {
 			INDIRECT,

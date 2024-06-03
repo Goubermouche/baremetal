@@ -62,7 +62,6 @@ namespace baremetal {
 		ASSERT(operand_count == 2, "only instructions with 2 operands are supported");
 		const operand operands[3] = { op_1, op_2, op_3 };
 
-		const auto [is_imm, imm_index] = inst.has_imm_operands();
 		auto [rx, destination] = find_rex_pair(operands);
 
 		if(inst.extension & EXT_OP_R) {
@@ -73,12 +72,14 @@ namespace baremetal {
 		if(inst.has_prefix()) {
 			const u8 prefix = inst.prefix;
 
-			// group 1
-			switch(prefix & 0b00000011) {
-				case LOCK:  m_bytes.push_back(0xF0); break;
-				case REPNE: m_bytes.push_back(0xF2); break;
-				case REP:   m_bytes.push_back(0xF3); break;
-				default: break;
+			// group 4
+			if(prefix & ADDRESS_SIZE_OVERRIDE) {
+				m_bytes.push_back(0x67);
+			}
+
+			// group 3
+			if(prefix & OPERAND_SIZE_OVERRIDE) {
+				m_bytes.push_back(0x66);
 			}
 
 			// group 2
@@ -94,14 +95,12 @@ namespace baremetal {
 				default: break;
 			}
 
-			// group 3
-			if(prefix & OPERAND_SIZE_OVERRIDE) {
-				m_bytes.push_back(0x66);
-			}
-
-			// group 4
-			if(prefix & ADDRESS_SIZE_OVERRIDE) {
-				m_bytes.push_back(0x67);
+			// group 1
+			switch(prefix & 0b00000011) {
+				case LOCK:  m_bytes.push_back(0xF0); break;
+				case REPNE: m_bytes.push_back(0xF2); break;
+				case REP:   m_bytes.push_back(0xF3); break;
+				default: break;
 			}
 		}
 
@@ -119,13 +118,17 @@ namespace baremetal {
 			opcode += destination & 0b00000111;
 		}
 
-		for(u8 i = 4; i-- > 0;) {
+		for(u8 i = 4; i-- > 1;) {
 			const u8 byte = (opcode >> (i * 8)) & 0xFF;
 
 			if(byte != 0) {
 				m_bytes.push_back(byte);
 			}
 		}
+
+		// always push the last byte
+		const u8 byte = (opcode >> (0 * 8)) & 0xFF;
+		m_bytes.push_back(byte);
 
 		// mod rm / sib
 		if(is_mod_rm) {
@@ -137,51 +140,57 @@ namespace baremetal {
 			m_bytes.push_back(mod_rm_part);
 		}
 
-		// immediate operand 
-		if(is_imm) {
-			switch(operands[imm_index].type) {
-				case operand::OP_I8: {
-					const u8 value = static_cast<u8>(operands[imm_index].imm);
-
-					for(int i = 0; i < 1; ++i) {
-						utility::byte b = (value >> (i * 8)) & 0xFF;
-						m_bytes.push_back(b);
-					}
-
-					break;
-				}
-				case operand::OP_I16: {
-					const u16 value = static_cast<u16>(operands[imm_index].imm);
-
-					for(int i = 0; i < 2; ++i) {
-						utility::byte b = (value >> (i * 8)) & 0xFF;
-						m_bytes.push_back(b);
-					}
-
-					break;
-				}
-				case operand::OP_I32: {
-					const u32 value = static_cast<u32>(operands[imm_index].imm);
-
-					for(int i = 0; i < 4; ++i) {
-						utility::byte b = (value >> (i * 8)) & 0xFF;
-						m_bytes.push_back(b);
-					}
-
-					break;
-				}
-				case operand::OP_I64: {
-					const u64 value = operands[imm_index].imm;
-
-					for(int i = 0; i < 8; ++i) {
-						utility::byte b = (value >> (i * 8)) & 0xFF;
-						m_bytes.push_back(b);
-					}
-
-					break;
-				}
-				default: ASSERT(false, "ivalid operand");
+		// immediate operands
+		for(u8 i = 0; i < operand_count; ++i) {
+			if(is_operand_imm(operands[i].type)) {
+				emit_immediate_operand(operands[i]);
 			}
+		}
+	}
+
+	void assembler::emit_immediate_operand(operand op) {
+		switch(op.type) {
+			case operand::OP_I8: {
+				const u8 value = static_cast<u8>(op.imm);
+
+				for(int i = 0; i < 1; ++i) {
+					utility::byte b = (value >> (i * 8)) & 0xFF;
+					m_bytes.push_back(b);
+				}
+
+				break;
+			}
+			case operand::OP_I16: {
+				const u16 value = static_cast<u16>(op.imm);
+
+				for(int i = 0; i < 2; ++i) {
+					utility::byte b = (value >> (i * 8)) & 0xFF;
+					m_bytes.push_back(b);
+				}
+
+				break;
+			}
+			case operand::OP_I32: {
+				const u32 value = static_cast<u32>(op.imm);
+
+				for(int i = 0; i < 4; ++i) {
+					utility::byte b = (value >> (i * 8)) & 0xFF;
+					m_bytes.push_back(b);
+				}
+
+				break;
+			}
+			case operand::OP_I64: {
+				const u64 value = op.imm;
+
+				for(int i = 0; i < 8; ++i) {
+					utility::byte b = (value >> (i * 8)) & 0xFF;
+					m_bytes.push_back(b);
+				}
+
+				break;
+			}
+			default: ASSERT(false, "ivalid operand");
 		}
 	}
 

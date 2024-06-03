@@ -113,16 +113,16 @@ namespace baremetal {
 		}
 
 		auto has_imm_operands() const -> std::pair<bool, u8> {
-			if(is_operand_imm(op1)) {
-				return { true, 0 };
+			if(is_operand_imm(op3)) {
+				return { true, 3 };
 			}
 
 			if(is_operand_imm(op2)) {
 				return { true, 1 };
 			}
 
-			if(is_operand_imm(op3)) {
-				return { true, 2 };
+			if(is_operand_imm(op1)) {
+				return { true, 0 };
 			}
 
 			return { false, 0 };
