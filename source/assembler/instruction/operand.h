@@ -110,7 +110,6 @@ namespace baremetal {
 		};
 	};
 
-
 	struct reg8  : operand {
 		constexpr explicit reg8(u8 index) { reg = index; type = OP_REG8; }
 	};
@@ -127,73 +126,93 @@ namespace baremetal {
 		constexpr explicit reg64(u8 index) { reg = index; type = OP_REG64; }
 	};
 
-	static constexpr reg64 rax = reg64(0);
-	static constexpr reg64 rcx = reg64(1);
-	static constexpr reg64 rdx = reg64(2);
-	static constexpr reg64 rbx = reg64(3);
-	static constexpr reg64 rsp = reg64(4);
-	static constexpr reg64 rbp = reg64(5);
-	static constexpr reg64 rsi = reg64(6);
-	static constexpr reg64 rdi = reg64(7);
-	static constexpr reg64 r8  = reg64(8);
-	static constexpr reg64 r9  = reg64(9);
-	static constexpr reg64 r10 = reg64(10);
-	static constexpr reg64 r11 = reg64(11);
-	static constexpr reg64 r12 = reg64(12);
-	static constexpr reg64 r13 = reg64(13);
-	static constexpr reg64 r14 = reg64(14);
-	static constexpr reg64 r15 = reg64(15);
+#define REGISTER_CLASS_64_DECL(name, index) \
+  struct name : reg64 {                     \
+    constexpr name() : reg64(index) {}      \
+  };                                        \
+                                            \
+  static constexpr name name
 
-	static constexpr reg32 eax  = reg32(0);
-	static constexpr reg32 ecx  = reg32(1);
-	static constexpr reg32 edx  = reg32(2);
-	static constexpr reg32 ebx  = reg32(3);
-	static constexpr reg32 esp  = reg32(4);
-	static constexpr reg32 ebp  = reg32(5);
-	static constexpr reg32 esi  = reg32(6);
-	static constexpr reg32 edi  = reg32(7);
-	static constexpr reg32 r8d  = reg32(8);
-	static constexpr reg32 r9d  = reg32(9);
-	static constexpr reg32 r10d = reg32(10);
-	static constexpr reg32 r11d = reg32(11);
-	static constexpr reg32 r12d = reg32(12);
-	static constexpr reg32 r13d = reg32(13);
-	static constexpr reg32 r14d = reg32(14);
-	static constexpr reg32 r15d = reg32(15);
+#define REGISTER_CLASS_32_DECL(name, index) \
+  struct name : reg32 {                     \
+    constexpr name() : reg32(index) {}      \
+  };                                        \
+                                            \
+  static constexpr name name
 
-	static constexpr reg16 ax   = reg16(0);
-	static constexpr reg16 cx   = reg16(1);
-	static constexpr reg16 dx   = reg16(2);
-	static constexpr reg16 bx   = reg16(3);
-	static constexpr reg16 sp   = reg16(4);
-	static constexpr reg16 bp   = reg16(5);
-	static constexpr reg16 si   = reg16(6);
-	static constexpr reg16 di   = reg16(7);
-	static constexpr reg16 r8w  = reg16(8);
-	static constexpr reg16 r9w  = reg16(9);
-	static constexpr reg16 r10w = reg16(10);
-	static constexpr reg16 r11w = reg16(11);
-	static constexpr reg16 r12w = reg16(12);
-	static constexpr reg16 r13w = reg16(13);
-	static constexpr reg16 r14w = reg16(14);
-	static constexpr reg16 r15w = reg16(15);
+#define REGISTER_CLASS_16_DECL(name, index) \
+  struct name : reg16 {                     \
+    constexpr name() : reg16(index) {}      \
+  };                                        \
+                                           \
+  static constexpr name name
 
-	static constexpr reg8 al   = reg8(0);
-	static constexpr reg8 cl   = reg8(1);
-	static constexpr reg8 dl   = reg8(2);
-	static constexpr reg8 bl   = reg8(3);
-	static constexpr reg8 ah   = reg8(4);
-	static constexpr reg8 ch   = reg8(5);
-	static constexpr reg8 dh   = reg8(6);
-	static constexpr reg8 bh   = reg8(7);
-	// static constexpr R8 r8l  = R8(8);
-	// static constexpr R8 r9l  = R8(9);
-	// static constexpr R8 r10l = R8(10);
-	// static constexpr R8 r11l = R8(11);
-	// static constexpr R8 r12l = R8(12);
-	// static constexpr R8 r13l = R8(13);
-	// static constexpr R8 r14l = R8(14);
-	// static constexpr R8 r15l = R8(15);
+#define REGISTER_CLASS_8_DECL(name, index) \
+  struct name : reg8 {                     \
+    constexpr name() : reg8(index) {}      \
+  };                                       \
+                                           \
+  static constexpr name name
+
+	REGISTER_CLASS_64_DECL(rax, 0 );
+	REGISTER_CLASS_64_DECL(rcx, 1 );
+	REGISTER_CLASS_64_DECL(rdx, 2 );
+	REGISTER_CLASS_64_DECL(rbx, 3 );
+	REGISTER_CLASS_64_DECL(rsp, 4 );
+	REGISTER_CLASS_64_DECL(rbp, 5 );
+	REGISTER_CLASS_64_DECL(rsi, 6 );
+	REGISTER_CLASS_64_DECL(rdi, 7 );
+	REGISTER_CLASS_64_DECL(r8 , 8 );
+	REGISTER_CLASS_64_DECL(r9 , 9 );
+	REGISTER_CLASS_64_DECL(r10, 10);
+	REGISTER_CLASS_64_DECL(r11, 11);
+	REGISTER_CLASS_64_DECL(r12, 12);
+	REGISTER_CLASS_64_DECL(r13, 13);
+	REGISTER_CLASS_64_DECL(r14, 14);
+	REGISTER_CLASS_64_DECL(r15, 15);
+
+	REGISTER_CLASS_32_DECL(eax , 0 );
+	REGISTER_CLASS_32_DECL(ecx , 1 );
+	REGISTER_CLASS_32_DECL(edx , 2 );
+	REGISTER_CLASS_32_DECL(ebx , 3 );
+	REGISTER_CLASS_32_DECL(esp , 4 );
+	REGISTER_CLASS_32_DECL(ebp , 5 );
+	REGISTER_CLASS_32_DECL(esi , 6 );
+	REGISTER_CLASS_32_DECL(edi , 7 );
+	REGISTER_CLASS_32_DECL(r8d , 8 );
+	REGISTER_CLASS_32_DECL(r9d , 9 );
+	REGISTER_CLASS_32_DECL(r10d, 10);
+	REGISTER_CLASS_32_DECL(r11d, 11);
+	REGISTER_CLASS_32_DECL(r12d, 12);
+	REGISTER_CLASS_32_DECL(r13d, 13);
+	REGISTER_CLASS_32_DECL(r14d, 14);
+	REGISTER_CLASS_32_DECL(r15d, 15);
+
+	REGISTER_CLASS_16_DECL(ax  , 0 );
+	REGISTER_CLASS_16_DECL(cx  , 1 );
+	REGISTER_CLASS_16_DECL(dx  , 2 );
+	REGISTER_CLASS_16_DECL(bx  , 3 );
+	REGISTER_CLASS_16_DECL(sp  , 4 );
+	REGISTER_CLASS_16_DECL(bp  , 5 );
+	REGISTER_CLASS_16_DECL(si  , 6 );
+	REGISTER_CLASS_16_DECL(di  , 7 );
+	REGISTER_CLASS_16_DECL(r8w , 8 );
+	REGISTER_CLASS_16_DECL(r9w , 9 );
+	REGISTER_CLASS_16_DECL(r10w, 10);
+	REGISTER_CLASS_16_DECL(r11w, 11);
+	REGISTER_CLASS_16_DECL(r12w, 12);
+	REGISTER_CLASS_16_DECL(r13w, 13);
+	REGISTER_CLASS_16_DECL(r14w, 14);
+	REGISTER_CLASS_16_DECL(r15w, 15);
+
+	REGISTER_CLASS_8_DECL(al, 0);
+	REGISTER_CLASS_8_DECL(cl, 1);
+	REGISTER_CLASS_8_DECL(dl, 2);
+	REGISTER_CLASS_8_DECL(bl, 3);
+	REGISTER_CLASS_8_DECL(ah, 4);
+	REGISTER_CLASS_8_DECL(ch, 5);
+	REGISTER_CLASS_8_DECL(dh, 6);
+	REGISTER_CLASS_8_DECL(bh, 7);
 
 	struct I8  : operand {
 		I8(u8 value) { imm = value; type = OP_I8; }
