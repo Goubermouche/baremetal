@@ -79,10 +79,10 @@ namespace baremetal {
 		const u64 extended_source   = sign_extend(shrunk, src, dst);
 		const u64 extended_original = sign_extend(value, original, dst);
 
-		utility::console::print("v   {}\n", value);
-		utility::console::print("s   {}\n", shrunk);
-		utility::console::print("exs {}\n", extended_source);
-		utility::console::print("exo {} {}\n", extended_original, original);
+		// utility::console::print("v   {}\n", value);
+		// utility::console::print("s   {}\n", shrunk);
+		// utility::console::print("exs {}\n", extended_source);
+		// utility::console::print("exo {} {}\n", extended_original, original);
 
 		return extended_source == extended_original;
 	}
@@ -93,14 +93,18 @@ namespace baremetal {
 		if(is_operand_imm(op_2.type)) {
 			std::vector<const instruction_info*> possible_infos = {};
 
-			const u64 immediate = op_2.imm;
+			const imm& immediate = op_2.imm;
 			const u8 bits = get_operand_bit_width(op_2.type);
-			const u8 bits_least = min_bits(immediate); // lowest amount of bits which we need to represent a value
 
 			// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
 			// less we can look for a smaller destination
-			if(op_1.type == operand::OP_REG64 && bits_least <= 32) {
-				index = instruction_db[index].context_index;
+
+			if(op_1.type == operand::OP_REG64 && immediate.min_bits <= 32) {
+				// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64 bits)
+				// we can't zero extend 
+				if(immediate.sign == false) {
+					index = instruction_db[index].context_index;
+				}
 			}
 
 			u32 current_index = index;
@@ -113,9 +117,6 @@ namespace baremetal {
 				info = possible_infos[0];
 			}
 			else {
-				// TODO: sort immediates from smallest to biggest
-
-
 				for(const instruction_info* i : possible_infos) {
 					const u8 src_bits = get_operand_bit_width(i->op2);
 					const u8 dst_bits = get_operand_bit_width(i->op1);
@@ -123,18 +124,20 @@ namespace baremetal {
 					// sign extension
 					if(src_bits < dst_bits) {
 						// assume we're sign extending
-						if(signed_extend_representable(immediate, bits, dst_bits, src_bits)) {
+						if(signed_extend_representable(immediate.value, bits, dst_bits, src_bits)) {
 							info = i;
 							break;
 						}
 					}
 
-					// value is representable with a smaller immediate
-					if(src_bits >= bits_least) {
+					// value is representable with a smaller imm
+					if(src_bits >= immediate.min_bits) {
 						info = i;
 						break;
 					}
 				}
+
+
 			}
 		}
 		else {
@@ -250,7 +253,7 @@ namespace baremetal {
 		const enum operand::type operands_actual[2] = { inst->op1, inst->op2 };
 
 
-		// immediate operands
+		// imm operands
 		for(u8 i = 0; i < operand_count; ++i) {
 			if(is_operand_imm(operands[i].type)) {
 				emit_immediate_operand(operands[i].imm, operands_actual[i]);
@@ -258,10 +261,10 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_immediate_operand(u64 imm, enum operand::type type) {
+	void assembler::emit_immediate_operand(const imm& i, enum operand::type type) {
 		switch(type) {
-			case operand::OP_I8: {
-				const u8 value = static_cast<u8>(imm);
+			case operand::type::OP_I8: {
+				const u8 value = static_cast<u8>(i.value);
 
 				for(int i = 0; i < 1; ++i) {
 					utility::byte b = (value >> (i * 8)) & 0xFF;
@@ -270,8 +273,8 @@ namespace baremetal {
 
 				break;
 			}
-			case operand::OP_I16: {
-				const u16 value = static_cast<u16>(imm);
+			case operand::type::OP_I16: {
+				const u16 value = static_cast<u16>(i.value);
 
 				for(int i = 0; i < 2; ++i) {
 					utility::byte b = (value >> (i * 8)) & 0xFF;
@@ -280,8 +283,8 @@ namespace baremetal {
 
 				break;
 			}
-			case operand::OP_I32: {
-				const u32 value = static_cast<u32>(imm);
+			case operand::type::OP_I32: {
+				const u32 value = static_cast<u32>(i.value);
 
 				for(int i = 0; i < 4; ++i) {
 					utility::byte b = (value >> (i * 8)) & 0xFF;
@@ -290,8 +293,8 @@ namespace baremetal {
 
 				break;
 			}
-			case operand::OP_I64: {
-				const u64 value = imm;
+			case operand::type::OP_I64: {
+				const u64 value = i.value;
 
 				for(int i = 0; i < 8; ++i) {
 					utility::byte b = (value >> (i * 8)) & 0xFF;

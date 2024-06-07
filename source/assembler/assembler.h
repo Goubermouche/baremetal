@@ -7,7 +7,7 @@ namespace baremetal {
 
 #define INST(index, name, op1, op2)                                 \
   void name(op1 destination, op2 source) {                          \
-    emit_instruction(index, operand(destination), operand(source)); \
+    emit_instruction(index, destination, source); \
   }
 
 #include "assembler_database.inc"
@@ -24,7 +24,7 @@ namespace baremetal {
 
 		void emit_instruction(u32 index, operand op_1, operand op_2);
 
-		void emit_immediate_operand(u64 imm, enum operand::type type);
+		void emit_immediate_operand(const imm& i, enum operand::type type);
 
 		enum mod_mode {
 			INDIRECT,

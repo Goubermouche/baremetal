@@ -1,6 +1,8 @@
 #pragma once
 #include <utility/types.h>
 
+#include "utility/streams/console.h"
+
 namespace baremetal {
 	using namespace utility::types;
 
@@ -23,14 +25,66 @@ namespace baremetal {
 		R15,
 	};
 
+	struct imm {
+		imm(u64 i) {
+			if(i >= std::numeric_limits<u8>::min() && i <= std::numeric_limits<u8>::max()) {
+				min_bits = 8;
+			}
+			else if(i >= std::numeric_limits<u16>::min() && i <= std::numeric_limits<u16>::max()) {
+				min_bits = 16;
+			}
+			else if(i >= std::numeric_limits<u32>::min() && i <= std::numeric_limits<u32>::max()) {
+				min_bits = 32;
+			}
+			else {
+				min_bits = 64;
+			}
+
+			value = i;
+			sign = false;
+		}
+
+		imm(i64 i) {
+			if(i >= 0) {
+				*this = imm(static_cast<u64>(i));
+				return;
+			}
+
+			if(i >= std::numeric_limits<i8>::min() && i <= std::numeric_limits<i8>::max()) {
+				min_bits = 8;
+			}
+			else if(i >= std::numeric_limits<i16>::min() && i <= std::numeric_limits<i16>::max()) {
+				min_bits = 16;
+			}
+			else if(i >= std::numeric_limits<i32>::min() && i <= std::numeric_limits<i32>::max()) {
+				min_bits = 32;
+			}
+			else {
+				min_bits = 64;
+			}
+
+			value = i;
+			sign = true;
+		}
+
+		template<typename type, typename std::enable_if<std::is_integral<type>::value, int>::type = 0>
+		imm(type i) {
+			if(std::is_signed<type>::value) {
+				*this = imm(static_cast<i64>(i));
+			}
+			else {
+				*this = imm(static_cast<u64>(i));
+			}
+		}
+
+		u64 value;
+		u8 min_bits;
+		bool sign;
+	};
+
 	struct operand {
 		constexpr operand() : type(OP_NONE), reg(0) {}
-		constexpr operand(i8  imm) : type(OP_I8), imm(imm) {}
-		constexpr operand(i16 imm) : type(OP_I16), imm(imm) {}
-		constexpr operand(i32 imm) : type(OP_I32), imm(imm) {}
-		constexpr operand(i64 imm) : type(OP_I64), imm(imm) {}
-
-		constexpr operand(const operand& other) : type(other.type), imm(other.imm) {}
+		 operand(imm i) : type(OP_I64), imm(i) {}
 
 		enum type : u8 {
 			OP_NONE,
@@ -52,24 +106,25 @@ namespace baremetal {
 
 		union {
 			u8 reg;
-			u64 imm;
+			imm imm;
 		};
 	};
 
+
 	struct reg8  : operand {
-		constexpr reg8(u8 index) { reg = index; type = OP_REG8; }
+		constexpr explicit reg8(u8 index) { reg = index; type = OP_REG8; }
 	};
 
 	struct reg16 : operand {
-		constexpr reg16(u8 index) { reg = index; type = OP_REG16; }
+		constexpr explicit reg16(u8 index) { reg = index; type = OP_REG16; }
 	};
 
 	struct reg32 : operand {
-		constexpr reg32(u8 index) { reg = index; type = OP_REG32; }
+		constexpr explicit reg32(u8 index) { reg = index; type = OP_REG32; }
 	};
 
 	struct reg64 : operand {
-		constexpr reg64(u8 index) { reg = index; type = OP_REG64; }
+		constexpr explicit reg64(u8 index) { reg = index; type = OP_REG64; }
 	};
 
 	static constexpr reg64 rax = reg64(0);
@@ -244,14 +299,14 @@ namespace baremetal {
 	//struct operand {
 	//	constexpr operand() = default;
 
-	//	constexpr operand(u64 immediate) : immediate(immediate) {}
+	//	constexpr operand(u64 imm) : imm(imm) {}
 	//	constexpr operand(mem memory)  : memory(memory) {}
 	//	constexpr operand(gpr_reg reg) : reg(reg) {}
 
 	//	union {
 	//		mem memory;
 	//		gpr_reg reg;
-	//		u64 immediate;
+	//		u64 imm;
 	//	};
 	//};
 #pragma pack(pop)

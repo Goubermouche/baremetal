@@ -1,2 +1,2 @@
 BITS 64
-mov rcx, 1111
+mov rbx, -2147483648

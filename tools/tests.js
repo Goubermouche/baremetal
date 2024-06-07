@@ -61,14 +61,14 @@ const compileInstruction = (instruction) => {
 function generate_combinations(operands) {
      // Define the mapping between operands and their corresponding arrays
      const operandMap = {
-        reg8:  [ 'cl' , 'dl'                 , 'bl'                  ],
-        reg16: [ 'cx' , 'dx'                 , 'bx'                  ],
-        reg32: [ 'ecx', 'edx'                , 'ebx'                 ],
-        reg64: [ 'rcx', 'rdx'                , 'rbx'                 ],
-        i8:    [ '0'  , '127'                /*'255'                 */],
-        i16:   [ '0'  , '32767'              /*'65535'               */],
-        i32:   [ '0'  , '2147483647'         /*'4294967295'          */],
-        i64:   [ '0'  , '9223372036854775807'/*'18446744073709551615'*/]
+        reg8:  [ 'cl' , 'dl'                 , 'bl'                                           ],
+        reg16: [ 'cx' , 'dx'                 , 'bx'                                           ],
+        reg32: [ 'ecx', 'edx'                , 'ebx'                                          ],
+        reg64: [ 'rcx', 'rdx'                , 'rbx'                                          ],
+        i8:    [ '0'  , '127'                , '255'                 , '-128'                 ],
+        i16:   [ '0'  , '32767'              , '65535'               , '-32768'               ],
+        i32:   [ '0'  , '2147483647'         , '4294967295'          , '-2147483648'          ],
+        i64:   [ '0'  , '9223372036854775807', '18446744073709551615', '-9223372036854775808' ]
     };
 
     // Helper function to generate combinations recursively

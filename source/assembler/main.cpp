@@ -77,34 +77,64 @@ void run_tests() {
 	TEST_INST("4889db", mov(rbx, rbx));
 	TEST_INST("b100", mov(cl, 0));
 	TEST_INST("b17f", mov(cl, 127));
+	TEST_INST("b1ff", mov(cl, 255));
+	TEST_INST("b180", mov(cl, -128));
 	TEST_INST("b200", mov(dl, 0));
 	TEST_INST("b27f", mov(dl, 127));
+	TEST_INST("b2ff", mov(dl, 255));
+	TEST_INST("b280", mov(dl, -128));
 	TEST_INST("b300", mov(bl, 0));
 	TEST_INST("b37f", mov(bl, 127));
+	TEST_INST("b3ff", mov(bl, 255));
+	TEST_INST("b380", mov(bl, -128));
 	TEST_INST("66b90000", mov(cx, 0));
 	TEST_INST("66b9ff7f", mov(cx, 32767));
+	TEST_INST("66b9ffff", mov(cx, 65535));
+	TEST_INST("66b90080", mov(cx, -32768));
 	TEST_INST("66ba0000", mov(dx, 0));
 	TEST_INST("66baff7f", mov(dx, 32767));
+	TEST_INST("66baffff", mov(dx, 65535));
+	TEST_INST("66ba0080", mov(dx, -32768));
 	TEST_INST("66bb0000", mov(bx, 0));
 	TEST_INST("66bbff7f", mov(bx, 32767));
+	TEST_INST("66bbffff", mov(bx, 65535));
+	TEST_INST("66bb0080", mov(bx, -32768));
 	TEST_INST("b900000000", mov(ecx, 0));
 	TEST_INST("b9ffffff7f", mov(ecx, 2147483647));
+	TEST_INST("b9ffffffff", mov(ecx, 4294967295));
+	TEST_INST("b900000080", mov(ecx, -2147483648));
 	TEST_INST("ba00000000", mov(edx, 0));
 	TEST_INST("baffffff7f", mov(edx, 2147483647));
+	TEST_INST("baffffffff", mov(edx, 4294967295));
+	TEST_INST("ba00000080", mov(edx, -2147483648));
 	TEST_INST("bb00000000", mov(ebx, 0));
 	TEST_INST("bbffffff7f", mov(ebx, 2147483647));
+	TEST_INST("bbffffffff", mov(ebx, 4294967295));
+	TEST_INST("bb00000080", mov(ebx, -2147483648));
 	TEST_INST("b900000000", mov(rcx, 0));
 	TEST_INST("48b9ffffffffffffff7f", mov(rcx, 9223372036854775807));
+	TEST_INST("48c7c1ffffffff", mov(rcx, 18446744073709551615));
+	TEST_INST("48b90000000000000080", mov(rcx, -9223372036854775808));
 	TEST_INST("ba00000000", mov(rdx, 0));
 	TEST_INST("48baffffffffffffff7f", mov(rdx, 9223372036854775807));
+	TEST_INST("48c7c2ffffffff", mov(rdx, 18446744073709551615));
+	TEST_INST("48ba0000000000000080", mov(rdx, -9223372036854775808));
 	TEST_INST("bb00000000", mov(rbx, 0));
 	TEST_INST("48bbffffffffffffff7f", mov(rbx, 9223372036854775807));
+	TEST_INST("48c7c3ffffffff", mov(rbx, 18446744073709551615));
+	TEST_INST("48bb0000000000000080", mov(rbx, -9223372036854775808));
 	TEST_INST("b900000000", mov(rcx, 0));
 	TEST_INST("b9ffffff7f", mov(rcx, 2147483647));
+	TEST_INST("b9ffffffff", mov(rcx, 4294967295));
+	TEST_INST("48c7c100000080", mov(rcx, -2147483648));
 	TEST_INST("ba00000000", mov(rdx, 0));
 	TEST_INST("baffffff7f", mov(rdx, 2147483647));
+	TEST_INST("baffffffff", mov(rdx, 4294967295));
+	TEST_INST("48c7c200000080", mov(rdx, -2147483648));
 	TEST_INST("bb00000000", mov(rbx, 0));
 	TEST_INST("bbffffff7f", mov(rbx, 2147483647));
+	TEST_INST("bbffffffff", mov(rbx, 4294967295));
+	TEST_INST("48c7c300000080", mov(rbx, -2147483648));
 
 	utility::console::print(
 		"{}/{} tests passed\n",
@@ -113,7 +143,12 @@ void run_tests() {
 	);
 }
 
+
 int main() {
 	run_tests();
+	using namespace baremetal;
+
+	// TODO: test all previous immediates as well
+
 	return 0;
 }
