@@ -25,13 +25,19 @@ namespace baremetal {
 
 	struct operand {
 		constexpr operand() : type(OP_NONE), reg(0) {}
+		constexpr operand(i8  imm) : type(OP_I8), imm(imm) {}
+		constexpr operand(i16 imm) : type(OP_I16), imm(imm) {}
+		constexpr operand(i32 imm) : type(OP_I32), imm(imm) {}
+		constexpr operand(i64 imm) : type(OP_I64), imm(imm) {}
+
+		constexpr operand(const operand& other) : type(other.type), imm(other.imm) {}
 
 		enum type : u8 {
 			OP_NONE,
-			OP_R8,
-			OP_R16,
-			OP_R32,
-			OP_R64,
+			OP_REG8,
+			OP_REG16,
+			OP_REG32,
+			OP_REG64,
 			OP_M8,
 			OP_M16,
 			OP_M32,
@@ -50,81 +56,81 @@ namespace baremetal {
 		};
 	};
 
-	struct R8  : operand {
-		constexpr R8(u8 index) { reg = index; type = OP_R8; }
+	struct reg8  : operand {
+		constexpr reg8(u8 index) { reg = index; type = OP_REG8; }
 	};
 
-	struct R16 : operand {
-		constexpr R16(u8 index) { reg = index; type = OP_R16; }
+	struct reg16 : operand {
+		constexpr reg16(u8 index) { reg = index; type = OP_REG16; }
 	};
 
-	struct R32 : operand {
-		constexpr R32(u8 index) { reg = index; type = OP_R32; }
+	struct reg32 : operand {
+		constexpr reg32(u8 index) { reg = index; type = OP_REG32; }
 	};
 
-	struct R64 : operand {
-		constexpr R64(u8 index) { reg = index; type = OP_R64; }
+	struct reg64 : operand {
+		constexpr reg64(u8 index) { reg = index; type = OP_REG64; }
 	};
 
-	static constexpr R64 rax = R64(0);
-	static constexpr R64 rcx = R64(1);
-	static constexpr R64 rdx = R64(2);
-	static constexpr R64 rbx = R64(3);
-	static constexpr R64 rsp = R64(4);
-	static constexpr R64 rbp = R64(5);
-	static constexpr R64 rsi = R64(6);
-	static constexpr R64 rdi = R64(7);
-	static constexpr R64 r8  = R64(8);
-	static constexpr R64 r9  = R64(9);
-	static constexpr R64 r10 = R64(10);
-	static constexpr R64 r11 = R64(11);
-	static constexpr R64 r12 = R64(12);
-	static constexpr R64 r13 = R64(13);
-	static constexpr R64 r14 = R64(14);
-	static constexpr R64 r15 = R64(15);
+	static constexpr reg64 rax = reg64(0);
+	static constexpr reg64 rcx = reg64(1);
+	static constexpr reg64 rdx = reg64(2);
+	static constexpr reg64 rbx = reg64(3);
+	static constexpr reg64 rsp = reg64(4);
+	static constexpr reg64 rbp = reg64(5);
+	static constexpr reg64 rsi = reg64(6);
+	static constexpr reg64 rdi = reg64(7);
+	static constexpr reg64 r8  = reg64(8);
+	static constexpr reg64 r9  = reg64(9);
+	static constexpr reg64 r10 = reg64(10);
+	static constexpr reg64 r11 = reg64(11);
+	static constexpr reg64 r12 = reg64(12);
+	static constexpr reg64 r13 = reg64(13);
+	static constexpr reg64 r14 = reg64(14);
+	static constexpr reg64 r15 = reg64(15);
 
-	static constexpr R32 eax  = R32(0);
-	static constexpr R32 ecx  = R32(1);
-	static constexpr R32 edx  = R32(2);
-	static constexpr R32 ebx  = R32(3);
-	static constexpr R32 esp  = R32(4);
-	static constexpr R32 ebp  = R32(5);
-	static constexpr R32 esi  = R32(6);
-	static constexpr R32 edi  = R32(7);
-	static constexpr R32 r8d  = R32(8);
-	static constexpr R32 r9d  = R32(9);
-	static constexpr R32 r10d = R32(10);
-	static constexpr R32 r11d = R32(11);
-	static constexpr R32 r12d = R32(12);
-	static constexpr R32 r13d = R32(13);
-	static constexpr R32 r14d = R32(14);
-	static constexpr R32 r15d = R32(15);
+	static constexpr reg32 eax  = reg32(0);
+	static constexpr reg32 ecx  = reg32(1);
+	static constexpr reg32 edx  = reg32(2);
+	static constexpr reg32 ebx  = reg32(3);
+	static constexpr reg32 esp  = reg32(4);
+	static constexpr reg32 ebp  = reg32(5);
+	static constexpr reg32 esi  = reg32(6);
+	static constexpr reg32 edi  = reg32(7);
+	static constexpr reg32 r8d  = reg32(8);
+	static constexpr reg32 r9d  = reg32(9);
+	static constexpr reg32 r10d = reg32(10);
+	static constexpr reg32 r11d = reg32(11);
+	static constexpr reg32 r12d = reg32(12);
+	static constexpr reg32 r13d = reg32(13);
+	static constexpr reg32 r14d = reg32(14);
+	static constexpr reg32 r15d = reg32(15);
 
-	static constexpr R16 ax   = R16(0);
-	static constexpr R16 cx   = R16(1);
-	static constexpr R16 dx   = R16(2);
-	static constexpr R16 bx   = R16(3);
-	static constexpr R16 sp   = R16(4);
-	static constexpr R16 bp   = R16(5);
-	static constexpr R16 si   = R16(6);
-	static constexpr R16 di   = R16(7);
-	static constexpr R16 r8w  = R16(8);
-	static constexpr R16 r9w  = R16(9);
-	static constexpr R16 r10w = R16(10);
-	static constexpr R16 r11w = R16(11);
-	static constexpr R16 r12w = R16(12);
-	static constexpr R16 r13w = R16(13);
-	static constexpr R16 r14w = R16(14);
-	static constexpr R16 r15w = R16(15);
+	static constexpr reg16 ax   = reg16(0);
+	static constexpr reg16 cx   = reg16(1);
+	static constexpr reg16 dx   = reg16(2);
+	static constexpr reg16 bx   = reg16(3);
+	static constexpr reg16 sp   = reg16(4);
+	static constexpr reg16 bp   = reg16(5);
+	static constexpr reg16 si   = reg16(6);
+	static constexpr reg16 di   = reg16(7);
+	static constexpr reg16 r8w  = reg16(8);
+	static constexpr reg16 r9w  = reg16(9);
+	static constexpr reg16 r10w = reg16(10);
+	static constexpr reg16 r11w = reg16(11);
+	static constexpr reg16 r12w = reg16(12);
+	static constexpr reg16 r13w = reg16(13);
+	static constexpr reg16 r14w = reg16(14);
+	static constexpr reg16 r15w = reg16(15);
 
-	static constexpr R8 al   = R8(0);
-	static constexpr R8 cl   = R8(1);
-	static constexpr R8 dl   = R8(2);
-	static constexpr R8 bl   = R8(3);
-	static constexpr R8 ah   = R8(4);
-	static constexpr R8 ch   = R8(5);
-	static constexpr R8 dh   = R8(6);
-	static constexpr R8 bh   = R8(7);
+	static constexpr reg8 al   = reg8(0);
+	static constexpr reg8 cl   = reg8(1);
+	static constexpr reg8 dl   = reg8(2);
+	static constexpr reg8 bl   = reg8(3);
+	static constexpr reg8 ah   = reg8(4);
+	static constexpr reg8 ch   = reg8(5);
+	static constexpr reg8 dh   = reg8(6);
+	static constexpr reg8 bh   = reg8(7);
 	// static constexpr R8 r8l  = R8(8);
 	// static constexpr R8 r9l  = R8(9);
 	// static constexpr R8 r10l = R8(10);
@@ -157,10 +163,10 @@ namespace baremetal {
 
 	inline auto is_operand_reg(enum operand::type op) -> bool {
 		switch(op) {
-			case operand::OP_R8:
-			case operand::OP_R16:
-			case operand::OP_R32:
-			case operand::OP_R64:  return true;
+			case operand::OP_REG8:
+			case operand::OP_REG16:
+			case operand::OP_REG32:
+			case operand::OP_REG64:  return true;
 			default: return false;
 		}
 	}
@@ -175,13 +181,27 @@ namespace baremetal {
 		}
 	}
 
-	inline auto operand_type_to_string(enum operand::type op) -> std::string_view {
+	inline auto get_operand_bit_width(enum operand::type op) -> u8 {
+		switch(op) {
+			case operand::OP_I8:  return 8;
+			case operand::OP_I16: return 16;
+			case operand::OP_I32: return 32;
+			case operand::OP_I64: return 64;
+			case operand::OP_REG8:  return 8;
+			case operand::OP_REG16: return 16;
+			case operand::OP_REG32: return 32;
+			case operand::OP_REG64: return 64;
+			default:              return 0;
+		}
+	}
+
+	inline auto operand_type_to_string(enum operand::type op) -> const char* {
 		switch(op) {
 			case operand::OP_NONE: return "none";
-			case operand::OP_R8:   return "r8";
-			case operand::OP_R16:  return "r16";
-			case operand::OP_R32:  return "r32";
-			case operand::OP_R64:  return "r64";
+			case operand::OP_REG8:   return "r8";
+			case operand::OP_REG16:  return "r16";
+			case operand::OP_REG32:  return "r32";
+			case operand::OP_REG64:  return "r64";
 			case operand::OP_M8:   return "m8";
 			case operand::OP_M16:  return "m16";
 			case operand::OP_M32:  return "m32";

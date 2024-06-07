@@ -67,55 +67,55 @@ namespace baremetal {
 
 #pragma pack(push, 1)
 	struct instruction_info {
-		constexpr auto is_rexw() const -> bool {
-			return extension & EXT_REXW;
-		}
+		 constexpr auto is_rexw() const -> bool {
+		 	return extension & EXT_REXW;
+		 }
 
-		constexpr auto is_r() const -> bool {
-			return extension & EXT_R;
-		}
+		 constexpr auto is_r() const -> bool {
+		 	return extension & EXT_R;
+		 }
 
-		constexpr auto is_opcode_ext() const -> bool {
-			return extension & EXT_OP_R;
-		}
+		 constexpr auto is_opcode_ext() const -> bool {
+		 	return extension & EXT_OP_R;
+		 }
 
-		constexpr auto get_ext() const -> u8 {
-			// extract the ext_x bits and subtract one to convert them to the
-			// specific value
-			const u8 masked = extension & 0b00011111;
-			return masked - 1;
-		}
+		 constexpr auto get_ext() const -> u8 {
+		 	// extract the ext_x bits and subtract one to convert them to the
+		 	// specific value
+		 	const u8 masked = extension & 0b00011111;
+		 	return masked - 1;
+		 }
 
-		constexpr auto is_ext() const -> bool {
-			return
-				extension & EXT_0 ||
-				extension & EXT_1 ||
-				extension & EXT_2 ||
-				extension & EXT_3 ||
-				extension & EXT_4 ||
-				extension & EXT_5 ||
-				extension & EXT_6 ||
-				extension & EXT_7;
-		}
+		 constexpr auto is_ext() const -> bool {
+		 	return
+		 		extension & EXT_0 ||
+		 		extension & EXT_1 ||
+		 		extension & EXT_2 ||
+		 		extension & EXT_3 ||
+		 		extension & EXT_4 ||
+		 		extension & EXT_5 ||
+		 		extension & EXT_6 ||
+		 		extension & EXT_7;
+		 }
 
-		constexpr auto has_prefix() const -> bool {
-			return prefix != PREFIX_NONE;
-		}
+		 constexpr auto has_prefix() const -> bool {
+		 	return prefix != PREFIX_NONE;
+		 }
 
 		constexpr auto get_operand_count() const -> u8 {
 			u8 count = 0;
 
 			if(op1 != operand::OP_NONE) { count++; }
 			if(op2 != operand::OP_NONE) { count++; }
-			if(op3 != operand::OP_NONE) { count++; }
+			// if(op3 != operand::OP_NONE) { count++; }
 
 			return count;
 		}
 
 		auto has_imm_operands() const -> std::pair<bool, u8> {
-			if(is_operand_imm(op3)) {
-				return { true, 3 };
-			}
+			// if(is_operand_imm(op3)) {
+			// 	return { true, 3 };
+			// }
 
 			if(is_operand_imm(op2)) {
 				return { true, 1 };
@@ -132,33 +132,16 @@ namespace baremetal {
 		u32 opcode; // 3 bytes
 		u8 extension;
 		u8 prefix;
+		u16 context_index;
 		enum operand::type op1;
 		enum operand::type op2;
-		enum operand::type op3;
+		// enum operand::type op3;
 	};
 #pragma pack(pop)
 
-#define INST_0(name, opcode, extension, prefix) { ###name, opcode, extension, prefix, operand::OP_NONE, operand::OP_NONE, operand::OP_NONE },
-#define INST_1(name, opcode, extension, prefix, op_1) { ###name, opcode, extension, prefix, operand::OP_ ## op_1, operand::OP_NONE, operand::OP_NONE },
-#define INST_2(name, opcode, extension, prefix, op_1, op_2) { ###name, opcode, extension, prefix, operand::OP_ ## op_1, operand::OP_ ## op_2, operand::OP_NONE },
-#define INST_3(name, opcode, extension, prefix, op_1, op_2, op_3) { ###name, opcode, extension, prefix, operand::OP_ ## op_1, operand::OP_ ## op_2, operand::OP_ ## op_3 },
-
-#define INST_SELECT(count) CONCATENATE(INST_, count)
-#define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
-
-#define INST(index, name, opcode, extension, prefix, ...) INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extension, prefix, __VA_ARGS__)
+#define INST(name, opcode, extensions, prefix, context, op1, op2) { ###name, opcode, extensions, prefix, context, operand::OP_ ## op1, operand::OP_ ## op2 },
 
 	static constexpr instruction_info instruction_db[] = {
-	 #include "assembler/instruction_database.inc"
+		#include "assembler/instruction_database.inc"
 	};
-
-#undef INST_0
-#undef INST_1
-#undef INST_2
-#undef INST_3
-
-#undef INST_SELECT
-#undef INST_HELPER
-
-#undef INST
 } // namespace baremetal

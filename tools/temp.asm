@@ -1,2 +1,2 @@
 BITS 64
-xor rcx, rcx
+mov rcx, 1111

@@ -7,14 +7,14 @@ const tempBinaryPath = path.join(__dirname, "temp.bin")
 
 const translateOperands = (operands) => {
     const replacements = {
-        "I8" : "100",
-        "I16": "1000",
-        "I32": "100000",
-        "I64": "10000000000",
-        "R8" : "cl",
-        "R16": "cx",
-        "R32": "ecx",
-        "R64": "rcx"
+        "I8" : "255",
+        "I16": "65535",
+        "I32": "4294967295",
+        "I64": "18446744073709551615",
+        "reg8" : "cl",
+        "reg16": "cx",
+        "reg32": "ecx",
+        "reg64": "rcx"
     };
 
     const regex = new RegExp(Object.keys(replacements).join("|"), "g");
@@ -23,14 +23,14 @@ const translateOperands = (operands) => {
 
 const translateOperandsCPP = (operands) => {
     const replacements = {
-        "I8" : "I8(100)",
-        "I16": "I16(1000)",
-        "I32": "I32(100000)",
-        "I64": "I64(10000000000)",
-        "R8" : "cl",
-        "R16": "cx",
-        "R32": "ecx",
-        "R64": "rcx"
+        "I8" : "I8(255)",
+        "I16": "I16(65535)",
+        "I32": "I32(4294967295)",
+        "I64": "I64(18446744073709551615)",
+        "reg8" : "cl",
+        "reg16": "cx",
+        "reg32": "ecx",
+        "reg64": "rcx"
     };
 
     const regex = new RegExp(Object.keys(replacements).join("|"), "g");
@@ -58,15 +58,56 @@ const compileInstruction = (instruction) => {
     return utility.readFileHex(tempBinaryPath);
 }
 
+function generate_combinations(operands) {
+     // Define the mapping between operands and their corresponding arrays
+     const operandMap = {
+        reg8:  [ 'cl' , 'dl'                 , 'bl'                  ],
+        reg16: [ 'cx' , 'dx'                 , 'bx'                  ],
+        reg32: [ 'ecx', 'edx'                , 'ebx'                 ],
+        reg64: [ 'rcx', 'rdx'                , 'rbx'                 ],
+        i8:    [ '0'  , '127'                /*'255'                 */],
+        i16:   [ '0'  , '32767'              /*'65535'               */],
+        i32:   [ '0'  , '2147483647'         /*'4294967295'          */],
+        i64:   [ '0'  , '9223372036854775807'/*'18446744073709551615'*/]
+    };
+
+    // Helper function to generate combinations recursively
+    function generate(operands, index) {
+        if (index === operands.length) {
+            return [[]];
+        }
+
+        const currentOperand = operands[index];
+        const currentArray = operandMap[currentOperand] || [];
+        const remainingCombinations = generate(operands, index + 1);
+
+        const combinations = [];
+        for (const value of currentArray) {
+            for (const combination of remainingCombinations) {
+                combinations.push([value, ...combination]);
+            }
+        }
+        return combinations;
+    }
+
+    // Generate and return combinations
+    return generate(operands, 0);
+}
+
 const compileInstructions = (instructions) => {
     let binary = [];
 
     instructions.forEach((inst, i) => {
-        const operands = translateOperands(inst.operands).join(", ");
-        const binary = compileInstruction(`${inst.name} ${operands}`);
-        const formattedOperands = translateOperandsCPP(inst.operands).join(", ");
+        // const operands = translateOperands(inst.operands).join(", ");
 
-        console.log(`TEST_INST(\"${binary}\", ${inst.name.toUpperCase()}(${formattedOperands}));`)
+        generate_combinations(inst.operands).forEach(combination => {
+            const operands = combination.join(", ");
+            const binary = compileInstruction(`${inst.name} ${operands}`);
+            // const formattedOperands = translateOperandsCPP(inst.operands).join(", ");
+            console.log(`TEST_INST(\"${binary}\", ${inst.name}(${operands}));`)
+        })
+
+
     });
 
     return binary;

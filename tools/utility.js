@@ -1,7 +1,7 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const { execSync  } = require('child_process');
+const { execSync } = require('child_process');
 
 const asmdb = require("asmdb");
 
@@ -55,7 +55,7 @@ function extractOpcode(inst) {
 }
 
 // translate asmdb immediate operands over to our format
-function translateOperands(operands) {
+function translateImmOperands(operands) {
     const replacements = {
         "iq": "i64",
         "uq": "i64",
@@ -73,7 +73,7 @@ function translateOperands(operands) {
 
 // retrieve valid operand combinations for a given instruction instance
 function getOperandCombinations(operands) {
-    let cleanOperands = translateOperands(operands);
+    let cleanOperands = translateImmOperands(operands);
     let result = [];
 
     function generateCombinations(current, index) {
@@ -120,19 +120,19 @@ function extractExtensions(inst) {
 function extractPrefix(inst) {
     let result = [];
 
-    if(inst._67h || (inst.pp && inst.pp.includes("66"))) {
+    if (inst._67h || (inst.pp && inst.pp.includes("66"))) {
         result.push("OPERAND_SIZE_OVERRIDE");
     }
-    
-    if(inst.lock) {
+
+    if (inst.lock) {
         result.push("LOCK");
     }
 
-    if(inst.rep || inst.repz || (inst.pp && inst.pp.includes("F3"))) {
+    if (inst.rep || inst.repz || (inst.pp && inst.pp.includes("F3"))) {
         result.push("REP");
     }
 
-    if(inst.repnz || (inst.pp && inst.pp.includes("F2"))) {
+    if (inst.repnz || (inst.pp && inst.pp.includes("F2"))) {
         result.push("REPNE");
     }
 
@@ -152,47 +152,71 @@ function verifyInstruction(inst) {
 // verify instruction operands, this boils down to us only supporting immediate and 
 // register operands
 function verifyOperands(operands) {
-    const validOperands = ["R8", "R16", "R32", "R64", "I8", "I16", "I32", "I64"];
+    const validOperands = ["reg8", "reg16", "reg32", "reg64", "i8", "i16", "i32", "i64"/*, "M8", "M16", "M32", "M64"*/];
     return operands.length === 2 && operands.every(part => validOperands.includes(part));
 }
 
+function translateOperands(op) {
+    return op.map(o => {
+        switch(o) {
+            case "r8":  return "reg8"
+            case "r16": return "reg16"
+            case "r32": return "reg32"
+            case "r64": return "reg64"
+            default:    return o;
+        }
+    });
+}
 
 // filter instruction x operand combinations that we can generate code for
 function filterInstructions() {
-    let instructions = [];
-    let visited = new Set();
+    let instructions = new Map();
 
     database.forEach((name, inst) => {
-        if (!verifyInstruction(inst)) {
+        //if (!verifyInstruction(inst)) {
+        //    return;
+        //}
+
+        // if (inst.name != "xor" && inst.name != "mov") {
+       //      return;
+        // }
+        if(inst.name != "mov") {
             return;
         }
 
         const combinations = getOperandCombinations(inst.operands.map(op => op.data));
 
         combinations.forEach(combination => {
-            const operands = combination.map(op => op.toUpperCase());
+            const operands = translateOperands(combination);
 
-            if(!verifyOperands(operands)) {
+            if (!verifyOperands(operands)) {
                 return;
             }
 
-            const key = `${inst.name}:${operands.join()}`;
+            const key = `${inst.name}:${operands.join(':')}`;
 
-            if(visited.has(key)) {
-                return;
+            if (instructions.has(key)) {
+                instructions.get(key).variants.push({
+                    opcode: extractOpcode(inst),
+                    rm: inst.rm,
+                    w: inst.w,
+                    ri: inst.ri,
+                    pp: inst.pp
+                })
             }
-
-            visited.add(key);
-
-            instructions.push({
-                name:     inst.name,
-                operands: operands,
-                opcode: extractOpcode(inst),
-                rm: inst.rm,
-                w: inst.w,
-                ri: inst.ri,
-                pp: inst.pp
-            });
+            else {
+                instructions.set(key, {
+                    name: inst.name,
+                    operands: operands,
+                    variants: [{
+                            opcode: extractOpcode(inst),
+                            rm: inst.rm,
+                            w: inst.w,
+                            ri: inst.ri,
+                            pp: inst.pp
+                    }]
+                });
+            }
         });
     })
 
@@ -207,7 +231,7 @@ module.exports = {
     executeCommand,
     extractExtensions,
     extractOpcode,
-    translateOperands,
+    translateImmOperands,
     getOperandCombinations,
     extractExtensions,
     verifyInstruction,
