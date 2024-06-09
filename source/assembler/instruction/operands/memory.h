@@ -1,4 +1,5 @@
 #pragma once
+#include "assembler/instruction/operands/immediates.h"
 #include "assembler/instruction/operands/registers.h"
 
 namespace baremetal {
@@ -13,8 +14,11 @@ namespace baremetal {
 		u8 base;
 		u8 index;
 
+		bool has_base = false;
+		bool has_index = false;
+
 		scale scale;
-		i32 displacement;
+		imm displacement;
 	};
 
 	struct mem8  : mem {};

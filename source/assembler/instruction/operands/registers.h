@@ -112,4 +112,9 @@ namespace baremetal {
 	REGISTER_CLASS_8_DECL(ch, 5);
 	REGISTER_CLASS_8_DECL(dh, 6);
 	REGISTER_CLASS_8_DECL(bh, 7);
+
+	static inline auto is_stack_pointer(reg r) -> bool {
+		// TODO: spl
+		return r.index == rsp.index; // rsp, esp, sp
+	}
 } // namespace baremetal

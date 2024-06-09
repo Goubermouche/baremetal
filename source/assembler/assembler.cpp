@@ -136,8 +136,6 @@ namespace baremetal {
 						break;
 					}
 				}
-
-
 			}
 		}
 		else {
@@ -229,12 +227,60 @@ namespace baremetal {
 
 		// mod rm / sib
 		if(inst->is_r()) {
-			const utility::byte mod_rm_part = direct(rx, destination);
+			utility::byte mod_rm_part;
+
+			if(is_operand_mem(op_1.type)) {
+				const bool has_sib = has_sib_byte(inst, op_1, op_2);
+
+				// left mem
+				if(op_1.mem.displacement.min_bits <= 8) {
+					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : op_1.mem.base);
+				}
+				else {
+					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : op_1.mem.base);
+				}
+			}
+			else if(is_operand_mem(op_2.type)) {
+				const bool has_sib = has_sib_byte(inst, op_1, op_2);
+
+				// right mem
+				if(op_2.mem.displacement.min_bits <= 8) {
+					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : op_2.mem.base);
+				}
+				else {
+					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : op_2.mem.base);
+				}
+			}
+			else {
+				mod_rm_part = direct(rx, destination);
+			}
+
 			m_bytes.push_back(mod_rm_part);
 		}
 		else if(inst->is_ext()) {
 			const utility::byte mod_rm_part = direct(inst->get_ext(), destination);
 			m_bytes.push_back(mod_rm_part);
+		}
+	}
+
+	void assembler::emit_instruction_sib(const instruction_info* inst, operand op_1, operand op_2) {
+		mem memory;
+
+		if(is_operand_mem(op_1.type)) {
+			memory = op_1.mem;
+		}
+		else if(is_operand_mem(op_2.type)) {
+			memory = op_2.mem;
+		}
+		else {
+			return; // no sib byte
+		}
+
+		if(memory.has_index) {
+			m_bytes.push_back(sib(memory.scale, memory.index, memory.base));
+		}
+		else if(is_stack_pointer(reg(memory.base))) {
+			m_bytes.push_back(sib(memory.scale, memory.index, memory.base)); // may not be correct
 		}
 	}
 
@@ -245,6 +291,7 @@ namespace baremetal {
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, op_1, op_2);
 		emit_instruction_modrm(inst, op_1, op_2);
+		emit_instruction_sib(inst, op_1, op_2);
 
 		const u8 operand_count = inst->get_operand_count(); // this could be inferred ig
 
@@ -252,19 +299,49 @@ namespace baremetal {
 		const operand operands[2] = { op_1, op_2 };
 		const enum operand::type operands_actual[2] = { inst->op1, inst->op2 };
 
-
-		// imm operands
+		// integral values
 		for(u8 i = 0; i < operand_count; ++i) {
 			if(is_operand_imm(operands[i].type)) {
-				emit_immediate_operand(operands[i].imm, operands_actual[i]);
+				// imm operands
+				emit_immediate_operand(operands[i].imm.value, operands_actual[i]);
+			}
+			else if(is_operand_mem(operands[i].type)) {
+				// memory displacement
+				const auto displacement = operands[i].mem.displacement;
+				const enum operand::type ty = displacement.min_bits <= 8 ? operand::type::OP_I8 : operand::type::OP_I32;
+				emit_immediate_operand(displacement.value, ty);
 			}
 		}
 	}
 
-	void assembler::emit_immediate_operand(const imm& i, enum operand::type type) {
+	auto assembler::has_sib_byte(const instruction_info* inst, operand op_1, operand op_2) -> bool {
+		mem memory;
+
+		if(is_operand_mem(op_1.type)) {
+			memory = op_1.mem;
+		}
+		else if(is_operand_mem(op_2.type)) {
+			memory = op_2.mem;
+		}
+		else {
+			return false;
+		}
+
+		if(memory.has_index) {
+			return true;
+		}
+
+		if(is_stack_pointer(reg(memory.base))) {
+			return true;
+		}
+
+		return false;
+	}
+
+	void assembler::emit_immediate_operand(u64 imm, enum operand::type type) {
 		switch(type) {
 			case operand::type::OP_I8: {
-				const u8 value = static_cast<u8>(i.value);
+				const u8 value = static_cast<u8>(imm);
 
 				for(int i = 0; i < 1; ++i) {
 					utility::byte b = (value >> (i * 8)) & 0xFF;
@@ -274,7 +351,7 @@ namespace baremetal {
 				break;
 			}
 			case operand::type::OP_I16: {
-				const u16 value = static_cast<u16>(i.value);
+				const u16 value = static_cast<u16>(imm);
 
 				for(int i = 0; i < 2; ++i) {
 					utility::byte b = (value >> (i * 8)) & 0xFF;
@@ -284,7 +361,7 @@ namespace baremetal {
 				break;
 			}
 			case operand::type::OP_I32: {
-				const u32 value = static_cast<u32>(i.value);
+				const u32 value = static_cast<u32>(imm);
 
 				for(int i = 0; i < 4; ++i) {
 					utility::byte b = (value >> (i * 8)) & 0xFF;
@@ -294,7 +371,7 @@ namespace baremetal {
 				break;
 			}
 			case operand::type::OP_I64: {
-				const u64 value = i.value;
+				const u64 value = imm;
 
 				for(int i = 0; i < 8; ++i) {
 					utility::byte b = (value >> (i * 8)) & 0xFF;
@@ -305,6 +382,16 @@ namespace baremetal {
 			}
 			default: ASSERT(false, "ivalid operand");
 		}
+	}
+
+	auto assembler::sib(u8 scale, u8 index, u8 base) -> u8 {
+		ASSERT(scale <= 3, "invalid scale");
+
+		// scale [XX______]
+		// index [__XXX___]
+		// base  [_____XXX]
+
+		return (scale << 6) | ((index & 0x7) << 3) | (base & 0x7);
 	}
 
 	auto assembler::rex(bool w, u8 rx, u8 base, u8 index) -> u8 {
@@ -338,7 +425,7 @@ namespace baremetal {
 		// registers 0 - 7  primary registers
 		// registers 8 - 16 extended registers
 
-		// mod  [XX______]
+		// mod  [XX______] (addressing mode)
 		// rx   [__XXX___]
 		// rm   [_____XXX]
 		return static_cast<u8>((rm & 7) | ((rx & 7) << 3) | (mod << 6));
@@ -346,5 +433,13 @@ namespace baremetal {
 
 	auto assembler::direct(u8 rx, u8 reg) -> u8 {
 		return mod_rx_rm(DIRECT, rx, reg);
+	}
+
+	auto assembler::indirect_disp_8(u8 rx, u8 base) -> u8 {
+		return mod_rx_rm(INDIRECT_DISP8, rx, base);
+	}
+
+	auto assembler::indirect_disp_32(u8 rx, u8 base) -> u8 {
+		return mod_rx_rm(INDIRECT_DISP32, rx, base);
 	}
 } // namespace baremetal

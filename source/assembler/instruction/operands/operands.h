@@ -1,5 +1,4 @@
 #pragma once
-#include "assembler/instruction/operands/immediates.h"
 #include "assembler/instruction/operands/memory.h"
 
 namespace baremetal {

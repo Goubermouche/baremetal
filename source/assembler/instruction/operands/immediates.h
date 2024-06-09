@@ -5,6 +5,7 @@ namespace baremetal {
 	using namespace utility::types;
 
 	struct imm {
+		imm() = default;
 		imm(u64 i) {
 			if(i >= std::numeric_limits<u8>::min() && i <= std::numeric_limits<u8>::max()) {
 				min_bits = 8;
