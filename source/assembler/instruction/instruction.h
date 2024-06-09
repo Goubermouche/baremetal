@@ -1,5 +1,5 @@
 #pragma once
-#include "assembler/instruction/operand.h"
+#include "assembler/instruction/operands/operands.h"
 
 namespace baremetal {
 #pragma pack(push, 1)

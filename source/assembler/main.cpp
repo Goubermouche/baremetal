@@ -216,11 +216,21 @@ void run_tests() {
 }
 
 int main() {
-	run_tests();
+	// run_tests();
 	using namespace baremetal;
 
 	// TODO: add support for smaller destination reg indexing in generators
 	// TODO: add warnings/error for incompatible imm sizes
+
+	assembler assembler;
+
+	const mem8 memory = {};
+
+	// mov r8, m8
+	assembler.mov(al, memory);
+
+
+	utility::console::print("{}\n", bytes_to_string(assembler.get_bytes()));
 
 	return 0;
 }

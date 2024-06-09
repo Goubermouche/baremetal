@@ -1,2 +1,2 @@
 BITS 64
-mov rbx, -128
+mov eax, [0x51]

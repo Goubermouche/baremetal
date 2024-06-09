@@ -2,6 +2,8 @@
 "use strict"
 const utility = require("./utility.js")
 
+const DEBUG_PRINT_DISCARDED_INSTRUCTIONS = false;
+
 // calculate the layout of our instruction table
 function calculateLayout(instructions) {
     let layout = {
@@ -147,6 +149,15 @@ function optimize_away_duplicates(instructions) {
             }
         }
 
+        if(DEBUG_PRINT_DISCARDED_INSTRUCTIONS) {
+            inst.variants.forEach(v => {
+                if(v != best) {
+                    console.log(v.opcode, inst.name, inst.operands.join(", "));
+                }
+            })
+        }
+        
+
         delete inst.variants;
         inst.opcode = best.opcode;
         inst.rm = best.rm;
@@ -166,21 +177,52 @@ function is_immediate(op) {
     }
 }
 
-const customOrder = ["i8", "i16", "i32", "i64"];
+const customOrder = [
+    "i8", "i16", "i32", "i64",
+    "al", "ax", "eax", "rax",
+    "reg8", "reg16", "reg32", "reg64",
+    "moff8", "moff16", "moff32", "moff64",
+    "m8", "m16", "m32", "m64"
+];
 
 function customOperandOrder(value) {
     const index = customOrder.indexOf(value);
     return index === -1 ? customOrder.length : index;
 }
 
+function assemblerDBImmediates(operands) {
+    return operands.map(op => {
+        switch(op) {
+            case "i8":  return "imm"
+            case "i16": return "imm"
+            case "i32": return "imm"
+            case "i64": return "imm"
+            case "moff8":  return "moff"
+            case "moff16": return "moff"
+            case "moff32": return "moff"
+            case "moff64": return "moff"
+            case "m8":  return "mem8"
+            case "m16": return "mem16"
+            case "m32": return "mem32"
+            case "m64": return "mem64"
+            default: return op;
+        }
+    });
+}
+
+function translate_operands_to_inst(operands) {
+    return operands.map(op => {
+        switch(op) {
+            case "m8":  return "MEM8"
+            case "m16": return "MEM16"
+            case "m32": return "MEM32"
+            case "m64": return "MEM64"
+            default: return op;
+        }
+    });
+}
+
 function main() {
-    // read the db
-    // generate the table
-    // const instructions = utility.filterInstructions();
-    // const layout = calculateLayout(instructions);
-
-    // createTable(instructions, layout);
-
     let instructions = utility.filterInstructions();
     optimize_away_duplicates(instructions)
 
@@ -193,26 +235,30 @@ function main() {
     flat_instructions.sort((a, b) => {
         if (a.name < b.name) return -1;
         if (a.name > b.name) return 1;
-    
-        if (a.operands[0] < b.operands[0]) return -1;
-        if (a.operands[0] > b.operands[0]) return 1;
-    
-        const orderA = customOperandOrder(a.operands[1]);
-        const orderB = customOperandOrder(b.operands[1]);
+
+        const orderA = customOperandOrder(a.operands[0]);
+        const orderB = customOperandOrder(b.operands[0]);
     
         if (orderA < orderB) return -1;
         if (orderA > orderB) return 1;
+    
+        const orderC = customOperandOrder(a.operands[1]);
+        const orderD = customOperandOrder(b.operands[1]);
+    
+        if (orderC < orderD) return -1;
+        if (orderC > orderD) return 1;
     
         return 0;
     });
 
     let indices = new Map();
+    let dest_to_source = new Map();
     let current_index = 0;
     let last_destination = undefined;
 
     // actual array
     flat_instructions.forEach((inst, i) => {
-        console.log(`INST(${inst.name}, 0x${inst.opcode}, ${utility.extractExtensions(inst)}, ${utility.extractPrefix(inst)}, ${inst.operands.join(", ").toUpperCase()})`);
+        dest_to_source.set(`${inst.name}:${inst.operands.join(":")}`, i);
 
         if(last_destination === inst.operands[0]) {
             if(is_immediate(inst.operands[1])) {}
@@ -224,9 +270,19 @@ function main() {
             current_index = i;
         }
 
-        indices.set(`${inst.name},${inst.operands.join(",")}`, current_index);
+        indices.set(`${inst.name},${assemblerDBImmediates(inst.operands).join(",")}`, current_index);
         last_destination = inst.operands[0];
     });
+
+    flat_instructions.forEach(inst => {
+        let special_index = 0;
+
+        if(inst.operands[0] == "reg64" && inst.operands[1] == "i32") {
+            special_index = dest_to_source.get(`${inst.name}:reg32:i32`)
+        }
+
+        console.log(`INST(${inst.name}, 0x${inst.opcode}, ${utility.extractExtensions(inst)}, ${utility.extractPrefix(inst)}, ${special_index}, ${translate_operands_to_inst(inst.operands).join(", ").toUpperCase()})`);
+    })
 
     console.log("\n\ninterface:\n\n")
 

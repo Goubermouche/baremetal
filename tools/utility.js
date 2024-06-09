@@ -152,7 +152,13 @@ function verifyInstruction(inst) {
 // verify instruction operands, this boils down to us only supporting immediate and 
 // register operands
 function verifyOperands(operands) {
-    const validOperands = ["reg8", "reg16", "reg32", "reg64", "i8", "i16", "i32", "i64"/*, "M8", "M16", "M32", "M64"*/];
+    const validOperands = [
+        "reg8", "reg16", "reg32", "reg64",
+        "i8", "i16", "i32", "i64", 
+        //"moff8", "moff16", "moff32", "moff64", 
+        //"al", "ax", "eax", "rax",
+        "m8", "m16", "m32", "m64"
+    ];
     return operands.length === 2 && operands.every(part => validOperands.includes(part));
 }
 
