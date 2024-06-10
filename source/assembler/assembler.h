@@ -60,8 +60,12 @@ namespace baremetal {
 		static auto indirect(u8 rx, u8 base) -> u8;
 		static auto indirect_disp_8(u8 rx, u8 base) -> u8;
 		static auto indirect_disp_32(u8 rx, u8 base) -> u8;
+
+		void instruction_begin();
+		auto get_current_inst_size() const -> u8;
 	private:
 		utility::dynamic_array<utility::byte> m_bytes;
+		u64 m_current_inst_begin;
 	};
 
 	static constexpr rax rax;

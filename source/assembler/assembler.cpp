@@ -2,7 +2,7 @@
 #include <utility/assert.h>
 
 namespace baremetal {
-	assembler::assembler() {}
+	assembler::assembler() : m_current_inst_begin(0) {}
 
 	auto assembler::get_bytes() const -> const utility::dynamic_array<utility::byte>& {
 		return m_bytes;
@@ -297,6 +297,8 @@ namespace baremetal {
 	}
 
 	void assembler::emit_instruction(u32 index, operand op_1, operand op_2) {
+		instruction_begin();
+
 		const instruction_info* inst = get_instruction_info(index, op_1, op_2);
 		utility::console::print("assembling as: {} {} {}\n", inst->name, operand_type_to_string(inst->op1), operand_type_to_string(inst->op2));
 
@@ -320,7 +322,7 @@ namespace baremetal {
 			else if(is_operand_mem(operands[i].type)) {
 				// memory displacement
 				const auto memory = operands[i].mem;
-				const auto displacement = memory.displacement;
+				auto displacement = memory.displacement;
 
 				if(displacement.value == 0 && memory.base.type != REG_RIP) {
 					continue; // skip 0 displacements
@@ -328,8 +330,14 @@ namespace baremetal {
 
 				enum operand::type ty;
 
-				if(memory.has_base == false || memory.base.type == REG_RIP) {
+				if(memory.has_base == false) {
 					ty = operand::type::OP_I32;
+				}
+				else if(memory.base.type == REG_RIP) {
+					ty = operand::type::OP_I32;
+
+					// beginning of the instruction
+					displacement = imm(displacement.value - (get_current_inst_size() + 4));
 				}
 				else if(displacement.min_bits <= 8) {
 					ty = operand::type::OP_I8;
@@ -478,5 +486,13 @@ namespace baremetal {
 
 	auto assembler::indirect_disp_32(u8 rx, u8 base) -> u8 {
 		return mod_rx_rm(INDIRECT_DISP32, rx, base);
+	}
+
+	void assembler::instruction_begin() {
+		m_current_inst_begin = m_bytes.size();
+	}
+
+	auto assembler::get_current_inst_size() const -> u8 {
+		return m_bytes.size() - m_current_inst_begin;
 	}
 } // namespace baremetal

@@ -1,2 +1,3 @@
 BITS 64
-mov al, [rel + 0x50]
+mov al, byte [rel $ + 0x123456]
+mov al, byte [rel $ + 0x123456]
