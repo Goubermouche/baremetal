@@ -230,25 +230,24 @@ namespace baremetal {
 			utility::byte mod_rm_part;
 
 			if(is_operand_mem(op_1.type)) {
-				const bool has_sib = has_sib_byte(inst, op_1, op_2);
-
-				// left mem
-				if(op_1.mem.displacement.min_bits <= 8) {
-					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : op_1.mem.base);
-				}
-				else {
-					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : op_1.mem.base);
-				}
+				ASSERT(false, "not implemented");
 			}
 			else if(is_operand_mem(op_2.type)) {
 				const bool has_sib = has_sib_byte(inst, op_1, op_2);
+				ASSERT(op_2.mem.displacement.min_bits <= 32, "too many displacement bits");
 
 				// right mem
-				if(op_2.mem.displacement.min_bits <= 8) {
-					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : op_2.mem.base);
+				if(op_2.mem.displacement.value == 0) {
+					// no displacement
+					mod_rm_part = indirect(rx, has_sib ? 0b100 : op_2.mem.base.index);
+				}
+				else if(op_2.mem.displacement.min_bits <= 8) {
+					// 8 bit displacement
+					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : op_2.mem.base.index);
 				}
 				else {
-					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : op_2.mem.base);
+					// 32 bit displacement
+					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : op_2.mem.base.index);
 				}
 			}
 			else {
@@ -277,10 +276,10 @@ namespace baremetal {
 		}
 
 		if(memory.has_index) {
-			m_bytes.push_back(sib(memory.scale, memory.index, memory.base));
+			m_bytes.push_back(sib(memory.scale, memory.index.index, memory.base.index));
 		}
 		else if(is_stack_pointer(reg(memory.base))) {
-			m_bytes.push_back(sib(memory.scale, memory.index, memory.base)); // may not be correct
+			m_bytes.push_back(sib(memory.scale, memory.index.index, memory.base.index)); // may not be correct
 		}
 	}
 
@@ -308,6 +307,11 @@ namespace baremetal {
 			else if(is_operand_mem(operands[i].type)) {
 				// memory displacement
 				const auto displacement = operands[i].mem.displacement;
+
+				if(displacement.value == 0) {
+					continue; // skip 0 displacements
+				}
+
 				const enum operand::type ty = displacement.min_bits <= 8 ? operand::type::OP_I8 : operand::type::OP_I32;
 				emit_immediate_operand(displacement.value, ty);
 			}
@@ -433,6 +437,10 @@ namespace baremetal {
 
 	auto assembler::direct(u8 rx, u8 reg) -> u8 {
 		return mod_rx_rm(DIRECT, rx, reg);
+	}
+
+	auto assembler::indirect(u8 rx, u8 base) -> u8 {
+		return mod_rx_rm(INDIRECT, rx, base);
 	}
 
 	auto assembler::indirect_disp_8(u8 rx, u8 base) -> u8 {

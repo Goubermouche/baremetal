@@ -57,6 +57,7 @@ namespace baremetal {
 		static auto mod_rx_rm(u8 mod, u8 rx, u8 rm) -> u8;
 
 		static auto direct(u8 rx, u8 reg) -> u8;
+		static auto indirect(u8 rx, u8 base) -> u8;
 		static auto indirect_disp_8(u8 rx, u8 base) -> u8;
 		static auto indirect_disp_32(u8 rx, u8 base) -> u8;
 	private:

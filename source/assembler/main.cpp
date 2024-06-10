@@ -216,29 +216,16 @@ void run_tests() {
 }
 
 int main() {
-	// run_tests();
+	run_tests();
 	using namespace baremetal;
 
 	// TODO: add support for smaller destination reg indexing in generators
 	// TODO: add warnings/error for incompatible imm sizes
 
 	assembler assembler;
-	mem8 memory = {};
-
-	// base + index * scale + displacement
-
-	memory.base = rax.index;     // accounted for
-	memory.has_base = true;
-
-	memory.index = rcx.index;    // accounted for
-	memory.has_index = true;
-
-	memory.scale = mem::SCALE_1; // accounted for
-
-	memory.displacement = 0x10;  // accounted for 
 
 	// mov r8, m8
-	assembler.mov(al, memory);
+	assembler.mov(al, mem8::absolute());
 
 	utility::console::print("{}\n", bytes_to_string(assembler.get_bytes()));
 

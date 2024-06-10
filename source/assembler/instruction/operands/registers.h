@@ -5,6 +5,7 @@ namespace baremetal {
 	using namespace utility::types;
 
 	struct reg {
+		constexpr reg() : index(0) {}
 		constexpr explicit reg(u8 index) : index(index) {}
 		u8 index;
 	};
