@@ -4,55 +4,65 @@
 namespace baremetal {
 	using namespace utility::types;
 
+	enum reg_type : u8 {
+		REG_I8,
+		REG_I16,
+		REG_I32,
+		REG_I64,
+		REG_RIP
+	};
+
 	struct reg {
 		constexpr reg() : index(0) {}
-		constexpr explicit reg(u8 index) : index(index) {}
+		constexpr explicit reg(u8 index, reg_type ty) : index(index), type(ty) {}
 		u8 index;
+		reg_type type;
 	};
 
 	struct reg8 : reg {
-		constexpr explicit reg8(u8 i) : reg(i) {}
+		constexpr explicit reg8(u8 i) : reg(i, REG_I8) {}
 	};
 
 	struct reg16 : reg {
-		constexpr explicit reg16(u8 i) : reg(i) {}
+		constexpr explicit reg16(u8 i) : reg(i, REG_I16) {}
 	};
 
 	struct reg32 : reg {
-		constexpr explicit reg32(u8 i) : reg(i) {}
+		constexpr explicit reg32(u8 i) : reg(i, REG_I32) {}
 	};
 
 	struct reg64 : reg {
-		constexpr explicit reg64(u8 i) : reg(i) {}
+		constexpr explicit reg64(u8 i) : reg(i, REG_I64) {}
+	};
+
+	struct reg_void : reg {
+		constexpr explicit reg_void(u8 i, reg_type ty) : reg(i, ty) {}
 	};
 
 #define REGISTER_CLASS_64_DECL(name, index) \
   struct name : reg64 {                     \
     constexpr name() : reg64(index) {}      \
-  };                                        \
-                                            \
-  static constexpr name name
+  };
 
 #define REGISTER_CLASS_32_DECL(name, index) \
   struct name : reg32 {                     \
     constexpr name() : reg32(index) {}      \
-  };                                        \
-                                            \
-  static constexpr name name
+  };
 
 #define REGISTER_CLASS_16_DECL(name, index) \
   struct name : reg16 {                     \
     constexpr name() : reg16(index) {}      \
-  };                                        \
-                                            \
-  static constexpr name name
+  };
 
 #define REGISTER_CLASS_8_DECL(name, index) \
   struct name : reg8 {                     \
     constexpr name() : reg8(index) {}      \
-  };                                       \
-                                           \
-  static constexpr name name
+  };
+
+#define REGISTER_CLASS_VOID_DECL(name, index, type) \
+  struct name : reg_void {                          \
+    constexpr name() : reg_void(index, type) {}     \
+  };
 
 	REGISTER_CLASS_64_DECL(rax, 0);
 	REGISTER_CLASS_64_DECL(rcx, 1);
@@ -114,8 +124,7 @@ namespace baremetal {
 	REGISTER_CLASS_8_DECL(dh, 6);
 	REGISTER_CLASS_8_DECL(bh, 7);
 
-	static inline auto is_stack_pointer(reg r) -> bool {
-		// TODO: spl
-		return r.index == rsp.index; // rsp, esp, sp
-	}
+	REGISTER_CLASS_VOID_DECL(rip, 0, REG_RIP);
+
+
 } // namespace baremetal

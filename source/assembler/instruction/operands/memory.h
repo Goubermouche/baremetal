@@ -23,10 +23,21 @@ namespace baremetal {
 
 	struct mem8  : mem {
 		// [base]
-		static auto absolute(u64 base) -> mem8 {
+		static auto absolute(i32 address) -> mem8 {
 			mem8 memory = {};
 
+			memory.displacement = address;
 
+			return memory;
+		}
+
+		static auto ptr(rip rip, i32 offset) -> mem8 {
+			mem8 memory = {};
+
+			memory.base = rip;
+			memory.has_base = true;
+
+			memory.displacement = offset;
 
 			return memory;
 		}

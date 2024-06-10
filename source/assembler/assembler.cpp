@@ -237,9 +237,18 @@ namespace baremetal {
 				ASSERT(op_2.mem.displacement.min_bits <= 32, "too many displacement bits");
 
 				// right mem
-				if(op_2.mem.displacement.value == 0) {
-					// no displacement
-					mod_rm_part = indirect(rx, has_sib ? 0b100 : op_2.mem.base.index);
+				
+				if(op_2.mem.has_base == false) {
+					// absolute address
+					mod_rm_part = indirect(rx, 0b100); // 100 = SIB byte
+				}
+				else if(op_2.mem.base.type == REG_RIP) {
+					// rip reg
+					mod_rm_part = indirect(rx, 0b101); // 101 = RIP-relative
+				}
+				else if(op_2.mem.displacement.value == 0) {
+				// no displacement
+				mod_rm_part = indirect(rx, has_sib ? 0b100 : op_2.mem.base.index);
 				}
 				else if(op_2.mem.displacement.min_bits <= 8) {
 					// 8 bit displacement
@@ -281,6 +290,10 @@ namespace baremetal {
 		else if(is_stack_pointer(reg(memory.base))) {
 			m_bytes.push_back(sib(memory.scale, memory.index.index, memory.base.index)); // may not be correct
 		}
+		else if(memory.has_base == false) {
+			// no scale, no index, displacement-only mode
+			m_bytes.push_back(sib(0b00, 0b100, 0b101));
+		}
 	}
 
 	void assembler::emit_instruction(u32 index, operand op_1, operand op_2) {
@@ -306,13 +319,25 @@ namespace baremetal {
 			}
 			else if(is_operand_mem(operands[i].type)) {
 				// memory displacement
-				const auto displacement = operands[i].mem.displacement;
+				const auto memory = operands[i].mem;
+				const auto displacement = memory.displacement;
 
-				if(displacement.value == 0) {
+				if(displacement.value == 0 && memory.base.type != REG_RIP) {
 					continue; // skip 0 displacements
 				}
 
-				const enum operand::type ty = displacement.min_bits <= 8 ? operand::type::OP_I8 : operand::type::OP_I32;
+				enum operand::type ty;
+
+				if(memory.has_base == false || memory.base.type == REG_RIP) {
+					ty = operand::type::OP_I32;
+				}
+				else if(displacement.min_bits <= 8) {
+					ty = operand::type::OP_I8;
+				}
+				else {
+					ty = operand::type::OP_I32;
+				}
+
 				emit_immediate_operand(displacement.value, ty);
 			}
 		}
@@ -337,6 +362,10 @@ namespace baremetal {
 
 		if(is_stack_pointer(reg(memory.base))) {
 			return true;
+		}
+
+		if(memory.has_base == false) {
+			return true; // absolute address
 		}
 
 		return false;

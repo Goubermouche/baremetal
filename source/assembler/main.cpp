@@ -225,8 +225,7 @@ int main() {
 	assembler assembler;
 
 	// mov r8, m8
-	assembler.mov(al, mem8::absolute());
-
+	assembler.mov(al, mem8::ptr(rip, -0x123456));
 	utility::console::print("{}\n", bytes_to_string(assembler.get_bytes()));
 
 	return 0;

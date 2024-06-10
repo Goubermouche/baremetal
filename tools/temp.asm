@@ -1,2 +1,2 @@
 BITS 64
-mov al, [rax + rcx]
+mov al, [rel + 0x50]
