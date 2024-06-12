@@ -140,10 +140,10 @@ function generate_combinations(operands) {
         i16:   [ new imm('0')  , new imm('32767')              , new imm('-32768'),               new imm('127'),        new imm('-128')                                                                                                                 ],
         i32:   [ new imm('0')  , new imm('2147483647')         , new imm('-2147483648'),          new imm('32767'),      new imm('-32768'),      new imm('127'),   new imm('-128')                                                     ],
         i64:   [ new imm('0')  , new imm('9223372036854775807'), new imm('-9223372036854775808'), new imm('2147483647'), new imm('-2147483648'), new imm('32767'), new imm('-32768'), new imm('127'), new imm('-128')  ],
-        mem8:  [ new mem(8, 'rip', '0x0') ],
-        mem16: [ new mem(16, 'rip', '0x0') ],
-        mem32: [ new mem(32, 'rip', '0x0') ],
-        mem64: [ new mem(64, 'rip', '0x0') ]
+        mem8:  [ new mem(8,  'rip', '0x0'), new mem(8,  'rip', '0xFF'), new mem(8,  'rip', '0xFFFF') ],
+        mem16: [ new mem(16, 'rip', '0x0'), new mem(16, 'rip', '0xFF'), new mem(16, 'rip', '0xFFFF') ],
+        mem32: [ new mem(32, 'rip', '0x0'), new mem(32, 'rip', '0xFF'), new mem(32, 'rip', '0xFFFF') ],
+        mem64: [ new mem(64, 'rip', '0x0'), new mem(64, 'rip', '0xFF'), new mem(64, 'rip', '0xFFFF') ]
     };
 
     // Helper function to generate combinations recursively
