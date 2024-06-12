@@ -1,2 +1,2 @@
 BITS 64
-mov qword [rel $ + 0xFFFF], -128
+mov qword [rax + 0xFFFF], -128
