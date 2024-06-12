@@ -21,56 +21,44 @@ namespace baremetal {
 		imm displacement;
 	};
 
-	struct mem8  : mem {
-		// [base]
-		static auto absolute(i32 address) -> mem8 {
-			mem8 memory = {};
+#define MEM_DECL(bit_width)                                                                                  \
+  struct mem ## bit_width : mem {                                                                            \
+    static auto absolute(i32 address) -> mem ## bit_width {                                                  \
+      mem ## bit_width memory = {};                                                                          \
+      memory.displacement = address;                                                                         \
+      return memory;                                                                                         \
+    }                                                                                                        \
+                                                                                                             \
+  static auto ptr(rip rip, i32 offset) -> mem ## bit_width {                                                 \
+    mem ## bit_width memory = {};                                                                            \
+    memory.base = rip;                                                                                       \
+    memory.has_base = true;                                                                                  \
+    memory.displacement = offset;                                                                            \
+    return memory;                                                                                           \
+  }                                                                                                          \
+                                                                                                             \
+  static auto ptr(reg base_reg, i32 offset) -> mem ## bit_width {                                            \
+		mem ## bit_width memory = {};                                                                            \
+    memory.base = base_reg;                                                                                  \
+    memory.has_base = true;                                                                                  \
+    memory.displacement = offset;                                                                            \
+    return memory;                                                                                           \
+  }                                                                                                          \
+                                                                                                             \
+  static auto ptr(reg base_reg, reg index_reg, enum scale s = SCALE_1, i32 offset = 0) -> mem ## bit_width { \
+    mem ## bit_width memory = {};                                                                            \
+    memory.base = base_reg;                                                                                  \
+    memory.has_base = true;                                                                                  \
+    memory.index = index_reg;                                                                                \
+    memory.has_index = true;                                                                                 \
+    memory.displacement = offset;                                                                            \
+    memory.scale = s;                                                                                        \
+    return memory;                                                                                           \
+  }                                                                                                          \
+};
 
-			memory.displacement = address;
-
-			return memory;
-		}
-
-		static auto ptr(rip rip, i32 offset) -> mem8 {
-			mem8 memory = {};
-
-			memory.base = rip;
-			memory.has_base = true;
-
-			memory.displacement = offset;
-
-			return memory;
-		}
-
-		// [base_reg + offset]
-		static auto ptr(reg base_reg, i32 offset) -> mem8 {
-			mem8 memory = {};
-
-			memory.base = base_reg;
-			memory.has_base = true;
-
-			memory.displacement = offset;
-
-			return memory;
-		}
-		// [base_reg + (index * s) + offset]
-		static auto ptr(reg base_reg, reg index_reg, enum scale s = SCALE_1, i32 offset = 0) -> mem8 {
-			mem8 memory = {};
-
-			memory.base = base_reg;
-			memory.has_base = true;
-
-			memory.index = index_reg;
-			memory.has_index = true;
-
-			memory.displacement = offset;
-			memory.scale = s;
-
-			return memory;
-		}
-	};
-
-	struct mem16 : mem {};
-	struct mem32 : mem {};
-	struct mem64 : mem {};
+	MEM_DECL(8)
+	MEM_DECL(16)
+	MEM_DECL(32)
+	MEM_DECL(64)
 } // namespace baremetal

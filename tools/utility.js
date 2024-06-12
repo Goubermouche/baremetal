@@ -157,7 +157,7 @@ function verifyOperands(operands) {
         "i8", "i16", "i32", "i64", 
         //"moff8", "moff16", "moff32", "moff64", 
         //"al", "ax", "eax", "rax",
-        "m8", "m16", "m32", "m64"
+        "mem8", "mem16", "mem32", "mem64"
     ];
     return operands.length === 2 && operands.every(part => validOperands.includes(part));
 }
@@ -169,23 +169,92 @@ function translateOperands(op) {
             case "r16": return "reg16"
             case "r32": return "reg32"
             case "r64": return "reg64"
+            case "m8":  return "mem8"
+            case "m16": return "mem16"
+            case "m32": return "mem32"
+            case "m64": return "mem64"
             default:    return o;
         }
     });
 }
 
+function pop_count(str) {
+    for(let i = 0; i < str.length; ++i) {
+        if(str[i] != 0) {
+            return Math.ceil((str.length - i) / 2); 
+        }
+    }
+
+    return 0;
+}
+
+function calculate_code_len(inst) {
+    let len = 0;
+
+    // prefix
+    len += extractPrefix(inst) == "PREFIX_NONE" ? 0 : 1;
+
+    // opcode
+    len += pop_count(inst.opcode);
+
+    // extension
+    if (inst.rm) {
+        len++;
+    }
+
+    if (inst.w) {
+        len++;
+    }
+
+    return len;
+}
+
+function optimize_away_duplicates(instructions) {
+    let flat_instructions = [];
+
+    instructions.forEach(inst => {
+        let best = inst.variants[0];
+        let best_len = calculate_code_len(best);
+
+        for(let i = 1; i < inst.variants.length; ++i) {
+            let current = calculate_code_len(inst.variants[i]);
+
+            if(current < best_len) {
+                best_len = current;
+                best = inst.variants[i];
+            }
+        }
+
+        if(false) {
+            inst.variants.forEach(v => {
+                if(v != best) {
+                    console.log(v.opcode, inst.name, inst.operands.join(", "));
+                }
+            })
+        }
+
+        flat_instructions.push({
+            name: inst.name,
+            operands: inst.operands,
+            opcode: best.opcode,
+            rm: best.rm,
+            w: best.w,
+            ri: best.ri,
+            pp: best.pp
+        });
+    });
+
+    return flat_instructions;
+}
+
 // filter instruction x operand combinations that we can generate code for
-function filterInstructions() {
+function get_instructions() {
     let instructions = new Map();
 
     database.forEach((name, inst) => {
         //if (!verifyInstruction(inst)) {
         //    return;
         //}
-
-        // if (inst.name != "xor" && inst.name != "mov") {
-       //      return;
-        // }
         if(inst.name != "mov") {
             return;
         }
@@ -215,18 +284,20 @@ function filterInstructions() {
                     name: inst.name,
                     operands: operands,
                     variants: [{
-                            opcode: extractOpcode(inst),
-                            rm: inst.rm,
-                            w: inst.w,
-                            ri: inst.ri,
-                            pp: inst.pp
+                        opcode: extractOpcode(inst),
+                        rm: inst.rm,
+                        w: inst.w,
+                        ri: inst.ri,
+                        pp: inst.pp
                     }]
                 });
             }
         });
     })
 
-    return instructions;
+    let flat_instructions = optimize_away_duplicates(instructions);
+
+    return flat_instructions;
 }
 
 module.exports = {
@@ -242,6 +313,7 @@ module.exports = {
     extractExtensions,
     verifyInstruction,
     verifyOperands,
-    filterInstructions,
-    extractPrefix
+    extractPrefix,
+
+    get_instructions,
 };

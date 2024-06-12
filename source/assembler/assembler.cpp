@@ -11,7 +11,7 @@ namespace baremetal {
 	auto assembler::find_rex_pair(const operand* operands) -> std::pair<u8, u8> {
 		// locate the first registers from the back
 		std::pair<u8, u8> result = { 0, 0 };
-		u8 i = 4;
+		i8 i = 4;
 
 		while(i-- > 0) {
 			if(is_operand_reg(operands[i].type)) {
@@ -226,37 +226,63 @@ namespace baremetal {
 		auto [rx, destination] = find_rex_pair(operands);
 
 		// mod rm / sib
-		if(inst->is_r()) {
+		if(inst->is_r() || is_operand_mem(op_1.type) || is_operand_mem(op_2.type)) {
 			utility::byte mod_rm_part;
 
 			if(is_operand_mem(op_1.type)) {
-				ASSERT(false, "not implemented");
-			}
-			else if(is_operand_mem(op_2.type)) {
 				const bool has_sib = has_sib_byte(inst, op_1, op_2);
-				ASSERT(op_2.mem.displacement.min_bits <= 32, "too many displacement bits");
+				const auto memory = op_1.mem;
+
+				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
 				// right mem
-				
-				if(op_2.mem.has_base == false) {
+				if(memory.has_base == false) {
 					// absolute address
 					mod_rm_part = indirect(rx, 0b100); // 100 = SIB byte
 				}
-				else if(op_2.mem.base.type == REG_RIP) {
+				else if(memory.base.type == REG_RIP) {
 					// rip reg
 					mod_rm_part = indirect(rx, 0b101); // 101 = RIP-relative
 				}
-				else if(op_2.mem.displacement.value == 0) {
-				// no displacement
-				mod_rm_part = indirect(rx, has_sib ? 0b100 : op_2.mem.base.index);
+				else if(memory.displacement.value == 0) {
+					// no displacement
+					mod_rm_part = indirect(rx, has_sib ? 0b100 : memory.base.index);
 				}
-				else if(op_2.mem.displacement.min_bits <= 8) {
+				else if(memory.displacement.min_bits <= 8) {
 					// 8 bit displacement
-					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : op_2.mem.base.index);
+					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index);
 				}
 				else {
 					// 32 bit displacement
-					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : op_2.mem.base.index);
+					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index);
+				}
+			}
+			else if(is_operand_mem(op_2.type)) {
+				const bool has_sib = has_sib_byte(inst, op_1, op_2);
+				const auto memory = op_2.mem;
+
+				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
+
+				// right mem
+				if(memory.has_base == false) {
+					// absolute address
+					mod_rm_part = indirect(rx, 0b100); // 100 = SIB byte
+				}
+				else if(memory.base.type == REG_RIP) {
+					// rip reg
+					mod_rm_part = indirect(rx, 0b101); // 101 = RIP-relative
+				}
+				else if(memory.displacement.value == 0) {
+				// no displacement
+				mod_rm_part = indirect(rx, has_sib ? 0b100 : memory.base.index);
+				}
+				else if(memory.displacement.min_bits <= 8) {
+					// 8 bit displacement
+					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index);
+				}
+				else {
+					// 32 bit displacement
+					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index);
 				}
 			}
 			else {
@@ -337,7 +363,16 @@ namespace baremetal {
 					ty = operand::type::OP_I32;
 
 					// beginning of the instruction
-					displacement = imm(displacement.value - (get_current_inst_size() + 4));
+					i32 new_displacement = static_cast<i32>(displacement.value - (get_current_inst_size() + 4));
+
+					if(i + 1 != operand_count) {
+						// if we have another operand after the current one, calculate it's size
+						if(is_operand_imm(operands_actual[i + 1])) { // regs are already encoded
+							new_displacement -= get_operand_bit_width(operands_actual[i + 1]) / 8;
+						}
+					}
+
+					displacement = imm(new_displacement);
 				}
 				else if(displacement.min_bits <= 8) {
 					ty = operand::type::OP_I8;
