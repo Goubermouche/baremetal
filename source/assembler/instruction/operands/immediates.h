@@ -7,13 +7,13 @@ namespace baremetal {
 	struct imm {
 		imm() = default;
 		imm(u64 i) {
-			if(i >= std::numeric_limits<u8>::min() && i <= std::numeric_limits<u8>::max()) {
+			if(i <= std::numeric_limits<u8>::max()) {
 				min_bits = 8;
 			}
-			else if(i >= std::numeric_limits<u16>::min() && i <= std::numeric_limits<u16>::max()) {
+			else if(i <= std::numeric_limits<u16>::max()) {
 				min_bits = 16;
 			}
-			else if(i >= std::numeric_limits<u32>::min() && i <= std::numeric_limits<u32>::max()) {
+			else if(i <= std::numeric_limits<u32>::max()) {
 				min_bits = 32;
 			}
 			else {
@@ -30,13 +30,13 @@ namespace baremetal {
 				return;
 			}
 
-			if(i >= std::numeric_limits<i8>::min() && i <= std::numeric_limits<i8>::max()) {
+			if(i >= std::numeric_limits<i8>::min()) {
 				min_bits = 8;
 			}
-			else if(i >= std::numeric_limits<i16>::min() && i <= std::numeric_limits<i16>::max()) {
+			else if(i >= std::numeric_limits<i16>::min()) {
 				min_bits = 16;
 			}
-			else if(i >= std::numeric_limits<i32>::min() && i <= std::numeric_limits<i32>::max()) {
+			else if(i >= std::numeric_limits<i32>::min()) {
 				min_bits = 32;
 			}
 			else {
@@ -47,9 +47,9 @@ namespace baremetal {
 			sign = true;
 		}
 
-		template<typename type, typename std::enable_if<std::is_integral<type>::value, int>::type = 0>
+		template<typename type, std::enable_if_t<std::is_integral_v<type>, i32> = 0>
 		imm(type i) {
-			if(std::is_signed<type>::value) {
+			if(std::is_signed_v<type>) {
 				*this = imm(static_cast<i64>(i));
 			}
 			else {

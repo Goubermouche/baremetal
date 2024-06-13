@@ -11,8 +11,9 @@ namespace baremetal {
 			SCALE_8 = 0b11
 		};
 
+		// this can't be a reg64 since it can contain special registers (ie. rip)
 		reg base;
-		reg index;
+		reg64 index;
 
 		bool has_base = false;
 		bool has_index = false;
@@ -21,40 +22,40 @@ namespace baremetal {
 		imm displacement;
 	};
 
-#define MEM_DECL(bit_width)                                                                                  \
-  struct mem ## bit_width : mem {                                                                            \
-    static auto absolute(i32 address) -> mem ## bit_width {                                                  \
-      mem ## bit_width memory = {};                                                                          \
-      memory.displacement = address;                                                                         \
-      return memory;                                                                                         \
-    }                                                                                                        \
-                                                                                                             \
-  static auto ptr(rip rip, i32 offset) -> mem ## bit_width {                                                 \
-    mem ## bit_width memory = {};                                                                            \
-    memory.base = rip;                                                                                       \
-    memory.has_base = true;                                                                                  \
-    memory.displacement = offset;                                                                            \
-    return memory;                                                                                           \
-  }                                                                                                          \
-                                                                                                             \
-  static auto ptr(reg base_reg, i32 offset = 0) -> mem ## bit_width {                                        \
-		mem ## bit_width memory = {};                                                                            \
-    memory.base = base_reg;                                                                                  \
-    memory.has_base = true;                                                                                  \
-    memory.displacement = offset;                                                                            \
-    return memory;                                                                                           \
-  }                                                                                                          \
-                                                                                                             \
-  static auto ptr(reg base_reg, reg index_reg, enum scale s = SCALE_1, i32 offset = 0) -> mem ## bit_width { \
-    mem ## bit_width memory = {};                                                                            \
-    memory.base = base_reg;                                                                                  \
-    memory.has_base = true;                                                                                  \
-    memory.index = index_reg;                                                                                \
-    memory.has_index = true;                                                                                 \
-    memory.displacement = offset;                                                                            \
-    memory.scale = s;                                                                                        \
-    return memory;                                                                                           \
-  }                                                                                                          \
+#define MEM_DECL(bit_width)                                                                                      \
+  struct mem ## bit_width : mem {                                                                                \
+    static auto absolute(i32 address) -> mem ## bit_width {                                                      \
+      mem ## bit_width memory = {};                                                                              \
+      memory.displacement = address;                                                                             \
+      return memory;                                                                                             \
+    }                                                                                                            \
+                                                                                                                 \
+  static auto ptr(rip rip, i32 offset) -> mem ## bit_width {                                                     \
+    mem ## bit_width memory = {};                                                                                \
+    memory.base = rip;                                                                                           \
+    memory.has_base = true;                                                                                      \
+    memory.displacement = offset;                                                                                \
+    return memory;                                                                                               \
+  }                                                                                                              \
+                                                                                                                 \
+  static auto ptr(reg64 base_reg, i32 offset = 0) -> mem ## bit_width {                                          \
+		mem ## bit_width memory = {};                                                                                \
+    memory.base = base_reg;                                                                                      \
+    memory.has_base = true;                                                                                      \
+    memory.displacement = offset;                                                                                \
+    return memory;                                                                                               \
+  }                                                                                                              \
+                                                                                                                 \
+  static auto ptr(reg64 base_reg, reg64 index_reg, enum scale s = SCALE_1, i32 offset = 0) -> mem ## bit_width { \
+    mem ## bit_width memory = {};                                                                                \
+    memory.base = base_reg;                                                                                      \
+    memory.has_base = true;                                                                                      \
+    memory.index = index_reg;                                                                                    \
+    memory.has_index = true;                                                                                     \
+    memory.displacement = offset;                                                                                \
+    memory.scale = s;                                                                                            \
+    return memory;                                                                                               \
+  }                                                                                                              \
 };
 
 	MEM_DECL(8)

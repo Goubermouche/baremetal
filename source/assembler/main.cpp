@@ -7,11 +7,11 @@ using namespace utility::types;
 
 auto bytes_to_string(const utility::dynamic_array<utility::byte>& bytes) -> utility::dynamic_string {
 	utility::dynamic_string result;
-	result.reserve(bytes.size() * 2);
+	result.reserve(bytes.get_size() * 2);
 
 	constexpr char digits[] = "0123456789abcdef";
 
-	for(u64 i = 0; i < bytes.size(); ++i) {
+	for(u64 i = 0; i < bytes.get_size(); ++i) {
 		const byte value = bytes[i];
 		result.push_back(digits[(value >> 4) & 0x0F]);
 		result.push_back(digits[value & 0x0F]);
@@ -22,6 +22,7 @@ auto bytes_to_string(const utility::dynamic_array<utility::byte>& bytes) -> util
 
 u64 g_fail_counter = 0;
 u64 g_success_counter = 0;
+
 #define TEST_INST(expected, instruction)                                                                             \
 do {                                                                                                                 \
   assembler assembler;                                                                                               \
@@ -38,6 +39,8 @@ do {                                                                            
 
 void run_tests() {
 	using namespace baremetal;
+
+	utility::timer timer;
 
 	TEST_INST("88c9"                  , mov(cl, cl)                              );
 	TEST_INST("88d1"                  , mov(cl, dl)                              );
@@ -675,10 +678,16 @@ void run_tests() {
 	TEST_INST("48c780ffff00007f000000", mov(mem64::ptr(rax, 0xFFFF), 127)        );
 	TEST_INST("48c780ffff000080ffffff", mov(mem64::ptr(rax, 0xFFFF), -128)       );
 
+	const u64 test_count = g_success_counter + g_fail_counter;
+	const f64 elapsed = timer.get_elapsed<std::chrono::nanoseconds>();
+	const u64 per_second = static_cast<u64>((static_cast<f64>(test_count) / elapsed) * 1'000'000'000);
+
 	utility::console::print(
-		"{}/{} tests passed\n",
+		"{}/{} tests passed ({}ms) ({} instructions per second)\n",
 		g_success_counter,
-		g_success_counter + g_fail_counter
+		test_count,
+		elapsed / 1'000'000, 
+		per_second
 	);
 }
 

@@ -2,25 +2,6 @@
 #include "assembler/instruction/operands/operands.h"
 
 namespace baremetal {
-#pragma pack(push, 1)
-	//struct instruction {
-	//	enum opcode : u16 {
-	//		MOV_RR,
-	//		MOV_R_I8,
-	//		MOV_R_I32,
-	//	};
-
-	//	instruction(opcode opcode);
-	//	instruction(opcode opcode, operand a);
-	//	instruction(opcode opcode, operand a, operand b);
-	//	instruction(opcode opcode, operand a, operand b, operand c);
-
-	//	opcode opcode;
-	//	operand operands[3]; // expect up to 3 operands per instruction, this can technically be higher
-	//	                     // for AVX 512 instructions, but those operands aren't actually encoded in
-	//	                     // the instruction itself
-	//};
-#pragma pack(pop)
 	enum extension : u8 {
 		EXT_NONE = 0b00000000,
 		EXT_0    = 0b00000001, // /0
@@ -107,16 +88,11 @@ namespace baremetal {
 
 			if(op1 != operand::OP_NONE) { count++; }
 			if(op2 != operand::OP_NONE) { count++; }
-			// if(op3 != operand::OP_NONE) { count++; }
 
 			return count;
 		}
 
 		auto has_imm_operands() const -> std::pair<bool, u8> {
-			// if(is_operand_imm(op3)) {
-			// 	return { true, 3 };
-			// }
-
 			if(is_operand_imm(op2)) {
 				return { true, 1 };
 			}
@@ -135,13 +111,14 @@ namespace baremetal {
 		u16 context_index;
 		enum operand::type op1;
 		enum operand::type op2;
-		// enum operand::type op3;
 	};
 #pragma pack(pop)
 
 #define INST(name, opcode, extensions, prefix, context, op1, op2) { ###name, opcode, extensions, prefix, context, operand::OP_ ## op1, operand::OP_ ## op2 },
 
 	static constexpr instruction_info instruction_db[] = {
-		#include "assembler/instruction_database.inc"
+		#include "assembler/instruction/databases/instruction_database.inc"
 	};
+
+#undef INST
 } // namespace baremetal

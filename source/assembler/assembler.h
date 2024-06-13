@@ -7,10 +7,12 @@ namespace baremetal {
 
 #define INST(index, name, op1, op2)                                 \
   void name(op1 destination, op2 source) {                          \
-    emit_instruction(index, destination, source); \
+    emit_instruction(index, destination, source);                   \
   }
 
-#include "assembler_database.inc"
+#include "assembler/instruction/databases/assembler_database.inc"
+
+#undef INST
 
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<utility::byte>&;
 	private:
@@ -68,6 +70,8 @@ namespace baremetal {
 		u64 m_current_inst_begin;
 	};
 
+	// TODO: move these to registers.h using struct ... (?)
+	// 64 bit registers
 	static constexpr rax rax;
 	static constexpr rcx rcx;
 	static constexpr rdx rdx;
@@ -76,8 +80,8 @@ namespace baremetal {
 	static constexpr rbp rbp;
 	static constexpr rsi rsi;
 	static constexpr rdi rdi;
-	static constexpr r8  r8 ;
-	static constexpr r9  r9 ;
+	static constexpr r8 r8;
+	static constexpr r9 r9;
 	static constexpr r10 r10;
 	static constexpr r11 r11;
 	static constexpr r12 r12;
@@ -85,6 +89,7 @@ namespace baremetal {
 	static constexpr r14 r14;
 	static constexpr r15 r15;
 
+	// 32 bit registers
 	static constexpr eax eax;
 	static constexpr ecx ecx;
 	static constexpr edx edx;
@@ -102,6 +107,7 @@ namespace baremetal {
 	static constexpr r14d r14d;
 	static constexpr r15d r15d;
 
+	// 16 bit registers
 	static constexpr ax ax;
 	static constexpr cx cx;
 	static constexpr dx dx;
@@ -119,6 +125,7 @@ namespace baremetal {
 	static constexpr r14w r14w;
 	static constexpr r15w r15w;
 
+	// 8 bit registers (low)
 	static constexpr al al;
 	static constexpr cl cl;
 	static constexpr dl dl;
@@ -128,9 +135,10 @@ namespace baremetal {
 	static constexpr dh dh;
 	static constexpr bh bh;
 
+	// special registers
 	static constexpr rip rip;
 
-	static inline auto is_stack_pointer(reg r) -> bool {
+	static auto is_stack_pointer(reg r) -> bool {
 		// TODO: spl
 		return r.index == rsp.index; // rsp, esp, sp
 	}

@@ -13,29 +13,25 @@ namespace baremetal {
 	};
 
 	struct reg {
-		constexpr reg() : index(0) {}
+		constexpr reg() : index(0), type() {}
 		constexpr explicit reg(u8 index, reg_type ty) : index(index), type(ty) {}
 		u8 index;
 		reg_type type;
 	};
 
-	struct reg8 : reg {
-		constexpr explicit reg8(u8 i) : reg(i, REG_I8) {}
-	};
+#define REGISTER_DECL(bits)                                          \
+  struct reg ## bits : reg {                                         \
+    constexpr reg ## bits () = default;                              \
+    constexpr explicit reg ## bits (u8 i) : reg(i, REG_I ## bits) {} \
+  };
 
-	struct reg16 : reg {
-		constexpr explicit reg16(u8 i) : reg(i, REG_I16) {}
-	};
-
-	struct reg32 : reg {
-		constexpr explicit reg32(u8 i) : reg(i, REG_I32) {}
-	};
-
-	struct reg64 : reg {
-		constexpr explicit reg64(u8 i) : reg(i, REG_I64) {}
-	};
+	REGISTER_DECL(8);
+	REGISTER_DECL(16);
+	REGISTER_DECL(32);
+	REGISTER_DECL(64);
 
 	struct reg_void : reg {
+		constexpr reg_void() = default;
 		constexpr explicit reg_void(u8 i, reg_type ty) : reg(i, ty) {}
 	};
 
@@ -64,6 +60,7 @@ namespace baremetal {
     constexpr name() : reg_void(index, type) {}     \
   };
 
+	// 64 bit registers
 	REGISTER_CLASS_64_DECL(rax, 0);
 	REGISTER_CLASS_64_DECL(rcx, 1);
 	REGISTER_CLASS_64_DECL(rdx, 2);
@@ -81,6 +78,7 @@ namespace baremetal {
 	REGISTER_CLASS_64_DECL(r14, 14);
 	REGISTER_CLASS_64_DECL(r15, 15);
 
+	// 32 bit registers
 	REGISTER_CLASS_32_DECL(eax, 0);
 	REGISTER_CLASS_32_DECL(ecx, 1);
 	REGISTER_CLASS_32_DECL(edx, 2);
@@ -98,6 +96,7 @@ namespace baremetal {
 	REGISTER_CLASS_32_DECL(r14d, 14);
 	REGISTER_CLASS_32_DECL(r15d, 15);
 
+	// 16 bit registers
 	REGISTER_CLASS_16_DECL(ax, 0);
 	REGISTER_CLASS_16_DECL(cx, 1);
 	REGISTER_CLASS_16_DECL(dx, 2);
@@ -115,6 +114,7 @@ namespace baremetal {
 	REGISTER_CLASS_16_DECL(r14w, 14);
 	REGISTER_CLASS_16_DECL(r15w, 15);
 
+	// 8 bit registers (low)
 	REGISTER_CLASS_8_DECL(al, 0);
 	REGISTER_CLASS_8_DECL(cl, 1);
 	REGISTER_CLASS_8_DECL(dl, 2);
@@ -124,7 +124,6 @@ namespace baremetal {
 	REGISTER_CLASS_8_DECL(dh, 6);
 	REGISTER_CLASS_8_DECL(bh, 7);
 
+	// special registers
 	REGISTER_CLASS_VOID_DECL(rip, 0, REG_RIP);
-
-
 } // namespace baremetal

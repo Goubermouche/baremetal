@@ -45,21 +45,6 @@ namespace baremetal {
 		return result;
 	}
 
-	static auto min_bits(u64 value) -> u8 {
-		if(value == 0) {
-			return 1;
-		}
-
-		u8 bits = 0;
-
-		while(value != 0) {
-			bits++;
-			value >>= 1;
-		}
-
-		return bits;
-	}
-
 	u64 sign_extend(u64 x, u8 x_bits, u8 n) {
 		const bool sign = (x >> (x_bits - 1)) & 1;
 
@@ -326,7 +311,7 @@ namespace baremetal {
 		instruction_begin();
 
 		const instruction_info* inst = get_instruction_info(index, op_1, op_2);
-		utility::console::print("assembling as: {} {} {}\n", inst->name, operand_type_to_string(inst->op1), operand_type_to_string(inst->op2));
+		// utility::console::print("assembling as: {} {} {}\n", inst->name, operand_type_to_string(inst->op1), operand_type_to_string(inst->op2));
 
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, op_1, op_2);
@@ -366,7 +351,7 @@ namespace baremetal {
 					i32 new_displacement = static_cast<i32>(displacement.value - (get_current_inst_size() + 4));
 
 					if(i + 1 != operand_count) {
-						// if we have another operand after the current one, calculate it's size
+						// if we have another operand after the current one, calculate it's get_size
 						if(is_operand_imm(operands_actual[i + 1])) { // regs are already encoded
 							new_displacement -= get_operand_bit_width(operands_actual[i + 1]) / 8;
 						}
@@ -524,10 +509,10 @@ namespace baremetal {
 	}
 
 	void assembler::instruction_begin() {
-		m_current_inst_begin = m_bytes.size();
+		m_current_inst_begin = m_bytes.get_size();
 	}
 
 	auto assembler::get_current_inst_size() const -> u8 {
-		return m_bytes.size() - m_current_inst_begin;
+		return static_cast<u8>(m_bytes.get_size() - m_current_inst_begin);
 	}
 } // namespace baremetal
