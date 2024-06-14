@@ -78,7 +78,7 @@ namespace baremetal {
 		if(is_operand_imm(op_2.type)) {
 			std::vector<const instruction_info*> possible_infos = {};
 
-			const imm& immediate = op_2.imm;
+			const imm& immediate = op_2.immediate;
 			const u8 bits = get_operand_bit_width(op_2.type);
 
 			// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
@@ -172,9 +172,9 @@ namespace baremetal {
 	void assembler::emit_instruction_opcode(const instruction_info* inst, operand op_1, operand op_2) {
 		const bool is_rexw = inst->is_rexw();
 		const bool is_extended_reg = is_extended_register(op_1, op_2);
-		const u8 operand_count = inst->get_operand_count(); // this could be inferred ig
+		// const u8 operand_count = inst->get_operand_count(); // this could be inferred ig
 
-		ASSERT(operand_count == 2, "only instructions with 2 operands are supported");
+		// ASSERT(operand_count == 2, "only instructions with 2 operands are supported");
 		const operand operands[2] = { op_1, op_2 };
 
 		auto [rx, destination] = find_rex_pair(operands);
@@ -216,7 +216,7 @@ namespace baremetal {
 
 			if(is_operand_mem(op_1.type)) {
 				const bool has_sib = has_sib_byte(op_1, op_2);
-				const auto memory = op_1.mem;
+				const auto memory = op_1.memory;
 
 				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
@@ -244,7 +244,7 @@ namespace baremetal {
 			}
 			else if(is_operand_mem(op_2.type)) {
 				const bool has_sib = has_sib_byte(op_1, op_2);
-				const auto memory = op_2.mem;
+				const auto memory = op_2.memory;
 
 				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
@@ -286,10 +286,10 @@ namespace baremetal {
 		mem memory;
 
 		if(is_operand_mem(op_1.type)) {
-			memory = op_1.mem;
+			memory = op_1.memory;
 		}
 		else if(is_operand_mem(op_2.type)) {
-			memory = op_2.mem;
+			memory = op_2.memory;
 		}
 		else {
 			return; // no sib byte
@@ -328,11 +328,11 @@ namespace baremetal {
 		for(u8 i = 0; i < operand_count; ++i) {
 			if(is_operand_imm(operands[i].type)) {
 				// imm operands
-				emit_immediate_operand(operands[i].imm.value, operands_actual[i]);
+				emit_immediate_operand(operands[i].immediate.value, operands_actual[i]);
 			}
 			else if(is_operand_mem(operands[i].type)) {
 				// memory displacement
-				const auto memory = operands[i].mem;
+				const auto memory = operands[i].memory;
 				auto displacement = memory.displacement;
 
 				if(displacement.value == 0 && memory.base.type != REG_RIP) {
@@ -375,10 +375,10 @@ namespace baremetal {
 		mem memory;
 
 		if(is_operand_mem(op_1.type)) {
-			memory = op_1.mem;
+			memory = op_1.memory;
 		}
 		else if(is_operand_mem(op_2.type)) {
-			memory = op_2.mem;
+			memory = op_2.memory;
 		}
 		else {
 			return false;

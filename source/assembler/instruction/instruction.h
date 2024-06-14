@@ -114,7 +114,7 @@ namespace baremetal {
 	};
 #pragma pack(pop)
 
-#define INST(name, opcode, extensions, prefix, context, op1, op2) { ###name, opcode, extensions, prefix, context, operand::OP_ ## op1, operand::OP_ ## op2 },
+#define INST(name, opcode, extensions, prefix, context, op1, op2) { #name, opcode, extensions, prefix, context, operand::OP_ ## op1, operand::OP_ ## op2 },
 
 	static constexpr instruction_info instruction_db[] = {
 		#include "assembler/instruction/databases/instruction_database.inc"

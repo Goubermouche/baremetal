@@ -12,9 +12,9 @@ auto bytes_to_string(const utility::dynamic_array<utility::byte>& bytes) -> util
 	constexpr char digits[] = "0123456789abcdef";
 
 	for(u64 i = 0; i < bytes.get_size(); ++i) {
-		const byte value = bytes[i];
-		result.push_back(digits[(value >> 4) & 0x0F]);
-		result.push_back(digits[value & 0x0F]);
+		const utility::byte value = bytes[i];
+		result.push_back(digits[(value >> 4) & utility::byte(0x0F)]);
+		result.push_back(digits[value & utility::byte(0x0F)]);
 	}
 
 	return result;
@@ -29,7 +29,7 @@ do {                                                                            
   assembler.instruction;                                                                                             \
   utility::dynamic_string result = bytes_to_string(assembler.get_bytes());                                           \
 	if((expected) != result) {                                                                                         \
-		utility::console::print("error: \"{}\", expected \"{}\", but got \"{}\"\n", ###instruction, (expected), result); \
+		utility::console::print("error: \"{}\", expected \"{}\", but got \"{}\"\n", #instruction, (expected), result); \
     g_fail_counter++;                                                                                                \
 	}                                                                                                                  \
 	else {                                                                                                             \

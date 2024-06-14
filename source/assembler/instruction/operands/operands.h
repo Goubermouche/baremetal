@@ -4,17 +4,17 @@
 namespace baremetal {
 	struct operand {
 		constexpr operand() : type(OP_NONE), reg(0) {}
-		operand(imm i) : type(OP_I64), imm(i) {}
+		operand(imm i) : type(OP_I64), immediate(i) {}
 
 		operand(reg8  r) : type(OP_REG8),  reg(r.index) {}
 		operand(reg16 r) : type(OP_REG16), reg(r.index) {}
 		operand(reg32 r) : type(OP_REG32), reg(r.index) {}
 		operand(reg64 r) : type(OP_REG64), reg(r.index) {}
 
-		operand(mem8  m) : type(OP_MEM8),  mem(m) {}
-		operand(mem16 m) : type(OP_MEM16), mem(m) {}
-		operand(mem32 m) : type(OP_MEM32), mem(m) {}
-		operand(mem64 m) : type(OP_MEM64), mem(m) {}
+		operand(mem8  m) : type(OP_MEM8),  memory(m) {}
+		operand(mem16 m) : type(OP_MEM16), memory(m) {}
+		operand(mem32 m) : type(OP_MEM32), memory(m) {}
+		operand(mem64 m) : type(OP_MEM64), memory(m) {}
 
 		enum type : u8 {
 			OP_NONE,
@@ -42,8 +42,8 @@ namespace baremetal {
 
 		union {
 			u8 reg;
-			imm imm;
-			mem mem;
+			imm immediate;
+			mem memory;
 		};
 	};
 
