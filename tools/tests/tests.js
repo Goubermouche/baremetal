@@ -2,7 +2,7 @@
 
 const os = require('os');
 const path = require('path');
-const utility = require("./utility.js")
+const utility = require("../utility.js")
 const { Worker, isMainThread, parentPort, workerData, workerId } = require('worker_threads');
 
 const TEMP_INSTRUCTION_PATH = path.join(__dirname, "temp.asm")

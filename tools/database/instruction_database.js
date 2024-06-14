@@ -1,6 +1,6 @@
 // generates the contents of instruction_database.inc
 "use strict"
-const utility = require("./utility.js")
+const utility = require("../utility.js")
 
 const DEBUG_PRINT_DISCARDED_INSTRUCTIONS = false;
 
