@@ -13,8 +13,9 @@ namespace baremetal {
 #include "assembler/instruction/databases/assembler_database.inc"
 
 #undef INST
-
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<utility::byte>&;
+
+		void clear();
 	private:
 		static auto find_rex_pair(const operand* operands) -> std::pair<u8, u8>;
 

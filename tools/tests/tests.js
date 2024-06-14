@@ -42,7 +42,6 @@ class imm {
             case "-9223372036854775808": return "-9223372036854775807 - 1";
             default: return this.value;
         }
-        return this.value;
     }
 
     value;
@@ -136,22 +135,25 @@ function generate_combinations(operands) {
         reg8: [
             new reg('cl'),
             new reg('dl'),
-            new reg('bl')
+            new reg('bl'),
         ],
         reg16: [
             new reg('cx'),
             new reg('dx'),
-            new reg('bx')
+            new reg('bx'),
+            new reg('r15w'),
         ],
         reg32: [
             new reg('ecx'),
             new reg('edx'),
-            new reg('ebx')
+            new reg('ebx'),
+            new reg('r15d'),
         ],
         reg64: [
             new reg('rcx'),
             new reg('rdx'),
-            new reg('rbx')
+            new reg('rbx'),
+            new reg('r15'),
         ],
         i8: [
             new imm('0'),
@@ -197,6 +199,7 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(8, 'rax', 'rsi', '0xFFFF', "2"),
             mem.base_index_offset_scale(8, 'rax', 'rsi', '0xFFFF', "4"),
             mem.base_index_offset_scale(8, 'rax', 'rsi', '0xFFFF', "8"),
+            mem.base_index_offset_scale(8, 'rsp', 'rax', '0xFFFF', "8"),
         ],
         mem16: [
             mem.rip_relative(16, '0x0'),
@@ -210,6 +213,7 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(16, 'rax', 'rsi', '0xFFFF', "2"),
             mem.base_index_offset_scale(16, 'rax', 'rsi', '0xFFFF', "4"),
             mem.base_index_offset_scale(16, 'rax', 'rsi', '0xFFFF', "8"),
+            mem.base_index_offset_scale(16, 'rsp', 'rax', '0xFFFF', "8"),
         ],
         mem32: [
             mem.rip_relative(32, '0x0'),
@@ -223,6 +227,7 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(32, 'rax', 'rsi', '0xFFFF', "2"),
             mem.base_index_offset_scale(32, 'rax', 'rsi', '0xFFFF', "4"),
             mem.base_index_offset_scale(32, 'rax', 'rsi', '0xFFFF', "8"),
+            mem.base_index_offset_scale(32, 'rsp', 'rax', '0xFFFF', "8"),
         ],
         mem64: [
             mem.rip_relative(64, '0x0'),
@@ -236,6 +241,7 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(64, 'rax', 'rsi', '0xFFFF', "2"),
             mem.base_index_offset_scale(64, 'rax', 'rsi', '0xFFFF', "4"),
             mem.base_index_offset_scale(64, 'rax', 'rsi', '0xFFFF', "8"),
+            mem.base_index_offset_scale(64, 'rsp', 'rax', '0xFFFF', "8"),
         ]
     };
 

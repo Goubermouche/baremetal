@@ -512,6 +512,11 @@ namespace baremetal {
 		m_current_inst_begin = m_bytes.get_size();
 	}
 
+	void assembler::clear() {
+		m_bytes.clear();
+		m_current_inst_begin = 0;
+	}
+
 	auto assembler::get_current_inst_size() const -> u8 {
 		return static_cast<u8>(m_bytes.get_size() - m_current_inst_begin);
 	}
