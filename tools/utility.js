@@ -260,9 +260,9 @@ function get_instructions() {
     let instructions = new Map();
 
     database.forEach((name, inst) => {
-        //if (!verify_instruction(inst)) {
-        //    return;
-        //}
+        // if (!verify_instruction(inst)) {
+        //     return;
+        // }
         if(inst.name != "mov") {
             return;
         }

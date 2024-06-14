@@ -2,6 +2,7 @@
 
 const path = require('path');
 const utility = require("./utility.js")
+const { Worker, isMainThread, parentPort, workerData, workerId } = require('worker_threads');
 
 const TEMP_INSTRUCTION_PATH = path.join(__dirname, "temp.asm")
 const TEMP_BINARY_PATH      = path.join(__dirname, "temp.bin")
@@ -253,97 +254,135 @@ function generate_combinations(operands) {
     return generate(operands, 0);
 }
 
-function compile_instruction(instruction) {
+function compile_instruction(instruction, id) {
     const assembly = `BITS 64\n${instruction}`;
-    const command = `nasm -f bin -o ${TEMP_BINARY_PATH} ${TEMP_INSTRUCTION_PATH} > ${TEMP_OUTPUT_PATH} 2>&1`
+    const command = `nasm -f bin -o ${path.join(__dirname, `temp${id}.bin`)} ${path.join(__dirname, `temp${id}.asm`)} > ${path.join(__dirname, `temp${id}.txt`)} 2>&1`
 
     try {
-        utility.write_file(TEMP_INSTRUCTION_PATH, assembly);
+        utility.write_file(path.join(__dirname, `temp${id}.asm`), assembly);
         utility.execute(command);
-        const message = utility.read_file(TEMP_OUTPUT_PATH);
+        const message = utility.read_file(path.join(__dirname, `temp${id}.txt`));
 
         if(message.length > 0) {
-            throw message;
+            // throw message;
+            return "error";
         }
     } catch(err) {
         throw err;
     }
 
-    return utility.read_file_hex(TEMP_BINARY_PATH);
+    return utility.read_file_hex(path.join(__dirname, `temp${id}.bin`));
 }
 
-function compile_instructions(instructions) {
+if (isMainThread) {
+    const instructions = utility.get_instructions();
+    let items = [];
     let tests = [];
 
     instructions.forEach((inst, index) => {
-        process.stdout.write(`${((index + 1) / instructions.length * 100).toFixed(2)}% done\r`);
-
         let operands_combinations = generate_combinations(inst.operands);
 
         operands_combinations.forEach((combination, combinationIndex) => {
-            const nasm_combinations = combination.map(c => c.get_nasm_string());
-            const baremetal_combinations = combination.map(c => c.get_baremetal_string());
-
-            const nasm_operands = nasm_combinations.join(", ");
-            const baremetal_operands = baremetal_combinations.join(", ");
-
-            // compile the nasm instruction
-            try {
-                const binary = compile_instruction(`${inst.name} ${nasm_operands}`);
-
-                tests.push({
-                    binary_part: binary,
-                    instruction_part: `${inst.name}(${baremetal_operands})`
-                });
-            } catch(message) {
-                throw `instruction: '${inst.name} ${nasm_operands}'\n${message}`;
-            }
+            items.push({
+                name: inst.name,
+                operands: combination.map(op => op.get_nasm_string()).join(", "),
+                baremetal: combination.map(op => op.get_baremetal_string()).join(", "),
+            });
         });
     });
 
-    let max_binary_part_len = 0;
-    let max_instruction_part_len = 0;
+    const numWorkers = 6;
+    const chunkSize = Math.ceil(items.length / numWorkers);
 
-    console.log("generating layout...");
+    function finished_processing(data) {
+        tests = tests.concat(data);
 
-    tests.forEach(test => {
-        max_binary_part_len = Math.max(max_binary_part_len, test.binary_part.length);
-        max_instruction_part_len = Math.max(max_instruction_part_len, test.instruction_part.length);
-    })
-
-    let test_file = "";
-
-    tests.forEach(test => {
-        test_file += (
-            `TEST_INST("` +
-            `${`${test.binary_part}"`.padEnd(max_binary_part_len + 1)}, ` +
-            `${test.instruction_part.padEnd(max_instruction_part_len)});\n`
-        );
-    })
-
-    utility.write_file(OUTPUT_PATH, test_file);
-}
-
-function main() {
-    console.log("generating instruction set...");
-    const instructions = utility.get_instructions();
-    let error = false;
-
-    try {
-        console.log("generating tests...");
-        compile_instructions(instructions);
-        console.log(`tests generated (${OUTPUT_PATH})`);
-    } catch(message) {
-        console.log(`encountered a potential error, stopping...\n${message}`);
-        error = true;
-    } finally {
-        // cleanup
-        utility.delete_file(TEMP_INSTRUCTION_PATH);
-        utility.delete_file(TEMP_BINARY_PATH);
-        utility.delete_file(TEMP_OUTPUT_PATH);
+        if(tests.length === items.length) {
+            let max_binary_part_len = 0;
+            let max_instruction_part_len = 0;
+        
+            console.log("generating layout...");
+        
+            tests.forEach(test => {
+                max_binary_part_len = Math.max(max_binary_part_len, test.binary_part.length);
+                max_instruction_part_len = Math.max(max_instruction_part_len, test.instruction_part.length);
+            })
+        
+            let test_file = "";
+        
+            tests.forEach(test => {
+                test_file += (
+                    `TEST_INST("` +
+                    `${`${test.binary_part}"`.padEnd(max_binary_part_len + 1)}, ` +
+                    `${test.instruction_part.padEnd(max_instruction_part_len)});\n`
+                );
+            })
+        
+            utility.write_file(OUTPUT_PATH, test_file);
+            console.log(`tests generated (${OUTPUT_PATH})`);
+        }
     }
 
-    process.exit(error);
-};
+    let finished_count = 0;
+    
+    for (let i = 0; i < numWorkers; i++) {
+        const start = i * chunkSize;
+        const end = start + chunkSize;
+        const workerData = {
+            data: items.slice(start, end),
+            id: i
+        };
 
-main();
+        const worker = new Worker(__filename, { workerData });
+
+        worker.on('message', (message) => {
+            switch(message.id) {
+                case "result": finished_processing(message.data); break;
+                case "update": {
+                    finished_count += 10;
+                    console.log(`${finished_count}/${items.length}`);
+                    break;
+                }
+            }
+        });
+
+        worker.on('error', (error) => {
+            console.error(`Worker ${i} encountered an error:`, error);
+        });
+
+        worker.on('exit', (code) => {
+            if (code !== 0)
+                console.error(`Worker ${i} stopped with exit code ${code}`);
+        });
+    }
+} else {
+    const data = workerData.data;
+    const id = workerData.id;
+    let tests = [];
+
+    data.forEach(inst => {
+        const binary = compile_instruction(`${inst.name} ${inst.operands}`, id);
+
+        tests.push({
+            binary_part: binary,
+            instruction_part: `${inst.name}(${inst.baremetal})`
+        });
+
+        if(tests.length % 10 === 0) {
+            parentPort.postMessage({
+                id: "update"
+            });
+        }
+    });
+
+
+    // cleanup
+    utility.delete_file(path.join(__dirname, `temp${id}.bin`));
+    utility.delete_file(path.join(__dirname, `temp${id}.txt`));
+    utility.delete_file(path.join(__dirname, `temp${id}.asm`));
+
+    parentPort.postMessage({
+        id: "result",
+        data: tests
+    });
+}
