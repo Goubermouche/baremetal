@@ -1,7 +1,7 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
-const { execSync  } = require('child_process');
+const { execSync } = require('child_process');
 
 const asmdb = require("asmdb");
 
@@ -9,30 +9,34 @@ let database = new asmdb.x86util.X86DataBase();
 database.addDefault();
 
 // general purpose utilities
-function readJSON(fileName) {
-    const content = fs.readFileSync(fileName);
+function read_json(path) {
+    const content = fs.readFileSync(path);
     return JSON.parse(content);
 }
 
-function writeFile(filePath, data) {
-    fs.writeFileSync(filePath, data);
+function write_file(path, data) {
+    fs.writeFileSync(path, data);
 };
 
-function readFile(filePath) {
-    return fs.readFileSync(filePath, 'utf8');
+function delete_file(path) {
+    return fs.unlinkSync(path)
+}
+
+function read_file(path) {
+    return fs.readFileSync(path, 'utf8');
 };
 
-function readFileHex(filePath) {
-    return fs.readFileSync(filePath, 'hex');
+function read_file_hex(path) {
+    return fs.readFileSync(path, 'hex');
 };
 
-function executeCommand(cmd) {
-    return execSync(cmd, { encoding: 'utf8' });
+function execute(cmd) {
+    return execSync(cmd, { encoding: 'utf8'});
 }
 
 // utility functions related to instruction transformations
 // extract the 3-byte opcode from an instruction instance
-function extractOpcode(inst) {
+function extract_opcode(inst) {
     let opcodeBytes = [0x00, 0x00, 0x00];
 
     if (inst.opcode) {
@@ -54,26 +58,34 @@ function extractOpcode(inst) {
     return opcodeBytes.reverse().map(byte => byte.toString(16).padStart(2, '0')).join('');
 }
 
-// translate asmdb immediate operands over to our format
-function translateOperands(operands) {
-    const replacements = {
-        "iq": "i64",
-        "uq": "i64",
-        "id": "i32",
-        "ud": "i32",
-        "iw": "i16",
-        "uw": "i16",
-        "ib": "i8",
-        "ub": "i8"
-    };
-
-    const regex = new RegExp(Object.keys(replacements).join("|"), "g");
-    return operands.map(str => str.replace(regex, match => replacements[match]));
+// translate asmdb operands over to our format
+function translate_operands(op) {
+    return op.map(o => {
+        switch(o) {
+            case "iq":  return "i64";
+            case "uq":  return "i64";
+            case "id":  return "i32";
+            case "ud":  return "i32";
+            case "iw":  return "i16";
+            case "uw":  return "i16";
+            case "ib":  return "i8";
+            case "ub":  return "i8";
+            case "r8":  return "reg8";
+            case "r16": return "reg16";
+            case "r32": return "reg32";
+            case "r64": return "reg64";
+            case "m8":  return "mem8";
+            case "m16": return "mem16";
+            case "m32": return "mem32";
+            case "m64": return "mem64";
+            default:    return o;
+        }
+    });
 }
 
 // retrieve valid operand combinations for a given instruction instance
-function getOperandCombinations(operands) {
-    let cleanOperands = translateOperands(operands);
+function generate_operand_combinations(operands) {
+    let cleanOperands = translate_operands(operands);
     let result = [];
 
     function generateCombinations(current, index) {
@@ -95,7 +107,7 @@ function getOperandCombinations(operands) {
 }
 
 // extract a string which represent instruction extensions that we recognize
-function extractExtensions(inst) {
+function extract_extensions(inst) {
     let result = [];
 
     if (inst.rm) {
@@ -117,73 +129,203 @@ function extractExtensions(inst) {
     return result.join(" | ");
 }
 
+function extract_prefix(inst) {
+    let result = [];
+
+    if (inst._67h || (inst.pp && inst.pp.includes("66"))) {
+        result.push("OPERAND_SIZE_OVERRIDE");
+    }
+
+    if (inst.lock) {
+        result.push("LOCK");
+    }
+
+    if (inst.rep || inst.repz || (inst.pp && inst.pp.includes("F3"))) {
+        result.push("REP");
+    }
+
+    if (inst.repnz || (inst.pp && inst.pp.includes("F2"))) {
+        result.push("REPNE");
+    }
+
+    if (result.length === 0) {
+        return "PREFIX_NONE";
+    }
+
+    return result.join(" | ");
+}
+
 // validate an instruction instance, since we don't currently support every
 // instruction type
-function verifyInstruction(inst) {
+function verify_instruction(inst) {
     return !inst.prefix && !inst.fpu && (inst.arch === "ANY" || inst.arch === "X64");
 }
 
 // verify instruction operands, this boils down to us only supporting immediate and 
 // register operands
-function verifyOperands(operands) {
-    const validOperands = ["R8", "R16", "R32", "R64", "I8", "I16", "I32", "I64"];
-    return operands.length === 2 && operands.every(part => validOperands.includes(part));
+function verify_operands(operands) {
+    const valid_operands = [
+        "reg8", "reg16", "reg32", "reg64",
+        "i8", "i16", "i32", "i64", 
+        //"moff8", "moff16", "moff32", "moff64", 
+        //"al", "ax", "eax", "rax",
+         "mem8", "mem16", "mem32", "mem64"
+    ];
+
+    return operands.length === 2 && operands.every(part => valid_operands.includes(part));
 }
 
+function pop_count(str) {
+    for(let i = 0; i < str.length; ++i) {
+        if(str[i] != 0) {
+            return Math.ceil((str.length - i) / 2); 
+        }
+    }
 
-// filter instruction x operand combinations that we can generate code for
-function filterInstructions() {
-    let instructions = [];
-    let visited = new Set();
+    return 0;
+}
 
-    database.forEach((name, inst) => {
-        if (!verifyInstruction(inst)) {
-            return;
+function calculate_code_len(inst) {
+    let len = 0;
+
+    // prefix
+    len += extract_prefix(inst) == "PREFIX_NONE" ? 0 : 1;
+
+    // opcode
+    len += pop_count(inst.opcode);
+
+    // extension
+    if (inst.rm) {
+        len++;
+    }
+
+    if (inst.w) {
+        len++;
+    }
+
+    return len;
+}
+
+function optimize_away_duplicates(instructions) {
+    let flat_instructions = [];
+
+    instructions.forEach(inst => {
+        let best = inst.variants[0];
+        let best_len = calculate_code_len(best);
+
+        for(let i = 1; i < inst.variants.length; ++i) {
+            let current = calculate_code_len(inst.variants[i]);
+
+            if(current < best_len) {
+                best_len = current;
+                best = inst.variants[i];
+            }
         }
 
-        const combinations = getOperandCombinations(inst.operands.map(op => op.data));
+        if(false) {
+            inst.variants.forEach(v => {
+                if(v != best) {
+                    console.log(v.opcode, inst.name, inst.operands.join(", "));
+                }
+            })
+        }
+
+        flat_instructions.push({
+            name: inst.name,
+            operands: inst.operands,
+            opcode: best.opcode,
+            rm: best.rm,
+            w: best.w,
+            ri: best.ri,
+            pp: best.pp
+        });
+    });
+
+    return flat_instructions;
+}
+
+function bit_width_to_name(bit_width) {
+    switch (bit_width) {
+        case 8: return "byte";
+        case 16: return "word";
+        case 32: return "dword";
+        case 64: return "qword";
+    }
+
+    return "";
+}
+
+// filter instruction x operand combinations that we can generate code for
+function get_instructions() {
+    let instructions = new Map();
+
+    database.forEach((name, inst) => {
+        if (!verify_instruction(inst)) {
+            return;
+        }
+        //if(inst.name != "mov") {
+        //    return;
+        //}
+
+        const combinations = generate_operand_combinations(inst.operands.map(op => op.data));
 
         combinations.forEach(combination => {
-            const operands = combination.map(op => op.toUpperCase());
+            const operands = translate_operands(combination);
 
-            if(!verifyOperands(operands)) {
+            if (!verify_operands(operands)) {
                 return;
             }
 
-            const key = `${inst.name}:${operands.join()}`;
+            const key = `${inst.name}:${operands.join(':')}`;
 
-            if(visited.has(key)) {
-                return;
+            if (instructions.has(key)) {
+                instructions.get(key).variants.push({
+                    opcode: extract_opcode(inst),
+                    rm: inst.rm,
+                    w: inst.w,
+                    ri: inst.ri,
+                    pp: inst.pp
+                })
             }
-
-            visited.add(key);
-
-            instructions.push({
-                name:     inst.name,
-                operands: operands,
-                opcode: extractOpcode(inst),
-                rm: inst.rm,
-                w: inst.w,
-                ri: inst.ri
-            });
+            else {
+                instructions.set(key, {
+                    name: inst.name,
+                    operands: operands,
+                    variants: [{
+                        opcode: extract_opcode(inst),
+                        rm: inst.rm,
+                        w: inst.w,
+                        ri: inst.ri,
+                        pp: inst.pp
+                    }]
+                });
+            }
         });
     })
 
-    return instructions;
+    let flat_instructions = optimize_away_duplicates(instructions);
+    return flat_instructions;
 }
 
 module.exports = {
-    readJSON,
-    writeFile,
-    readFile,
-    readFileHex,
-    executeCommand,
-    extractExtensions,
-    extractOpcode,
-    translateOperands,
-    getOperandCombinations,
-    extractExtensions,
-    verifyInstruction,
-    verifyOperands,
-    filterInstructions
+    read_json,
+    write_file,
+    delete_file,
+    read_file,
+    read_file_hex,
+    execute,
+    bit_width_to_name,
+
+    // instructions
+    get_instructions,
+    verify_instruction,
+
+    // operands
+    verify_operands,
+    translate_operands,
+    generate_operand_combinations,
+
+    extract_extensions,
+    extract_prefix,
+    extract_opcode,
 };
