@@ -30,9 +30,9 @@ namespace baremetal {
       return memory;                                                                                             \
     }                                                                                                            \
                                                                                                                  \
-  static auto ptr(rip rip, i32 offset) -> mem ## bit_width {                                                     \
+  static auto ptr(struct rip base_reg, i32 offset) -> mem ## bit_width {                                         \
     mem ## bit_width memory = {};                                                                                \
-    memory.base = rip;                                                                                           \
+    memory.base = base_reg;                                                                                      \
     memory.has_base = true;                                                                                      \
     memory.displacement = offset;                                                                                \
     return memory;                                                                                               \

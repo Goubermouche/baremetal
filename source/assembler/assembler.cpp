@@ -215,7 +215,7 @@ namespace baremetal {
 			utility::byte mod_rm_part;
 
 			if(is_operand_mem(op_1.type)) {
-				const bool has_sib = has_sib_byte(inst, op_1, op_2);
+				const bool has_sib = has_sib_byte(op_1, op_2);
 				const auto memory = op_1.mem;
 
 				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
@@ -243,7 +243,7 @@ namespace baremetal {
 				}
 			}
 			else if(is_operand_mem(op_2.type)) {
-				const bool has_sib = has_sib_byte(inst, op_1, op_2);
+				const bool has_sib = has_sib_byte(op_1, op_2);
 				const auto memory = op_2.mem;
 
 				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
@@ -282,7 +282,7 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_instruction_sib(const instruction_info* inst, operand op_1, operand op_2) {
+	void assembler::emit_instruction_sib(operand op_1, operand op_2) {
 		mem memory;
 
 		if(is_operand_mem(op_1.type)) {
@@ -316,7 +316,7 @@ namespace baremetal {
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, op_1, op_2);
 		emit_instruction_modrm(inst, op_1, op_2);
-		emit_instruction_sib(inst, op_1, op_2);
+		emit_instruction_sib(op_1, op_2);
 
 		const u8 operand_count = inst->get_operand_count(); // this could be inferred ig
 
@@ -371,7 +371,7 @@ namespace baremetal {
 		}
 	}
 
-	auto assembler::has_sib_byte(const instruction_info* inst, operand op_1, operand op_2) -> bool {
+	auto assembler::has_sib_byte(operand op_1, operand op_2) -> bool {
 		mem memory;
 
 		if(is_operand_mem(op_1.type)) {

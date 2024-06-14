@@ -9,6 +9,8 @@ namespace baremetal {
 		REG_I16,
 		REG_I32,
 		REG_I64,
+
+		// special registers
 		REG_RIP
 	};
 
@@ -38,27 +40,37 @@ namespace baremetal {
 #define REGISTER_CLASS_64_DECL(name, index) \
   struct name : reg64 {                     \
     constexpr name() : reg64(index) {}      \
-  };
+  };                                        \
+                                            \
+	static constexpr name name;
 
 #define REGISTER_CLASS_32_DECL(name, index) \
   struct name : reg32 {                     \
     constexpr name() : reg32(index) {}      \
-  };
+  };                                        \
+                                            \
+	static constexpr name name;
 
 #define REGISTER_CLASS_16_DECL(name, index) \
   struct name : reg16 {                     \
     constexpr name() : reg16(index) {}      \
-  };
+  };                                        \
+                                            \
+	static constexpr name name;
 
 #define REGISTER_CLASS_8_DECL(name, index) \
   struct name : reg8 {                     \
     constexpr name() : reg8(index) {}      \
-  };
+  };                                       \
+                                           \
+	static constexpr name name;
 
 #define REGISTER_CLASS_VOID_DECL(name, index, type) \
   struct name : reg_void {                          \
     constexpr name() : reg_void(index, type) {}     \
-  };
+  };                                                \
+                                                    \
+	static constexpr name name;
 
 	// 64 bit registers
 	REGISTER_CLASS_64_DECL(rax, 0);
@@ -114,7 +126,7 @@ namespace baremetal {
 	REGISTER_CLASS_16_DECL(r14w, 14);
 	REGISTER_CLASS_16_DECL(r15w, 15);
 
-	// 8 bit registers (low)
+	// 8 bit registers
 	REGISTER_CLASS_8_DECL(al, 0);
 	REGISTER_CLASS_8_DECL(cl, 1);
 	REGISTER_CLASS_8_DECL(dl, 2);
@@ -126,4 +138,9 @@ namespace baremetal {
 
 	// special registers
 	REGISTER_CLASS_VOID_DECL(rip, 0, REG_RIP);
+
+	inline auto is_stack_pointer(reg r) -> bool {
+		// TODO: spl
+		return r.index == rsp.index; // rsp, esp, sp
+	}
 } // namespace baremetal

@@ -58,7 +58,7 @@ namespace baremetal {
 		}
 
 		u64 value;
-		u8 min_bits;
+		u8 min_bits; // 8, 16, 32, 64
 		bool sign;
 	};
 } // namespace baremetal
