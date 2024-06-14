@@ -37,6 +37,11 @@ class imm {
     }
 
     get_baremetal_string() {
+        switch(this.value) {
+            // edge case: -9223372036854775808 - most compilers interpret this as an unsigned number
+            case "-9223372036854775808": return "-9223372036854775807 - 1";
+            default: return this.value;
+        }
         return this.value;
     }
 
