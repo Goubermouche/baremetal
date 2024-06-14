@@ -1,5 +1,6 @@
 "use strict"
 
+const os = require('os');
 const path = require('path');
 const utility = require("./utility.js")
 const { Worker, isMainThread, parentPort, workerData, workerId } = require('worker_threads');
@@ -8,6 +9,7 @@ const TEMP_INSTRUCTION_PATH = path.join(__dirname, "temp.asm")
 const TEMP_BINARY_PATH      = path.join(__dirname, "temp.bin")
 const TEMP_OUTPUT_PATH      = path.join(__dirname, "temp.txt")
 const OUTPUT_PATH           = path.join(__dirname, "tests.txt");
+const MESSAGE_PATH          = path.join(__dirname, "messages.txt");
 
 class reg {
     constructor(name) {
@@ -254,31 +256,54 @@ function generate_combinations(operands) {
     return generate(operands, 0);
 }
 
-function compile_instruction(instruction, id) {
+function compile_instruction(instruction, temp_dir, bin_dir, asm_dir) {
     const assembly = `BITS 64\n${instruction}`;
-    const command = `nasm -f bin -o ${path.join(__dirname, `temp${id}.bin`)} ${path.join(__dirname, `temp${id}.asm`)} > ${path.join(__dirname, `temp${id}.txt`)} 2>&1`
+    const command = `nasm -f bin -o ${bin_dir} ${asm_dir} > ${temp_dir} 2>&1`
 
     try {
-        utility.write_file(path.join(__dirname, `temp${id}.asm`), assembly);
+        utility.write_file(asm_dir, assembly);
         utility.execute(command);
-        const message = utility.read_file(path.join(__dirname, `temp${id}.txt`));
+        const message = utility.read_file(temp_dir);
 
         if(message.length > 0) {
             // throw message;
-            return "error";
+            return {
+                id: "message",
+                data: message
+            }
         }
     } catch(err) {
         throw err;
     }
 
-    return utility.read_file_hex(path.join(__dirname, `temp${id}.bin`));
+    return {
+        id: "data",
+        data: utility.read_file_hex(bin_dir)
+    };
+}
+
+function get_asm_dir(id) {
+    return path.join(__dirname, `temp${id}.asm`);
+}
+
+function get_bin_dir(id) {
+    return path.join(__dirname, `temp${id}.bin`);
+}
+
+function get_temp_dir(id) {
+    return path.join(__dirname, `temp${id}.txt`);
 }
 
 if (isMainThread) {
+    // main thread
+    const start_time = Date.now();
     const instructions = utility.get_instructions();
+
+    let messages = [];
     let items = [];
     let tests = [];
 
+    // generate the various combinations we'll need to assemble
     instructions.forEach((inst, index) => {
         let operands_combinations = generate_combinations(inst.operands);
 
@@ -291,13 +316,11 @@ if (isMainThread) {
         });
     });
 
-    const numWorkers = 6;
-    const chunkSize = Math.ceil(items.length / numWorkers);
-
     function finished_processing(data) {
         tests = tests.concat(data);
 
         if(tests.length === items.length) {
+            // generate the final layout
             let max_binary_part_len = 0;
             let max_instruction_part_len = 0;
         
@@ -317,17 +340,39 @@ if (isMainThread) {
                     `${test.instruction_part.padEnd(max_instruction_part_len)});\n`
                 );
             })
+
+            // serialize messages
+
+            if(messages.length > 0) {
+                let message_file = "";
+
+                messages.forEach(message => {
+                    message_file += message + "\n\n";
+                })
+
+                utility.write_file(MESSAGE_PATH, message_file);
+            }
         
             utility.write_file(OUTPUT_PATH, test_file);
-            console.log(`tests generated (${OUTPUT_PATH})`);
+            console.log(`encountered messages   ${messages.length}`);
+            console.log(`tests generated in     ${(Date.now() - start_time) / 1000}s`);
+            console.log(`output stored in       ${OUTPUT_PATH}`);
+
+            if(messages.length > 0) {
+                console.log(`messages stored in     ${MESSAGE_PATH}`);
+            }
         }
     }
 
+    // accept the first parameter as the number of threads we want to use
+    const worker_count = process.argv[2] ? parseInt(process.argv[2]) : os.cpus().length - 1; 
+    const chunk_size = Math.ceil(items.length / worker_count);
     let finished_count = 0;
     
-    for (let i = 0; i < numWorkers; i++) {
-        const start = i * chunkSize;
-        const end = start + chunkSize;
+    // assemble our tests
+    for (let i = 0; i < worker_count; i++) {
+        const start = i * chunk_size;
+        const end = start + chunk_size;
         const workerData = {
             data: items.slice(start, end),
             id: i
@@ -340,49 +385,64 @@ if (isMainThread) {
                 case "result": finished_processing(message.data); break;
                 case "update": {
                     finished_count += 10;
-                    console.log(`${finished_count}/${items.length}`);
+                    process.stdout.write(`${finished_count}/${items.length}\r`);
+                    break;
+                }
+                case "message": {
+                    messages.push(message.data);
                     break;
                 }
             }
         });
 
         worker.on('error', (error) => {
-            console.error(`Worker ${i} encountered an error:`, error);
+            console.error(`worker ${i} encountered an error:`, error);
         });
 
         worker.on('exit', (code) => {
-            if (code !== 0)
-                console.error(`Worker ${i} stopped with exit code ${code}`);
+            if (code !== 0) {
+                console.error(`worker ${i} stopped with exit code ${code}`);
+            }
         });
     }
 } else {
-    const data = workerData.data;
-    const id = workerData.id;
-    let tests = [];
+    // worker thread
+    const instructions = workerData.data;
+    const worker_id = workerData.id;
+    const tests = [];
 
-    data.forEach(inst => {
-        const binary = compile_instruction(`${inst.name} ${inst.operands}`, id);
+    const temp_dir = get_temp_dir(worker_id);
+    const bin_dir = get_bin_dir(worker_id);
+    const asm_dir = get_asm_dir(worker_id);
 
-        tests.push({
-            binary_part: binary,
-            instruction_part: `${inst.name}(${inst.baremetal})`
-        });
+    // compile all instructions
+    instructions.forEach(inst => {
+        const result = compile_instruction(`${inst.name} ${inst.operands}`, temp_dir, bin_dir, asm_dir);
+
+        if(result.id === "message") {
+            parentPort.postMessage({ id: "message", data: result.data });
+
+            tests.push({
+                binary_part: "FAILED TO ASSEMBLE",
+                instruction_part: `${inst.name}(${inst.baremetal})`
+            });
+        }
+        else {
+            tests.push({
+                binary_part: result.data,
+                instruction_part: `${inst.name}(${inst.baremetal})`
+            });
+        }
 
         if(tests.length % 10 === 0) {
-            parentPort.postMessage({
-                id: "update"
-            });
+            parentPort.postMessage({ id: "update" });
         }
     });
 
-
     // cleanup
-    utility.delete_file(path.join(__dirname, `temp${id}.bin`));
-    utility.delete_file(path.join(__dirname, `temp${id}.txt`));
-    utility.delete_file(path.join(__dirname, `temp${id}.asm`));
+    utility.delete_file(temp_dir);
+    utility.delete_file(bin_dir);
+    utility.delete_file(asm_dir);
 
-    parentPort.postMessage({
-        id: "result",
-        data: tests
-    });
+    parentPort.postMessage({ id: "result", data: tests });
 }
