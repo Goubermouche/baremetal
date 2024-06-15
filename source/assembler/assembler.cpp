@@ -183,11 +183,11 @@ namespace baremetal {
 				m_bytes.push_back(rex_part);
 			}
 			else if(is_operand_reg(op_1.type) && is_operand_mem(op_2.type)) {
-				const utility::byte rex_part = rex(is_rexw, op_1.reg, 0, 0);
+				const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.memory.base.index, op_2.memory.index.index);
 				m_bytes.push_back(rex_part);
 			}
 			else if(is_operand_mem(op_1.type) && is_operand_reg(op_2.type)) {
-				const utility::byte rex_part = rex(is_rexw, op_2.reg, 0, 0);
+				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.memory.base.index, op_1.memory.index.index);
 				m_bytes.push_back(rex_part);
 			}
 			// reg x
@@ -200,10 +200,39 @@ namespace baremetal {
 				const utility::byte rex_part = rex(is_rexw, 0, op_2.reg, 0);
 				m_bytes.push_back(rex_part);
 			}
+			// mem x
+			else if(is_operand_mem(op_1.type)) {
+				const utility::byte rex_part = rex(is_rexw, 0, op_1.memory.base.index, op_1.memory.index.index);
+				m_bytes.push_back(rex_part);
+			}
 			// x x
 			else {
 				const utility::byte rex_part = rex(is_rexw, rx, destination, 0);
 				m_bytes.push_back(rex_part);
+			}
+		}
+		else if(is_operand_mem(op_1.type)) {
+			const auto memory = op_1.memory;
+
+			// extended base
+			if(memory.has_base && memory.base.index >= 8) {
+				// const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
+			}
+			else if(memory.has_index &&  memory.index.index >= 8) {
+				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
+			}
+		}
+		else if(is_operand_mem(op_2.type)) {
+			const auto memory = op_2.memory;
+
+			// extended base
+			if(memory.has_base && memory.base.index >= 8) {
+				// const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
+			}
+			else if(memory.has_index &&  memory.index.index >= 8) {
+				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
 			}
 		}
 
