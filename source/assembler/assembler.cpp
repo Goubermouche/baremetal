@@ -362,7 +362,7 @@ namespace baremetal {
 		instruction_begin();
 
 		const instruction_info* inst = get_instruction_info(index, op_1, op_2);
-		utility::console::print("assembling as: {} {} {}\n", inst->name, operand_type_to_string(inst->op1), operand_type_to_string(inst->op2));
+		// utility::console::print("assembling as: {} {} {}\n", inst->name, operand_type_to_string(inst->op1), operand_type_to_string(inst->op2));
 
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, op_1, op_2);
