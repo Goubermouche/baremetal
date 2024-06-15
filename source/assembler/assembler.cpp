@@ -1,4 +1,5 @@
 #include "assembler.h"
+#include "instruction/operands/operands.h"
 #include <utility/assert.h>
 
 namespace baremetal {
@@ -31,18 +32,12 @@ namespace baremetal {
 		return result;
 	}
 
-	auto is_extended_register(operand op_1, operand op_2) -> bool {
-		bool result = false;
-
-		if(is_operand_reg(op_1.type)) {
-			result |= op_1.reg >= 8;
+	auto is_extended_register(operand op) -> bool {
+		if(is_operand_reg(op.type)) {
+			return op.reg >= 8;
 		}
 
-		if(is_operand_reg(op_2.type)) {
-			result |= op_2.reg >= 8;
-		}
-
-		return result;
+		return false;
 	}
 
 	u64 sign_extend(u64 x, u8 x_bits, u8 n) {
@@ -171,18 +166,45 @@ namespace baremetal {
 
 	void assembler::emit_instruction_opcode(const instruction_info* inst, operand op_1, operand op_2) {
 		const bool is_rexw = inst->is_rexw();
-		const bool is_extended_reg = is_extended_register(op_1, op_2);
-		// const u8 operand_count = inst->get_operand_count(); // this could be inferred ig
-
-		// ASSERT(operand_count == 2, "only instructions with 2 operands are supported");
 		const operand operands[2] = { op_1, op_2 };
 
 		auto [rx, destination] = find_rex_pair(operands);
 
 		// opcode - rex prefix
-		if(is_rexw || is_extended_reg) {
-			const utility::byte rex_part = rex(is_rexw, rx, destination, 0);
-			m_bytes.push_back(rex_part);
+		if(is_rexw || is_extended_register(op_1) || is_extended_register(op_2)) {
+			// extended reg | reg
+			if(is_extended_register(op_1) && is_operand_reg(op_2.type)) {
+				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+				m_bytes.push_back(rex_part);
+			}
+			// reg | extended reg
+			else if(is_extended_register(op_2) && is_operand_reg(op_1.type)) {
+				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+				m_bytes.push_back(rex_part);
+			}
+			else if(is_operand_reg(op_1.type) && is_operand_mem(op_2.type)) {
+				const utility::byte rex_part = rex(is_rexw, op_1.reg, 0, 0);
+				m_bytes.push_back(rex_part);
+			}
+			else if(is_operand_mem(op_1.type) && is_operand_reg(op_2.type)) {
+				const utility::byte rex_part = rex(is_rexw, op_2.reg, 0, 0);
+				m_bytes.push_back(rex_part);
+			}
+			// reg x
+			else if(is_operand_reg(op_1.type)) {
+				const utility::byte rex_part = rex(is_rexw, 0, op_1.reg, 0);
+				m_bytes.push_back(rex_part);
+			}
+			// x reg
+			else if(is_operand_reg(op_2.type)) {
+				const utility::byte rex_part = rex(is_rexw, 0, op_2.reg, 0);
+				m_bytes.push_back(rex_part);
+			}
+			// x x
+			else {
+				const utility::byte rex_part = rex(is_rexw, rx, destination, 0);
+				m_bytes.push_back(rex_part);
+			}
 		}
 
 		// opcode id
@@ -299,7 +321,7 @@ namespace baremetal {
 			m_bytes.push_back(sib(memory.scale, memory.index.index, memory.base.index));
 		}
 		else if(is_stack_pointer(reg(memory.base))) {
-			m_bytes.push_back(sib(memory.scale, memory.index.index, memory.base.index)); // may not be correct
+			m_bytes.push_back(sib(memory.scale, memory.has_index ? memory.index.index : 0b100, memory.base.index));
 		}
 		else if(memory.has_base == false) {
 			// no scale, no index, displacement-only mode
@@ -311,7 +333,7 @@ namespace baremetal {
 		instruction_begin();
 
 		const instruction_info* inst = get_instruction_info(index, op_1, op_2);
-		// utility::console::print("assembling as: {} {} {}\n", inst->name, operand_type_to_string(inst->op1), operand_type_to_string(inst->op2));
+		utility::console::print("assembling as: {} {} {}\n", inst->name, operand_type_to_string(inst->op1), operand_type_to_string(inst->op2));
 
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, op_1, op_2);
