@@ -3,13 +3,10 @@
 const os = require('os');
 const path = require('path');
 const utility = require("../utility.js")
-const { Worker, isMainThread, parentPort, workerData, workerId } = require('worker_threads');
+const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 
-const TEMP_INSTRUCTION_PATH = path.join(__dirname, "temp.asm")
-const TEMP_BINARY_PATH      = path.join(__dirname, "temp.bin")
-const TEMP_OUTPUT_PATH      = path.join(__dirname, "temp.txt")
-const OUTPUT_PATH           = path.join(__dirname, "tests.txt");
-const MESSAGE_PATH          = path.join(__dirname, "messages.txt");
+const OUTPUT_PATH  = path.join(__dirname, "generated_tests.txt");
+const MESSAGE_PATH = path.join(__dirname, "generated_messages.txt");
 
 class reg {
     constructor(name) {

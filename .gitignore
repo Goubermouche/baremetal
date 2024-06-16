@@ -401,3 +401,5 @@ FodyWeavers.xsd
 *.vcxproj.filters
 
 .sln
+
+generated_*.*
