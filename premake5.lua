@@ -29,11 +29,7 @@ workspace "assembler"
         runtime "Debug"
         defines { "DEBUG", "_DEBUG" }
 
-    project "utility"
-        kind "StaticLib"
-
-        files { "source/utility/utility/**.cpp", "source/utility/utility/**.h" }
-        includedirs { "source/utility//utility/" } 
+    include "source/utility"
 
     project "assembler"
         kind "ConsoleApp"
