@@ -20,29 +20,34 @@ auto bytes_to_string(const utility::dynamic_array<utility::byte>& bytes) -> util
 	return result;
 }
 
-u64 g_fail_counter = 0;
-u64 g_success_counter = 0;
-
-#define TEST_INST(expected, instruction)                                                                             \
-do {                                                                                                                 \
-  assembler.instruction;                                                                                             \
-  utility::dynamic_string result = bytes_to_string(assembler.get_bytes());                                           \
-	if((expected) != result) {                                                                                         \
-		utility::console::print("error: \"{}\", expected \"{}\", but got \"{}\"\n", #instruction, (expected), result); \
-    g_fail_counter++;                                                                                                \
-	}                                                                                                                  \
-	else {                                                                                                             \
-    g_success_counter++;                                                                                             \
-	}                          \
-	assembler.clear();                                                                                       \
+#define TEST_INST(expected, instruction)                                                                           \
+do {                                                                                                               \
+  assembler.instruction;                                                                                           \
+  utility::dynamic_string result = bytes_to_string(assembler.get_bytes());                                         \
+  if((expected) != result) {                                                                                       \
+    utility::console::print("error: \"{}\", expected \"{}\", but got \"{}\"\n", #instruction, (expected), result); \
+    fail_counter++;                                                                                                \
+  }                                                                                                                \
+  else {                                                                                                           \
+    success_counter++;                                                                                             \
+  }                                                                                                                \
+  assembler.clear();                                                                                               \
 } while(false)
 
-void run_tests() {
+struct test_result {
+	u64 fail_count;
+	u64 success_count;
+	f64 elapsed;
+};
+
+auto run_tests() -> test_result {
 	using namespace baremetal;
 
-	assembler assembler; 
-
 	utility::timer timer;
+	assembler assembler;
+
+	u64 success_counter = 0;
+	u64 fail_counter = 0;
 
 	TEST_INST("b900000000"              , mov(rcx, 0)                              );
 	TEST_INST("b9ffffff7f"              , mov(rcx, 2147483647)                     );
@@ -1159,32 +1164,69 @@ void run_tests() {
 	TEST_INST("8b10"                    , mov(edx, mem32::ptr(rax, 0x0))           );
 	TEST_INST("8b90ffff0000"            , mov(edx, mem32::ptr(rax, 0xFFFF))        );
 
-	const u64 test_count = g_success_counter + g_fail_counter;
-	const f64 elapsed = timer.get_elapsed<std::chrono::nanoseconds>();
-	const u64 per_second = static_cast<u64>((static_cast<f64>(test_count) / elapsed) * 1'000'000'000);
+	// const u64 test_count = g_success_counter + g_fail_counter;
+	// const f64 elapsed = timer.get_elapsed<std::chrono::nanoseconds>();
+	// const u64 per_second = static_cast<u64>((static_cast<f64>(test_count) / elapsed) * 1'000'000'000);
+	// 
+	// utility::console::print(
+	// 	"{}/{} tests passed ({}ms) ({} instructions per second)\n",
+	// 	g_success_counter,
+	// 	test_count,
+	// 	elapsed / 1'000'000, 
+	// 	per_second
+	// );
+
+	return {
+		fail_counter,
+		success_counter,
+		timer.get_elapsed<std::chrono::nanoseconds>()
+	};
+}
+
+auto run_validation_tests() -> bool {
+	const test_result result = run_tests();
+	const u64 total_tests = result.success_count + result.fail_count;
 
 	utility::console::print(
-		"{}/{} tests passed ({}ms) ({} instructions per second)\n",
-		g_success_counter,
-		test_count,
-		elapsed / 1'000'000, 
-		per_second
+		"validation tests finished {}/{}\n",
+		result.success_count,
+		total_tests
+	);
+
+	return result.success_count == total_tests;
+}
+
+void run_performance_tests() {
+	constexpr u64 iterations = 100;
+	f64 elapsed = 0.0;
+	u64 instructions_per_second = 0;
+
+	for(u64 i = 0; i < iterations; ++i) {
+		const test_result result = run_tests();
+
+		const u64 total_tests = result.success_count + result.fail_count;
+		const u64 per_second = static_cast<u64>((static_cast<f64>(total_tests) / result.elapsed) * 1'000'000'000);
+
+		instructions_per_second += per_second;
+		elapsed += result.elapsed;
+	}
+
+	utility::console::print(
+		"performance tests finished {}ms ({} instructions/s)\n",
+		elapsed / 1'000'000,
+		static_cast<u64>(instructions_per_second / iterations)
 	);
 }
 
 int main() {
-	run_tests();
+	if(run_validation_tests()) {
+		run_performance_tests();
+	}
+
 	using namespace baremetal;
 
 	// TODO: add support for smaller destination reg indexing in generators
 	// TODO: add warnings/error for incompatible imm sizes
-
-	// assembler assembler;
-	// 
-	// // mov r8, m8
-	// assembler.mov(al, mem8::ptr(rip, 0x123456));
-	// assembler.mov(mem16::ptr(rip, 0x0), cx);
-	// utility::console::print("{}\n", bytes_to_string(assembler.get_bytes()));
 
 	return 0;
 }
