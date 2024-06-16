@@ -185,7 +185,7 @@ const customOrder = [
     "m8", "m16", "m32", "m64"
 ];
 
-function customOperandOrder(value) {
+function get_operand_order(value) {
     const index = customOrder.indexOf(value);
     return index === -1 ? customOrder.length : index;
 }
@@ -223,8 +223,7 @@ function translate_operands_to_inst(operands) {
 }
 
 function main() {
-    let instructions = utility.filterInstructions();
-    optimize_away_duplicates(instructions)
+    let instructions = utility.get_instructions();
 
     let flat_instructions = [];
 
@@ -236,14 +235,14 @@ function main() {
         if (a.name < b.name) return -1;
         if (a.name > b.name) return 1;
 
-        const orderA = customOperandOrder(a.operands[0]);
-        const orderB = customOperandOrder(b.operands[0]);
+        const orderA = get_operand_order(a.operands[0]);
+        const orderB = get_operand_order(b.operands[0]);
     
         if (orderA < orderB) return -1;
         if (orderA > orderB) return 1;
     
-        const orderC = customOperandOrder(a.operands[1]);
-        const orderD = customOperandOrder(b.operands[1]);
+        const orderC = get_operand_order(a.operands[1]);
+        const orderD = get_operand_order(b.operands[1]);
     
         if (orderC < orderD) return -1;
         if (orderC > orderD) return 1;
@@ -277,11 +276,38 @@ function main() {
     flat_instructions.forEach(inst => {
         let special_index = 0;
 
+        // special cases
         if(inst.operands[0] == "reg64" && inst.operands[1] == "i32") {
             special_index = dest_to_source.get(`${inst.name}:reg32:i32`)
         }
+        // moff <- reg
+        else if(inst.operands[0] == "moff8") {
+            special_index = dest_to_source.get(`${inst.name}:mem8:reg8`)
+        }
+        else if(inst.operands[0] == "moff16") {
+            special_index = dest_to_source.get(`${inst.name}:mem16:reg16`)
+        }
+        else if(inst.operands[0] == "moff32") {
+            special_index = dest_to_source.get(`${inst.name}:mem32:reg32`)
+        }
+        else if(inst.operands[0] == "moff64") {
+            special_index = dest_to_source.get(`${inst.name}:mem64:reg64`)
+        }
+        // reg -> moff
+        else if(inst.operands[1] == "moff8") {
+            special_index = dest_to_source.get(`${inst.name}:reg8:mem8`)
+        }
+        else if(inst.operands[1] == "moff16") {
+            special_index = dest_to_source.get(`${inst.name}:reg16:mem16`)
+        }
+        else if(inst.operands[1] == "moff32") {
+            special_index = dest_to_source.get(`${inst.name}:reg32:mem32`)
+        }
+        else if(inst.operands[1] == "moff64") {
+            special_index = dest_to_source.get(`${inst.name}:reg64:mem64`)
+        }
 
-        console.log(`INST(${inst.name}, 0x${inst.opcode}, ${utility.extractExtensions(inst)}, ${utility.extractPrefix(inst)}, ${special_index}, ${translate_operands_to_inst(inst.operands).join(", ").toUpperCase()})`);
+        console.log(`INST(${inst.name}, 0x${inst.opcode}, ${utility.extract_extensions(inst)}, ${utility.extract_prefix(inst)}, ${special_index}, ${translate_operands_to_inst(inst.operands).join(", ").toUpperCase()})`);
     })
 
     console.log("\n\ninterface:\n\n")

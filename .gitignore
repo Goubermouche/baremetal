@@ -403,3 +403,5 @@ FodyWeavers.xsd
 .sln
 
 generated_*.*
+Makefile
+.make

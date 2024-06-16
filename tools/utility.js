@@ -167,9 +167,9 @@ function verify_operands(operands) {
     const valid_operands = [
         "reg8", "reg16", "reg32", "reg64",
         "i8", "i16", "i32", "i64", 
-        //"moff8", "moff16", "moff32", "moff64", 
-        //"al", "ax", "eax", "rax",
-         "mem8", "mem16", "mem32", "mem64"
+        "moff8", "moff16", "moff32", "moff64", 
+        "al", "ax", "eax", "rax",
+        "mem8", "mem16", "mem32", "mem64"
     ];
 
     return operands.length === 2 && operands.every(part => valid_operands.includes(part));

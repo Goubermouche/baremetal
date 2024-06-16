@@ -65,4 +65,10 @@ namespace baremetal {
 		u8 min_bits; // 8, 16, 32, 64
 		bool sign;
 	};
+
+	struct moff {
+		constexpr moff() = default;
+
+		constexpr moff(u64 address) {}
+	};
 } // namespace baremetal

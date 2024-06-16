@@ -5,6 +5,7 @@ namespace baremetal {
 	struct operand {
 		constexpr operand() : type(OP_NONE), reg(0) {}
 		operand(imm i) : type(OP_I64), immediate(i) {}
+		operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
 
 		operand(reg8  r) : type(OP_REG8),  reg(r.index) {}
 		operand(reg16 r) : type(OP_REG16), reg(r.index) {}
@@ -35,7 +36,19 @@ namespace baremetal {
 			OP_I8,
 			OP_I16,
 			OP_I32,
-			OP_I64
+			OP_I64,
+
+			// moff
+			OP_MOFF8,
+			OP_MOFF16,
+			OP_MOFF32,
+			OP_MOFF64,
+
+			// concrete registers
+			OP_AL,
+			OP_AX,
+			OP_EAX,
+			OP_RAX
 		};
 
 		type type;
@@ -44,6 +57,7 @@ namespace baremetal {
 			u8 reg;
 			imm immediate;
 			mem memory;
+			moff memory_offset;
 		};
 	};
 

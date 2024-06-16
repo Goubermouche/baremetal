@@ -127,6 +127,22 @@ class mem {
     scale;
 }
 
+class moff {
+    constructor(offset) {
+        this.offset = offset;
+    }
+
+    get_nasm_string() {
+        return `[QWORD ${this.offset}]`;
+    }
+
+    get_baremetal_string() {
+        return `moff(${this.offset})`;
+    }
+
+    offset;
+}
+
 function generate_combinations(operands) {
     const operand_map = {
         reg8: [
@@ -152,6 +168,38 @@ function generate_combinations(operands) {
             new reg('rbx'),
             new reg('r15'),
         ],
+        moff8: [
+            new moff('0'),
+            new moff('0xFF'),
+            new moff('0xFFFF'),
+            new moff('0xFFFFFFFF'),
+            new moff('0xFFFFFFFFFFFFFFFF'),
+        ],
+        moff16: [
+            new moff('0'),
+            new moff('0xFF'),
+            new moff('0xFFFF'),
+            new moff('0xFFFFFFFF'),
+            new moff('0xFFFFFFFFFFFFFFFF'),
+        ],
+        moff32: [
+            new moff('0'),
+            new moff('0xFF'),
+            new moff('0xFFFF'),
+            new moff('0xFFFFFFFF'),
+            new moff('0xFFFFFFFFFFFFFFFF'),
+        ],
+        moff64: [
+            new moff('0'),
+            new moff('0xFF'),
+            new moff('0xFFFF'),
+            new moff('0xFFFFFFFF'),
+            new moff('0xFFFFFFFFFFFFFFFF'),
+        ],
+        al: [ new reg('al') ],
+        ax: [ new reg('ax') ],
+        eax: [ new reg('eax') ],
+        rax: [ new reg('rax') ],
         i8: [
             new imm('0'),
             new imm('127'),
@@ -185,6 +233,9 @@ function generate_combinations(operands) {
             new imm('-128')
         ],
         mem8: [
+            mem.absolute(8, '0x0'),
+            mem.absolute(8, '0xFF'),
+            mem.absolute(8, '0xFFFF'),
             mem.rip_relative(8, '0x0'),
             mem.rip_relative(8, '0xFF'),
             mem.rip_relative(8, '0xFFFF'),
@@ -205,6 +256,9 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(8, 'r14', 'r15', '0xFFFF', "8"),
         ],
         mem16: [
+            mem.absolute(16, '0x0'),
+            mem.absolute(16, '0xFF'),
+            mem.absolute(16, '0xFFFF'),
             mem.rip_relative(16, '0x0'),
             mem.rip_relative(16, '0xFF'),
             mem.rip_relative(16, '0xFFFF'),
@@ -225,6 +279,9 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(16, 'r14', 'r15', '0xFFFF', "8"),
         ],
         mem32: [
+            mem.absolute(32, '0x0'),
+            mem.absolute(32, '0xFF'),
+            mem.absolute(32, '0xFFFF'),
             mem.rip_relative(32, '0x0'),
             mem.rip_relative(32, '0xFF'),
             mem.rip_relative(32, '0xFFFF'),
@@ -245,6 +302,9 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(32, 'r14', 'r15', '0xFFFF', "8"),
         ],
         mem64: [
+            mem.absolute(64, '0x0'),
+            mem.absolute(64, '0xFF'),
+            mem.absolute(64, '0xFFFF'),
             mem.rip_relative(64, '0x0'),
             mem.rip_relative(64, '0xFF'),
             mem.rip_relative(64, '0xFFFF'),

@@ -38,7 +38,7 @@ workspace "assembler"
         targetdir ("output/bin/%{prj.name}")
         objdir ("output/obj/%{prj.name}")
 
-        files { "source/assembler/**.cpp", "source/assembler/**.h" }
+        files { "source/assembler/**.cpp", "source/assembler/**.h", "source/assembler/**.inc" }
 
         includedirs { "source", "source/utility/" }
         links { "utility" }
