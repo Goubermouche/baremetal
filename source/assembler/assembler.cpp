@@ -386,8 +386,12 @@ namespace baremetal {
 				const auto memory = operands[i].memory;
 				auto displacement = memory.displacement;
 
-				if(displacement.value == 0 && memory.base.type != REG_RIP) {
-					continue; // skip 0 displacements
+
+
+				if(displacement.value == 0) {
+					if(memory.has_base && memory.base.type != REG_RIP) {
+						continue; // skip 0 displacements
+					}
 				}
 
 				enum operand::type ty;
