@@ -81,6 +81,16 @@ namespace baremetal {
 		}
 	}
 
+	inline auto is_operand_moff(enum operand::type op) -> bool {
+		switch(op) {
+		case operand::OP_MOFF8:
+		case operand::OP_MOFF16:
+		case operand::OP_MOFF32:
+		case operand::OP_MOFF64:  return true;
+		default: return false;
+		}
+	}
+
 	inline auto is_operand_imm(enum operand::type op) -> bool {
 		switch(op) {
 			case operand::OP_I8:

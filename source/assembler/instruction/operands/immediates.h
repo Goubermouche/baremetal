@@ -68,7 +68,8 @@ namespace baremetal {
 
 	struct moff {
 		constexpr moff() = default;
+		constexpr moff(u64 address) : value(address) {}
 
-		constexpr moff(u64 address) {}
+		u64 value;
 	};
 } // namespace baremetal

@@ -5,9 +5,9 @@ namespace baremetal {
 	struct assembler {
 		assembler();
 
-#define INST(index, name, op1, op2)                                 \
-  void name(struct op1 destination, struct op2 source) {            \
-    emit_instruction(index, destination, source);                   \
+#define INST(index, name, op1, op2)                      \
+  void name(struct op1 destination, struct op2 source) { \
+    emit_instruction(index, destination, source);        \
   }
 
 #include "assembler/instruction/databases/assembler_database.inc"

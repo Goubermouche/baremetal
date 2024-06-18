@@ -394,7 +394,6 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-# JetBrains Rider
 *.sln.iml
 .vscode
 *.vcxproj
@@ -405,3 +404,6 @@ FodyWeavers.xsd
 generated_*.*
 Makefile
 .make
+
+# ignore tests
+source/tests/

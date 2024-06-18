@@ -4,7 +4,7 @@ workspace "assembler"
     language "C++"
 
     configurations { "Release", "Debug" }
-    startproject "assembler"
+    startproject "tests"
     warnings "Extra"
 
     -- buildoptions { "-fsanitize=address" }
@@ -32,7 +32,7 @@ workspace "assembler"
     include "source/utility"
 
     project "assembler"
-        kind "ConsoleApp"
+        kind "StaticLib"
         location "source/assembler"
 
         targetdir ("output/bin/%{prj.name}")
@@ -42,3 +42,16 @@ workspace "assembler"
 
         includedirs { "source", "source/utility/" }
         links { "utility" }
+
+    project "tests"
+        kind "ConsoleApp"
+        location "source/tests"
+
+        targetdir ("output/bin/%{prj.name}")
+        objdir ("output/obj/%{prj.name}")
+
+        files { "source/tests/**.cpp", "source/tests/**.h" }
+
+        includedirs { "source", "source/utility/", "source/assembler" }
+        links { "utility", "assembler" }
+

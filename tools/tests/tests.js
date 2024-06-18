@@ -7,6 +7,8 @@ const { Worker, isMainThread, parentPort, workerData } = require('worker_threads
 
 const OUTPUT_PATH  = path.join(__dirname, "generated_tests.txt");
 const MESSAGE_PATH = path.join(__dirname, "generated_messages.txt");
+const TEST_DIR_PATH = path.join(__dirname, "../../source/tests/tests")
+const TEST_MAIN_PATH = path.join(__dirname, "../../source/tests/main.cpp")
 
 class reg {
     constructor(name) {
@@ -350,20 +352,20 @@ function generate_combinations(operands) {
 
 function compile_instruction(instruction, temp_dir, bin_dir, asm_dir) {
     const assembly = `BITS 64\n${instruction}`;
-    const command = `nasm -f bin -o ${bin_dir} ${asm_dir} > ${temp_dir} 2>&1`
+    const command = `nasm -w+all -f bin -o ${bin_dir} ${asm_dir} > ${temp_dir} 2>&1`
 
     try {
         utility.write_file(asm_dir, assembly);
         utility.execute(command);
         const message = utility.read_file(temp_dir);
 
-        if(message.length > 0) {
-            // throw message;
-            return {
-                id: "message",
-                data: message
-            }
-        }
+        // if(message.length > 0) {
+        //     // throw message;
+        //     return {
+        //         id: "message",
+        //         data: message
+        //     }
+        // }
     } catch(err) {
         throw err;
     }
@@ -413,46 +415,126 @@ if (isMainThread) {
 
         if(tests.length === items.length) {
             // generate the final layout
-            let max_binary_part_len = 0;
-            let max_instruction_part_len = 0;
-        
             console.log("generating layout...");
-        
+
+            let name_to_tests = new Map();
+
             tests.forEach(test => {
-                max_binary_part_len = Math.max(max_binary_part_len, test.binary_part.length);
-                max_instruction_part_len = Math.max(max_instruction_part_len, test.instruction_part.length);
+                if(name_to_tests.has(test.name)) {
+                    name_to_tests.get(test.name).push({
+                        binary_part: test.binary_part,
+                        instruction_part: test.instruction_part
+                    })
+                }
+                else {
+                    name_to_tests.set(test.name, [{
+                        binary_part: test.binary_part,
+                        instruction_part: test.instruction_part
+                    }])
+                }
             })
-        
-            let test_file = "";
-        
-            tests.forEach(test => {
-                test_file += (
-                    `TEST_INST("` +
-                    `${`${test.binary_part}"`.padEnd(max_binary_part_len + 1)}, ` +
-                    `${test.instruction_part.padEnd(max_instruction_part_len)});\n`
-                );
-            })
+
+            for(let [name, tests] of name_to_tests) {
+                let max_binary_part_len = 0;
+                let max_instruction_part_len = 0;
+
+                tests.forEach(test => {
+                    max_binary_part_len = Math.max(max_binary_part_len, test.binary_part.length);
+                    max_instruction_part_len = Math.max(max_instruction_part_len, test.instruction_part.length);
+                })
+
+                let test_file = "";
+                tests.forEach(test => {
+                    test_file += (
+                        `\t\tTEST_INST("` +
+                        `${`${test.binary_part}"`.padEnd(max_binary_part_len + 1)}, ` +
+                        `${test.instruction_part.padEnd(max_instruction_part_len)});\n`
+                    );
+                })
+
+                const text = `#pragma once
+#include "tests/utilities.h"
+
+namespace baremetal::tests {
+\tinline auto run_test_${name}() -> test_result {
+\t\tassembler assembler;
+\t\ttest_result result;
+
+${test_file}
+\t\treturn result;
+\t}
+}`;
+
+                const filepath = path.join(TEST_DIR_PATH, `${name}.h`);
+                utility.write_file(filepath, text);
+            }
+
+            let includes = [];
+            let test_runs = [];
+
+            for(let [name, tests] of name_to_tests) {
+                includes.push(`#include "tests/tests/${name}.h"`);
+                test_runs.push(`\tTEST(${name});`);
+            }
+
+            const includes_text = includes.join("\n");
+            const test_runs_text = test_runs.join("\n");
+
+            const main_text = `${includes_text}
+
+using namespace baremetal::tests;
+
+auto main() -> i32 {
+\tu64 total_success = 0;
+\tu64 total_fail = 0;
+
+${test_runs_text}
+
+\tutility::console::print("tests finished ({}/{})\\n", total_success, total_success + total_fail);
+
+\treturn 0;
+}\n`
+
+utility.write_file(TEST_MAIN_PATH, main_text)
+
+
+            //tests.forEach(test => {
+            //    max_binary_part_len = Math.max(max_binary_part_len, test.binary_part.length);
+            //    max_instruction_part_len = Math.max(max_instruction_part_len, test.instruction_part.length);
+            //})
+        //
+            //let test_file = "";
+        //
+            //tests.forEach(test => {
+            //    test_file += (
+            //        `TEST_INST("` +
+            //        `${`${test.binary_part}"`.padEnd(max_binary_part_len + 1)}, ` +
+            //        `${test.instruction_part.padEnd(max_instruction_part_len)});\n`
+            //    );
+            //})
+
+
 
             // serialize messages
 
-            if(messages.length > 0) {
-                let message_file = "";
-
-                messages.forEach(message => {
-                    message_file += message + "\n\n";
-                })
-
-                utility.write_file(MESSAGE_PATH, message_file);
-            }
+            //if(messages.length > 0) {
+            //    let message_file = "";
+//
+            //    messages.forEach(message => {
+            //        message_file += message.command + "\n" + message.text + "\n\n";
+            //    })
+//
+            //    utility.write_file(MESSAGE_PATH, message_file);
+            //}
         
-            utility.write_file(OUTPUT_PATH, test_file);
-            console.log(`encountered messages   ${messages.length}`);
-            console.log(`tests generated in     ${(Date.now() - start_time) / 1000}s`);
-            console.log(`output stored in       ${OUTPUT_PATH}`);
-
-            if(messages.length > 0) {
-                console.log(`messages stored in     ${MESSAGE_PATH}`);
-            }
+           // utility.write_file(OUTPUT_PATH, test_file);
+            //console.log(`encountered messages   ${messages.length}`);
+            //console.log(`tests generated in     ${(Date.now() - start_time) / 1000}s`);
+            //console.log(`output stored in       ${OUTPUT_PATH}`);
+//
+            //if(messages.length > 0) {
+            //    console.log(`messages stored in     ${MESSAGE_PATH}`);
+            //}
         }
     }
 
@@ -509,10 +591,29 @@ if (isMainThread) {
 
     // compile all instructions
     instructions.forEach(inst => {
-        const result = compile_instruction(`${inst.name} ${inst.operands}`, temp_dir, bin_dir, asm_dir);
+        let result = {
+            id: "data",
+            data: "none"
+        }
+
+        try {
+            result = compile_instruction(`${inst.name} ${inst.operands}`, temp_dir, bin_dir, asm_dir);
+    
+            if(tests.length % 10 === 0) {
+                parentPort.postMessage({ id: "update" });
+            }
+        } catch(message) {
+            parentPort.postMessage({ id: "message", data: {
+                text: message,
+                command: `worker error`
+            } });
+        }
 
         if(result.id === "message") {
-            parentPort.postMessage({ id: "message", data: result.data });
+            parentPort.postMessage({ id: "message", data: {
+                text: result.data,
+                command: `${inst.name}(${inst.operands})`
+            } });
 
             tests.push({
                 binary_part: "FAILED TO ASSEMBLE",
@@ -521,13 +622,10 @@ if (isMainThread) {
         }
         else {
             tests.push({
+                name: utility.format_instruction_name(inst.name),
                 binary_part: result.data,
-                instruction_part: `${inst.name}(${inst.baremetal})`
+                instruction_part: `${utility.format_instruction_name(inst.name)}(${inst.baremetal})`
             });
-        }
-
-        if(tests.length % 10 === 0) {
-            parentPort.postMessage({ id: "update" });
         }
     });
 

@@ -71,7 +71,7 @@ namespace baremetal {
 		const instruction_info* info = nullptr;
 
 		if(is_operand_imm(op_2.type)) {
-			std::vector<const instruction_info*> possible_infos = {};
+			utility::dynamic_array<const instruction_info*> possible_infos = {};
 
 			const imm& immediate = op_2.immediate;
 			const u8 bits = get_operand_bit_width(op_2.type);
@@ -93,7 +93,7 @@ namespace baremetal {
 				possible_infos.push_back(&instruction_db[current_index++]);
 			}
 
-			if(possible_infos.size() == 1) {
+			if(possible_infos.get_size() == 1) {
 				info = possible_infos[0];
 			}
 			else {
@@ -381,12 +381,13 @@ namespace baremetal {
 				// imm operands
 				emit_immediate_operand(operands[i].immediate.value, operands_actual[i]);
 			}
+			else if(is_operand_moff(operands[i].type)) {
+				emit_immediate_operand(operands[i].memory_offset.value, operand::type::OP_I64);
+			}
 			else if(is_operand_mem(operands[i].type)) {
 				// memory displacement
 				const auto memory = operands[i].memory;
 				auto displacement = memory.displacement;
-
-
 
 				if(displacement.value == 0) {
 					if(memory.has_base && memory.base.type != REG_RIP) {
@@ -406,7 +407,7 @@ namespace baremetal {
 					i32 new_displacement = static_cast<i32>(displacement.value - (get_current_inst_size() + 4));
 
 					if(i + 1 != operand_count) {
-						// if we have another operand after the current one, calculate it's get_size
+						// if we have another operand after the current one, calculate it's size
 						if(is_operand_imm(operands_actual[i + 1])) { // regs are already encoded
 							new_displacement -= get_operand_bit_width(operands_actual[i + 1]) / 8;
 						}
@@ -544,6 +545,7 @@ namespace baremetal {
 		// mod  [XX______] (addressing mode)
 		// rx   [__XXX___]
 		// rm   [_____XXX]
+
 		return static_cast<u8>((rm & 7) | ((rx & 7) << 3) | (mod << 6));
 	}
 

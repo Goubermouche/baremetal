@@ -39,7 +39,7 @@ namespace baremetal {
   }                                                                                                              \
                                                                                                                  \
   static auto ptr(reg64 base_reg, i32 offset = 0) -> mem ## bit_width {                                          \
-		mem ## bit_width memory = {};                                                                                \
+    mem ## bit_width memory = {};                                                                                \
     memory.base = base_reg;                                                                                      \
     memory.has_base = true;                                                                                      \
     memory.displacement = offset;                                                                                \

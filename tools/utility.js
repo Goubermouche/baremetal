@@ -167,8 +167,8 @@ function verify_operands(operands) {
     const valid_operands = [
         "reg8", "reg16", "reg32", "reg64",
         "i8", "i16", "i32", "i64", 
-        //"moff8", "moff16", "moff32", "moff64", 
-        //"al", "ax", "eax", "rax",
+        "moff8", "moff16", "moff32", "moff64", 
+        "al", "ax", "eax", "rax",
         "mem8", "mem16", "mem32", "mem64"
     ];
 
@@ -260,12 +260,12 @@ function get_instructions() {
     let instructions = new Map();
 
     database.forEach((name, inst) => {
-        // if (!verify_instruction(inst)) {
-        //     return;
-        // }
-        if(inst.name != "mov") {
+        if (!verify_instruction(inst)) {
             return;
         }
+        // if(inst.name != "mov") {
+        //     return;
+        // }
 
         const combinations = generate_operand_combinations(inst.operands.map(op => op.data));
 
@@ -307,6 +307,15 @@ function get_instructions() {
     return flat_instructions;
 }
 
+function format_instruction_name(name) {
+    switch(name) {
+        case "xor": return "xor_";
+        case "and": return "and_";
+        case "or": return "or_";
+        default: return name;
+    }
+}
+
 module.exports = {
     read_json,
     write_file,
@@ -328,4 +337,5 @@ module.exports = {
     extract_extensions,
     extract_prefix,
     extract_opcode,
+    format_instruction_name
 };

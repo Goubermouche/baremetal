@@ -42,35 +42,35 @@ namespace baremetal {
     constexpr name() : reg64(index) {}      \
   };                                        \
                                             \
-	static constexpr name name;
+	static inline constexpr name name;
 
 #define REGISTER_CLASS_32_DECL(name, index) \
   struct name : reg32 {                     \
     constexpr name() : reg32(index) {}      \
   };                                        \
                                             \
-	static constexpr name name;
+	static inline constexpr name name;
 
 #define REGISTER_CLASS_16_DECL(name, index) \
   struct name : reg16 {                     \
     constexpr name() : reg16(index) {}      \
   };                                        \
                                             \
-	static constexpr name name;
+	static inline constexpr name name;
 
 #define REGISTER_CLASS_8_DECL(name, index) \
   struct name : reg8 {                     \
     constexpr name() : reg8(index) {}      \
   };                                       \
                                            \
-	static constexpr name name;
+	static inline constexpr name name;
 
 #define REGISTER_CLASS_VOID_DECL(name, index, type) \
   struct name : reg_void {                          \
     constexpr name() : reg_void(index, type) {}     \
   };                                                \
                                                     \
-	static constexpr name name;
+	static inline constexpr name name;
 
 	// 64 bit registers
 	REGISTER_CLASS_64_DECL(rax, 0);
