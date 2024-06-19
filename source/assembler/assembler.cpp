@@ -174,13 +174,25 @@ namespace baremetal {
 		if(is_rexw || is_extended_register(op_1) || is_extended_register(op_2)) {
 			// extended reg | reg
 			if(is_extended_register(op_1) && is_operand_reg(op_2.type)) {
-				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
-				m_bytes.push_back(rex_part);
+				if(inst->get_direction()) {
+					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+				else {
+					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
 			}
 			// reg | extended reg
 			else if(is_extended_register(op_2) && is_operand_reg(op_1.type)) {
-				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
-				m_bytes.push_back(rex_part);
+				if(inst->get_direction()) {
+					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+				else {
+					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
 			}
 			else if(is_operand_reg(op_1.type) && is_operand_mem(op_2.type)) {
 				const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.memory.base.index, op_2.memory.index.index);
@@ -322,7 +334,13 @@ namespace baremetal {
 				}
 			}
 			else {
-				mod_rm_part = direct(rx, destination);
+				// extract the direction bit
+				if(inst->get_direction()) {
+					mod_rm_part = direct(rx, destination);
+				}
+				else {
+					mod_rm_part = direct(destination, rx);
+				}
 			}
 
 			m_bytes.push_back(mod_rm_part);

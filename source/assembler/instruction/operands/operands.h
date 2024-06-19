@@ -91,7 +91,7 @@ namespace baremetal {
 		}
 	}
 
-	inline auto is_operand_imm(enum operand::type op) -> bool {
+	inline constexpr auto is_operand_imm(enum operand::type op) -> bool {
 		switch(op) {
 			case operand::OP_I8:
 			case operand::OP_I16:
