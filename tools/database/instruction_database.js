@@ -4,6 +4,87 @@ const utility = require("../utility.js")
 
 const DEBUG_PRINT_DISCARDED_INSTRUCTIONS = false;
 
+const direction_map = new Map([
+    ["adc", "NORMAL"],
+    ["adcx", "ENCODED"],
+    ["add", "NORMAL"],
+    ["adox", "ENCODED"],
+    ["and", "NORMAL"],
+    ["bsf", "REVERSE"],
+    ["bsr", "REVERSE"],
+    ["bt", "NORMAL"],
+    ["btc", "NORMAL"],
+    ["btr", "NORMAL"],
+    ["bts", "NORMAL"],
+    ["cmova", "REVERSE"],
+    ["cmovae", "REVERSE"],
+    ["cmovb", "REVERSE"],
+    ["cmovbe", "REVERSE"],
+    ["cmovc", "REVERSE"],
+    ["cmove", "REVERSE"],
+    ["cmovg", "REVERSE"],
+    ["cmovge", "REVERSE"],
+    ["cmovl", "REVERSE"],
+    ["cmovle", "REVERSE"],
+    ["cmovna", "REVERSE"],
+    ["cmovnae", "REVERSE"],
+    ["cmovnb", "REVERSE"],
+    ["cmovnbe", "REVERSE"],
+    ["cmovnc", "REVERSE"],
+    ["cmovne", "REVERSE"],
+    ["cmovng", "REVERSE"],
+    ["cmovnge", "REVERSE"],
+    ["cmovnl", "REVERSE"],
+    ["cmovnle", "REVERSE"],
+    ["cmovno", "REVERSE"],
+    ["cmovnp", "REVERSE"],
+    ["cmovns", "REVERSE"],
+    ["cmovnz", "REVERSE"],
+    ["cmovo", "REVERSE"],
+    ["cmovp", "REVERSE"],
+    ["cmovpe", "REVERSE"],
+    ["cmovpo", "REVERSE"],
+    ["cmovs", "REVERSE"],
+    ["cmovz", "REVERSE"],
+    ["cmp", "NORMAL"],
+    ["crc32", "REVERSE"],
+    ["cvtsd2si", "NORMAL"],
+    ["cvtss2si", "NORMAL"],
+    ["cvttsd2si", "NORMAL"],
+    ["cvttss2si", "NORMAL"],
+    ["div", "NORMAL"],
+    ["enter", "NORMAL"],
+    ["idiv", "NORMAL"],
+    ["imul", "NORMAL"],
+    ["in", "NORMAL"],
+    ["lzcnt", "REVERSE"],
+    ["mov", "NORMAL"],
+    ["movbe", "REVERSE"],
+    ["movnti", "REVERSE"],
+    ["movsx", "REVERSE"],
+    ["movsxd", "REVERSE"],
+    ["movzx", "REVERSE"],
+    ["mul", "NORMAL"],
+    ["or", "NORMAL"],
+    ["out", "NORMAL"],
+    ["popcnt", "REVERSE"],
+    ["rcl", "NORMAL"],
+    ["rcr", "NORMAL"],
+    ["rol", "NORMAL"],
+    ["ror", "NORMAL"],
+    ["sal", "NORMAL"],
+    ["sar", "NORMAL"],
+    ["sbb", "NORMAL"],
+    ["shl", "NORMAL"],
+    ["shr", "NORMAL"],
+    ["sub", "NORMAL"],
+    ["test", "NORMAL"],
+    ["tzcnt", "REVERSE"],
+    ["xadd", "NORMAL"],
+    ["xchg", "NORMAL"],
+    ["xor", "NORMAL"]
+]);
+
 function pop_count(str) {
     for(let i = 0; i < str.length; ++i) {
         if(str[i] != 0) {
@@ -194,6 +275,8 @@ function main() {
         operands.forEach((op, i) => {
             row.push(op.toUpperCase());
         });
+
+        row.push(direction_map.get(inst.name));
 
         instruction_db.push(row);
     })
