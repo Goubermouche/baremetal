@@ -129,10 +129,12 @@ function is_immediate(op) {
 function get_operand_order(value) {
     const operand_order = [
         "i8", "i16", "i32", "i64",
-        "al", "ax", "eax", "rax",
-        "reg8", "reg16", "reg32", "reg64",
+        "al", "reg8",
+        "ax", "reg16",
+        "eax", "reg32", 
+        "rax", "reg64",
         "moff8", "moff16", "moff32", "moff64",
-        "m8", "m16", "m32", "m64"
+        "mem8", "mem16", "mem32", "mem64"
     ];
 
     const index = operand_order.indexOf(value);
@@ -255,7 +257,7 @@ function main() {
     let instruction_db = [];
 
     instructions.forEach(inst => {
-        let special_index = 0;
+        let special_index = 65535; // u16 max
 
         // special cases
         if(inst.operands[0] == "reg64" && inst.operands[1] == "i32") {

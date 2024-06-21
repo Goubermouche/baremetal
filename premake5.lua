@@ -55,3 +55,5 @@ workspace "assembler"
         includedirs { "source", "source/utility/", "source/assembler" }
         links { "utility", "assembler" }
 
+        buildoptions("/bigobj")
+

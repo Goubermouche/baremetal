@@ -34,6 +34,17 @@ function execute(cmd) {
     return execSync(cmd, { encoding: 'utf8'});
 }
 
+function delete_files_in_directory(directory) {
+    fs.readdirSync(directory, (err, files) => {
+        if (err) throw err;
+
+        for (const file of files) {
+            delete_file(path.join(directory, file));
+        }
+    });
+}
+
+
 // utility functions related to instruction transformations
 // extract the 3-byte opcode from an instruction instance
 function extract_opcode(inst) {
@@ -220,6 +231,8 @@ function optimize_away_duplicates(instructions) {
                 best_len = current;
                 best = inst.variants[i];
             }
+            else if(current == best_len) {
+            }
         }
 
         if(false) {
@@ -263,10 +276,7 @@ function get_instructions() {
         if (!verify_instruction(inst)) {
             return;
         }
-        // if(inst.name != "mov") {
-        //     return;
-        // }
-
+        
         const combinations = generate_operand_combinations(inst.operands.map(op => op.data));
 
         combinations.forEach(combination => {
@@ -324,7 +334,8 @@ module.exports = {
     read_file_hex,
     execute,
     bit_width_to_name,
-
+    delete_files_in_directory,
+    
     // instructions
     get_instructions,
     verify_instruction,

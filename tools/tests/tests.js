@@ -419,6 +419,9 @@ if (isMainThread) {
 
             let name_to_tests = new Map();
 
+            // clear the directory
+            utility.delete_files_in_directory(TEST_DIR_PATH);
+            
             tests.forEach(test => {
                 if(name_to_tests.has(test.name)) {
                     name_to_tests.get(test.name).push({

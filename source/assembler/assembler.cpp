@@ -1,4 +1,7 @@
 #include "assembler.h"
+
+#include <algorithm>
+
 #include "instruction/operands/operands.h"
 #include <utility/assert.h>
 
@@ -67,6 +70,16 @@ namespace baremetal {
 		return extended_source == extended_original;
 	}
 
+	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool {
+		switch(a) {
+			case operand::OP_AL:  return b == operand::OP_AL  || b == operand::OP_REG8;
+			case operand::OP_AX:  return b == operand::OP_AX  || b == operand::OP_REG16;
+			case operand::OP_EAX: return b == operand::OP_EAX || b == operand::OP_REG32;
+			case operand::OP_RAX: return b == operand::OP_RAX || b == operand::OP_REG64;
+			default: return a == b;
+		}
+	}
+
 	auto assembler::get_instruction_info(u32 index, operand op_1, operand op_2)  -> const instruction_info* {
 		const instruction_info* info = nullptr;
 
@@ -76,22 +89,34 @@ namespace baremetal {
 			const imm& immediate = op_2.immediate;
 			const u8 bits = get_operand_bit_width(op_2.type);
 
-			// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
-			// less we can look for a smaller destination
-
-			if(op_1.type == operand::OP_REG64 && immediate.min_bits <= 32) {
-				// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64 bits)
-				// we can't zero extend 
-				if(immediate.sign == false) {
-					index = instruction_db[index].context_index;
+			// if we have an optimization index
+			if(instruction_db[index].context_index != std::numeric_limits<u16>::max()) {
+				// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
+				// less we can look for a smaller destination
+				if(op_1.type == operand::OP_REG64 && immediate.min_bits <= 32) {
+					// verify if it's safe to zero extend the operand (since we're implicitly going
+					// from 32 to 64 bits) we can't zero extend 
+					if(immediate.sign == false) {
+						index = instruction_db[index].context_index;
+					}
 				}
 			}
 
 			u32 current_index = index;
-
-			while(instruction_db[current_index].op1 == instruction_db[index].op1) {
-				possible_infos.push_back(&instruction_db[current_index++]);
+			
+			while(is_operand_of_same_kind(instruction_db[index].op1, instruction_db[current_index].op1)) {
+				if(is_operand_imm(instruction_db[current_index].op2)) {
+					possible_infos.push_back(&instruction_db[current_index++]);
+				}
+				else {
+					break;
+				}
 			}
+
+			// reorder to smallest source operands
+			std::sort(possible_infos.begin(), possible_infos.end(), [](const instruction_info* a, const instruction_info* b) {
+				return get_operand_bit_width(a->op2) < get_operand_bit_width(b->op2);
+			});
 
 			if(possible_infos.get_size() == 1) {
 				info = possible_infos[0];
@@ -286,23 +311,50 @@ namespace baremetal {
 				// right mem
 				if(memory.has_base == false) {
 					// absolute address
-					mod_rm_part = indirect(rx, 0b100); // 100 = SIB byte
+					if(inst->is_ext()) {
+						mod_rm_part = indirect(inst->get_ext(), 0b100);
+					}
+					else {
+						// this may not be needed
+						mod_rm_part = indirect(rx, 0b100); // 100 = SIB byte
+					}
 				}
 				else if(memory.base.type == REG_RIP) {
 					// rip reg
-					mod_rm_part = indirect(rx, 0b101); // 101 = RIP-relative
+					if(inst->is_ext()) {
+						mod_rm_part = indirect(inst->get_ext(), 0b101);
+					}
+					else {
+						mod_rm_part = indirect(rx, 0b101); // 101 = RIP-relative
+					}
 				}
 				else if(memory.displacement.value == 0) {
 					// no displacement
-					mod_rm_part = indirect(rx, has_sib ? 0b100 : memory.base.index);
+					if(inst->is_ext()) {
+						mod_rm_part = indirect(inst->get_ext(), has_sib ? 0b100 : memory.base.index);
+					}
+					else {
+						mod_rm_part = indirect(rx, has_sib ? 0b100 : memory.base.index);
+					}
 				}
 				else if(memory.displacement.min_bits <= 8) {
 					// 8 bit displacement
-					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index);
+					if(inst->is_ext()) {
+						mod_rm_part = indirect_disp_8(inst->get_ext(), has_sib ? 0b100 : memory.base.index);
+					}
+					else {
+						mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index);
+					}
+
 				}
 				else {
 					// 32 bit displacement
-					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index);
+					if(inst->is_ext()) {
+						mod_rm_part = indirect_disp_32(inst->get_ext(), has_sib ? 0b100 : memory.base.index);
+					}
+					else {
+						mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index);
+					}
 				}
 			}
 			else if(is_operand_mem(op_2.type)) {
@@ -379,6 +431,7 @@ namespace baremetal {
 	void assembler::emit_instruction(u32 index, operand op_1, operand op_2) {
 		instruction_begin();
 
+		// utility::console::print("original operands {} {}\n", operand_type_to_string(op_1.type), operand_type_to_string(op_2.type));
 		const instruction_info* inst = get_instruction_info(index, op_1, op_2);
 		// utility::console::print("assembling as: {} {} {}\n", inst->name, operand_type_to_string(inst->op1), operand_type_to_string(inst->op2));
 
