@@ -287,7 +287,12 @@ namespace baremetal {
 
 		if(inst->is_opcode_ext()) {
 			// extract the 3 least significant bits 
-			opcode += destination & 0b00000111;
+			if(inst->get_direction()) {
+				opcode += destination & 0b00000111;
+			}
+			else {
+				opcode += rx & 0b00000111;
+			}
 		}
 
 		for(u8 i = 4; i-- > 1;) {

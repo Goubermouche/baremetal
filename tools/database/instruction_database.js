@@ -85,9 +85,11 @@ const direction_map = new Map([
     ["xor", "NORMAL"]
 ]);
 
-// name:operands -> whether the instruction is sign extended or not
-const extension_map = new Map([
-
+// overrides to the direction map
+const direction_map_override = new Map([
+    ["xchg:ax:reg16", "REVERSE"],
+    ["xchg:eax:reg32", "REVERSE"],
+    ["xchg:rax:reg64", "REVERSE"]
 ]);
 
 function pop_count(str) {
@@ -283,7 +285,16 @@ function main() {
             row.push(op.toUpperCase());
         });
 
-        row.push(direction_map.get(inst.name));
+        // directions
+        const key = `${inst.name}:${inst.operands.join(":")}`;
+
+        if(direction_map_override.has(key)) {
+            row.push(direction_map_override.get(key));
+        }
+        else {
+            row.push(direction_map.get(inst.name));
+        }
+
 
         instruction_db.push(row);
     })
