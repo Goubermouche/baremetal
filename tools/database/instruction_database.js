@@ -82,7 +82,8 @@ const direction_map = new Map([
     ["tzcnt", "REVERSE"],
     ["xadd", "NORMAL"],
     ["xchg", "NORMAL"],
-    ["xor", "NORMAL"]
+    ["xor", "NORMAL"],
+    ["cmpxchg", "NORMAL"]
 ]);
 
 // overrides to the direction map
@@ -295,13 +296,11 @@ function main() {
             row.push(direction_map.get(inst.name));
         }
 
-
         instruction_db.push(row);
     })
 
     const instruction_db_layout = calculate_layout(instruction_db);
     const instruction_db_text = apply_layout(instruction_db_layout, instruction_db, "INST(", ")");
-
     let assembler_db = [];
 
     indices.forEach((value, key) => {

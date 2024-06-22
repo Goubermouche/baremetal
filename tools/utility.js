@@ -268,6 +268,18 @@ function bit_width_to_name(bit_width) {
     return "";
 }
 
+function get_required_operands(operands) {
+    let result = [];
+
+    operands.forEach(op => {
+        if(op.implicit == false) {
+            result.push(op);
+        }
+    })
+
+    return result;
+}
+
 // filter instruction x operand combinations that we can generate code for
 function get_instructions() {
     let instructions = new Map();
@@ -277,11 +289,8 @@ function get_instructions() {
             return;
         }
 
-        // if(name != "test") {
-        //     return ;
-        // }
-        
-        const combinations = generate_operand_combinations(inst.operands.map(op => op.data));
+        const required_operands = get_required_operands(inst.operands);
+        const combinations = generate_operand_combinations(required_operands.map(op => op.data));
 
         combinations.forEach(combination => {
             const operands = translate_operands(combination);
