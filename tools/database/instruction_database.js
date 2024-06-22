@@ -55,7 +55,7 @@ const direction_map = new Map([
     ["div", "NORMAL"],
     ["enter", "NORMAL"],
     ["idiv", "NORMAL"],
-    ["imul", "NORMAL"],
+    ["imul", "REVERSE"],
     ["in", "NORMAL"],
     ["lzcnt", "REVERSE"],
     ["mov", "NORMAL"],
