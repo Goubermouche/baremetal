@@ -83,6 +83,8 @@ namespace baremetal {
 	auto assembler::get_instruction_info(u32 index, operand op_1, operand op_2)  -> const instruction_info* {
 		const instruction_info* info = nullptr;
 
+		// utility::console::print("index: {}\n", index);
+
 		if(is_operand_imm(op_2.type)) {
 			utility::dynamic_array<const instruction_info*> possible_infos = {};
 
@@ -102,8 +104,11 @@ namespace baremetal {
 				}
 			}
 
+			// utility::console::print("index: {}\n", index);
+
 			u32 current_index = index;
-			
+			// instruction_db[index].print();
+
 			while(is_operand_of_same_kind(instruction_db[index].op1, instruction_db[current_index].op1)) {
 				if(is_operand_imm(instruction_db[current_index].op2)) {
 					possible_infos.push_back(&instruction_db[current_index++]);
@@ -112,6 +117,10 @@ namespace baremetal {
 					break;
 				}
 			}
+
+			// for(const auto& inst : possible_infos) {
+			// 	inst->print();
+			// }
 
 			// reorder to smallest source operands
 			std::sort(possible_infos.begin(), possible_infos.end(), [](const instruction_info* a, const instruction_info* b) {
@@ -433,7 +442,7 @@ namespace baremetal {
 
 		// utility::console::print("original operands {} {}\n", operand_type_to_string(op_1.type), operand_type_to_string(op_2.type));
 		const instruction_info* inst = get_instruction_info(index, op_1, op_2);
-		// utility::console::print("assembling as: {} {} {}\n", inst->name, operand_type_to_string(inst->op1), operand_type_to_string(inst->op2));
+		// inst->print();
 
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, op_1, op_2);

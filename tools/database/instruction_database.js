@@ -85,6 +85,11 @@ const direction_map = new Map([
     ["xor", "NORMAL"]
 ]);
 
+// name:operands -> whether the instruction is sign extended or not
+const extension_map = new Map([
+
+]);
+
 function pop_count(str) {
     for(let i = 0; i < str.length; ++i) {
         if(str[i] != 0) {
@@ -260,7 +265,7 @@ function main() {
         let special_index = 65535; // u16 max
 
         // special cases
-        if(inst.operands[0] == "reg64" && inst.operands[1] == "i32") {
+        if(inst.name == "mov" && inst.operands[0] == "reg64" && inst.operands[1] == "i32") {
             special_index = dest_to_source.get(`${inst.name}:reg32:i32`)
         }
 

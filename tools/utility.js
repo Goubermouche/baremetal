@@ -276,6 +276,10 @@ function get_instructions() {
         if (!verify_instruction(inst)) {
             return;
         }
+
+        // if(name != "test") {
+        //     return ;
+        // }
         
         const combinations = generate_operand_combinations(inst.operands.map(op => op.data));
 

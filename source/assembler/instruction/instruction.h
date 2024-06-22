@@ -55,6 +55,10 @@ namespace baremetal {
 
 #pragma pack(push, 1)
 	struct instruction_info {
+		void print() const {
+			utility::console::print("{} {} {}\n", name, operand_type_to_string(op1), operand_type_to_string(op2));
+		}
+
 		constexpr auto is_rexw() const -> bool {
 			return extension & EXT_REXW;
 		}
