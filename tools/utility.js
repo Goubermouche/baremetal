@@ -44,6 +44,13 @@ function delete_files_in_directory(directory) {
     });
 }
 
+function create_directory(path) {
+    if(fs.existsSync(path)) {
+        return;
+    }
+    
+    return fs.mkdirSync(path);
+}
 
 // utility functions related to instruction transformations
 // extract the 3-byte opcode from an instruction instance
@@ -348,7 +355,8 @@ module.exports = {
     execute,
     bit_width_to_name,
     delete_files_in_directory,
-    
+    create_directory, 
+
     // instructions
     get_instructions,
     verify_instruction,

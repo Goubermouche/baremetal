@@ -405,5 +405,8 @@ generated_*.*
 Makefile
 .make
 
-# ignore tests
-source/tests/
+# ignore everything in source/tests directory
+source/tests/*
+
+# except utilities.h
+!source/tests/utilities.h

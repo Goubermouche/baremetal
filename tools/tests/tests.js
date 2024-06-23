@@ -419,6 +419,8 @@ if (isMainThread) {
 
             let name_to_tests = new Map();
 
+            utility.create_directory(TEST_DIR_PATH);
+
             // clear the directory
             utility.delete_files_in_directory(TEST_DIR_PATH);
             
@@ -466,7 +468,7 @@ namespace baremetal::tests {
 ${test_file}
 \t\treturn result;
 \t}
-}`;
+} // namespace baremetal::tests\n`;
 
                 const filepath = path.join(TEST_DIR_PATH, `${name}.h`);
                 utility.write_file(filepath, text);
