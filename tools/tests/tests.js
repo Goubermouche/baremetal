@@ -170,6 +170,12 @@ function generate_combinations(operands) {
             new reg('rbx'),
             new reg('r15'),
         ],
+        xmm: [
+            new reg('xmm0'),
+            new reg('xmm1'),
+            new reg('xmm2'),
+            new reg('xmm15')
+        ],
         moff8: [
             new moff('0'),
             new moff('0xFF'),

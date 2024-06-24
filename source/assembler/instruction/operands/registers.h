@@ -5,10 +5,11 @@ namespace baremetal {
 	using namespace utility::types;
 
 	enum reg_type : u8 {
-		REG_I8,
-		REG_I16,
-		REG_I32,
-		REG_I64,
+		REG_GP_8,
+		REG_GP_16,
+		REG_GP_32,
+		REG_GP_64,
+		REG_XMM,
 
 		// special registers
 		REG_RIP
@@ -21,56 +22,85 @@ namespace baremetal {
 		reg_type type;
 	};
 
-#define REGISTER_DECL(bits)                                          \
-  struct reg ## bits : reg {                                         \
-    constexpr reg ## bits () = default;                              \
-    constexpr explicit reg ## bits (u8 i) : reg(i, REG_I ## bits) {} \
+#define REGISTER_GP_DECL(bits)                                         \
+  struct reg ## bits : reg {                                           \
+    constexpr reg ## bits () = default;                                \
+    constexpr explicit reg ## bits (u8 i) : reg(i, REG_GP_ ## bits) {} \
   };
 
-	REGISTER_DECL(8);
-	REGISTER_DECL(16);
-	REGISTER_DECL(32);
-	REGISTER_DECL(64);
+	REGISTER_GP_DECL(8);
+	REGISTER_GP_DECL(16);
+	REGISTER_GP_DECL(32);
+	REGISTER_GP_DECL(64);
 
+	struct xmm : reg{
+		constexpr xmm() = default;
+		constexpr explicit xmm(u8 i) : reg(i, REG_XMM) {}
+	};
 	struct reg_void : reg {
 		constexpr reg_void() = default;
 		constexpr explicit reg_void(u8 i, reg_type ty) : reg(i, ty) {}
 	};
+
+#define REGISTER_CLASS_XMM_DECL(name, index) \
+  struct name : xmm {                        \
+    constexpr name() : xmm(index) {}         \
+  };                                         \
+                                             \
+  static inline constexpr name name;
 
 #define REGISTER_CLASS_64_DECL(name, index) \
   struct name : reg64 {                     \
     constexpr name() : reg64(index) {}      \
   };                                        \
                                             \
-	static inline constexpr name name;
+  static inline constexpr name name;
 
 #define REGISTER_CLASS_32_DECL(name, index) \
   struct name : reg32 {                     \
     constexpr name() : reg32(index) {}      \
   };                                        \
                                             \
-	static inline constexpr name name;
+  static inline constexpr name name;
 
 #define REGISTER_CLASS_16_DECL(name, index) \
   struct name : reg16 {                     \
     constexpr name() : reg16(index) {}      \
   };                                        \
                                             \
-	static inline constexpr name name;
+  static inline constexpr name name;
 
 #define REGISTER_CLASS_8_DECL(name, index) \
   struct name : reg8 {                     \
     constexpr name() : reg8(index) {}      \
   };                                       \
                                            \
-	static inline constexpr name name;
+  static inline constexpr name name;
 
 #define REGISTER_CLASS_VOID_DECL(name, index, type) \
   struct name : reg_void {                          \
     constexpr name() : reg_void(index, type) {}     \
   };                                                \
                                                     \
-	static inline constexpr name name;
+  static inline constexpr name name;
+
+	// 128 bit registers
+	REGISTER_CLASS_XMM_DECL(xmm0, 0);
+	REGISTER_CLASS_XMM_DECL(xmm1, 1);
+	REGISTER_CLASS_XMM_DECL(xmm2, 2);
+	REGISTER_CLASS_XMM_DECL(xmm3, 3);
+	REGISTER_CLASS_XMM_DECL(xmm4, 4);
+	REGISTER_CLASS_XMM_DECL(xmm5, 5);
+	REGISTER_CLASS_XMM_DECL(xmm6, 6);
+	REGISTER_CLASS_XMM_DECL(xmm7, 7);
+	REGISTER_CLASS_XMM_DECL(xmm8, 8);
+	REGISTER_CLASS_XMM_DECL(xmm9, 9);
+	REGISTER_CLASS_XMM_DECL(xmm10, 10);
+	REGISTER_CLASS_XMM_DECL(xmm11, 11);
+	REGISTER_CLASS_XMM_DECL(xmm12, 12);
+	REGISTER_CLASS_XMM_DECL(xmm13, 13);
+	REGISTER_CLASS_XMM_DECL(xmm14, 14);
+	REGISTER_CLASS_XMM_DECL(xmm15, 15);
 
 	// 64 bit registers
 	REGISTER_CLASS_64_DECL(rax, 0);

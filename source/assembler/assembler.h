@@ -10,7 +10,7 @@ namespace baremetal {
     emit_instruction(index, destination, source);        \
   }
 
-#include "assembler/instruction/databases/assembler_database.inc"
+ #include "assembler/instruction/databases/assembler_database.inc"
 
 #undef INST
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<utility::byte>&;

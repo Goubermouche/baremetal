@@ -217,6 +217,12 @@ function apply_layout(layout, data, line_prefix, line_postfix) {
     return result;
 }
 
+function format_instruction_operand(op) {
+    switch(op) {
+        default: return op;
+    }
+}
+
 function main() {
     let instructions = utility.get_instructions();
 
@@ -293,7 +299,12 @@ function main() {
             row.push(direction_map_override.get(key));
         }
         else {
-            row.push(direction_map.get(inst.name));
+            if(direction_map.has(inst.name)) {
+                row.push(direction_map.get(inst.name));
+            }
+            else {
+                row.push("NORMAL")
+            }
         }
 
         instruction_db.push(row);
@@ -316,10 +327,10 @@ function main() {
             }
             else {
                 if(i + 1 !== operands.length) {
-                    row.push(`${op}`)
+                    row.push(`${format_instruction_operand(op)}`)
                 }
                 else {
-                    row.push(op);
+                    row.push(format_instruction_operand(op));
                 }
             }
         })

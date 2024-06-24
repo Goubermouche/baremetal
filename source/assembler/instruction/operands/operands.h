@@ -11,6 +11,7 @@ namespace baremetal {
 		operand(reg16 r) : type(OP_REG16), reg(r.index) {}
 		operand(reg32 r) : type(OP_REG32), reg(r.index) {}
 		operand(reg64 r) : type(OP_REG64), reg(r.index) {}
+		operand(xmm r) : type(OP_XMM), reg(r.index) {}
 
 		operand(mem8  m) : type(OP_MEM8),  memory(m) {}
 		operand(mem16 m) : type(OP_MEM16), memory(m) {}
@@ -25,6 +26,7 @@ namespace baremetal {
 			OP_REG16,
 			OP_REG32,
 			OP_REG64,
+			OP_XMM, // xmm
 
 			// memory
 			OP_MEM8,

@@ -48,7 +48,7 @@ function create_directory(path) {
     if(fs.existsSync(path)) {
         return;
     }
-    
+
     return fs.mkdirSync(path);
 }
 
@@ -179,18 +179,34 @@ function verify_instruction(inst) {
     return !inst.prefix && !inst.fpu && (inst.arch === "ANY" || inst.arch === "X64");
 }
 
+let unknown_operands = new Set();
+
 // verify instruction operands, this boils down to us only supporting immediate and 
 // register operands
 function verify_operands(operands) {
     const valid_operands = [
-        "reg8", "reg16", "reg32", "reg64",
-        "i8", "i16", "i32", "i64", 
-        "moff8", "moff16", "moff32", "moff64", 
-        "al", "ax", "eax", "rax",
-        "mem8", "mem16", "mem32", "mem64"
+        // "reg8", "reg16", "reg32", "reg64",
+        // "i8", "i16", "i32", "i64", 
+        // "moff8", "moff16", "moff32", "moff64", 
+        // "al", "ax", "eax", "rax",
+        // "mem8", "mem16", "mem32", "mem64"
+        "xmm"
     ];
 
-    return operands.length === 2 && operands.every(part => valid_operands.includes(part));
+    if(operands.length === 2) {
+        if(operands.every(part => valid_operands.includes(part))) {
+            return true;
+        }
+        else {
+            operands.forEach(op => {
+                if(valid_operands.includes(op) == false) {
+                    unknown_operands.add(op)
+                }
+            })
+        }
+    }
+
+    return false;
 }
 
 function pop_count(str) {
@@ -334,6 +350,11 @@ function get_instructions() {
     })
 
     let flat_instructions = optimize_away_duplicates(instructions);
+
+    unknown_operands.forEach(un => {
+        console.log(un)
+    })
+
     return flat_instructions;
 }
 
