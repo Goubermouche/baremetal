@@ -63,12 +63,27 @@ namespace baremetal {
 		};
 	};
 
+	inline auto is_operand_xmm(enum operand::type op) -> bool {
+		return op == operand::OP_XMM;
+	}
+
 	inline auto is_operand_reg(enum operand::type op) -> bool {
 		switch(op) {
 			case operand::OP_REG8:
 			case operand::OP_REG16:
 			case operand::OP_REG32:
-			case operand::OP_REG64:  return true;
+			case operand::OP_REG64:
+			case operand::OP_XMM:   return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_gp_reg(enum operand::type op) -> bool {
+		switch(op) {
+			case operand::OP_REG8:
+			case operand::OP_REG16:
+			case operand::OP_REG32:
+			case operand::OP_REG64: return true;
 			default: return false;
 		}
 	}
@@ -110,6 +125,7 @@ namespace baremetal {
 			case operand::OP_REG16:  return 16;
 			case operand::OP_REG32:  return 32;
 			case operand::OP_REG64:  return 64;
+			case operand::OP_XMM:    return 128;
 			case operand::OP_MEM8:   return 8;
 			case operand::OP_MEM16:  return 16;
 			case operand::OP_MEM32:  return 32;
@@ -138,6 +154,7 @@ namespace baremetal {
 			case operand::OP_REG16:  return "r16";
 			case operand::OP_REG32:  return "r32";
 			case operand::OP_REG64:  return "r64";
+			case operand::OP_XMM:    return "xmm";
 
 			case operand::OP_MEM8:   return "m8";
 			case operand::OP_MEM16:  return "m16";

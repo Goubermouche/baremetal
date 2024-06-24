@@ -52,10 +52,20 @@ function create_directory(path) {
     return fs.mkdirSync(path);
 }
 
+const opcode_override_map = new Map([
+    ["pblendvb:xmm:xmm", "0f3810"]
+]);
+
 // utility functions related to instruction transformations
 // extract the 3-byte opcode from an instruction instance
-function extract_opcode(inst) {
+function extract_opcode(inst, operands) {
     let opcodeBytes = [0x00, 0x00, 0x00];
+
+    const key = `${inst.name}:${operands.join(":")}`;
+
+    if(opcode_override_map.has(key)) {
+        return opcode_override_map.get(key);
+    }
 
     if (inst.opcode) {
         opcodeBytes[0] = parseInt(inst.opcode, 16);
@@ -326,7 +336,7 @@ function get_instructions() {
 
             if (instructions.has(key)) {
                 instructions.get(key).variants.push({
-                    opcode: extract_opcode(inst),
+                    opcode: extract_opcode(inst, operands),
                     rm: inst.rm,
                     w: inst.w,
                     ri: inst.ri,
@@ -338,7 +348,7 @@ function get_instructions() {
                     name: inst.name,
                     operands: operands,
                     variants: [{
-                        opcode: extract_opcode(inst),
+                        opcode: extract_opcode(inst, operands),
                         rm: inst.rm,
                         w: inst.w,
                         ri: inst.ri,
