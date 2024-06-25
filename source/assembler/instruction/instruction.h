@@ -64,7 +64,16 @@ namespace baremetal {
 				return true;
 			}
 
-			return get_operand_bit_width(op1) == 64 || get_operand_bit_width(op2) == 64;
+			// TODO: this can be replaced by a fake REX.W flag
+			if(is_operand_gp_reg(op1) && get_operand_bit_width(op1) == 64) {
+				return true;
+			}
+
+			if(is_operand_gp_reg(op2) && get_operand_bit_width(op2) == 64) {
+				return true;
+			}
+
+			return false;
 		}
 
 		constexpr auto is_r() const -> bool {
