@@ -60,7 +60,11 @@ namespace baremetal {
 		}
 
 		constexpr auto is_rexw() const -> bool {
-			return extension & EXT_REXW;
+			if(extension& EXT_REXW) {
+				return true;
+			}
+
+			return get_operand_bit_width(op1) == 64 || get_operand_bit_width(op2) == 64;
 		}
 
 		constexpr auto is_r() const -> bool {

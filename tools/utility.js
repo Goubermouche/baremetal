@@ -31,7 +31,7 @@ function read_file_hex(path) {
 };
 
 function execute(cmd) {
-    return execSync(cmd, { encoding: 'utf8'});
+    return execSync(cmd, { encoding: 'utf8' });
 }
 
 function delete_files_in_directory(directory) {
@@ -45,7 +45,7 @@ function delete_files_in_directory(directory) {
 }
 
 function create_directory(path) {
-    if(fs.existsSync(path)) {
+    if (fs.existsSync(path)) {
         return;
     }
 
@@ -63,7 +63,7 @@ function extract_opcode(inst, operands) {
 
     const key = `${inst.name}:${operands.join(":")}`;
 
-    if(opcode_override_map.has(key)) {
+    if (opcode_override_map.has(key)) {
         return opcode_override_map.get(key);
     }
 
@@ -89,24 +89,24 @@ function extract_opcode(inst, operands) {
 // translate asmdb operands over to our format
 function translate_operands(op) {
     return op.map(o => {
-        switch(o) {
-            case "iq":  return "i64";
-            case "uq":  return "i64";
-            case "id":  return "i32";
-            case "ud":  return "i32";
-            case "iw":  return "i16";
-            case "uw":  return "i16";
-            case "ib":  return "i8";
-            case "ub":  return "i8";
-            case "r8":  return "reg8";
+        switch (o) {
+            case "iq": return "i64";
+            case "uq": return "i64";
+            case "id": return "i32";
+            case "ud": return "i32";
+            case "iw": return "i16";
+            case "uw": return "i16";
+            case "ib": return "i8";
+            case "ub": return "i8";
+            case "r8": return "reg8";
             case "r16": return "reg16";
             case "r32": return "reg32";
             case "r64": return "reg64";
-            case "m8":  return "mem8";
+            case "m8": return "mem8";
             case "m16": return "mem16";
             case "m32": return "mem32";
             case "m64": return "mem64";
-            default:    return o;
+            default: return o;
         }
     });
 }
@@ -195,21 +195,21 @@ let unknown_operands = new Set();
 // register operands
 function verify_operands(operands) {
     const valid_operands = [
-        // "reg8", "reg16", "reg32", "reg64",
-        // "i8", "i16", "i32", "i64", 
+        "reg8", "reg16", "reg32", "reg64",
+        "i8", "i16", "i32", "i64",
         // "moff8", "moff16", "moff32", "moff64", 
         // "al", "ax", "eax", "rax",
         // "mem8", "mem16", "mem32", "mem64"
         "xmm"
     ];
 
-    if(operands.length === 2) {
-        if(operands.every(part => valid_operands.includes(part))) {
-            return true;
+    if (operands.length === 2) {
+        if (operands.every(part => valid_operands.includes(part))) {
+            return operands.includes("xmm");
         }
         else {
             operands.forEach(op => {
-                if(valid_operands.includes(op) == false) {
+                if (valid_operands.includes(op) == false) {
                     unknown_operands.add(op)
                 }
             })
@@ -220,9 +220,9 @@ function verify_operands(operands) {
 }
 
 function pop_count(str) {
-    for(let i = 0; i < str.length; ++i) {
-        if(str[i] != 0) {
-            return Math.ceil((str.length - i) / 2); 
+    for (let i = 0; i < str.length; ++i) {
+        if (str[i] != 0) {
+            return Math.ceil((str.length - i) / 2);
         }
     }
 
@@ -257,20 +257,20 @@ function optimize_away_duplicates(instructions) {
         let best = inst.variants[0];
         let best_len = calculate_code_len(best);
 
-        for(let i = 1; i < inst.variants.length; ++i) {
+        for (let i = 1; i < inst.variants.length; ++i) {
             let current = calculate_code_len(inst.variants[i]);
 
-            if(current < best_len) {
+            if (current < best_len) {
                 best_len = current;
                 best = inst.variants[i];
             }
-            else if(current == best_len) {
+            else if (current == best_len) {
             }
         }
 
-        if(false) {
+        if (false) {
             inst.variants.forEach(v => {
-                if(v != best) {
+                if (v != best) {
                     console.log(v.opcode, inst.name, inst.operands.join(", "));
                 }
             })
@@ -305,12 +305,38 @@ function get_required_operands(operands) {
     let result = [];
 
     operands.forEach(op => {
-        if(op.implicit == false) {
+        if (op.implicit == false) {
             result.push(op);
         }
     })
 
     return result;
+}
+
+function get_operand_size(op) {
+    switch (op) {
+        case "reg8": return 8;
+        case "reg16": return 16;
+        case "reg32": return 32;
+        case "reg64": return 64;
+        case "i8": return 8;
+        case "i16": return 16;
+        case "i32": return 32;
+        case "i64": return 64;
+        case "moff8": return 8;
+        case "moff16": return 16;
+        case "moff32": return 32;
+        case "moff64": return 64;
+        case "al": return 8;
+        case "ax": return 16;
+        case "eax": return 32;
+        case "rax": return 64;
+        case "mem8": return 8;
+        case "mem16": return 16;
+        case "mem32": return 32;
+        case "mem64": return 64;
+        case "xmm": return 128;
+    }
 }
 
 // filter instruction x operand combinations that we can generate code for
@@ -326,13 +352,27 @@ function get_instructions() {
         const combinations = generate_operand_combinations(required_operands.map(op => op.data));
 
         combinations.forEach(combination => {
-            const operands = translate_operands(combination);
+            let name = inst.name;
+            let operands = translate_operands(combination);
 
             if (!verify_operands(operands)) {
                 return;
             }
 
-            const key = `${inst.name}:${operands.join(':')}`;
+            // special cases where we need to rename the instruction
+            if (name === "movd") {
+                for(let i = 0; i < operands.length; ++i) {
+                    if(get_operand_size(operands[i]) == 64) {
+                        name = "movq"
+                        break;
+                    }
+                }
+            }
+            else if(name === "pmovmskb") {
+                operands = [ 'reg32', 'xmm' ]; // force 
+            }
+
+            const key = `${name}:${operands.join(':')}`;
 
             if (instructions.has(key)) {
                 instructions.get(key).variants.push({
@@ -345,7 +385,7 @@ function get_instructions() {
             }
             else {
                 instructions.set(key, {
-                    name: inst.name,
+                    name: name,
                     operands: operands,
                     variants: [{
                         opcode: extract_opcode(inst, operands),
@@ -369,7 +409,7 @@ function get_instructions() {
 }
 
 function format_instruction_name(name) {
-    switch(name) {
+    switch (name) {
         case "xor": return "xor_";
         case "and": return "and_";
         case "or": return "or_";
@@ -386,7 +426,7 @@ module.exports = {
     execute,
     bit_width_to_name,
     delete_files_in_directory,
-    create_directory, 
+    create_directory,
 
     // instructions
     get_instructions,

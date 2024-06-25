@@ -278,17 +278,30 @@ const direction_map = new Map([
 	["pmovzxdq", "REVERSE"],
 	["pmovzxwd", "REVERSE"],
 	["pmovzxwq", "REVERSE"],
-    ["pblendvb", "REVERSE"]
-
+    ["pblendvb", "REVERSE"],
+    ["cvtsi2sd", "REVERSE"],
+    ["cvtsi2ss", "REVERSE"],
+    ["cvtss2si", "REVERSE"],
+    ["cvttsd2si", "REVERSE"],
+    ["cvttss2si", "REVERSE"],
+    ["cvtsd2si", "REVERSE"],
+    ["movmskpd", "REVERSE"],
+    ["movmskps", "REVERSE"],
 ]);
+
+
+
 
 // overrides to the direction map
 const direction_map_override = new Map([
     ["xchg:ax:reg16", "REVERSE"],
     ["xchg:eax:reg32", "REVERSE"],
-    ["xchg:rax:reg64", "REVERSE"]
+    ["xchg:rax:reg64", "REVERSE"],
+    ["movq:reg64:xmm", "NORMAL"],
+    ["movd:xmm:reg32", "REVERSE"],
+    ["pmovmskb:reg32:xmm", "REVERSE"],
+    
 ]);
-
 function pop_count(str) {
     for(let i = 0; i < str.length; ++i) {
         if(str[i] != 0) {
@@ -337,6 +350,7 @@ function get_operand_order(value) {
         "ax", "reg16",
         "eax", "reg32", 
         "rax", "reg64",
+        "xmm",
         "moff8", "moff16", "moff32", "moff64",
         "mem8", "mem16", "mem32", "mem64"
     ];
@@ -446,8 +460,14 @@ function main() {
     let current_index = 0;
     let last_destination = undefined;
 
+    let last_inst_name = "";
+
     // actual array
     instructions.forEach((inst, i) => {
+        if(last_inst_name != inst.name) {
+            current_index = i;
+        }
+
         dest_to_source.set(`${inst.name}:${inst.operands.join(":")}`, i);
 
         if(last_destination === inst.operands[0]) {
@@ -462,6 +482,7 @@ function main() {
 
         indices.set(`${inst.name},${translate_operands_to_baremetal(inst.operands).join(",")}`, current_index);
         last_destination = inst.operands[0];
+        last_inst_name = inst.name;
     });
 
     let instruction_db = [];

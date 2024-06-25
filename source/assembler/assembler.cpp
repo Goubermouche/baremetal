@@ -36,7 +36,19 @@ namespace baremetal {
 	}
 
 	auto is_extended_reg(operand op) -> bool {
-		return op.reg >= 8;
+		if(is_operand_reg(op.type)) {
+			return op.reg >= 8;
+		}
+
+		return false;
+	}
+
+	auto is_extended_xmm_reg(operand op) -> bool {
+		if(is_operand_xmm(op.type)) {
+			return op.reg >= 8;
+		}
+
+		return false;
 	}
 
 	auto is_extended_gp_reg(operand op) -> bool {
@@ -209,9 +221,9 @@ namespace baremetal {
 		auto [rx, destination] = find_rex_pair(operands);
 
 		// opcode - rex prefix
-		if(is_rexw || is_extended_gp_reg(op_1) || is_extended_gp_reg(op_2)) {
-			// extended reg | reg
-			if(is_extended_gp_reg(op_1) && is_operand_gp_reg(op_2.type)) {
+		if(is_rexw || is_extended_reg(op_1) || is_extended_reg(op_2)) {
+			// extended gp | register
+			if(is_extended_gp_reg(op_1) && is_operand_reg(op_2.type)) {
 				if(inst->get_direction()) {
 					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
 					m_bytes.push_back(rex_part);
@@ -221,7 +233,7 @@ namespace baremetal {
 					m_bytes.push_back(rex_part);
 				}
 			}
-			// reg | extended reg
+			// gp | extended gp
 			else if(is_extended_gp_reg(op_2) && is_operand_gp_reg(op_1.type)) {
 				if(inst->get_direction()) {
 					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
@@ -232,12 +244,68 @@ namespace baremetal {
 					m_bytes.push_back(rex_part);
 				}
 			}
+			// extended gp | mem
 			else if(is_operand_gp_reg(op_1.type) && is_operand_mem(op_2.type)) {
 				const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.memory.base.index, op_2.memory.index.index);
 				m_bytes.push_back(rex_part);
 			}
+			// mem | extended gp
 			else if(is_operand_mem(op_1.type) && is_operand_gp_reg(op_2.type)) {
 				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.memory.base.index, op_1.memory.index.index);
+				m_bytes.push_back(rex_part);
+			}
+			// extended xmm | xmm
+			else if(is_extended_xmm_reg(op_1) && is_operand_xmm(op_2.type)) {
+				if(inst->get_direction()) {
+					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+				else {
+					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+			}
+			// xmm | extended xmm
+			else if(is_extended_xmm_reg(op_2) && is_operand_xmm(op_1.type)) {
+				if(inst->get_direction()) {
+					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+				else {
+					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+			}
+			// extended xmm | gp
+			else if(is_extended_xmm_reg(op_1) && is_operand_gp_reg(op_2.type)) {
+				if(inst->get_direction()) {
+					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+				else {
+					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+			}
+			// gp | extended xmm
+			else if(is_extended_xmm_reg(op_2) && is_operand_gp_reg(op_1.type)) {
+				if(inst->get_direction()) {
+					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+				else {
+					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+			}
+			// extended xmm | imm
+			else if(is_extended_xmm_reg(op_1) && is_operand_imm(op_2.type)) {
+				const utility::byte rex_part = rex(is_rexw, 0, op_1.reg, 0);
+				m_bytes.push_back(rex_part);
+			}
+			// gp | xmm
+			else if(is_operand_gp_reg(op_1.type) && is_operand_xmm(op_2.type)) {
+				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
 				m_bytes.push_back(rex_part);
 			}
 			// reg x
@@ -283,29 +351,6 @@ namespace baremetal {
 			}
 			else if(memory.has_index &&  memory.index.index >= 8) {
 				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
-			}
-		}
-
-		if(is_operand_xmm(op_1.type) || is_operand_xmm(op_2.type)) {
-			if(is_extended_reg(op_1) && is_operand_xmm(op_2.type)) {
-				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
-					m_bytes.push_back(rex_part);
-				}
-				else {
-					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
-					m_bytes.push_back(rex_part);
-				}
-			}
-			else if(is_extended_reg(op_2) && is_operand_xmm(op_1.type)) {
-				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
-					m_bytes.push_back(rex_part);
-				}
-				else {
-					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
-					m_bytes.push_back(rex_part);
-				}
 			}
 		}
 
