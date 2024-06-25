@@ -303,6 +303,14 @@ namespace baremetal {
 				const utility::byte rex_part = rex(is_rexw, 0, op_1.reg, 0);
 				m_bytes.push_back(rex_part);
 			}
+			else if(is_extended_xmm_reg(op_1) && is_operand_mem(op_2.type)) {
+				const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.memory.base.index, op_2.memory.index.index);
+				m_bytes.push_back(rex_part);
+			}
+			else if(is_extended_xmm_reg(op_2) && is_operand_mem(op_1.type)) {
+				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.memory.base.index, op_1.memory.index.index);
+				m_bytes.push_back(rex_part);
+			}
 			// gp | xmm
 			else if(is_operand_gp_reg(op_1.type) && is_operand_xmm(op_2.type)) {
 				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
@@ -323,6 +331,11 @@ namespace baremetal {
 				const utility::byte rex_part = rex(is_rexw, 0, op_1.memory.base.index, op_1.memory.index.index);
 				m_bytes.push_back(rex_part);
 			}
+			// mem x
+			else if(is_operand_mem(op_2.type)) {
+				const utility::byte rex_part = rex(is_rexw, 0, op_2.memory.base.index, op_2.memory.index.index);
+				m_bytes.push_back(rex_part);
+				}
 			// x x
 			else {
 				const utility::byte rex_part = rex(is_rexw, rx, destination, 0);
