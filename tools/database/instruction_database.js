@@ -346,10 +346,10 @@ function is_immediate(op) {
 function get_operand_order(value) {
     const operand_order = [
         "i8", "i16", "i32", "i64",
-        "al", "reg8",
-        "ax", "reg16",
-        "eax", "reg32", 
-        "rax", "reg64",
+        "al", "cl", "reg8",
+        "ax", "dx", "reg16",
+        "eax", "ecx", "reg32", 
+        "rax", "rcx", "reg64",
         "xmm",
         "moff8", "moff16", "moff32", "moff64",
         "mem8", "mem16", "mem32", "mem64",

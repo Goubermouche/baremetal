@@ -52,7 +52,11 @@ namespace baremetal {
 			OP_AL,
 			OP_AX,
 			OP_EAX,
-			OP_RAX
+			OP_RAX,
+			OP_CL,
+			OP_DX,
+			OP_ECX,
+			OP_RCX,
 		};
 
 		type type;
@@ -146,6 +150,10 @@ namespace baremetal {
 			case operand::OP_AX:     return 16;
 			case operand::OP_EAX:    return 32;
 			case operand::OP_RAX:    return 64;
+			case operand::OP_CL:     return 8;
+			case operand::OP_DX:     return 16;
+			case operand::OP_ECX:    return 32;
+			case operand::OP_RCX:    return 64;
 			default:                 return 0;
 		}
 	}
@@ -180,6 +188,11 @@ namespace baremetal {
 			case operand::OP_AX:     return "ax";
 			case operand::OP_EAX:    return "eax";
 			case operand::OP_RAX:    return "rax";
+
+			case operand::OP_CL:     return "cl";
+			case operand::OP_DX:     return "dx";
+			case operand::OP_ECX:    return "ecx";
+			case operand::OP_RCX:    return "rcx";
 		}
 
 		return "unknown";

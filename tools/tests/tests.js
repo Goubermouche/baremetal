@@ -208,6 +208,10 @@ function generate_combinations(operands) {
         ax: [ new reg('ax') ],
         eax: [ new reg('eax') ],
         rax: [ new reg('rax') ],
+        dx: [ new reg('dx') ],
+        cl: [ new reg('cl') ],
+        rcx: [ new reg('rcx') ],
+        ecx: [ new reg('ecx') ],
         i8: [
             new imm('0'),
             new imm('127'),

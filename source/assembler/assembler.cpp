@@ -88,10 +88,10 @@ namespace baremetal {
 
 	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool {
 		switch(a) {
-			case operand::OP_AL:  return b == operand::OP_AL  || b == operand::OP_REG8;
-			case operand::OP_AX:  return b == operand::OP_AX  || b == operand::OP_REG16;
-			case operand::OP_EAX: return b == operand::OP_EAX || b == operand::OP_REG32;
-			case operand::OP_RAX: return b == operand::OP_RAX || b == operand::OP_REG64;
+			case operand::OP_AL:  return b == operand::OP_AL  || b == operand::OP_CL || b == operand::OP_REG8;
+			case operand::OP_AX:  return b == operand::OP_AX  || b == operand::OP_DX || b == operand::OP_REG16;
+			case operand::OP_EAX: return b == operand::OP_EAX || b == operand::OP_ECX || b == operand::OP_REG32;
+			case operand::OP_RAX: return b == operand::OP_RAX || b == operand::OP_RCX || b == operand::OP_REG64;
 			default: return a == b;
 		}
 	}
