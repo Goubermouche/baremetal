@@ -53,7 +53,8 @@ function create_directory(path) {
 }
 
 const opcode_override_map = new Map([
-    ["pblendvb:xmm:xmm", "0f3810"]
+    ["pblendvb:xmm:xmm", "0f3810"],
+    ["pblendvb:xmm:mem128", "0f3810"]
 ]);
 
 // utility functions related to instruction transformations
@@ -106,6 +107,7 @@ function translate_operands(op) {
             case "m16": return "mem16";
             case "m32": return "mem32";
             case "m64": return "mem64";
+            case "m128": return "mem128";
             default: return o;
         }
     });
@@ -200,12 +202,13 @@ function verify_operands(operands) {
        "moff8", "moff16", "moff32", "moff64", 
        "al", "ax", "eax", "rax",
         "mem8", "mem16", "mem32", "mem64",
-        "xmm"
+        "xmm",
+        "mem128"
     ];
 
     if (operands.length === 2) {
         if (operands.every(part => valid_operands.includes(part))) {
-            return true;
+            return operands.includes("mem128")
         }
         else {
             operands.forEach(op => {
@@ -335,6 +338,7 @@ function get_operand_size(op) {
         case "mem16": return 16;
         case "mem32": return 32;
         case "mem64": return 64;
+        case "mem128": return 128;
         case "xmm": return 128;
     }
 }

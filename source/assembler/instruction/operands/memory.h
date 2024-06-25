@@ -62,4 +62,5 @@ namespace baremetal {
 	MEM_DECL(16)
 	MEM_DECL(32)
 	MEM_DECL(64)
+	MEM_DECL(128)
 } // namespace baremetal

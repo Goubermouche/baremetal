@@ -352,7 +352,8 @@ function get_operand_order(value) {
         "rax", "reg64",
         "xmm",
         "moff8", "moff16", "moff32", "moff64",
-        "mem8", "mem16", "mem32", "mem64"
+        "mem8", "mem16", "mem32", "mem64",
+        "mem128"
     ];
 
     const index = operand_order.indexOf(value);
@@ -374,6 +375,7 @@ function translate_operands_to_baremetal(operands) {
             case "m16":    return "mem16"
             case "m32":    return "mem32"
             case "m64":    return "mem64"
+            case "m128":    return "mem128"
             default: return op;
         }
     });
@@ -386,6 +388,7 @@ function translate_operands_to_inst(operands) {
             case "m16": return "MEM16"
             case "m32": return "MEM32"
             case "m64": return "MEM64"
+            case "m128": return "MEM128"
             default: return op;
         }
     });

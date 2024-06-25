@@ -347,7 +347,6 @@ namespace baremetal {
 
 			// extended base
 			if(memory.has_base && memory.base.index >= 8) {
-				// const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
 				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
 			}
 			else if(memory.has_index &&  memory.index.index >= 8) {
@@ -359,7 +358,6 @@ namespace baremetal {
 
 			// extended base
 			if(memory.has_base && memory.base.index >= 8) {
-				// const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
 				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
 			}
 			else if(memory.has_index &&  memory.index.index >= 8) {

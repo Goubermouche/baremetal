@@ -17,6 +17,7 @@ namespace baremetal {
 		operand(mem16 m) : type(OP_MEM16), memory(m) {}
 		operand(mem32 m) : type(OP_MEM32), memory(m) {}
 		operand(mem64 m) : type(OP_MEM64), memory(m) {}
+		operand(mem128 m) : type(OP_MEM128), memory(m) {}
 
 		enum type : u8 {
 			OP_NONE,
@@ -33,6 +34,7 @@ namespace baremetal {
 			OP_MEM16,
 			OP_MEM32,
 			OP_MEM64,
+			OP_MEM128,
 
 			// immediates
 			OP_I8,
@@ -93,7 +95,8 @@ namespace baremetal {
 			case operand::OP_MEM8:
 			case operand::OP_MEM16:
 			case operand::OP_MEM32:
-			case operand::OP_MEM64:  return true;
+			case operand::OP_MEM64:
+			case operand::OP_MEM128:  return true;
 			default: return false;
 		}
 	}
@@ -130,6 +133,7 @@ namespace baremetal {
 			case operand::OP_MEM16:  return 16;
 			case operand::OP_MEM32:  return 32;
 			case operand::OP_MEM64:  return 64;
+			case operand::OP_MEM128: return 128;
 			case operand::OP_I8:     return 8;
 			case operand::OP_I16:    return 16;
 			case operand::OP_I32:    return 32;
@@ -160,6 +164,7 @@ namespace baremetal {
 			case operand::OP_MEM16:  return "m16";
 			case operand::OP_MEM32:  return "m32";
 			case operand::OP_MEM64:  return "m64";
+			case operand::OP_MEM128: return "m128";
 
 			case operand::OP_I8:     return "i8";
 			case operand::OP_I16:    return "i16";
