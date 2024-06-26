@@ -205,12 +205,13 @@ function verify_operands(operands) {
         "xmm",
         "mem128",
         "dx", "cl", "rcx", "ecx",
-        "bnd"
+        "bnd",
+        "mib"
     ];
 
     if (operands.length === 2) {
         if (operands.every(part => valid_operands.includes(part))) {
-            return operands.includes("bnd") ;
+            return operands.includes("mib") ;
         }
         else {
             operands.forEach(op => {
@@ -377,6 +378,12 @@ function get_instructions() {
             }
             else if(name === "pmovmskb") {
                 operands = [ 'reg32', 'xmm' ]; // force 
+            }
+            else if(name === "bndldx") {
+                operands = [ 'bnd', 'mem_address' ]; // force 
+            }
+            else if(name === "bndstx") {
+                operands = [ 'mem_address', 'bnd' ]; // force 
             }
             else if(operands.includes("bnd")) {
                 // remap bnd's with memory operands to just mems 
