@@ -139,6 +139,10 @@ function generate_operand_combinations(operands) {
 
 const extension_override_map = new Map([
     ["movq:reg64:mmx", "EXT_R | EXT_REXW"],
+    ["movmskpd:reg64:xmm", "EXT_R | EXT_REXW"],
+    ["movmskps:reg64:xmm", "EXT_R | EXT_REXW"],
+    ["movq:xmm:reg64", "EXT_R | EXT_REXW"],
+    ["movq:reg64:xmm", "EXT_R | EXT_REXW"],
     ["mov:sreg:reg64", "EXT_R"],
     ["mov:reg64:sreg", "EXT_R"],
 ]);
@@ -234,12 +238,15 @@ function verify_operands(operands) {
         "mib",
         "mem",
         "mmx",
-        "sreg", "dreg", "creg"
+        "sreg", "dreg", "creg",
+        "es:zdi",
+        "ds:zsi",
+        "rel8"
     ];
 
     if (operands.length === 2) {
         if (operands.every(part => valid_operands.includes(part))) {
-            return operands.includes("creg") ;
+            return true;
         }
         else {
             operands.forEach(op => {
@@ -404,6 +411,23 @@ function get_instructions() {
         combinations.forEach(combination => {
             let name = inst.name;
             let operands = translate_operands(combination);
+
+
+            // these are incorrectly encoded in asmDB, they don't have any operands we have to specify by hand
+            switch(name) {
+                case "insw":
+                case "insd":
+                case "insb":
+                case "outsw":
+                case "outsd":
+                case "outsb":
+                case "jecxz":  operands = []; break;
+                case "loop":
+                case "loope":
+                case "loopne": operands = ["rel8"]; break;
+                default: 
+            }
+
 
             if (!verify_operands(operands)) {
                 return;
