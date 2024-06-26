@@ -311,6 +311,26 @@ namespace baremetal {
 				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.memory.base.index, op_1.memory.index.index);
 				m_bytes.push_back(rex_part);
 			}
+			else if(is_extended_xmm_reg(op_2) && is_operand_reg(op_1.type)) {
+				if(inst->get_direction()) {
+					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+				else {
+					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+			}
+			else if(is_extended_xmm_reg(op_1) && is_operand_reg(op_2.type)) {
+				if(inst->get_direction()) {
+					const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+				else {
+					const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+			}
 			// gp | xmm
 			else if(is_operand_gp_reg(op_1.type) && is_operand_xmm(op_2.type)) {
 				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);

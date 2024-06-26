@@ -11,6 +11,7 @@ namespace baremetal {
 		REG_GP_64,
 		REG_XMM,
 		REG_BND,
+		REG_MMX,
 
 		// special registers
 		REG_RIP
@@ -39,6 +40,11 @@ namespace baremetal {
 		constexpr explicit xmm(u8 i) : reg(i, REG_XMM) {}
 	};
 
+	struct mmx : reg {
+		constexpr mmx() = default;
+		constexpr explicit mmx(u8 i) : reg(i, REG_MMX) {}
+	};
+
 	struct bnd : reg {
 		constexpr bnd() = default;
 		constexpr explicit bnd(u8 i) : reg(i, REG_BND) {}
@@ -48,6 +54,13 @@ namespace baremetal {
 		constexpr reg_void() = default;
 		constexpr explicit reg_void(u8 i, reg_type ty) : reg(i, ty) {}
 	};
+
+#define REGISTER_CLASS_MMX_DECL(name, index) \
+  struct name : mmx {                        \
+    constexpr name() : mmx(index) {}         \
+  };                                         \
+                                             \
+  static inline constexpr name name;
 
 #define REGISTER_CLASS_XMM_DECL(name, index) \
   struct name : xmm {                        \
@@ -104,7 +117,17 @@ namespace baremetal {
 	REGISTER_CLASS_BND_DECL(bnd2, 2);
 	REGISTER_CLASS_BND_DECL(bnd3, 3);
 
-	// 128 bit registers
+	// mmx registers
+	REGISTER_CLASS_MMX_DECL(mm0, 0);
+	REGISTER_CLASS_MMX_DECL(mm1, 1);
+	REGISTER_CLASS_MMX_DECL(mm2, 2);
+	REGISTER_CLASS_MMX_DECL(mm3, 3);
+	REGISTER_CLASS_MMX_DECL(mm4, 4);
+	REGISTER_CLASS_MMX_DECL(mm5, 5);
+	REGISTER_CLASS_MMX_DECL(mm6, 6);
+	REGISTER_CLASS_MMX_DECL(mm7, 7);
+
+	// xmm registers
 	REGISTER_CLASS_XMM_DECL(xmm0, 0);
 	REGISTER_CLASS_XMM_DECL(xmm1, 1);
 	REGISTER_CLASS_XMM_DECL(xmm2, 2);

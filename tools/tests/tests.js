@@ -178,6 +178,12 @@ function generate_combinations(operands) {
             new reg('xmm2'),
             new reg('xmm15')
         ],
+        mmx: [
+            new reg('mm0'),
+            new reg('mm1'),
+            new reg('mm2'),
+            new reg('mm7')
+        ],
         bnd: [
             new reg('bnd0'),
             new reg('bnd1'),

@@ -108,6 +108,7 @@ function translate_operands(op) {
             case "m32": return "mem32";
             case "m64": return "mem64";
             case "m128": return "mem128";
+            case "mm": return "mmx"
             default: return o;
         }
     });
@@ -136,9 +137,19 @@ function generate_operand_combinations(operands) {
     return result;
 }
 
+const extension_override_map = new Map([
+    ["movq:reg64:mmx", "EXT_R | EXT_REXW"]
+]);
+
 // extract a string which represent instruction extensions that we recognize
 function extract_extensions(inst) {
     let result = [];
+
+    const key = `${inst.name}:${inst.operands.join(":")}`;
+
+    if (extension_override_map.has(key)) {
+        return extension_override_map.get(key);
+    }
 
     if (inst.rm) {
         result.push("EXT_" + inst.rm.toUpperCase());
@@ -165,7 +176,8 @@ function extract_prefix(inst, operands) {
     const key = `${inst.name}:${operands.join(':')}`;
 
     const prefix_override_table = new Map([
-        ["lea:reg16:mem_address", "OPERAND_SIZE_OVERRIDE"]
+        ["lea:reg16:mem_address", "OPERAND_SIZE_OVERRIDE"],
+        ["pmovmskb:reg32:xmm", "OPERAND_SIZE_OVERRIDE"]
     ]);
 
     if(prefix_override_table.has(key)) {
@@ -217,12 +229,13 @@ function verify_operands(operands) {
         "dx", "cl", "rcx", "ecx",
         "bnd",
         "mib",
-        "mem"
+        "mem",
+        "mmx"
     ];
 
     if (operands.length === 2) {
         if (operands.every(part => valid_operands.includes(part))) {
-            return operands.includes("mem") ;
+            return operands.includes("mmx") ;
         }
         else {
             operands.forEach(op => {
@@ -356,8 +369,21 @@ function get_operand_size(op) {
         case "mem64": return 64;
         case "mem128": return 128;
         case "xmm": return 128;
+        case "mmx": return 64;
     }
 }
+
+const illegal_combinations = new Set([
+    "movq:mmx:reg64",
+    "movq:mmx:reg32",
+    "movq:xmm:mmx",
+    "movq:mmx:xmm",
+    "movq:mmx:mem32",
+    "movq:reg32:mmx",
+    "movq:mem32:mmx",
+    "pmuludq:mmx:mem64",
+    "psubq:mmx:mem64"
+]);
 
 // filter instruction x operand combinations that we can generate code for
 function get_instructions() {
@@ -422,6 +448,9 @@ function get_instructions() {
             }
 
             const key = `${name}:${operands.join(':')}`;
+            if(illegal_combinations.has(key)) {
+                return;
+            }
 
             if (instructions.has(key)) {
                 instructions.get(key).variants.push({

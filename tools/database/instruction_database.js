@@ -288,11 +288,18 @@ const direction_map = new Map([
     ["movmskpd", "REVERSE"],
     ["movmskps", "REVERSE"],
     ["bndmov", "REVERSE"],
-    ["bndmk", "REVERSE"]
+    ["bndmk", "REVERSE"],
+    ["cvtpd2pi", "REVERSE"],
+    ["cvtpi2pd", "REVERSE"],
+    ["cvtpi2ps", "REVERSE"],
+    ["cvtps2pi", "REVERSE"],
+    ["cvttpd2pi", "REVERSE"],
+    ["cvttps2pi", "REVERSE"],
+    ["maskmovq", "REVERSE"],
+    ["movdq2q", "REVERSE"],
+    ["movntq", "REVERSE"],
+    ["movq2dq", "REVERSE"],
 ]);
-
-
-
 
 // overrides to the direction map
 const direction_map_override = new Map([
@@ -305,8 +312,9 @@ const direction_map_override = new Map([
     ["bndcl:bnd:reg64", "REVERSE"],
     ["bndcn:bnd:reg64", "REVERSE"],
     ["bndcu:bnd:reg64", "REVERSE"],
-    
+    ["movq:reg64:mmx", "NORMAL"],
 ]);
+
 function pop_count(str) {
     for(let i = 0; i < str.length; ++i) {
         if(str[i] != 0) {
