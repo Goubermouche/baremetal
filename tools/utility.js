@@ -234,12 +234,12 @@ function verify_operands(operands) {
         "mib",
         "mem",
         "mmx",
-        "sreg", "dreg"
+        "sreg", "dreg", "creg"
     ];
 
     if (operands.length === 2) {
         if (operands.every(part => valid_operands.includes(part))) {
-            return operands.includes("dreg") ;
+            return operands.includes("creg") ;
         }
         else {
             operands.forEach(op => {

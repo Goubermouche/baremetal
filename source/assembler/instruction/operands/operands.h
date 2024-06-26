@@ -16,6 +16,7 @@ namespace baremetal {
 		operand(bnd r) : type(OP_BND), reg(r.index) {}
 		operand(sreg r) : type(OP_SREG), reg(r.index) {}
 		operand(dreg r) : type(OP_DREG), reg(r.index) {}
+		operand(creg r) : type(OP_CREG), reg(r.index) {}
 
 		operand(mem_address m) : type(OP_MEM_ADDRESS), memory(m) {}
 		operand(mem8  m) : type(OP_MEM8),  memory(m) {}
@@ -36,6 +37,7 @@ namespace baremetal {
 			OP_MMX, // xmm
 			OP_SREG, // segment registers
 			OP_DREG, // debug registers
+			OP_CREG, // control registers
 			OP_BND, // bound registers
 
 			// memory
@@ -79,6 +81,10 @@ namespace baremetal {
 		};
 	};
 
+	inline auto is_operand_creg(enum operand::type op) -> bool {
+		return op == operand::OP_CREG;
+	}
+
 	inline auto is_operand_mmx(enum operand::type op) -> bool {
 		return op == operand::OP_MMX;
 	}
@@ -101,6 +107,7 @@ namespace baremetal {
 			case operand::OP_MMX:
 			case operand::OP_SREG:
 			case operand::OP_DREG:
+			case operand::OP_CREG:
 			case operand::OP_BND:   return true;
 			default: return false;
 		}
@@ -160,6 +167,7 @@ namespace baremetal {
 			case operand::OP_BND:         return 64; // (?)
 			case operand::OP_SREG:        return 16;
 			case operand::OP_DREG:        return 64;
+			case operand::OP_CREG:        return 64;
 			case operand::OP_MEM_ADDRESS: return 0; // (?)
 			case operand::OP_MEM8:        return 8;
 			case operand::OP_MEM16:       return 16;
@@ -199,6 +207,7 @@ namespace baremetal {
 			case operand::OP_BND:         return "bnd";
 			case operand::OP_SREG:        return "sreg";
 			case operand::OP_DREG:        return "dreg";
+			case operand::OP_CREG:        return "creg";
 
 			case operand::OP_MEM_ADDRESS: return "mem_address";
 			case operand::OP_MEM8:        return "m8";

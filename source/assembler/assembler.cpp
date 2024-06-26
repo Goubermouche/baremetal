@@ -336,6 +336,16 @@ namespace baremetal {
 				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
 				m_bytes.push_back(rex_part);
 			}
+			// x | creg
+			else if(is_operand_creg(op_2.type)) {
+				const utility::byte rex_part = rex(is_rexw, op_2.reg, op_1.reg, 0);
+				m_bytes.push_back(rex_part);
+			}
+			// creg | x
+			else if(is_operand_creg(op_1.type)) {
+				const utility::byte rex_part = rex(is_rexw, op_1.reg, op_2.reg, 0);
+				m_bytes.push_back(rex_part);
+				}
 			// reg x
 			else if(is_operand_gp_reg(op_1.type)) {
 				const utility::byte rex_part = rex(is_rexw, 0, op_1.reg, 0);
@@ -555,7 +565,6 @@ namespace baremetal {
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, op_1, op_2);
 		emit_instruction_modrm(inst, op_1, op_2);
-		return;
 		emit_instruction_sib(op_1, op_2);
 
 		const u8 operand_count = inst->get_operand_count(); // this could be inferred ig

@@ -205,6 +205,13 @@ function generate_combinations(operands) {
             new reg('dr3'),
             new reg('dr7'),
         ],
+        creg: [
+            new reg('cr0'),
+            new reg('cr1'),
+            new reg('cr2'),
+            new reg('cr3'),
+            new reg('cr8'),
+        ],
         moff8: [
             new moff('0'),
             new moff('0xFF'),
