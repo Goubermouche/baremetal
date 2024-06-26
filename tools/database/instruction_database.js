@@ -288,6 +288,7 @@ const direction_map = new Map([
     ["movmskpd", "REVERSE"],
     ["movmskps", "REVERSE"],
     ["bndmov", "REVERSE"],
+    ["bndmk", "REVERSE"]
 ]);
 
 
@@ -506,7 +507,7 @@ function main() {
             `${utility.format_instruction_name(inst.name)}`, 
             `0x${inst.opcode}`,
             `${utility.extract_extensions(inst)}`, 
-            `${utility.extract_prefix(inst)}`,
+            `${utility.extract_prefix(inst, inst.operands)}`,
             `${special_index.toString()}`
         ]
 

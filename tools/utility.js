@@ -159,8 +159,18 @@ function extract_extensions(inst) {
     return result.join(" | ");
 }
 
-function extract_prefix(inst) {
+function extract_prefix(inst, operands) {
     let result = [];
+
+    const key = `${inst.name}:${operands.join(':')}`;
+
+    const prefix_override_table = new Map([
+        ["lea:reg16:mem_address", "OPERAND_SIZE_OVERRIDE"]
+    ]);
+
+    if(prefix_override_table.has(key)) {
+        return prefix_override_table.get(key)
+    }
 
     if (inst._67h || (inst.pp && inst.pp.includes("66"))) {
         result.push("OPERAND_SIZE_OVERRIDE");
@@ -206,12 +216,13 @@ function verify_operands(operands) {
         "mem128",
         "dx", "cl", "rcx", "ecx",
         "bnd",
-        "mib"
+        "mib",
+        "mem"
     ];
 
     if (operands.length === 2) {
         if (operands.every(part => valid_operands.includes(part))) {
-            return operands.includes("mib") ;
+            return operands.includes("mem") ;
         }
         else {
             operands.forEach(op => {
@@ -235,11 +246,11 @@ function pop_count(str) {
     return 0;
 }
 
-function calculate_code_len(inst) {
+function calculate_code_len(inst, operands) {
     let len = 0;
 
     // prefix
-    len += extract_prefix(inst) == "PREFIX_NONE" ? 0 : 1;
+    len += extract_prefix(inst, operands) == "PREFIX_NONE" ? 0 : 1;
 
     // opcode
     len += pop_count(inst.opcode);
@@ -261,10 +272,11 @@ function optimize_away_duplicates(instructions) {
 
     instructions.forEach(inst => {
         let best = inst.variants[0];
-        let best_len = calculate_code_len(best);
+        best.name = inst.name;
+        let best_len = calculate_code_len(best, inst.operands);
 
         for (let i = 1; i < inst.variants.length; ++i) {
-            let current = calculate_code_len(inst.variants[i]);
+            let current = calculate_code_len(inst.variants[i], inst.operands);
 
             if (current < best_len) {
                 best_len = current;
@@ -379,8 +391,21 @@ function get_instructions() {
             else if(name === "pmovmskb") {
                 operands = [ 'reg32', 'xmm' ]; // force 
             }
-            else if(name === "bndldx") {
-                operands = [ 'bnd', 'mem_address' ]; // force 
+            else if(operands.includes("mib")) {
+                operands = operands.map((op) => {
+                    switch(op) {
+                        case "mib": return "mem_address";
+                        default: return op;
+                    }
+                });
+            }
+            else if(operands.includes("mem")) {
+                operands = operands.map((op) => {
+                    switch(op) {
+                        case "mem": return "mem_address";
+                        default: return op;
+                    }
+                });
             }
             else if(name === "bndstx") {
                 operands = [ 'mem_address', 'bnd' ]; // force 

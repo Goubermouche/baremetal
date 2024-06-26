@@ -1,2 +1,6 @@
-INST(0, bndldx, bnd        , mem_address)
-INST(1, bndstx, mem_address, bnd        )
+INST(0, bndmk , bnd        , mem_address)
+INST(1, bndmov, bnd        , mem_address)
+INST(2, bndmov, mem_address, bnd        )
+INST(3, lea   , reg16      , mem_address)
+INST(4, lea   , reg32      , mem_address)
+INST(5, lea   , reg64      , mem_address)
