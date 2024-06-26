@@ -313,6 +313,11 @@ const direction_map_override = new Map([
     ["bndcn:bnd:reg64", "REVERSE"],
     ["bndcu:bnd:reg64", "REVERSE"],
     ["movq:reg64:mmx", "NORMAL"],
+    ["mov:sreg:reg16", "REVERSE"],
+    ["mov:sreg:reg32", "REVERSE"],
+    ["mov:sreg:reg64", "REVERSE"],
+    ["mov:sreg:mem16", "REVERSE"],
+    ["mov:sreg:mem64", "REVERSE"],
 ]);
 
 function pop_count(str) {

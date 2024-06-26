@@ -138,7 +138,9 @@ function generate_operand_combinations(operands) {
 }
 
 const extension_override_map = new Map([
-    ["movq:reg64:mmx", "EXT_R | EXT_REXW"]
+    ["movq:reg64:mmx", "EXT_R | EXT_REXW"],
+    ["mov:sreg:reg64", "EXT_R"],
+    ["mov:reg64:sreg", "EXT_R"],
 ]);
 
 // extract a string which represent instruction extensions that we recognize
@@ -177,7 +179,8 @@ function extract_prefix(inst, operands) {
 
     const prefix_override_table = new Map([
         ["lea:reg16:mem_address", "OPERAND_SIZE_OVERRIDE"],
-        ["pmovmskb:reg32:xmm", "OPERAND_SIZE_OVERRIDE"]
+        ["pmovmskb:reg32:xmm", "OPERAND_SIZE_OVERRIDE"],
+        ["mov:reg16:sreg", "OPERAND_SIZE_OVERRIDE"],
     ]);
 
     if(prefix_override_table.has(key)) {
@@ -230,12 +233,13 @@ function verify_operands(operands) {
         "bnd",
         "mib",
         "mem",
-        "mmx"
+        "mmx",
+        "sreg"
     ];
 
     if (operands.length === 2) {
         if (operands.every(part => valid_operands.includes(part))) {
-            return operands.includes("mmx") ;
+            return operands.includes("sreg") ;
         }
         else {
             operands.forEach(op => {

@@ -190,6 +190,14 @@ function generate_combinations(operands) {
             new reg('bnd2'),
             new reg('bnd3')
         ],
+        sreg: [
+            new reg('cs'),
+            new reg('ds'),
+            new reg('es'),
+            new reg('ss'),
+            new reg('fs'),
+            new reg('gs')
+        ],
         moff8: [
             new moff('0'),
             new moff('0xFF'),
