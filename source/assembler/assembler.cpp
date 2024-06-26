@@ -555,6 +555,7 @@ namespace baremetal {
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, op_1, op_2);
 		emit_instruction_modrm(inst, op_1, op_2);
+		return;
 		emit_instruction_sib(op_1, op_2);
 
 		const u8 operand_count = inst->get_operand_count(); // this could be inferred ig

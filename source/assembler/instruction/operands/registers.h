@@ -12,7 +12,8 @@ namespace baremetal {
 		REG_XMM,
 		REG_BND,
 		REG_MMX,
-		REG_SREG,
+		REG_SREG, // segment registers
+		REG_DREG, // debug registers
 
 		// special registers
 		REG_RIP
@@ -56,10 +57,22 @@ namespace baremetal {
 		constexpr explicit sreg(u8 i) : reg(i, REG_SREG) {}
 	};
 
+	struct dreg : reg {
+		constexpr dreg() = default;
+		constexpr explicit dreg(u8 i) : reg(i, REG_DREG) {}
+	};
+
 	struct reg_void : reg {
 		constexpr reg_void() = default;
 		constexpr explicit reg_void(u8 i, reg_type ty) : reg(i, ty) {}
 	};
+
+#define REGISTER_CLASS_DREG_DECL(name, index) \
+  struct name : dreg {                        \
+    constexpr name() : dreg(index) {}         \
+  };                                          \
+                                              \
+  static inline constexpr name name;
 
 #define REGISTER_CLASS_SREG_DECL(name, index) \
   struct name : sreg {                        \
@@ -123,6 +136,16 @@ namespace baremetal {
   };                                                \
                                                     \
   static inline constexpr name name;
+
+	// debug registers
+	REGISTER_CLASS_DREG_DECL(dr0, 0);
+	REGISTER_CLASS_DREG_DECL(dr1, 1);
+	REGISTER_CLASS_DREG_DECL(dr2, 2);
+	REGISTER_CLASS_DREG_DECL(dr3, 3);
+	REGISTER_CLASS_DREG_DECL(dr4, 4);
+	REGISTER_CLASS_DREG_DECL(dr5, 5);
+	REGISTER_CLASS_DREG_DECL(dr6, 6);
+	REGISTER_CLASS_DREG_DECL(dr7, 7);
 
 	// segment registers
 	REGISTER_CLASS_SREG_DECL(es, 0);

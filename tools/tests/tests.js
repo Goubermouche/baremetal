@@ -198,6 +198,13 @@ function generate_combinations(operands) {
             new reg('fs'),
             new reg('gs')
         ],
+        dreg: [
+            new reg('dr0'),
+            new reg('dr1'),
+            new reg('dr2'),
+            new reg('dr3'),
+            new reg('dr7'),
+        ],
         moff8: [
             new moff('0'),
             new moff('0xFF'),
