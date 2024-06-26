@@ -60,6 +60,8 @@ namespace baremetal {
 		}
 
 		constexpr auto is_rexw() const -> bool {
+			return extension & EXT_REXW;
+
 			if(extension& EXT_REXW) {
 				return true;
 			}

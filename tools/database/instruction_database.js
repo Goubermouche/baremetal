@@ -287,6 +287,7 @@ const direction_map = new Map([
     ["cvtsd2si", "REVERSE"],
     ["movmskpd", "REVERSE"],
     ["movmskps", "REVERSE"],
+    ["bndmov", "REVERSE"],
 ]);
 
 
@@ -300,6 +301,9 @@ const direction_map_override = new Map([
     ["movq:reg64:xmm", "NORMAL"],
     ["movd:xmm:reg32", "REVERSE"],
     ["pmovmskb:reg32:xmm", "REVERSE"],
+    ["bndcl:bnd:reg64", "REVERSE"],
+    ["bndcn:bnd:reg64", "REVERSE"],
+    ["bndcu:bnd:reg64", "REVERSE"],
     
 ]);
 function pop_count(str) {
@@ -353,7 +357,7 @@ function get_operand_order(value) {
         "xmm",
         "moff8", "moff16", "moff32", "moff64",
         "mem8", "mem16", "mem32", "mem64",
-        "mem128"
+        "mem128", "bnd"
     ];
 
     const index = operand_order.indexOf(value);

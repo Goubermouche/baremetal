@@ -110,13 +110,15 @@ class mem {
     }
 
     get_baremetal_string() {
+        const bw = this.bit_width === 0 ? "_address" : this.bit_width.toString();
+        
         switch (this.type) {
-            case mem_type.absolute: return `mem${this.bit_width}::absolute(${this.offset})`;
-            case mem_type.rip_relative: return `mem${this.bit_width}::ptr(${this.base}, ${this.offset})`;
-            case mem_type.register_indirect: return `mem${this.bit_width}::ptr(${this.base})`;
-            case mem_type.base_offset: return `mem${this.bit_width}::ptr(${this.base}, ${this.offset})`;
-            case mem_type.base_index_offset: return `mem${this.bit_width}::ptr(${this.base}, ${this.index}, SCALE_1, ${this.offset})`;
-            case mem_type.base_index_offset_scale: return `mem${this.bit_width}::ptr(${this.base}, ${this.index}, SCALE_${this.scale}, ${this.offset})`;
+            case mem_type.absolute: return `mem${bw}::absolute(${this.offset})`;
+            case mem_type.rip_relative: return `mem${bw}::ptr(${this.base}, ${this.offset})`;
+            case mem_type.register_indirect: return `mem${bw}::ptr(${this.base})`;
+            case mem_type.base_offset: return `mem${bw}::ptr(${this.base}, ${this.offset})`;
+            case mem_type.base_index_offset: return `mem${bw}::ptr(${this.base}, ${this.index}, SCALE_1, ${this.offset})`;
+            case mem_type.base_index_offset_scale: return `mem${bw}::ptr(${this.base}, ${this.index}, SCALE_${this.scale}, ${this.offset})`;
         }
     }
 
@@ -175,6 +177,12 @@ function generate_combinations(operands) {
             new reg('xmm1'),
             new reg('xmm2'),
             new reg('xmm15')
+        ],
+        bnd: [
+            new reg('bnd0'),
+            new reg('bnd1'),
+            new reg('bnd2'),
+            new reg('bnd3')
         ],
         moff8: [
             new moff('0'),
@@ -243,6 +251,29 @@ function generate_combinations(operands) {
             new imm('-32768'),
             new imm('127'),
             new imm('-128')
+        ],
+        mem_address: [
+            mem.absolute(0, '0x0'),
+            mem.absolute(0, '0xFF'),
+            mem.absolute(0, '0xFFFF'),
+            mem.rip_relative(0, '0x0'),
+            mem.rip_relative(0, '0xFF'),
+            mem.rip_relative(0, '0xFFFF'),
+            mem.register_indirect(0, 'rax'),
+            mem.base_offset(0, 'rax', '0x0'),
+            mem.base_offset(0, 'rax', '0xFFFF'),
+            mem.base_offset(0, 'r15', '0xFFFF'),
+            mem.base_index_offset(0, 'rax', 'rsi', '0xFFFF'),
+            mem.base_index_offset(0, 'rax', 'rsi', '0x0'),
+            mem.base_index_offset(0, 'r15', 'rsi', '0xFFFF'),
+            mem.base_index_offset(0, 'rax', 'r15', '0xFFFF'),
+            mem.base_index_offset_scale(0, 'rax', 'rsi', '0xFFFF', "2"),
+            mem.base_index_offset_scale(0, 'rax', 'rsi', '0xFFFF', "4"),
+            mem.base_index_offset_scale(0, 'rax', 'rsi', '0xFFFF', "8"),
+            mem.base_index_offset_scale(0, 'rsp', 'rax', '0xFFFF', "8"),
+            mem.base_index_offset_scale(0, 'r15', 'rax', '0xFFFF', "8"),
+            mem.base_index_offset_scale(0, 'rsp', 'r15', '0xFFFF', "8"),
+            mem.base_index_offset_scale(0, 'r14', 'r15', '0xFFFF', "8"),
         ],
         mem8: [
             mem.absolute(8, '0x0'),
@@ -577,7 +608,7 @@ utility.write_file(TEST_MAIN_PATH, main_text)
     }
 
     // accept the first parameter as the number of threads we want to use
-    const worker_count = process.argv[2] ? parseInt(process.argv[2]) : os.cpus().length - 1; 
+    const worker_count = 1; // process.argv[2] ? parseInt(process.argv[2]) : os.cpus().length - 1; 
     const chunk_size = Math.ceil(items.length / worker_count);
     let finished_count = 0;
     
@@ -641,6 +672,8 @@ utility.write_file(TEST_MAIN_PATH, main_text)
                 parentPort.postMessage({ id: "update" });
             }
         } catch(message) {
+            console.log(`${inst.name} ${inst.operands}`)
+
             parentPort.postMessage({ id: "message", data: {
                 text: message,
                 command: `worker error`

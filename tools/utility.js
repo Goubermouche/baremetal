@@ -204,12 +204,13 @@ function verify_operands(operands) {
         "mem8", "mem16", "mem32", "mem64",
         "xmm",
         "mem128",
-        "dx", "cl", "rcx", "ecx"
+        "dx", "cl", "rcx", "ecx",
+        "bnd"
     ];
 
     if (operands.length === 2) {
         if (operands.every(part => valid_operands.includes(part))) {
-            return operands.includes("dx") || operands.includes("cl") || operands.includes("rcx") || operands.includes("ecx");
+            return operands.includes("bnd") ;
         }
         else {
             operands.forEach(op => {
@@ -296,6 +297,7 @@ function optimize_away_duplicates(instructions) {
 
 function bit_width_to_name(bit_width) {
     switch (bit_width) {
+        case 0: return "";
         case 8: return "byte";
         case 16: return "word";
         case 32: return "dword";
@@ -375,6 +377,16 @@ function get_instructions() {
             }
             else if(name === "pmovmskb") {
                 operands = [ 'reg32', 'xmm' ]; // force 
+            }
+            else if(operands.includes("bnd")) {
+                // remap bnd's with memory operands to just mems 
+                operands = operands.map((op) => {
+                    switch(op) {
+                        case "mem32": return "mem_address";
+                        case "mem64": return "mem_address";
+                        default: return op;
+                    }
+                });
             }
 
             const key = `${name}:${operands.join(':')}`;
