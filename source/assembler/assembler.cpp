@@ -61,8 +61,8 @@ namespace baremetal {
 		u32 current_index = index; // index of the first variant
 
 		// locate all legal variants of our instruction
-		while(is_operand_of_same_kind(instruction_db[index].op1, instruction_db[current_index].op1)) {
-			if(is_operand_imm(instruction_db[current_index].op2)) {
+		while(is_operand_of_same_kind(instruction_db[index].operands[0], instruction_db[current_index].operands[0])) {
+			if(is_operand_imm(instruction_db[current_index].operands[1])) {
 				legal_variants.push_back(&instruction_db[current_index++]);
 			}
 			else {
@@ -72,7 +72,7 @@ namespace baremetal {
 
 		// sort by the smallest source operands
 		std::ranges::sort(legal_variants, [](const instruction_info* a, const instruction_info* b) {
-			return get_operand_bit_width(a->op2) < get_operand_bit_width(b->op2);
+			return get_operand_bit_width(a->operands[1]) < get_operand_bit_width(b->operands[1]);
 		});
 
 		if(legal_variants.get_size() == 1) {
@@ -83,8 +83,8 @@ namespace baremetal {
 		// multiple legal variants, determine the best one (since our data is sorted from smallest
 		// source operands to largest, we can exit as soon as we get a valid match)
 		for(const instruction_info* i : legal_variants) {
-			const u8 current_source_bits = get_operand_bit_width(i->op2);
-			const u8 current_dest_bits = get_operand_bit_width(i->op1);
+			const u8 current_source_bits = get_operand_bit_width(i->operands[1]);
+			const u8 current_dest_bits = get_operand_bit_width(i->operands[0]);
 
 			// check if there is a possibility of sign extending the immediate
 			if(current_source_bits < current_dest_bits) {
@@ -344,6 +344,61 @@ namespace baremetal {
 		}
 	}
 
+	void assembler::emit_operands(const operand* operands, u8 operand_count, const instruction_info* inst) {
+		for(u8 i = 0; i < operand_count; ++i) {
+			if(is_operand_imm(operands[i].type)) {
+				// immediate operand
+				emit_data_operand(operands[i].immediate.value, get_operand_bit_width(inst->operands[i]));
+			}
+			else if(is_operand_moff(operands[i].type)) {
+				// memory offset operand (always 64-bit)
+				emit_data_operand(operands[i].memory_offset.value, 64);
+			}
+			else if(is_operand_mem(operands[i].type)) {
+				// memory displacement operand
+				const mem memory = operands[i].memory;
+				imm displacement = memory.displacement;
+
+				if(displacement.value == 0) {
+					if(memory.has_base && memory.base.type != REG_RIP) {
+						continue; // skip 0 displacements
+					}
+				}
+
+				// determine the displacement size
+				enum operand::type ty;
+
+				if(memory.has_base == false) {
+					ty = operand::type::OP_I32;
+				}
+				else if(memory.base.type == REG_RIP) {
+					// calculate relative (rip) offset
+					ty = operand::type::OP_I32;
+
+					// beginning of the instruction
+					i32 new_displacement = static_cast<i32>(displacement.value - (get_current_inst_size() + 4));
+
+					if(i + 1 != operand_count) {
+						// if we have another operand after the current one, calculate it's size
+						if(is_operand_imm(inst->operands[i + 1])) { // registers are already encoded
+							new_displacement -= get_operand_bit_width(inst->operands[i + 1]) / 8;
+						}
+					}
+
+					displacement = imm(new_displacement);
+				}
+				else if(displacement.min_bits <= 8) {
+					ty = operand::type::OP_I8;
+				}
+				else {
+					ty = operand::type::OP_I32;
+				}
+
+				emit_data_operand(displacement.value, get_operand_bit_width(ty));
+			}
+		}
+	}
+
 	void assembler::emit_instruction_mod_rm(const instruction_info* inst, const operand& op_1, const operand& op_2) {
 		const operand operands[2] = { op_1, op_2 };
 		auto [rx, destination] = find_rex_pair(operands);
@@ -486,63 +541,11 @@ namespace baremetal {
 		emit_instruction_mod_rm(inst, op_1, op_2);
 		emit_instruction_sib(op_1, op_2);
 
-		const enum operand::type operand_types[2] = { inst->op1, inst->op2 }; // TODO: this should be stored in the inst itself
 		const u8 operand_count = inst->get_operand_count(); // TODO: infer this
 		const operand operands[2] = { op_1, op_2 };
 
 		// emit immediate, displacement, and memory offset operands
-		for(u8 i = 0; i < operand_count; ++i) {
-			if(is_operand_imm(operands[i].type)) {
-				// immediate operand
-				emit_data_operand(operands[i].immediate.value, get_operand_bit_width(operand_types[i]));
-			}
-			else if(is_operand_moff(operands[i].type)) {
-				// memory offset operand (always 64-bit)
-				emit_data_operand(operands[i].memory_offset.value, 64);
-			}
-			else if(is_operand_mem(operands[i].type)) {
-				// memory displacement operand
-				const mem memory = operands[i].memory;
-				imm displacement = memory.displacement;
-
-				if(displacement.value == 0) {
-					if(memory.has_base && memory.base.type != REG_RIP) {
-						continue; // skip 0 displacements
-					}
-				}
-
-				// determine the displacement size
-				enum operand::type ty;
-
-				if(memory.has_base == false) {
-					ty = operand::type::OP_I32;
-				}
-				else if(memory.base.type == REG_RIP) {
-					// calculate relative (rip) offset
-					ty = operand::type::OP_I32;
-
-					// beginning of the instruction
-					i32 new_displacement = static_cast<i32>(displacement.value - (get_current_inst_size() + 4));
-
-					if(i + 1 != operand_count) {
-						// if we have another operand after the current one, calculate it's size
-						if(is_operand_imm(operand_types[i + 1])) { // registers are already encoded
-							new_displacement -= get_operand_bit_width(operand_types[i + 1]) / 8;
-						}
-					}
-
-					displacement = imm(new_displacement);
-				}
-				else if(displacement.min_bits <= 8) {
-					ty = operand::type::OP_I8;
-				}
-				else {
-					ty = operand::type::OP_I32;
-				}
-
-				emit_data_operand(displacement.value, get_operand_bit_width(ty));
-			}
-		}
+		emit_operands(operands, operand_count, inst);
 	}
 
 	auto assembler::has_sib_byte(const operand& op_1, const operand& op_2) -> bool {

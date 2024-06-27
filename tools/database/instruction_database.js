@@ -6,9 +6,9 @@ const DEBUG_PRINT_DISCARDED_INSTRUCTIONS = false;
 
 const direction_map = new Map([
     ["adc", "NORMAL"],
-    ["adcx", "ENCODED"],
+    ["adcx", "REVERSE"],
     ["add", "NORMAL"],
-    ["adox", "ENCODED"],
+    ["adox", "REVERSE"],
     ["and", "NORMAL"],
     ["bsf", "REVERSE"],
     ["bsr", "REVERSE"],
@@ -528,10 +528,6 @@ function main() {
 
         let operands = translate_operands_to_inst(inst.operands);
 
-        operands.forEach((op, i) => {
-            row.push(op.toUpperCase());
-        });
-
         // directions
         const key = `${inst.name}:${inst.operands.join(":")}`;
 
@@ -546,6 +542,10 @@ function main() {
                 row.push("NORMAL")
             }
         }
+        
+        operands.forEach((op, i) => {
+            row.push(op.toUpperCase());
+        });
 
         instruction_db.push(row);
     })

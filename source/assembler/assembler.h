@@ -5,14 +5,40 @@ namespace baremetal {
 	struct assembler {
 		assembler();
 
-#define INST(index, name, op1, op2)                      \
+// function generators
+#define INST_0(index, name)                              \
+  void name() {                                          \
+    emit_instruction(index, operand(), operand());       \
+  }
+
+#define INST_1(index, name, op1)                         \
+  void name(struct op1 destination) {                    \
+    emit_instruction(index, destination, operand());     \
+  }
+
+#define INST_2(index, name, op1, op2)                    \
   void name(struct op1 destination, struct op2 source) { \
     emit_instruction(index, destination, source);        \
   }
 
- #include "assembler/instruction/databases/assembler_database.inc"
+// select which INST_X to call based off of the variable argument count (0-2)
+#define INST_SELECT(count) CONCATENATE(INST_, count)
+#define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
+#define INST(index, name, ...) INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), index, name, __VA_ARGS__)
+
+// assembler database
+#include "assembler/instruction/databases/assembler_database.inc"
+
+#undef INST_0
+#undef INST_1
+#undef INST_2
+#undef INST_3
+
+#undef INST_SELECT
+#undef INST_HELPER
 
 #undef INST
+
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<utility::byte>&;
 
 		void clear();
@@ -25,6 +51,7 @@ namespace baremetal {
 		void emit_instruction_sib(const operand& op_1, const operand& op_2);
 		void emit_instruction_prefix(const instruction_info* inst);
 
+		void emit_operands(const operand* operands, u8 operand_count, const instruction_info* inst);
 		void emit_data_operand(u64 data, u8 bit_width);
 		void emit_opcode_mem(const mem& memory);
 
