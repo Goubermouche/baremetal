@@ -155,6 +155,30 @@ namespace baremetal {
 		}
 	}
 
+	inline auto is_extended_reg(const operand& op) -> bool {
+		if(is_operand_reg(op.type)) {
+			return op.reg >= 8;
+		}
+
+		return false;
+	}
+
+	inline auto is_extended_xmm_reg(const operand& op) -> bool {
+		if(is_operand_xmm(op.type)) {
+			return op.reg >= 8;
+		}
+
+		return false;
+	}
+
+	inline auto is_extended_gp_reg(const operand& op) -> bool {
+		if(is_operand_gp_reg(op.type)) {
+			return op.reg >= 8;
+		}
+
+		return false;
+	}
+
 	inline auto get_operand_bit_width(enum operand::type op) -> u8 {
 		switch(op) {
 			case operand::OP_NONE:        return 0;

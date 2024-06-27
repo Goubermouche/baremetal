@@ -17,19 +17,21 @@ namespace baremetal {
 
 		void clear();
 	private:
-		static auto find_rex_pair(const operand* operands) -> std::pair<u8, u8>;
+		void emit_instruction(u32 index, const operand& op_1, const operand& op_2);
 
-		static auto get_instruction_info(u32 index, operand op_1, operand op_2) -> const instruction_info*;
-
+		// opcode
+		void emit_instruction_opcode(const instruction_info* inst, const operand& op_1, const operand& op_2);
+		void emit_instruction_mod_rm(const instruction_info* inst, const operand& op_1, const operand& op_2);
+		void emit_instruction_sib(const operand& op_1, const operand& op_2);
 		void emit_instruction_prefix(const instruction_info* inst);
-		void emit_instruction_opcode(const instruction_info* inst, operand op_1, operand op_2);
-		void emit_instruction_modrm(const instruction_info* inst, operand op_1, operand op_2);
-		void emit_instruction_sib(operand op_1, operand op_2);
-		void emit_immediate_operand(u64 imm, enum operand::type type);
 
-		void emit_instruction(u32 index, operand op_1, operand op_2);
+		void emit_data_operand(u64 data, u8 bit_width);
+		void emit_opcode_mem(const mem& memory);
 
-		static auto has_sib_byte(operand op_1, operand op_2) -> bool;
+		static auto find_rex_pair(const operand* operands) -> std::pair<u8, u8>;
+		static auto find_instruction_info(u32 index, const operand& op_1, const operand& op_2) -> const instruction_info*;
+
+		static auto has_sib_byte(const operand& op_1, const operand& op_2) -> bool;
 
 		enum mod_mode {
 			INDIRECT,
@@ -70,4 +72,16 @@ namespace baremetal {
 		utility::dynamic_array<utility::byte> m_bytes;
 		u64 m_current_inst_begin;
 	};
+
+	/**
+	 * \brief Checks if \b value can be represented by \b src sign-extended bits in \b dst bits.
+	 * \param value Immediate value to check
+	 * \param original Bit width of the value we're checking
+	 * \param dst Destination bit width
+	 * \param src Source bit width
+	 * \return True if the value is sign-representable in the specified environment, false otherwise.
+	 */
+	auto signed_extend_representable(u64 value, u8 original, u8 dst, u8 src) -> bool;
+
+	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool;
 } // namespace baremetal

@@ -1,6 +1,5 @@
 #include "assembler.h"
 
-#include <algorithm>
 
 #include "instruction/operands/operands.h"
 #include <utility/assert.h>
@@ -35,149 +34,79 @@ namespace baremetal {
 		return result;
 	}
 
-	auto is_extended_reg(operand op) -> bool {
-		if(is_operand_reg(op.type)) {
-			return op.reg >= 8;
+	auto assembler::find_instruction_info(u32 index, const operand& op_1, const operand& op_2)  -> const instruction_info* {
+		// instruction optimizations are only applicable if the last operand is an immediate
+		if(is_operand_imm(op_2.type) == false) {
+			return &instruction_db[index];
 		}
 
-		return false;
-	}
+		// store a list of legal variants, from which we'll pick the best one
+		utility::dynamic_array<const instruction_info*> legal_variants = {};
+		const u8 source_bit_width = get_operand_bit_width(op_2.type);
+		const imm& source = op_2.immediate;
 
-	auto is_extended_xmm_reg(operand op) -> bool {
-		if(is_operand_xmm(op.type)) {
-			return op.reg >= 8;
-		}
-
-		return false;
-	}
-
-	auto is_extended_gp_reg(operand op) -> bool {
-		if(is_operand_gp_reg(op.type)) {
-			return op.reg >= 8;
-		}
-
-		return false;
-	}
-
-	u64 sign_extend(u64 x, u8 x_bits, u8 n) {
-		const bool sign = (x >> (x_bits - 1)) & 1;
-
-		// utility::console::print("sign {}\n", (int)sign);
-
-		if(sign) {
-			x |= ((std::numeric_limits<u64>::max()) << x_bits) >> n;
-		}
-
-		return x;
-	}
-
-	static auto signed_extend_representable(u64 value, u8 original, u8 dst, u8 src) -> bool {
-		const uint64_t mask = (1ULL << src) - 1;
-		const u64 shrunk = value & mask;
-
-		const u64 extended_source   = sign_extend(shrunk, src, dst);
-		const u64 extended_original = sign_extend(value, original, dst);
-
-		// utility::console::print("v   {}\n", value);
-		// utility::console::print("s   {}\n", shrunk);
-		// utility::console::print("exs {}\n", extended_source);
-		// utility::console::print("exo {} {}\n", extended_original, original);
-
-		return extended_source == extended_original;
-	}
-
-	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool {
-		switch(a) {
-			case operand::OP_AL:  return b == operand::OP_AL  || b == operand::OP_CL || b == operand::OP_REG8;
-			case operand::OP_AX:  return b == operand::OP_AX  || b == operand::OP_DX || b == operand::OP_REG16;
-			case operand::OP_EAX: return b == operand::OP_EAX || b == operand::OP_ECX || b == operand::OP_REG32;
-			case operand::OP_RAX: return b == operand::OP_RAX || b == operand::OP_RCX || b == operand::OP_REG64;
-			default: return a == b;
-		}
-	}
-
-	auto assembler::get_instruction_info(u32 index, operand op_1, operand op_2)  -> const instruction_info* {
-		const instruction_info* info = nullptr;
-
-		// utility::console::print("index: {}\n", index);
-
-		if(is_operand_imm(op_2.type)) {
-			utility::dynamic_array<const instruction_info*> possible_infos = {};
-
-			const imm& immediate = op_2.immediate;
-			const u8 bits = get_operand_bit_width(op_2.type);
-
-			// if we have an optimization index
-			if(instruction_db[index].context_index != std::numeric_limits<u16>::max()) {
-				// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
-				// less we can look for a smaller destination
-				if(op_1.type == operand::OP_REG64 && immediate.min_bits <= 32) {
-					// verify if it's safe to zero extend the operand (since we're implicitly going
-					// from 32 to 64 bits) we can't zero extend 
-					if(immediate.sign == false) {
-						index = instruction_db[index].context_index;
-					}
+		// some instructions have a special optimization index, check if we have it
+		if(instruction_db[index].context_index != std::numeric_limits<u16>::max()) {
+			// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
+			// less we can look for a smaller destination
+			if(op_1.type == operand::OP_REG64 && source.min_bits <= 32) {
+				// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64
+				// bits) we can't zero extend 
+				if(source.sign == false) {
+					index = instruction_db[index].context_index;
 				}
 			}
+		}
 
-			// utility::console::print("index: {}\n", index);
+		u32 current_index = index; // index of the first variant
 
-			u32 current_index = index;
-			// instruction_db[index].print();
-
-			while(is_operand_of_same_kind(instruction_db[index].op1, instruction_db[current_index].op1)) {
-				if(is_operand_imm(instruction_db[current_index].op2)) {
-					possible_infos.push_back(&instruction_db[current_index++]);
-				}
-				else {
-					break;
-				}
-			}
-
-			// for(const auto& inst : possible_infos) {
-			// 	inst->print();
-			// }
-
-			// reorder to smallest source operands
-			std::sort(possible_infos.begin(), possible_infos.end(), [](const instruction_info* a, const instruction_info* b) {
-				return get_operand_bit_width(a->op2) < get_operand_bit_width(b->op2);
-			});
-
-			if(possible_infos.get_size() == 1) {
-				info = possible_infos[0];
+		// locate all legal variants of our instruction
+		while(is_operand_of_same_kind(instruction_db[index].op1, instruction_db[current_index].op1)) {
+			if(is_operand_imm(instruction_db[current_index].op2)) {
+				legal_variants.push_back(&instruction_db[current_index++]);
 			}
 			else {
-				for(const instruction_info* i : possible_infos) {
-					const u8 src_bits = get_operand_bit_width(i->op2);
-					const u8 dst_bits = get_operand_bit_width(i->op1);
-
-					// sign extension
-					if(src_bits < dst_bits) {
-						// assume we're sign extending
-						if(signed_extend_representable(immediate.value, bits, dst_bits, src_bits)) {
-							info = i;
-							break;
-						}
-					}
-
-					// value is representable with a smaller imm
-					if(src_bits >= immediate.min_bits) {
-						info = i;
-						break;
-					}
-				}
+				break;
 			}
 		}
-		else {
-			info = &instruction_db[index];
+
+		// sort by the smallest source operands
+		std::ranges::sort(legal_variants, [](const instruction_info* a, const instruction_info* b) {
+			return get_operand_bit_width(a->op2) < get_operand_bit_width(b->op2);
+		});
+
+		if(legal_variants.get_size() == 1) {
+			// one legal variant, use that
+			return legal_variants[0];
 		}
 
-		return info;
+		// multiple legal variants, determine the best one (since our data is sorted from smallest
+		// source operands to largest, we can exit as soon as we get a valid match)
+		for(const instruction_info* i : legal_variants) {
+			const u8 current_source_bits = get_operand_bit_width(i->op2);
+			const u8 current_dest_bits = get_operand_bit_width(i->op1);
+
+			// check if there is a possibility of sign extending the immediate
+			if(current_source_bits < current_dest_bits) {
+				// assume we're sign extending
+				if(signed_extend_representable(source.value, source_bit_width, current_dest_bits, current_source_bits)) {
+					return i;
+				}
+			}
+
+			// check if the source operand is representable with a smaller immediate
+			if(current_source_bits >= source.min_bits) {
+				return i;
+			}
+		}
+
+		ASSERT(false, "invalid instruction match");
+		return nullptr;
 	}
 
 	void assembler::emit_instruction_prefix(const instruction_info* inst) {
 		if(!inst->has_prefix()) {
-			return;
+			return; // no prefix
 		}
 
 		const u8 prefix = inst->prefix;
@@ -202,7 +131,7 @@ namespace baremetal {
 			case GS_SEGMENT:       m_bytes.push_back(0x65); break;
 			case BRANCH_NOT_TAKEN: m_bytes.push_back(0x2E); break;
 			case BRANCH_TAKEN:     m_bytes.push_back(0x3E); break;
-			default: break;
+			default:                                        break;
 		}
 
 		// group 1
@@ -210,14 +139,13 @@ namespace baremetal {
 			case LOCK:  m_bytes.push_back(0xF0); break;
 			case REPNE: m_bytes.push_back(0xF2); break;
 			case REP:   m_bytes.push_back(0xF3); break;
-			default: break;
+			default:                             break;
 		}
 	}
 
-	void assembler::emit_instruction_opcode(const instruction_info* inst, operand op_1, operand op_2) {
+	void assembler::emit_instruction_opcode(const instruction_info* inst, const operand& op_1, const operand& op_2) {
 		const bool is_rexw = inst->is_rexw();
 		const operand operands[2] = { op_1, op_2 };
-
 		auto [rx, destination] = find_rex_pair(operands);
 
 		// opcode - rex prefix
@@ -373,29 +301,13 @@ namespace baremetal {
 			}
 		}
 		else if(is_operand_mem(op_1.type)) {
-			const auto memory = op_1.memory;
-
-			// extended base
-			if(memory.has_base && memory.base.index >= 8) {
-				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
-			}
-			else if(memory.has_index &&  memory.index.index >= 8) {
-				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
-			}
+			emit_opcode_mem(op_1.memory);
 		}
 		else if(is_operand_mem(op_2.type)) {
-			const auto memory = op_2.memory;
-
-			// extended base
-			if(memory.has_base && memory.base.index >= 8) {
-				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
-			}
-			else if(memory.has_index &&  memory.index.index >= 8) {
-				m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
-			}
+			emit_opcode_mem(op_2.memory);
 		}
 
-		// opcode id
+		// emit the opcode
 		u64 opcode = inst->opcode;
 
 		if(inst->is_opcode_ext()) {
@@ -408,6 +320,7 @@ namespace baremetal {
 			}
 		}
 
+		// append opcode bytes
 		for(u8 i = 4; i-- > 1;) {
 			const u8 byte = (opcode >> (i * 8)) & 0xFF;
 
@@ -417,11 +330,21 @@ namespace baremetal {
 		}
 
 		// always push the last byte
-		const u8 byte = (opcode >> (0 * 8)) & 0xFF;
+		const u8 byte = opcode & 0xFF;
 		m_bytes.push_back(byte);
 	}
 
-	void assembler::emit_instruction_modrm(const instruction_info* inst, operand op_1, operand op_2) {
+	void assembler::emit_opcode_mem(const mem& memory) {
+		// extended base
+		if(memory.has_base && memory.base.index >= 8) {
+			m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
+		}
+		else if(memory.has_index && memory.index.index >= 8) {
+			m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
+		}
+	}
+
+	void assembler::emit_instruction_mod_rm(const instruction_info* inst, const operand& op_1, const operand& op_2) {
 		const operand operands[2] = { op_1, op_2 };
 		auto [rx, destination] = find_rex_pair(operands);
 
@@ -513,7 +436,6 @@ namespace baremetal {
 				}
 			}
 			else {
-				// extract the direction bit
 				if(inst->get_direction()) {
 					mod_rm_part = direct(rx, destination);
 				}
@@ -525,12 +447,11 @@ namespace baremetal {
 			m_bytes.push_back(mod_rm_part);
 		}
 		else if(inst->is_ext()) {
-			const utility::byte mod_rm_part = direct(inst->get_ext(), destination);
-			m_bytes.push_back(mod_rm_part);
+			m_bytes.push_back(direct(inst->get_ext(), destination));
 		}
 	}
 
-	void assembler::emit_instruction_sib(operand op_1, operand op_2) {
+	void assembler::emit_instruction_sib(const operand& op_1, const operand& op_2) {
 		mem memory;
 
 		if(is_operand_mem(op_1.type)) {
@@ -543,49 +464,46 @@ namespace baremetal {
 			return; // no sib byte
 		}
 
-		if(memory.has_index) {
-			m_bytes.push_back(sib(memory.scale, memory.index.index, memory.base.index));
-		}
-		else if(is_stack_pointer(reg(memory.base))) {
-			m_bytes.push_back(sib(memory.scale, memory.has_index ? memory.index.index : 0b100, memory.base.index));
-		}
-		else if(memory.has_base == false) {
-			// no scale, no index, displacement-only mode
-			m_bytes.push_back(sib(0b00, 0b100, 0b101));
+		const u8 scale = memory.has_base  ? memory.scale       : 0b00;
+		const u8 index = memory.has_index ? memory.index.index : 0b100;
+		const u8 base   = memory.has_base ? memory.base.index  : 0b101;
+
+		if(memory.has_index || is_stack_pointer(reg(memory.base)) || memory.has_base == false) {
+			m_bytes.push_back(sib(scale, index, base));
 		}
 	}
 
-	void assembler::emit_instruction(u32 index, operand op_1, operand op_2) {
-		instruction_begin();
+	void assembler::emit_instruction(u32 index, const operand& op_1, const operand& op_2) {
+		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
 
-		// utility::console::print("original operands {} {}\n", operand_type_to_string(op_1.type), operand_type_to_string(op_2.type));
-		const instruction_info* inst = get_instruction_info(index, op_1, op_2);
-		// inst->print();
+		// locate the actual instruction we want to assemble (this doesn't have to match the specified
+		// index, since we can apply optimizations which focus on stuff like shorter encodings)
+		const instruction_info* inst = find_instruction_info(index, op_1, op_2);
 
+		// emit instruction parts
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, op_1, op_2);
-		emit_instruction_modrm(inst, op_1, op_2);
+		emit_instruction_mod_rm(inst, op_1, op_2);
 		emit_instruction_sib(op_1, op_2);
 
-		const u8 operand_count = inst->get_operand_count(); // this could be inferred ig
-
-		ASSERT(operand_count == 2, "only instructions with 2 operands are supported");
+		const enum operand::type operand_types[2] = { inst->op1, inst->op2 }; // TODO: this should be stored in the inst itself
+		const u8 operand_count = inst->get_operand_count(); // TODO: infer this
 		const operand operands[2] = { op_1, op_2 };
-		const enum operand::type operands_actual[2] = { inst->op1, inst->op2 };
 
-		// integral values
+		// emit immediate, displacement, and memory offset operands
 		for(u8 i = 0; i < operand_count; ++i) {
 			if(is_operand_imm(operands[i].type)) {
-				// imm operands
-				emit_immediate_operand(operands[i].immediate.value, operands_actual[i]);
+				// immediate operand
+				emit_data_operand(operands[i].immediate.value, get_operand_bit_width(operand_types[i]));
 			}
 			else if(is_operand_moff(operands[i].type)) {
-				emit_immediate_operand(operands[i].memory_offset.value, operand::type::OP_I64);
+				// memory offset operand (always 64-bit)
+				emit_data_operand(operands[i].memory_offset.value, 64);
 			}
 			else if(is_operand_mem(operands[i].type)) {
-				// memory displacement
-				const auto memory = operands[i].memory;
-				auto displacement = memory.displacement;
+				// memory displacement operand
+				const mem memory = operands[i].memory;
+				imm displacement = memory.displacement;
 
 				if(displacement.value == 0) {
 					if(memory.has_base && memory.base.type != REG_RIP) {
@@ -593,12 +511,14 @@ namespace baremetal {
 					}
 				}
 
+				// determine the displacement size
 				enum operand::type ty;
 
 				if(memory.has_base == false) {
 					ty = operand::type::OP_I32;
 				}
 				else if(memory.base.type == REG_RIP) {
+					// calculate relative (rip) offset
 					ty = operand::type::OP_I32;
 
 					// beginning of the instruction
@@ -606,8 +526,8 @@ namespace baremetal {
 
 					if(i + 1 != operand_count) {
 						// if we have another operand after the current one, calculate it's size
-						if(is_operand_imm(operands_actual[i + 1])) { // regs are already encoded
-							new_displacement -= get_operand_bit_width(operands_actual[i + 1]) / 8;
+						if(is_operand_imm(operand_types[i + 1])) { // registers are already encoded
+							new_displacement -= get_operand_bit_width(operand_types[i + 1]) / 8;
 						}
 					}
 
@@ -620,12 +540,12 @@ namespace baremetal {
 					ty = operand::type::OP_I32;
 				}
 
-				emit_immediate_operand(displacement.value, ty);
+				emit_data_operand(displacement.value, get_operand_bit_width(ty));
 			}
 		}
 	}
 
-	auto assembler::has_sib_byte(operand op_1, operand op_2) -> bool {
+	auto assembler::has_sib_byte(const operand& op_1, const operand& op_2) -> bool {
 		mem memory;
 
 		if(is_operand_mem(op_1.type)) {
@@ -653,49 +573,9 @@ namespace baremetal {
 		return false;
 	}
 
-	void assembler::emit_immediate_operand(u64 imm, enum operand::type type) {
-		switch(type) {
-			case operand::type::OP_I8: {
-				const u8 value = static_cast<u8>(imm);
-
-				for(int i = 0; i < 1; ++i) {
-					utility::byte b = (value >> (i * 8)) & 0xFF;
-					m_bytes.push_back(b);
-				}
-
-				break;
-			}
-			case operand::type::OP_I16: {
-				const u16 value = static_cast<u16>(imm);
-
-				for(int i = 0; i < 2; ++i) {
-					utility::byte b = (value >> (i * 8)) & 0xFF;
-					m_bytes.push_back(b);
-				}
-
-				break;
-			}
-			case operand::type::OP_I32: {
-				const u32 value = static_cast<u32>(imm);
-
-				for(int i = 0; i < 4; ++i) {
-					utility::byte b = (value >> (i * 8)) & 0xFF;
-					m_bytes.push_back(b);
-				}
-
-				break;
-			}
-			case operand::type::OP_I64: {
-				const u64 value = imm;
-
-				for(int i = 0; i < 8; ++i) {
-					utility::byte b = (value >> (i * 8)) & 0xFF;
-					m_bytes.push_back(b);
-				}
-
-				break;
-			}
-			default: ASSERT(false, "ivalid operand");
+	void assembler::emit_data_operand(u64 data, u8 bit_width) {
+		for(u8 i = 0; i < bit_width / 8; ++i) {
+			m_bytes.push_back(data >> (i * 8) & 0xFF);
 		}
 	}
 
@@ -774,5 +654,26 @@ namespace baremetal {
 
 	auto assembler::get_current_inst_size() const -> u8 {
 		return static_cast<u8>(m_bytes.get_size() - m_current_inst_begin);
+	}
+
+	auto signed_extend_representable(u64 value, u8 original, u8 dst, u8 src) -> bool {
+		const uint64_t mask = (1ULL << src) - 1;
+		const u64 shrunk = value & mask;
+
+		const u64 extended_source   = utility::sign_extend(shrunk, src, dst);
+		const u64 extended_original = utility::sign_extend(value, original, dst);
+
+		return extended_source == extended_original;
+	}
+
+	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool {
+		switch(a) {
+			// don't just consider regular equalities, focus on register bit widths as well
+			case operand::OP_AL:  return b == operand::OP_AL  || b == operand::OP_CL  || b == operand::OP_REG8;  // 8 bits
+			case operand::OP_AX:  return b == operand::OP_AX  || b == operand::OP_DX  || b == operand::OP_REG16; // 16 bits
+			case operand::OP_EAX: return b == operand::OP_EAX || b == operand::OP_ECX || b == operand::OP_REG32; // 32 bits
+			case operand::OP_RAX: return b == operand::OP_RAX || b == operand::OP_RCX || b == operand::OP_REG64; // 64 bits
+			default: return a == b; // regular compares
+		}
 	}
 } // namespace baremetal
