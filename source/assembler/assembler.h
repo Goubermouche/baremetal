@@ -21,6 +21,16 @@ namespace baremetal {
     emit_instruction(index, destination, source);        \
   }
 
+#define INST_3(index, name, op1, op2, op3)               \
+  void name(struct op1 a, struct op2 b, struct op3 c) {  \
+    emit_instruction(index, a, b);                       \
+  }
+
+#define INST_4(index, name, op1, op2, op3,  op4)         \
+  void name(struct op1 a, struct op2 b, struct op3 c, struct op4 d) {  \
+    emit_instruction(index, a, b);                       \
+  }
+
 // select which INST_X to call based off of the variable argument count (0-2)
 #define INST_SELECT(count) CONCATENATE(INST_, count)
 #define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
@@ -33,6 +43,7 @@ namespace baremetal {
 #undef INST_1
 #undef INST_2
 #undef INST_3
+#undef INST_4
 
 #undef INST_SELECT
 #undef INST_HELPER

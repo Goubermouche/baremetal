@@ -148,119 +148,120 @@ class moff {
 }
 
 function generate_combinations(operands) {
-    const operand_map = {
-        reg8: [
+    const operand_map = new Map([
+        ["reg8", [
             new reg('cl'),
             new reg('dl'),
             new reg('bl'),
-        ],
-        reg16: [
+        ]],
+        ["reg16", [
             new reg('cx'),
             new reg('dx'),
             new reg('bx'),
             new reg('r15w'),
-        ],
-        reg32: [
+        ]],
+        ["reg32", [
             new reg('ecx'),
             new reg('edx'),
             new reg('ebx'),
             new reg('r15d'),
-        ],
-        reg64: [
+        ]],
+        ["reg64", [
             new reg('rcx'),
             new reg('rdx'),
             new reg('rbx'),
             new reg('r15'),
-        ],
-        xmm: [
+        ]],
+        ["xmm", [
             new reg('xmm0'),
             new reg('xmm1'),
             new reg('xmm2'),
             new reg('xmm15')
-        ],
-        mmx: [
+        ]],
+        ["mmx", [
             new reg('mm0'),
             new reg('mm1'),
             new reg('mm2'),
             new reg('mm7')
-        ],
-        bnd: [
+        ]],
+        ["bnd", [
             new reg('bnd0'),
             new reg('bnd1'),
             new reg('bnd2'),
             new reg('bnd3')
-        ],
-        sreg: [
+        ]],
+        ["sreg", [
             new reg('cs'),
             new reg('ds'),
             new reg('es'),
             new reg('ss'),
             new reg('fs'),
             new reg('gs')
-        ],
-        dreg: [
+        ]],
+        ["dreg", [
             new reg('dr0'),
             new reg('dr1'),
             new reg('dr2'),
             new reg('dr3'),
             new reg('dr7'),
-        ],
-        creg: [
+        ]],
+        ["creg", [
             new reg('cr0'),
             new reg('cr1'),
             new reg('cr2'),
             new reg('cr3'),
             new reg('cr8'),
-        ],
-        moff8: [
+        ]],
+        ["moff8", [
             new moff('0'),
             new moff('0xFF'),
             new moff('0xFFFF'),
             new moff('0xFFFFFFFF'),
             new moff('0xFFFFFFFFFFFFFFFF'),
-        ],
-        moff16: [
+        ]],
+        ["moff16", [
             new moff('0'),
             new moff('0xFF'),
             new moff('0xFFFF'),
             new moff('0xFFFFFFFF'),
             new moff('0xFFFFFFFFFFFFFFFF'),
-        ],
-        moff32: [
+        ]],
+        ["moff32", [
             new moff('0'),
             new moff('0xFF'),
             new moff('0xFFFF'),
             new moff('0xFFFFFFFF'),
             new moff('0xFFFFFFFFFFFFFFFF'),
-        ],
-        moff64: [
+        ]],
+        ["moff64", [
             new moff('0'),
             new moff('0xFF'),
             new moff('0xFFFF'),
             new moff('0xFFFFFFFF'),
             new moff('0xFFFFFFFFFFFFFFFF'),
-        ],
-        al: [ new reg('al') ],
-        ax: [ new reg('ax') ],
-        eax: [ new reg('eax') ],
-        rax: [ new reg('rax') ],
-        dx: [ new reg('dx') ],
-        cl: [ new reg('cl') ],
-        rcx: [ new reg('rcx') ],
-        ecx: [ new reg('ecx') ],
-        i8: [
+        ]],
+        ["al", [ new reg('al') ]],
+        ["ax", [ new reg('ax') ]],
+        ["eax", [ new reg('eax') ]],
+        ["rax", [ new reg('rax') ]],
+        ["dx", [ new reg('dx') ]],
+        ["cl", [ new reg('cl') ]],
+        ["rcx", [ new reg('rcx') ]],
+        ["ecx", [ new reg('ecx') ]],
+        ["1", [new imm('1')]],
+        ["i8", [
             new imm('0'),
             new imm('127'),
             new imm('-128')
-        ],
-        i16: [
+        ]],
+        ["i16", [
             new imm('0'),
             new imm('32767'),
             new imm('-32768'),
             new imm('127'),
             new imm('-128')
-        ],
-        i32: [
+        ]],
+        ["i32", [
             new imm('0'),
             new imm('2147483647'),
             new imm('-2147483648'),
@@ -268,8 +269,8 @@ function generate_combinations(operands) {
             new imm('-32768'),
             new imm('127'),
             new imm('-128')
-        ],
-        i64: [
+        ]],
+        ["i64", [
             new imm('0'),
             new imm('9223372036854775807'),
             new imm('-9223372036854775808'),
@@ -279,8 +280,8 @@ function generate_combinations(operands) {
             new imm('-32768'),
             new imm('127'),
             new imm('-128')
-        ],
-        mem_address: [
+        ]],
+        ["mem_address", [
             mem.absolute(0, '0x0'),
             mem.absolute(0, '0xFF'),
             mem.absolute(0, '0xFFFF'),
@@ -302,8 +303,8 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(0, 'r15', 'rax', '0xFFFF', "8"),
             mem.base_index_offset_scale(0, 'rsp', 'r15', '0xFFFF', "8"),
             mem.base_index_offset_scale(0, 'r14', 'r15', '0xFFFF', "8"),
-        ],
-        mem8: [
+        ]],
+        ["mem8", [
             mem.absolute(8, '0x0'),
             mem.absolute(8, '0xFF'),
             mem.absolute(8, '0xFFFF'),
@@ -325,8 +326,8 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(8, 'r15', 'rax', '0xFFFF', "8"),
             mem.base_index_offset_scale(8, 'rsp', 'r15', '0xFFFF', "8"),
             mem.base_index_offset_scale(8, 'r14', 'r15', '0xFFFF', "8"),
-        ],
-        mem16: [
+        ]],
+        ["mem16", [
             mem.absolute(16, '0x0'),
             mem.absolute(16, '0xFF'),
             mem.absolute(16, '0xFFFF'),
@@ -348,8 +349,8 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(16, 'r15', 'rax', '0xFFFF', "8"),
             mem.base_index_offset_scale(16, 'rsp', 'r15', '0xFFFF', "8"),
             mem.base_index_offset_scale(16, 'r14', 'r15', '0xFFFF', "8"),
-        ],
-        mem32: [
+        ]],
+        ["mem32", [
             mem.absolute(32, '0x0'),
             mem.absolute(32, '0xFF'),
             mem.absolute(32, '0xFFFF'),
@@ -371,8 +372,8 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(32, 'r15', 'rax', '0xFFFF', "8"),
             mem.base_index_offset_scale(32, 'rsp', 'r15', '0xFFFF', "8"),
             mem.base_index_offset_scale(32, 'r14', 'r15', '0xFFFF', "8"),
-        ],
-        mem64: [
+        ]],
+        ["mem64", [
             mem.absolute(64, '0x0'),
             mem.absolute(64, '0xFF'),
             mem.absolute(64, '0xFFFF'),
@@ -394,8 +395,8 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(64, 'r15', 'rax', '0xFFFF', "8"),
             mem.base_index_offset_scale(64, 'rsp', 'r15', '0xFFFF', "8"),
             mem.base_index_offset_scale(64, 'r14', 'r15', '0xFFFF', "8"),
-        ],
-        mem128: [
+        ]],
+        ["mem128", [
             mem.absolute(128, '0x0'),
             mem.absolute(128, '0xFF'),
             mem.absolute(128, '0xFFFF'),
@@ -417,8 +418,8 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(128, 'r15', 'rax', '0xFFFF', "8"),
             mem.base_index_offset_scale(128, 'rsp', 'r15', '0xFFFF', "8"),
             mem.base_index_offset_scale(128, 'r14', 'r15', '0xFFFF', "8"),
-        ]
-    };
+        ]]
+    ]);
 
     function generate(operands, index) {
         if (index === operands.length) {
@@ -426,7 +427,7 @@ function generate_combinations(operands) {
         }
 
         const current = operands[index];
-        const current_array = operand_map[current] || [];
+        const current_array = operand_map.get(current.toString()) || [];
         const remaining = generate(operands, index + 1);
         const combinations = [];
 
@@ -483,7 +484,7 @@ function get_temp_dir(id) {
 if (isMainThread) {
     // main thread
     const start_time = Date.now();
-    const instructions = utility.get_instructions();
+    const instructions = utility.new_database;
 
     let messages = [];
     let items = [];
@@ -494,11 +495,12 @@ if (isMainThread) {
         let operands_combinations = generate_combinations(inst.operands);
 
         operands_combinations.forEach((combination, combinationIndex) => {
-            items.push({
-                name: inst.name,
-                operands: combination.map(op => op.get_nasm_string()).join(", "),
-                baremetal: combination.map(op => op.get_baremetal_string()).join(", "),
-            });
+                items.push({
+                    name: inst.name,
+                    operands: combination.map(op => op.get_nasm_string()).join(", "),
+                    baremetal: combination.map(op => op.get_baremetal_string()).join(", "),
+                });
+           
         });
     });
 

@@ -112,20 +112,26 @@ namespace baremetal {
 		u8 prefix;
 		u16 context_index;
 		direction dir;
-		enum operand::type operands[2];
+		enum operand::type operands[4];
 	};
 
 #pragma pack(pop)
 
 // instruction generators
-#define INST_0(index, name)                                              \
-	{ #name, opcode, extensions, prefix, context, direction::DIR_ ## dir, { operand::OP_NONE, operand::OP_NONE }},
+#define INST_0(name, opcode, extensions, prefix, context, dir)                                              \
+	{ #name, opcode, extensions, prefix, context, direction::DIR_ ## dir, { operand::OP_NONE, operand::OP_NONE, operand::OP_NONE, operand::OP_NONE }},
 
-#define INST_1(index, name, op1)                                         \
-  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_NONE }},
+#define INST_1(name, opcode, extensions, prefix, context, dir, op1)                                         \
+  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_NONE, operand::OP_NONE, operand::OP_NONE }},
 
 #define INST_2(name, opcode, extensions, prefix, context, dir, op1, op2) \
-  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_ ## op2 }},
+  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_ ## op2, operand::OP_NONE, operand::OP_NONE }},
+
+#define INST_3(name, opcode, extensions, prefix, context, dir, op1, op2, op3) \
+  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_ ## op2, operand::OP_ ## op3, operand::OP_NONE }},
+
+#define INST_4(name, opcode, extensions, prefix, context, dir, op1, op2, op3, op4) \
+  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_ ## op2, operand::OP_ ## op3, operand::OP_ ## op4 }},
 
 // select which INST_X to call based off of the variable argument count (0-2)
 #define INST_SELECT(count) CONCATENATE(INST_, count)
@@ -142,6 +148,7 @@ namespace baremetal {
 #undef INST_1
 #undef INST_2
 #undef INST_3
+#undef INST_4
 
 #undef INST_SELECT
 #undef INST_HELPER

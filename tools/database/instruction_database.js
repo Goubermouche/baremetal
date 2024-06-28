@@ -395,7 +395,8 @@ function translate_operands_to_baremetal(operands) {
             case "m16":    return "mem16"
             case "m32":    return "mem32"
             case "m64":    return "mem64"
-            case "m128":    return "mem128"
+            case "m128":   return "mem128"
+            case "1":      return "imm"
             default: return op;
         }
     });
@@ -409,6 +410,7 @@ function translate_operands_to_inst(operands) {
             case "m32": return "MEM32"
             case "m64": return "MEM64"
             case "m128": return "MEM128"
+            case "1": return "I8"
             default: return op;
         }
     });
@@ -432,17 +434,29 @@ function calculate_layout(data) {
 
 function apply_layout(layout, data, line_prefix, line_postfix) {
     let result = "";
+    let layout_width = 0;
+
+    layout.forEach(l => {
+        layout_width += l + 2;
+    });
+
+    layout_width -= 2;
+
+    console.log(layout_width);
 
     data.forEach(row => {
         result += line_prefix;
+        let row_arr = [];
 
         row.forEach((element, column_i) => {
-            result += element.padEnd(layout[column_i], ' ');
-            if(column_i + 1 !== row.length) {
-                result += ", "
+            row_arr.push(element.padEnd(layout[column_i], ' '));
+            if(column_i + 1 !== row.length) {}
+            else {
+                result += row_arr.join(", ").padEnd(layout_width)
             }
         })
 
+        
         result += line_postfix;
         result += '\n';
     })
@@ -457,7 +471,52 @@ function format_instruction_operand(op) {
 }
 
 function main() {
-    let instructions = utility.get_instructions();
+    let instructions = utility.new_database;
+
+    // const new_set = new Set();
+
+    // utility.new_database.forEach(inst => {
+    //    new_set.add(`${inst.name}:${inst.operands.join(":")}`);
+    // })
+
+    // instructions.forEach(inst => {
+    //     const key = `${inst.name}:${inst.operands.join(":")}`;
+
+    //     if(new_set.has(key) === false) {
+    //         console.log(`{${
+    //             [
+    //                 `"name": "${inst.name}"`,
+    //                 `"operands": [${inst.operands.map(op => { return `"${op}"`; }).join(", ")}]`,
+    //                 `"opcode": "${inst.opcode}"`,
+    //                 `"rm": "${inst.rm}"`,
+    //                 `"w": "${inst.w}"`,
+    //                 `"ri": ${inst.ri}`,
+    //                 `"pp": "${inst.pp}"`
+    //             ].join(", ")
+    //         }},`);
+    //     }
+    // });
+
+    // let json_table = [];
+
+    // instructions.forEach(inst => {
+    //     json_table.push([
+    //         `"name": "${inst.name}"`,
+    //         `"operands": [${inst.operands.map(op => { return `"${op}"`; }).join(", ")}]`,
+    //         `"opcode": "${inst.opcode}"`,
+    //         `"rm": "${inst.rm}"`,
+    //         `"w": "${inst.w}"`,
+    //         `"ri": ${inst.ri}`,
+    //         `"pp": "${inst.pp}"`
+    //     ])
+    // })
+
+    // const json_layout = calculate_layout(json_table);
+    // const json_text = apply_layout(json_layout, json_table, "    { ", " },");
+
+    // console.log(`[\n${json_text.substring(0, json_text.length - 2)}\n]`)
+
+    // return;
 
     instructions.sort((a, b) => {
         if (a.name < b.name) return -1;
@@ -503,7 +562,7 @@ function main() {
             current_index = i;
         }
 
-        indices.set(`${inst.name},${translate_operands_to_baremetal(inst.operands).join(",")}`, current_index);
+        indices.set(`${inst.name}${inst.operands.length > 0 ? "," : ""}${translate_operands_to_baremetal(inst.operands).join(",")}`, current_index);
         last_destination = inst.operands[0];
         last_inst_name = inst.name;
     });
