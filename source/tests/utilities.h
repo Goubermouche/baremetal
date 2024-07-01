@@ -1,6 +1,6 @@
 #pragma once
-#include <utility/streams/console.h>
-#include <utility/dynamic_string.h>
+#include <utility/system/console.h>
+#include <utility/containers/dynamic_string.h>
 #include <assembler.h>
 
 using namespace utility::types;
@@ -40,8 +40,8 @@ namespace baremetal::tests {
 
 		for(u64 i = 0; i < bytes.get_size(); ++i) {
 			const utility::byte value = bytes[i];
-			result.push_back(digits[(value >> 4) & utility::byte(0x0F)]);
-			result.push_back(digits[value & utility::byte(0x0F)]);
+			result += (digits[(value >> 4) & utility::byte(0x0F)]);
+			result += (digits[value & utility::byte(0x0F)]);
 		}
 
 		return result;

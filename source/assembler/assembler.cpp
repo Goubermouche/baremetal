@@ -1,7 +1,8 @@
 #include "assembler.h"
 
-
 #include "instruction/operands/operands.h"
+
+#include <utility/algorithms/sort.h>
 #include <utility/assert.h>
 
 namespace baremetal {
@@ -46,12 +47,13 @@ namespace baremetal {
 		const imm& source = op_2.immediate;
 
 		// some instructions have a special optimization index, check if we have it
-
-		//           [1111111111111111] (65535) is an invalid index => that instruction does not have one
-		// kind      [XX______________]
-		// index     [__XXXXXXXXXXXXXX]
-
+		// if we have a valid context index the original index, provided as a parameter, will
+		// be replaced by this index
 		if(instruction_db[index].context_index != std::numeric_limits<u16>::max()) {
+			//           [1111111111111111] (65535) is an invalid index => that instruction does not have one
+			// kind      [XX______________]
+			// index     [__XXXXXXXXXXXXXX]
+
 			const u16 context = instruction_db[index].context_index;
 			const u8 kind = static_cast<u8>(context >> 14);
 			const u16 context_index = context & 0b0011111111111111;
@@ -98,7 +100,7 @@ namespace baremetal {
 		}
 
 		// sort by the smallest source operands
-		std::ranges::sort(legal_variants, [](const instruction_info* a, const instruction_info* b) {
+		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [](const instruction_info* a, const instruction_info* b) {
 			return get_operand_bit_width(a->operands[1]) < get_operand_bit_width(b->operands[1]);
 		});
 
