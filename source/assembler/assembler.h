@@ -6,29 +6,29 @@ namespace baremetal {
 		assembler();
 
 // function generators
-#define INST_0(index, name)                              \
-  void name() {                                          \
-    emit_instruction(index, operand(), operand());       \
+#define INST_0(index, name)                 \
+  void name() {                             \
+    emit_instruction(index, {}, {}, {}, {});\
   }
 
-#define INST_1(index, name, op1)                         \
-  void name(struct op1 destination) {                    \
-    emit_instruction(index, destination, operand());     \
+#define INST_1(index, name, op1)                      \
+  void name(struct op1 destination) {                 \
+    emit_instruction(index, destination, {}, {}, {}); \
   }
 
-#define INST_2(index, name, op1, op2)                    \
-  void name(struct op1 destination, struct op2 source) { \
-    emit_instruction(index, destination, source);        \
+#define INST_2(index, name, op1, op2)                     \
+  void name(struct op1 destination, struct op2 source) {  \
+    emit_instruction(index, destination, source, {}, {}); \
   }
 
 #define INST_3(index, name, op1, op2, op3)               \
   void name(struct op1 a, struct op2 b, struct op3 c) {  \
-    emit_instruction(index, a, b);                       \
+    emit_instruction(index, a, b, c, {});                \
   }
 
-#define INST_4(index, name, op1, op2, op3,  op4)         \
+#define INST_4(index, name, op1, op2, op3,  op4)                       \
   void name(struct op1 a, struct op2 b, struct op3 c, struct op4 d) {  \
-    emit_instruction(index, a, b);                       \
+    emit_instruction(index, a, b, c, d);                               \
   }
 
 // select which INST_X to call based off of the variable argument count (0-2)
@@ -54,7 +54,7 @@ namespace baremetal {
 
 		void clear();
 	private:
-		void emit_instruction(u32 index, const operand& op_1, const operand& op_2);
+		void emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
 
 		// opcode
 		void emit_instruction_opcode(const instruction_info* inst, const operand& op_1, const operand& op_2);

@@ -102,6 +102,8 @@ namespace baremetal {
 
 			if(operands[0] != operand::OP_NONE) { count++; }
 			if(operands[1] != operand::OP_NONE) { count++; }
+			if(operands[2] != operand::OP_NONE) { count++; }
+			if(operands[3] != operand::OP_NONE) { count++; }
 
 			return count;
 		}
@@ -118,10 +120,10 @@ namespace baremetal {
 #pragma pack(pop)
 
 // instruction generators
-#define INST_0(name, opcode, extensions, prefix, context, dir)                                              \
+#define INST_0(name, opcode, extensions, prefix, context, dir) \
 	{ #name, opcode, extensions, prefix, context, direction::DIR_ ## dir, { operand::OP_NONE, operand::OP_NONE, operand::OP_NONE, operand::OP_NONE }},
 
-#define INST_1(name, opcode, extensions, prefix, context, dir, op1)                                         \
+#define INST_1(name, opcode, extensions, prefix, context, dir, op1) \
   { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_NONE, operand::OP_NONE, operand::OP_NONE }},
 
 #define INST_2(name, opcode, extensions, prefix, context, dir, op1, op2) \
@@ -139,7 +141,6 @@ namespace baremetal {
 #define INST(name, opcode, extensions, prefix, context, dir, ...) \
   INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extensions, prefix, context, dir, __VA_ARGS__)
 
-	// instruction database
 	static constexpr instruction_info instruction_db[] = {
 		#include "assembler/instruction/databases/instruction_database.inc"
 	};

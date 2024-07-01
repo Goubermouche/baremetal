@@ -403,15 +403,14 @@ function translate_operands_to_baremetal(operands) {
 }
 
 function translate_operands_to_inst(operands) {
-    return operands.map(op => {
+    return operands.filter(op => op !== "1").map(op => {
         switch(op) {
-            case "m8":  return "MEM8"
-            case "m16": return "MEM16"
-            case "m32": return "MEM32"
-            case "m64": return "MEM64"
-            case "m128": return "MEM128"
-            case "1": return "I8"
-            default: return op;
+            case "m8":   return "MEM8";
+            case "m16":  return "MEM16";
+            case "m32":  return "MEM32";
+            case "m64":  return "MEM64";
+            case "m128": return "MEM128";
+            default:     return op;
         }
     });
 }
@@ -468,6 +467,14 @@ function format_instruction_operand(op) {
     switch(op) {
         default: return op;
     }
+}
+
+function encode_context(id, index) {
+    if (id < 0 || id > 3 || index < 0 || index > 16383) {
+        throw new Error('invalid id or index');
+    }
+
+    return (id << 14) | index;
 }
 
 function main() {
@@ -562,9 +569,16 @@ function main() {
             current_index = i;
         }
 
-        indices.set(`${inst.name}${inst.operands.length > 0 ? "," : ""}${translate_operands_to_baremetal(inst.operands).join(",")}`, current_index);
+
+        // don't encode these in the assembler database
+        if(inst.operands.length === 2 && inst.operands[1] === "1") {
+            return;
+        }
+
         last_destination = inst.operands[0];
         last_inst_name = inst.name;
+
+        indices.set(`${inst.name}${inst.operands.length > 0 ? "," : ""}${translate_operands_to_baremetal(inst.operands).join(",")}`, current_index);
     });
 
     let instruction_db = [];
@@ -574,7 +588,12 @@ function main() {
 
         // special cases
         if(inst.name == "mov" && inst.operands[0] == "reg64" && inst.operands[1] == "i32") {
-            special_index = dest_to_source.get(`${inst.name}:reg32:i32`)
+            // 0
+            special_index = encode_context(0, dest_to_source.get(`${inst.name}:reg32:i32`))
+        }
+        else if(inst.name == "rcl" && inst.operands[1] !== "1") {
+            // 1
+            special_index = encode_context(1, dest_to_source.get(`${inst.name}:${inst.operands[0]}:1`));
         }
 
         let row = [

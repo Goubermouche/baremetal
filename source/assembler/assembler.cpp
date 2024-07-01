@@ -46,14 +46,41 @@ namespace baremetal {
 		const imm& source = op_2.immediate;
 
 		// some instructions have a special optimization index, check if we have it
+
+		//           [1111111111111111] (65535) is an invalid index => that instruction does not have one
+		// kind      [XX______________]
+		// index     [__XXXXXXXXXXXXXX]
+
 		if(instruction_db[index].context_index != std::numeric_limits<u16>::max()) {
-			// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
-			// less we can look for a smaller destination
-			if(op_1.type == operand::OP_REG64 && source.min_bits <= 32) {
-				// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64
-				// bits) we can't zero extend 
-				if(source.sign == false) {
-					index = instruction_db[index].context_index;
+			const u16 context = instruction_db[index].context_index;
+			const u8 kind = static_cast<u8>(context >> 14);
+			const u16 context_index = context & 0b0011111111111111;
+
+			switch(kind) {
+				case 0: {
+					// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
+					// less we can look for a smaller destination
+					if(op_1.type == operand::OP_REG64 && source.min_bits <= 32) {
+						// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64
+						// bits) we can't zero extend 
+						if(source.sign == false) {
+							index = context_index;
+						}
+					}
+
+					break;
+				}
+				case 1: {
+					// if we have a source operand which is equal to 1, we can use a shorter encoding, in basically all
+					// cases we can just return, since the operand is effectively removed
+					if(op_2.immediate.value == 1) {
+						return &instruction_db[context_index];
+					}
+
+					break; // we're not using the optimization index, continue
+				}
+				default: {
+					utility::console::print_err("unknown context kind specified ({})\n", kind);
 				}
 			}
 		}
@@ -528,21 +555,23 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_instruction(u32 index, const operand& op_1, const operand& op_2) {
+	void assembler::emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
+		// NOTE: operand count can be inferred from overloaded functions
+
 		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
 
 		// locate the actual instruction we want to assemble (this doesn't have to match the specified
 		// index, since we can apply optimizations which focus on stuff like shorter encodings)
-		const instruction_info* inst = find_instruction_info(index, op_1, op_2);
+		const instruction_info* inst = find_instruction_info(index, op1, op2);
 
 		// emit instruction parts
 		emit_instruction_prefix(inst);
-		emit_instruction_opcode(inst, op_1, op_2);
-		emit_instruction_mod_rm(inst, op_1, op_2);
-		emit_instruction_sib(op_1, op_2);
+		emit_instruction_opcode(inst, op1, op2);
+		emit_instruction_mod_rm(inst, op1, op2);
+		emit_instruction_sib(op1, op2);
 
 		const u8 operand_count = inst->get_operand_count(); // TODO: infer this
-		const operand operands[2] = { op_1, op_2 };
+		const operand operands[4] = { op1, op2, op3, op4 };
 
 		// emit immediate, displacement, and memory offset operands
 		emit_operands(operands, operand_count, inst);
