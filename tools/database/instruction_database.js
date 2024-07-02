@@ -592,7 +592,7 @@ function main() {
 
         dest_to_source.set(`${inst.name}:${inst.operands.join(":")}`, i);
 
-        if(last_destination === inst.operands[0]) {
+        if(inst.operands.length > 0 && last_destination === inst.operands[0]) {
             if(is_immediate(inst.operands[1])) {}
             else {
                 current_index = i;

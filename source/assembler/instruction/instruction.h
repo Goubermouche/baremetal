@@ -55,7 +55,15 @@ namespace baremetal {
 #pragma pack(push, 1)
 	struct instruction_info {
 		void print() const {
-			utility::console::print("{} {} {}\n", name, operand_type_to_string(operands[0]), operand_type_to_string(operands[1]));
+			utility::console::print("{} ", name);
+
+			for(u8 i = 0; i < 4; ++i) {
+				if(operands[i] != operand::OP_NONE) {
+					utility::console::print("{} ", operand_type_to_string(operands[i]));
+				}
+			}
+
+			utility::console::print("\n");
 		}
 
 		constexpr auto is_rexw() const -> bool {

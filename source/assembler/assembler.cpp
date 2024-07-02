@@ -12,12 +12,18 @@ namespace baremetal {
 		return m_bytes;
 	}
 
-	auto assembler::find_rex_pair(const operand* operands) -> std::pair<u8, u8> {
+	auto assembler::find_rex_pair(const instruction_info* inst, const operand* operands) -> std::pair<u8, u8> {
+		if(inst->get_operand_count() == 1) {
+			return { 0, operands[0].reg };
+		}
+
 		// locate the first registers from the back
 		std::pair<u8, u8> result = { 0, 0 };
 		i8 i = 4;
 
 		while(i-- > 0) {
+			auto curr = operands[i];
+
 			if(is_operand_reg(operands[i].type)) {
 				result.first = operands[i].reg;
 				result.second = operands[i].reg;
@@ -175,7 +181,7 @@ namespace baremetal {
 	void assembler::emit_instruction_opcode(const instruction_info* inst, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
 		const bool is_rexw = inst->is_rexw();
 		const operand operands[4] = { op1, op2, op3, op4 };
-		auto [rx, destination] = find_rex_pair(operands);
+		auto [rx, destination] = find_rex_pair(inst, operands);
 
 		// opcode - rex prefix
 		if(is_rexw || is_extended_reg(op1) || is_extended_reg(op2)) {
@@ -427,7 +433,7 @@ namespace baremetal {
 
 	void assembler::emit_instruction_mod_rm(const instruction_info* inst, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
 		const operand operands[4] = { op1, op2, op3, op4 };
-		auto [rx, destination] = find_rex_pair(operands);
+		auto [rx, destination] = find_rex_pair(inst, operands);
 
 		// mod rm / sib
 		if(inst->is_r() || is_operand_mem(op1.type) || is_operand_mem(op2.type)) {
@@ -556,7 +562,6 @@ namespace baremetal {
 
 	void assembler::emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
 		// NOTE: operand count can be inferred from overloaded functions
-
 		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
 
 		// locate the actual instruction we want to assemble (this doesn't have to match the specified
