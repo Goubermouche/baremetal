@@ -7,9 +7,9 @@ workspace "assembler"
     startproject "tests"
     warnings "Extra"
 
-    -- buildoptions { "-fsanitize=address" }
-    -- linkoptions { "-fsanitize=address" }
-    -- debugformat "C7"
+    buildoptions { "-fsanitize=address" }
+    linkoptions { "-fsanitize=address" }
+    debugformat "C7"
 
     flags {
         "MultiProcessorCompile"

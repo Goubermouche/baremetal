@@ -299,6 +299,39 @@ const direction_map = new Map([
     ["movdq2q", "REVERSE"],
     ["movntq", "REVERSE"],
     ["movq2dq", "REVERSE"],
+    ["aeskeygenassist", "REVERSE"],
+    ["blendpd", "REVERSE"],
+    ["blendps", "REVERSE"],
+    ["cmppd", "REVERSE"],
+    ["cmpps", "REVERSE"],
+    ["cmpsd", "REVERSE"],
+    ["cmpss", "REVERSE"],
+    ["dppd", "REVERSE"],
+    ["dpps", "REVERSE"],
+    ["insertps", "REVERSE"],
+    ["mpsadbw", "REVERSE"],
+    ["palignr", "REVERSE"],
+    ["pblendw", "REVERSE"],
+    ["pclmulqdq", "REVERSE"],
+    ["pcmpestri", "REVERSE"],
+    ["pcmpestrm", "REVERSE"],
+    ["pcmpistri", "REVERSE"],
+    ["pcmpistrm", "REVERSE"],
+    ["pinsrb", "REVERSE"],
+    ["pinsrd", "REVERSE"],
+    ["pinsrq", "REVERSE"],
+    ["pinsrw", "REVERSE"],
+    ["pshufd", "REVERSE"],
+    ["pshufhw", "REVERSE"],
+    ["pshuflw", "REVERSE"],
+    ["pshufw", "REVERSE"],
+    ["roundpd", "REVERSE"],
+    ["roundps", "REVERSE"],
+    ["roundsd", "REVERSE"],
+    ["roundss", "REVERSE"],
+    ["sha1rnds4", "REVERSE"],
+    ["shufpd", "REVERSE"],
+    ["shufps", "REVERSE"],
 ]);
 
 // overrides to the direction map
@@ -591,7 +624,20 @@ function main() {
             // 0
             special_index = encode_context(0, dest_to_source.get(`${inst.name}:reg32:i32`))
         }
-        else if(inst.name == "rcl" && inst.operands[1] !== "1") {
+        else if(
+            (
+                inst.name == "rcl" || 
+                inst.name == "rcr" ||
+                inst.name == "rol" || 
+                inst.name == "ror" || 
+                inst.name == "sal" || 
+                inst.name == "sar" || 
+                inst.name == "shl" || 
+                inst.name == "shr" || 
+                inst.name == "rcr"
+            ) && 
+            inst.operands[1] !== "1"
+        ) {
             // 1
             special_index = encode_context(1, dest_to_source.get(`${inst.name}:${inst.operands[0]}:1`));
         }

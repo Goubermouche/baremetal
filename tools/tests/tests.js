@@ -576,6 +576,9 @@ ${test_file}
                 test_runs.push(`\tTEST(${name});`);
             }
 
+            includes.sort();
+            test_runs.sort();
+
             const includes_text = includes.join("\n");
             const test_runs_text = test_runs.join("\n");
 

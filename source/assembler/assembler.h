@@ -57,9 +57,9 @@ namespace baremetal {
 		void emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
 
 		// opcode
-		void emit_instruction_opcode(const instruction_info* inst, const operand& op_1, const operand& op_2);
-		void emit_instruction_mod_rm(const instruction_info* inst, const operand& op_1, const operand& op_2);
-		void emit_instruction_sib(const operand& op_1, const operand& op_2);
+		void emit_instruction_opcode(const instruction_info* inst, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
+		void emit_instruction_mod_rm(const instruction_info* inst, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
+		void emit_instruction_sib(const operand& op1, const operand& op2);
 		void emit_instruction_prefix(const instruction_info* inst);
 
 		void emit_operands(const operand* operands, u8 operand_count, const instruction_info* inst);
@@ -67,9 +67,9 @@ namespace baremetal {
 		void emit_opcode_mem(const mem& memory);
 
 		static auto find_rex_pair(const operand* operands) -> std::pair<u8, u8>;
-		static auto find_instruction_info(u32 index, const operand& op_1, const operand& op_2) -> const instruction_info*;
+		static auto find_instruction_info(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) -> const instruction_info*;
 
-		static auto has_sib_byte(const operand& op_1, const operand& op_2) -> bool;
+		static auto has_sib_byte(const operand& op1, const operand& op2) -> bool;
 
 		enum mod_mode {
 			INDIRECT,
