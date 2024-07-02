@@ -116,6 +116,28 @@ namespace baremetal {
 			return count;
 		}
 
+		auto get_imm_operand_count() const -> u8 {
+			u8 count = 0;
+
+			if(is_operand_imm(operands[0])) { count++; }
+			if(is_operand_imm(operands[1])) { count++; }
+			if(is_operand_imm(operands[2])) { count++; }
+			if(is_operand_imm(operands[3])) { count++; }
+
+			return count;
+		}
+
+		auto get_reg_operand_count() const -> u8 {
+			u8 count = 0;
+
+			if(is_operand_reg(operands[0])) { count++; }
+			if(is_operand_reg(operands[1])) { count++; }
+			if(is_operand_reg(operands[2])) { count++; }
+			if(is_operand_reg(operands[3])) { count++; }
+
+			return count;
+		}
+
 		const char* name;
 		u32 opcode; // 3 bytes
 		u8 extension;

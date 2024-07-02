@@ -17,13 +17,38 @@ namespace baremetal {
 			return { 0, operands[0].reg };
 		}
 
+		if(inst->get_operand_count() == 3 && inst->get_imm_operand_count() == 0) {
+			std::pair<u8, u8> result = { 0, 0 };
+
+			if(inst->get_reg_operand_count() == 3) {
+				return { operands[1].reg, operands[0].reg };
+			}
+
+			i8 i = 0;
+
+			for(; i < 4; ++i) {
+				if(is_operand_reg(operands[i].type)) {
+					result.first = operands[i].reg;
+					result.second = operands[i].reg;
+					break;
+				}
+			}
+
+			for(; i < 4; ++i) {
+				if(is_operand_reg(operands[i].type)) {
+					result.first = operands[i].reg;
+					break;
+				}
+			}
+
+			return result;
+		}
+
 		// locate the first registers from the back
 		std::pair<u8, u8> result = { 0, 0 };
 		i8 i = 4;
 
 		while(i-- > 0) {
-			auto curr = operands[i];
-
 			if(is_operand_reg(operands[i].type)) {
 				result.first = operands[i].reg;
 				result.second = operands[i].reg;
@@ -185,8 +210,19 @@ namespace baremetal {
 
 		// opcode - rex prefix
 		if(is_rexw || is_extended_reg(op1) || is_extended_reg(op2)) {
+			// gp | extended gp | gp
+			if(is_operand_reg(op1.type) && is_extended_gp_reg(op2) && is_operand_reg(op3.type)) {
+				if(inst->get_direction()) {
+					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+				else {
+					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
+					m_bytes.push_back(rex_part);
+				}
+			}
 			// extended gp | register
-			if(is_extended_gp_reg(op1) && is_operand_reg(op2.type)) {
+			else if(is_extended_gp_reg(op1) && is_operand_reg(op2.type)) {
 				if(inst->get_direction()) {
 					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
 					m_bytes.push_back(rex_part);
@@ -410,10 +446,10 @@ namespace baremetal {
 					// beginning of the instruction
 					i32 new_displacement = static_cast<i32>(displacement.value - (get_current_inst_size() + 4));
 
-					if(i + 1 != operand_count) {
+					for(u8 j = i; j < operand_count; ++j) {
 						// if we have another operand after the current one, calculate it's size
-						if(is_operand_imm(inst->operands[i + 1])) { // registers are already encoded
-							new_displacement -= get_operand_bit_width(inst->operands[i + 1]) / 8;
+						if(is_operand_imm(inst->operands[j])) { // registers are already encoded
+							new_displacement -= get_operand_bit_width(inst->operands[j]) / 8;
 						}
 					}
 

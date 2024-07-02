@@ -332,6 +332,8 @@ const direction_map = new Map([
     ["sha1rnds4", "REVERSE"],
     ["shufpd", "REVERSE"],
     ["shufps", "REVERSE"],
+    ["pextrw", "REVERSE"],
+    ["pextrw", "REVERSE"],
 ]);
 
 // overrides to the direction map

@@ -108,6 +108,14 @@ namespace baremetal {
 			case operand::OP_SREG:
 			case operand::OP_DREG:
 			case operand::OP_CREG:
+			case operand::OP_AL:
+			case operand::OP_AX:
+			case operand::OP_EAX:
+			case operand::OP_RAX:
+			case operand::OP_CL:
+			case operand::OP_DX:
+			case operand::OP_ECX:
+			case operand::OP_RCX:
 			case operand::OP_BND:   return true;
 			default: return false;
 		}
