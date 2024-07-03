@@ -1514,12 +1514,12 @@ const new_database = [
     { "name": "imul"           , "operands": ["reg64"]                 , "opcode": "0000f7", "rm": "5", "w": "W1", "ri": false, "pp": ""     },
     { "name": "imul"           , "operands": ["mem64"]                 , "opcode": "0000f7", "rm": "5", "w": "W1", "ri": false, "pp": ""     },
     
-    { "name": "imul"           , "operands": ["reg16", "reg16"]                 , "opcode": "0000f7", "rm": "5", "w": "W1", "ri": false, "pp": ""     },
-    { "name": "imul"           , "operands": ["reg16", "mem16"]                 , "opcode": "0000f7", "rm": "5", "w": "W1", "ri": false, "pp": ""     },
-    { "name": "imul"           , "operands": ["reg32", "reg32"]                 , "opcode": "0000f7", "rm": "5", "w": "W1", "ri": false, "pp": ""     },
-    { "name": "imul"           , "operands": ["reg32", "mem32"]                 , "opcode": "0000f7", "rm": "5", "w": "W1", "ri": false, "pp": ""     },
-    { "name": "imul"           , "operands": ["reg64", "reg64"]                 , "opcode": "0000f7", "rm": "5", "w": "W1", "ri": false, "pp": ""     },
-    { "name": "imul"           , "operands": ["reg64", "mem64"]                 , "opcode": "0000f7", "rm": "5", "w": "W1", "ri": false, "pp": ""     },
+    { "name": "imul"           , "operands": ["reg16", "reg16"]                 , "opcode": "000faf", "rm": "r", "w": "", "ri": false, "pp": "66"     },
+    { "name": "imul"           , "operands": ["reg16", "mem16"]                 , "opcode": "000faf", "rm": "r", "w": "", "ri": false, "pp": "66"     },
+    { "name": "imul"           , "operands": ["reg32", "reg32"]                 , "opcode": "000faf", "rm": "r", "w": "", "ri": false, "pp": ""     },
+    { "name": "imul"           , "operands": ["reg32", "mem32"]                 , "opcode": "000faf", "rm": "r", "w": "", "ri": false, "pp": ""     },
+    { "name": "imul"           , "operands": ["reg64", "reg64"]                 , "opcode": "000faf", "rm": "r", "w": "W1", "ri": false, "pp": ""     },
+    { "name": "imul"           , "operands": ["reg64", "mem64"]                 , "opcode": "000faf", "rm": "r", "w": "W1", "ri": false, "pp": ""     },
 
 
     { "name": "imul"           , "operands": ["reg16", "reg16", "i8"]  , "opcode": "00006b", "rm": "r", "w": ""  , "ri": false, "pp": "66"   },

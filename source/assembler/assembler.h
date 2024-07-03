@@ -121,5 +121,7 @@ namespace baremetal {
 	 */
 	auto signed_extend_representable(u64 value, u8 original, u8 dst, u8 src) -> bool;
 
+	auto sign_extend(u64 x, u8 x_bits, u8 n) -> u64;
+
 	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool;
 } // namespace baremetal

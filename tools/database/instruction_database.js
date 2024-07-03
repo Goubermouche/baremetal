@@ -643,6 +643,14 @@ function main() {
             // 1
             special_index = encode_context(1, dest_to_source.get(`${inst.name}:${inst.operands[0]}:1`));
         }
+        else if(inst.name === "imul" && inst.operands.length === 3 && is_immediate(inst.operands[2])) {
+            // 2
+            const key8 = `${inst.name}:${inst.operands[0]}:${inst.operands[1]}:i8`;
+
+            if(dest_to_source.has(key8) && inst.operands[2] !== "i8") {
+                special_index = encode_context(2, dest_to_source.get(key8));
+            }
+        }
 
         let row = [
             `${utility.format_instruction_name(inst.name)}`, 

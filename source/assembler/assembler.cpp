@@ -68,14 +68,16 @@ namespace baremetal {
 
 	auto assembler::find_instruction_info(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4)  -> const instruction_info* {
 		// instruction optimizations are only applicable if the last operand is an immediate
-		if(is_operand_imm(op2.type) == false) {
+		if(is_operand_imm(op2.type) == false && is_operand_imm(op3.type) == false) {
 			return &instruction_db[index];
 		}
 
 		// store a list of legal variants, from which we'll pick the best one
 		utility::dynamic_array<const instruction_info*> legal_variants = {};
-		const u8 source_bit_width = get_operand_bit_width(op2.type);
-		const imm& source = op2.immediate;
+		u8 immediate_index = is_operand_imm(op3.type) ? 2 : 1;
+		const operand& op = is_operand_imm(op3.type) ? op3 : op2;
+		const u8 source_bit_width = get_operand_bit_width(op.type);
+		const imm& source = op.immediate;
 
 		// some instructions have a special optimization index, check if we have it
 		// if we have a valid context index the original index, provided as a parameter, will
@@ -112,6 +114,21 @@ namespace baremetal {
 
 					break; // we're not using the optimization index, continue
 				}
+				case 2: {
+					// truncate to 8 bits 
+					const u64 truncated = op3.immediate.value & 0b011111111;
+					const u64 extend = sign_extend(truncated, 8, 64);
+
+					// utility::console::print("{}\n", truncated);
+					// utility::console::print("{}\n", extend);
+					// utility::console::print("{}\n", op3.immediate.value);
+
+					if(extend == op3.immediate.value) {
+						return &instruction_db[context_index];
+					}
+
+					break;
+				}
 				default: {
 					utility::console::print_err("unknown context kind specified ({})\n", kind);
 				}
@@ -119,10 +136,17 @@ namespace baremetal {
 		}
 
 		u32 current_index = index; // index of the first variant
+		u8 operand_count = instruction_db[current_index].get_operand_count() - 1;
 
 		// locate all legal variants of our instruction
-		while(is_operand_of_same_kind(instruction_db[index].operands[0], instruction_db[current_index].operands[0])) {
-			if(is_operand_imm(instruction_db[current_index].operands[1])) {
+		while(true) {
+			for(u8 i = 0; i < operand_count; ++i) {
+				if(!is_operand_of_same_kind(instruction_db[index].operands[i], instruction_db[current_index].operands[i])) {
+					goto end_location;
+				}
+			}
+
+			if(is_operand_imm(instruction_db[current_index].operands[immediate_index])) {
 				legal_variants.push_back(&instruction_db[current_index++]);
 			}
 			else {
@@ -130,15 +154,17 @@ namespace baremetal {
 			}
 		}
 
-		// sort by the smallest source operands
-		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [](const instruction_info* a, const instruction_info* b) {
-			return get_operand_bit_width(a->operands[1]) < get_operand_bit_width(b->operands[1]);
-		});
+end_location:
 
 		if(legal_variants.get_size() == 1) {
 			// one legal variant, use that
 			return legal_variants[0];
 		}
+
+		// sort by the smallest source operands
+		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [](const instruction_info* a, const instruction_info* b) {
+			return get_operand_bit_width(a->operands[1]) < get_operand_bit_width(b->operands[1]);
+		});
 
 		// multiple legal variants, determine the best one (since our data is sorted from smallest
 		// source operands to largest, we can exit as soon as we get a valid match)
@@ -732,10 +758,19 @@ namespace baremetal {
 		const uint64_t mask = (1ULL << src) - 1;
 		const u64 shrunk = value & mask;
 
-		const u64 extended_source   = utility::sign_extend(shrunk, src, dst);
-		const u64 extended_original = utility::sign_extend(value, original, dst);
+		const u64 extended_source   = sign_extend(shrunk, src, dst);
+		const u64 extended_original = sign_extend(value, original, dst);
 
 		return extended_source == extended_original;
+	}
+
+	auto sign_extend(u64 x, u8 x_bits, u8 n) -> u64 {
+		if(x >> (x_bits - 1)) {
+			// u8 diff = n - x_bits;
+			return x | (std::numeric_limits<u64>::max() << x_bits);
+		}
+
+		return x;
 	}
 
 	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool {
