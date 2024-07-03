@@ -556,6 +556,7 @@ if (isMainThread) {
 
 namespace baremetal::tests {
 \tinline auto run_test_${name}() -> test_result {
+\t\tutility::dynamic_string string;
 \t\tassembler assembler;
 \t\ttest_result result;
 

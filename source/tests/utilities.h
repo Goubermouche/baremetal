@@ -15,7 +15,7 @@ using namespace utility::types;
 #define TEST_INST(expected, instruction)                                                                           \
 do {                                                                                                               \
   assembler.instruction;                                                                                           \
-  utility::dynamic_string string = bytes_to_string(assembler.get_bytes());                                         \
+  string = bytes_to_string(assembler.get_bytes());                                                                 \
   if((expected) != string) {                                                                                       \
     utility::console::print("error: \"{}\", expected \"{}\", but got \"{}\"\n", #instruction, (expected), string); \
     result.fail_count++;                                                                                           \
