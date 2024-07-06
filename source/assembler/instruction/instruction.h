@@ -1,6 +1,7 @@
 #pragma once
-#include "assembler/instruction/operands/operands.h"
 #include <utility/assert.h>
+
+#include "assembler/instruction/operands/operands.h"
 
 namespace baremetal {
 	enum extension : u8 {
@@ -47,19 +48,43 @@ namespace baremetal {
 		ADDRESS_SIZE_OVERRIDE = 0b10000000
 	};
 
+	// operand direction
 	enum direction : u8 {
 		DIR_NORMAL,
 		DIR_REVERSE
 	};
 
 #pragma pack(push, 1)
-	struct instruction_info {
+	struct instruction {
+		constexpr instruction() = default;
+
+		constexpr instruction(
+			const char* name,
+			u32 opcode,
+			u8 ext,
+			u8 prefix,
+			u16 context_index,
+			u8 operand_count,
+			direction operand_direction,
+			enum operand::type op1,
+			enum operand::type op2,
+			enum operand::type op3,
+			enum operand::type op4
+		) : m_name(name),
+		m_opcode(opcode),
+		m_extension(ext),
+		m_prefix(prefix),
+		m_special_index(context_index),
+		m_operand_count(operand_count),
+		m_operand_direction(operand_direction),
+		m_operands{ op1, op2, op3, op4 } {}
+
 		void print() const {
-			utility::console::print("{} ", name);
+			utility::console::print("{} ", m_name);
 
 			for(u8 i = 0; i < 4; ++i) {
-				if(operands[i] != operand::OP_NONE) {
-					utility::console::print("{} ", operand_type_to_string(operands[i]));
+				if(m_operands[i] != operand::OP_NONE) {
+					utility::console::print("{} ", operand_type_to_string(m_operands[i]));
 				}
 			}
 
@@ -67,103 +92,182 @@ namespace baremetal {
 		}
 
 		constexpr auto is_rexw() const -> bool {
-			return extension & EXT_REXW;
+			return m_extension & EXT_REXW;
 		}
-
 		constexpr auto is_r() const -> bool {
-			return extension & EXT_R;
+			return m_extension & EXT_R;
 		}
-
 		constexpr auto is_opcode_ext() const -> bool {
-			return extension & EXT_OP_R;
+			return m_extension & EXT_OP_R;
+		}
+		constexpr auto is_ext() const -> bool {
+			return
+				m_extension & EXT_0 ||
+				m_extension & EXT_1 ||
+				m_extension & EXT_2 ||
+				m_extension & EXT_3 ||
+				m_extension & EXT_4 ||
+				m_extension & EXT_5 ||
+				m_extension & EXT_6 ||
+				m_extension & EXT_7;
 		}
 
 		constexpr auto get_ext() const -> u8 {
 			// extract the ext_x bits and subtract one to convert them to the
 			// specific value
-			const u8 masked = extension & 0b00011111;
+			const u8 masked = m_extension & 0b00011111;
 			return masked - 1;
 		}
-
 		constexpr auto get_direction() const -> bool {
-			return dir == DIR_NORMAL;
+			return m_operand_direction == DIR_NORMAL;
 		}
-
-		constexpr auto is_ext() const -> bool {
-			return
-				extension & EXT_0 ||
-				extension & EXT_1 ||
-				extension & EXT_2 ||
-				extension & EXT_3 ||
-				extension & EXT_4 ||
-				extension & EXT_5 ||
-				extension & EXT_6 ||
-				extension & EXT_7;
-		}
-
-		constexpr auto has_prefix() const -> bool {
-			return prefix != PREFIX_NONE;
-		}
-
 		constexpr auto get_operand_count() const -> u8 {
-			u8 count = 0;
-
-			if(operands[0] != operand::OP_NONE) { count++; }
-			if(operands[1] != operand::OP_NONE) { count++; }
-			if(operands[2] != operand::OP_NONE) { count++; }
-			if(operands[3] != operand::OP_NONE) { count++; }
-
-			return count;
+			return m_operand_count;
+		}
+		constexpr auto get_prefix() const -> u8 {
+			return m_prefix;
+		}
+		constexpr auto get_extension() const -> u8 {
+			return m_extension;
+		}
+		constexpr auto get_opcode() const -> u32 {
+			return m_opcode;
+		}
+		constexpr auto get_operand(u8 index) const -> enum operand::type {
+			return m_operands[index];
+		}
+		constexpr auto get_special_kind() const -> u8 {
+			return m_special_index >> 14;
+		}
+		constexpr auto get_special_index() const -> u16 {
+			return m_special_index & 0b0011111111111111;
 		}
 
 		auto get_imm_operand_count() const -> u8 {
 			u8 count = 0;
 
-			if(is_operand_imm(operands[0])) { count++; }
-			if(is_operand_imm(operands[1])) { count++; }
-			if(is_operand_imm(operands[2])) { count++; }
-			if(is_operand_imm(operands[3])) { count++; }
+			if(is_operand_imm(m_operands[0])) { count++; }
+			if(is_operand_imm(m_operands[1])) { count++; }
+			if(is_operand_imm(m_operands[2])) { count++; }
+			if(is_operand_imm(m_operands[3])) { count++; }
 
 			return count;
 		}
-
 		auto get_reg_operand_count() const -> u8 {
 			u8 count = 0;
 
-			if(is_operand_reg(operands[0])) { count++; }
-			if(is_operand_reg(operands[1])) { count++; }
-			if(is_operand_reg(operands[2])) { count++; }
-			if(is_operand_reg(operands[3])) { count++; }
+			if(is_operand_reg(m_operands[0])) { count++; }
+			if(is_operand_reg(m_operands[1])) { count++; }
+			if(is_operand_reg(m_operands[2])) { count++; }
+			if(is_operand_reg(m_operands[3])) { count++; }
 
 			return count;
 		}
 
-		const char* name;
-		u32 opcode; // 3 bytes
-		u8 extension;
-		u8 prefix;
-		u16 context_index;
-		direction dir;
-		enum operand::type operands[4];
-	};
+		constexpr auto has_prefix() const -> bool {
+			return m_prefix != PREFIX_NONE;
+		}
+		constexpr auto has_special_index() const -> bool {
+			return m_special_index != std::numeric_limits<u16>::max();
+		}
+	private:
+		const char* m_name;
 
+		// encoding
+		u32 m_opcode;
+		u8 m_extension;
+		u8 m_prefix;
+
+		// some instructions have a special optimization index, which points to an alternative variant
+		// which can be used depending on the provided operands
+
+		//           [1111111111111111] (65535) is an invalid index => that instruction does not have one
+		// kind      [XX______________]
+		// index     [__XXXXXXXXXXXXXX]
+		u16 m_special_index;
+
+		// operands
+		u8 m_operand_count;
+		direction m_operand_direction;
+		enum operand::type m_operands[4];
+	};
 #pragma pack(pop)
 
 // instruction generators
-#define INST_0(name, opcode, extensions, prefix, context, dir) \
-	{ #name, opcode, extensions, prefix, context, direction::DIR_ ## dir, { operand::OP_NONE, operand::OP_NONE, operand::OP_NONE, operand::OP_NONE }},
+#define INST_0(name, opcode, ext, prefix, ctx, dir) \
+  instruction(                                      \
+    #name,                                          \
+    opcode,                                         \
+    ext,                                            \
+    prefix,                                         \
+    ctx,                                            \
+    0,                                              \
+    direction::DIR_ ## dir,                         \
+    operand::OP_NONE,                               \
+    operand::OP_NONE,                               \
+    operand::OP_NONE,                               \
+    operand::OP_NONE                                \
+  ),
 
-#define INST_1(name, opcode, extensions, prefix, context, dir, op1) \
-  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_NONE, operand::OP_NONE, operand::OP_NONE }},
+#define INST_1(name, opcode, ext, prefix, ctx, dir, op1) \
+  instruction(                                           \
+    #name,                                               \
+    opcode,                                              \
+    ext,                                                 \
+    prefix,                                              \
+    ctx,                                                 \
+    1,                                                   \
+    direction::DIR_ ## dir,                              \
+    operand::OP_ ## op1,                                 \
+    operand::OP_NONE,                                    \
+    operand::OP_NONE,                                    \
+    operand::OP_NONE                                     \
+  ),
 
-#define INST_2(name, opcode, extensions, prefix, context, dir, op1, op2) \
-  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_ ## op2, operand::OP_NONE, operand::OP_NONE }},
+#define INST_2(name, opcode, ext, prefix, ctx, dir, op1, op2) \
+  instruction(                                                \
+    #name,                                                    \
+    opcode,                                                   \
+    ext,                                                      \
+    prefix,                                                   \
+    ctx,                                                      \
+    2,                                                        \
+    direction::DIR_ ## dir,                                   \
+    operand::OP_ ## op1,                                      \
+    operand::OP_ ## op2,                                      \
+    operand::OP_NONE,                                         \
+    operand::OP_NONE                                          \
+  ),
 
-#define INST_3(name, opcode, extensions, prefix, context, dir, op1, op2, op3) \
-  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_ ## op2, operand::OP_ ## op3, operand::OP_NONE }},
+#define INST_3(name, opcode, ext, prefix, ctx, dir, op1, op2, op3) \
+  instruction(                                                     \
+    #name,                                                         \
+    opcode,                                                        \
+    ext,                                                           \
+    prefix,                                                        \
+    ctx,                                                           \
+    3,                                                             \
+    direction::DIR_ ## dir,                                        \
+    operand::OP_ ## op1,                                           \
+    operand::OP_ ## op2,                                           \
+    operand::OP_ ## op3,                                           \
+    operand::OP_NONE                                               \
+  ),
 
-#define INST_4(name, opcode, extensions, prefix, context, dir, op1, op2, op3, op4) \
-  { #name, opcode, extensions, prefix, context, direction::DIR_ ## dir , { operand::OP_ ## op1, operand::OP_ ## op2, operand::OP_ ## op3, operand::OP_ ## op4 }},
+#define INST_4(name, opcode, ext, prefix, ctx, dir, op1, op2, op3, op4) \
+  instruction(                                                          \
+    #name,                                                              \
+    opcode,                                                             \
+    ext,                                                                \
+    prefix,                                                             \
+    ctx,                                                                \
+    4,                                                                  \
+    direction::DIR_ ## dir,                                             \
+    operand::OP_ ## op1,                                                \
+    operand::OP_ ## op2,                                                \
+    operand::OP_ ## op3,                                                \
+    operand::OP_ ## op4                                                 \
+  ),
 
 // select which INST_X to call based off of the variable argument count (0-2)
 #define INST_SELECT(count) CONCATENATE(INST_, count)
@@ -171,7 +275,7 @@ namespace baremetal {
 #define INST(name, opcode, extensions, prefix, context, dir, ...) \
   INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extensions, prefix, context, dir, __VA_ARGS__)
 
-	static constexpr instruction_info instruction_db[] = {
+	static constexpr instruction instruction_db[] = {
 		#include "assembler/instruction/databases/instruction_database.inc"
 	};
 

@@ -12,7 +12,7 @@ namespace baremetal {
 		return m_bytes;
 	}
 
-	auto assembler::find_rex_pair(const instruction_info* inst, const operand* operands) -> std::pair<u8, u8> {
+	auto assembler::find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8> {
 		if(inst->get_operand_count() == 1) {
 			return { 0, operands[0].reg };
 		}
@@ -66,7 +66,7 @@ namespace baremetal {
 		return result;
 	}
 
-	auto assembler::find_instruction_info(u32 index, const operand* operands)  -> const instruction_info* {
+	auto assembler::find_instruction_info(u32 index, const operand* operands)  -> const instruction* {
 		u8 imm_index = std::numeric_limits<u8>::max();
 
 		// locate the first immediate operand
@@ -83,22 +83,17 @@ namespace baremetal {
 		}
 
 		// store a list of legal variants, from which we'll pick the best one
-		utility::dynamic_array<const instruction_info*> legal_variants = {};
+		utility::dynamic_array<const instruction*> legal_variants = {};
 		const imm& imm_op = operands[imm_index].immediate;
 
 		// some instructions have a special optimization index, check if we have it
 		// if we have a valid context index, the original index, provided as a parameter, will
 		// be replaced by this index
-		if(instruction_db[index].context_index != std::numeric_limits<u16>::max()) {
-			//           [1111111111111111] (65535) is an invalid index => that instruction does not have one
-			// kind      [XX______________]
-			// index     [__XXXXXXXXXXXXXX]
-
-			const u16 context = instruction_db[index].context_index;
-			const u16 context_index = context & 0b0011111111111111;
+		if(instruction_db[index].has_special_index()) {
+			const u16 context_index = instruction_db[index].get_special_index();
 
 			// switch on the context kind
-			switch(context >> 14) {
+			switch(instruction_db[index].get_special_kind()) {
 				case 0: {
 					// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
 					// less we can look for a smaller destination
@@ -157,17 +152,17 @@ namespace baremetal {
 		// one (ie. an ax register). In these cases we lose the guarantee of them being sorted
 		// from smallest to biggest immediate operands, hence we have to sort them.
 		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [=](auto a, auto b) {
-			const u8 a_width = get_operand_bit_width(a->operands[imm_index]);
-			const u8 b_width = get_operand_bit_width(b->operands[imm_index]);
+			const u8 a_width = get_operand_bit_width(a->get_operand(imm_index));
+			const u8 b_width = get_operand_bit_width(b->get_operand(imm_index));
 
 			return a_width < b_width;
 		});
 
 		// multiple legal variants, determine the best one (since our data is sorted from smallest
 		// source operands to largest, we can exit as soon as we get a valid match)
-		for(const instruction_info* inst : legal_variants) {
-			const u8 src_bits = get_operand_bit_width(inst->operands[imm_index]);
-			const u8 dst_bits = get_operand_bit_width(inst->operands[0]);
+		for(const instruction* inst : legal_variants) {
+			const u8 src_bits = get_operand_bit_width(inst->get_operand(imm_index));
+			const u8 dst_bits = get_operand_bit_width(inst->get_operand(0));
 
 			// check if there is a possibility of sign extending the immediate
 			if(src_bits < dst_bits) {
@@ -191,20 +186,23 @@ namespace baremetal {
 		const u8 operand_count = instruction_db[a].get_operand_count() - 1;
 
 		for(u8 i = 0; i < operand_count; ++i) {
-			if(!is_operand_of_same_kind(instruction_db[a].operands[i], instruction_db[b].operands[i])) {
+			if(!is_operand_of_same_kind(
+				instruction_db[a].get_operand(i), 
+				instruction_db[b].get_operand(i)
+			)) {
 				return false;
 			}
 		}
 
-		return is_operand_imm(instruction_db[b].operands[imm_index]);
+		return is_operand_imm(instruction_db[b].get_operand(imm_index));
 	}
 
-	void assembler::emit_instruction_prefix(const instruction_info* inst) {
+	void assembler::emit_instruction_prefix(const instruction* inst) {
 		if(inst->has_prefix() == false) {
 			return; // no prefix
 		}
 
-		const u8 prefix = inst->prefix;
+		const u8 prefix = inst->get_prefix();
 
 		// group 4
 		if(prefix & ADDRESS_SIZE_OVERRIDE) {
@@ -238,7 +236,7 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_instruction_opcode(const instruction_info* inst, const operand* operands) {
+	void assembler::emit_instruction_opcode(const instruction* inst, const operand* operands) {
 		const bool is_rexw = inst->is_rexw();
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
@@ -379,7 +377,7 @@ namespace baremetal {
 		}
 
 		// opcode
-		u64 opcode = inst->opcode;
+		u64 opcode = inst->get_opcode();
 
 		if(inst->is_opcode_ext()) {
 			// extract the 3 least significant reg bits 
@@ -415,11 +413,11 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_operands(const instruction_info* inst, const operand* operands) {
+	void assembler::emit_operands(const instruction* inst, const operand* operands) {
 		for(u8 i = 0; i < inst->get_operand_count(); ++i) {
 			if(is_operand_imm(operands[i].type)) {
 				// immediate operand
-				emit_data_operand(operands[i].immediate.value, get_operand_bit_width(inst->operands[i]));
+				emit_data_operand(operands[i].immediate.value, get_operand_bit_width(inst->get_operand(i)));
 			}
 			else if(is_operand_moff(operands[i].type)) {
 				// memory offset operand (always 64-bit)
@@ -451,8 +449,8 @@ namespace baremetal {
 
 					for(u8 j = i; j < inst->get_operand_count(); ++j) {
 						// if we have another operand after the current one, calculate it's size
-						if(is_operand_imm(inst->operands[j])) { // registers are already encoded
-							new_displacement -= get_operand_bit_width(inst->operands[j]) / 8;
+						if(is_operand_imm(inst->get_operand(j))) { // registers are already encoded
+							new_displacement -= get_operand_bit_width(inst->get_operand(j)) / 8;
 						}
 					}
 
@@ -471,7 +469,7 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_instruction_mod_rm(const instruction_info* inst, const operand* operands) {
+	void assembler::emit_instruction_mod_rm(const instruction* inst, const operand* operands) {
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
 		// mod rm / sib byte
@@ -607,7 +605,7 @@ namespace baremetal {
 
 		// locate the actual instruction we want to assemble (this doesn't have to match the specified
 		// index, since we can apply optimizations which focus on stuff like shorter encodings)
-		const instruction_info* inst = find_instruction_info(index, operands);
+		const instruction* inst = find_instruction_info(index, operands);
 
 		// emit instruction parts
 		emit_instruction_prefix(inst);

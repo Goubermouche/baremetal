@@ -4,26 +4,30 @@
 namespace baremetal {
 	struct operand {
 		constexpr operand() : type(OP_NONE), reg(0) {}
-		operand(imm i) : type(OP_I64), immediate(i) {}
-		operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
 
-		operand(reg8  r) : type(OP_REG8),  reg(r.index) {}
-		operand(reg16 r) : type(OP_REG16), reg(r.index) {}
-		operand(reg32 r) : type(OP_REG32), reg(r.index) {}
-		operand(reg64 r) : type(OP_REG64), reg(r.index) {}
-		operand(xmm r) : type(OP_XMM), reg(r.index) {}
-		operand(mmx r) : type(OP_MMX), reg(r.index) {}
-		operand(bnd r) : type(OP_BND), reg(r.index) {}
-		operand(sreg r) : type(OP_SREG), reg(r.index) {}
-		operand(dreg r) : type(OP_DREG), reg(r.index) {}
-		operand(creg r) : type(OP_CREG), reg(r.index) {}
+		// immediates
+		constexpr operand(imm i)  : type(OP_I64), immediate(i) {}
 
-		operand(mem_address m) : type(OP_MEM_ADDRESS), memory(m) {}
-		operand(mem8  m) : type(OP_MEM8),  memory(m) {}
-		operand(mem16 m) : type(OP_MEM16), memory(m) {}
-		operand(mem32 m) : type(OP_MEM32), memory(m) {}
-		operand(mem64 m) : type(OP_MEM64), memory(m) {}
-		operand(mem128 m) : type(OP_MEM128), memory(m) {}
+		// registers
+		constexpr operand(reg8  r) : type(OP_REG8 ), reg(r.index) {}
+		constexpr operand(reg16 r) : type(OP_REG16), reg(r.index) {}
+		constexpr operand(reg32 r) : type(OP_REG32), reg(r.index) {}
+		constexpr operand(reg64 r) : type(OP_REG64), reg(r.index) {}
+		constexpr operand(sreg r) : type(OP_SREG), reg(r.index) {}
+		constexpr operand(dreg r) : type(OP_DREG), reg(r.index) {}
+		constexpr operand(creg r) : type(OP_CREG), reg(r.index) {}
+		constexpr operand(xmm r) : type(OP_XMM), reg(r.index) {}
+		constexpr operand(mmx r) : type(OP_MMX), reg(r.index) {}
+		constexpr operand(bnd r) : type(OP_BND), reg(r.index) {}
+
+		// memory
+		constexpr operand(mem_address m) : type(OP_MEM_ADDRESS), memory(m) {}
+		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
+		constexpr operand(mem128 m) : type(OP_MEM128), memory(m) {}
+		constexpr operand(mem64 m) : type(OP_MEM64), memory(m) {}
+		constexpr operand(mem32 m) : type(OP_MEM32), memory(m) {}
+		constexpr operand(mem16 m) : type(OP_MEM16), memory(m) {}
+		constexpr operand(mem8 m) : type(OP_MEM8), memory(m) {}
 
 		enum type : u8 {
 			OP_NONE,
@@ -153,7 +157,7 @@ namespace baremetal {
 		}
 	}
 
-	inline constexpr auto is_operand_imm(enum operand::type op) -> bool {
+	inline auto is_operand_imm(enum operand::type op) -> bool {
 		switch(op) {
 			case operand::OP_I8:
 			case operand::OP_I16:
@@ -235,7 +239,7 @@ namespace baremetal {
 			case operand::OP_REG32:       return "r32";
 			case operand::OP_REG64:       return "r64";
 			case operand::OP_XMM:         return "xmm";
-			case operand::OP_MMX:         return "xmm";
+			case operand::OP_MMX:         return "mmx";
 			case operand::OP_BND:         return "bnd";
 			case operand::OP_SREG:        return "sreg";
 			case operand::OP_DREG:        return "dreg";
