@@ -586,7 +586,6 @@ function main() {
 
     let last_inst_name = "";
 
-    // actual array
     instructions.forEach((inst, i) => {
         if(last_inst_name != inst.name) {
             current_index = i;
@@ -594,8 +593,8 @@ function main() {
 
         dest_to_source.set(`${inst.name}:${inst.operands.join(":")}`, i);
 
-        if(inst.operands.length > 0 && last_destination === inst.operands[0]) {
-            if(is_immediate(inst.operands[1])) {}
+        if((inst.operands.length ===  1 && is_immediate(inst.operands[0])) || (inst.operands.length > 1 && last_destination === inst.operands[0])) {
+            if(inst.operands.length === 1 ?  is_immediate(inst.operands[0]) :  is_immediate(inst.operands[1])) {}
             else {
                 current_index = i;
             }

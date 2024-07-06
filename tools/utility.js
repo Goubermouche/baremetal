@@ -1703,7 +1703,7 @@ const new_database = [
     { "name": "push"           , "operands": ["reg64"]                 , "opcode": "000050", "rm": "" , "w": ""  , "ri": true , "pp": ""     },
     { "name": "push"           , "operands": ["mem64"]                 , "opcode": "0000ff", "rm": "6", "w": ""  , "ri": false, "pp": ""     },
     { "name": "push"           , "operands": ["i8"]                    , "opcode": "00006a", "rm": "" , "w": ""  , "ri": false, "pp": ""     },
-    { "name": "push"           , "operands": ["i16"]                   , "opcode": "000068", "rm": "" , "w": ""  , "ri": false, "pp": "66"   },
+    // { "name": "push"           , "operands": ["i16"]                   , "opcode": "000068", "rm": "" , "w": ""  , "ri": false, "pp": "66"   },
     { "name": "push"           , "operands": ["i32"]                   , "opcode": "000068", "rm": "" , "w": ""  , "ri": false, "pp": ""     },
     { "name": "pushf"          , "operands": []                        , "opcode": "00009c", "rm": "" , "w": ""  , "ri": false, "pp": ""   },
     { "name": "pushfq"         , "operands": []                        , "opcode": "00009c", "rm": "" , "w": ""  , "ri": false, "pp": ""     },

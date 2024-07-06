@@ -66,16 +66,23 @@ namespace baremetal {
 		return result;
 	}
 
-	auto assembler::find_instruction_info(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4)  -> const instruction_info* {
-		// instruction optimizations are only applicable if the last operand is an immediate
-		if(is_operand_imm(op2.type) == false && is_operand_imm(op3.type) == false) {
+	auto assembler::find_instruction_info(u32 index, const operand* operands)  -> const instruction_info* {
+		u8 immediate_index = std::numeric_limits<u8>::max();
+
+		for(u8 i = 0; i < 4; ++i) {
+			if(is_operand_imm(operands[i].type)) {
+				immediate_index = i;
+				break;
+			}
+		}
+
+		if(immediate_index == std::numeric_limits<u8>::max()) {
 			return &instruction_db[index];
 		}
 
 		// store a list of legal variants, from which we'll pick the best one
 		utility::dynamic_array<const instruction_info*> legal_variants = {};
-		u8 immediate_index = is_operand_imm(op3.type) ? 2 : 1;
-		const operand& op = is_operand_imm(op3.type) ? op3 : op2;
+		const operand& op = operands[immediate_index];
 		const u8 source_bit_width = get_operand_bit_width(op.type);
 		const imm& source = op.immediate;
 
@@ -95,7 +102,7 @@ namespace baremetal {
 				case 0: {
 					// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
 					// less we can look for a smaller destination
-					if(op1.type == operand::OP_REG64 && source.min_bits <= 32) {
+					if(operands[0].type == operand::OP_REG64 && source.min_bits <= 32) {
 						// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64
 						// bits) we can't zero extend 
 						if(source.sign == false) {
@@ -108,7 +115,7 @@ namespace baremetal {
 				case 1: {
 					// if we have a source operand which is equal to 1, we can use a shorter encoding, in basically all
 					// cases we can just return, since the operand is effectively removed
-					if(op2.immediate.value == 1) {
+					if(operands[1].immediate.value == 1) {
 						return &instruction_db[context_index];
 					}
 
@@ -116,14 +123,14 @@ namespace baremetal {
 				}
 				case 2: {
 					// truncate to 8 bits 
-					const u64 truncated = op3.immediate.value & 0b011111111;
+					const u64 truncated = operands[2].immediate.value & 0b011111111;
 					const u64 extend = sign_extend(truncated, 8, 64);
 
 					// utility::console::print("{}\n", truncated);
 					// utility::console::print("{}\n", extend);
 					// utility::console::print("{}\n", op3.immediate.value);
 
-					if(extend == op3.immediate.value) {
+					if(extend == operands[2].immediate.value) {
 						return &instruction_db[context_index];
 					}
 
@@ -162,14 +169,14 @@ end_location:
 		}
 
 		// sort by the smallest source operands
-		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [](const instruction_info* a, const instruction_info* b) {
-			return get_operand_bit_width(a->operands[1]) < get_operand_bit_width(b->operands[1]);
+		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [immediate_index](const instruction_info* a, const instruction_info* b) {
+			return get_operand_bit_width(a->operands[immediate_index]) < get_operand_bit_width(b->operands[immediate_index]);
 		});
 
 		// multiple legal variants, determine the best one (since our data is sorted from smallest
 		// source operands to largest, we can exit as soon as we get a valid match)
 		for(const instruction_info* i : legal_variants) {
-			const u8 current_source_bits = get_operand_bit_width(i->operands[1]);
+			const u8 current_source_bits = get_operand_bit_width(i->operands[immediate_index]);
 			const u8 current_dest_bits = get_operand_bit_width(i->operands[0]);
 
 			// check if there is a possibility of sign extending the immediate
@@ -625,13 +632,13 @@ end_location:
 	void assembler::emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
 		// NOTE: operand count can be inferred from overloaded functions
 		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
+		const operand operands[4] = { op1, op2, op3, op4 }; // TODO: pass this instead of the individual operands
 
 		// locate the actual instruction we want to assemble (this doesn't have to match the specified
 		// index, since we can apply optimizations which focus on stuff like shorter encodings)
-		const instruction_info* inst = find_instruction_info(index, op1, op2, op3, op4);
+		const instruction_info* inst = find_instruction_info(index, operands);
 
 		const u8 operand_count = inst->get_operand_count(); // TODO: infer this
-		const operand operands[4] = { op1, op2, op3, op4 }; // TODO: pass this instead of the individual operands
 
 		// emit instruction parts
 		emit_instruction_prefix(inst);

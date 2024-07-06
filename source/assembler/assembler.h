@@ -67,7 +67,7 @@ namespace baremetal {
 		void emit_opcode_mem(const mem& memory);
 
 		static auto find_rex_pair(const instruction_info* inst, const operand* operands) -> std::pair<u8, u8>;
-		static auto find_instruction_info(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) -> const instruction_info*;
+		static auto find_instruction_info(u32 index, const operand* operands) -> const instruction_info*;
 
 		static auto has_sib_byte(const operand& op1, const operand& op2) -> bool;
 
