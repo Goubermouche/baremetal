@@ -57,25 +57,26 @@ namespace baremetal {
 		void emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
 
 		// opcode
-		void emit_instruction_opcode(const instruction_info* inst, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
-		void emit_instruction_mod_rm(const instruction_info* inst, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
-		void emit_instruction_sib(const operand& op1, const operand& op2);
+		void emit_instruction_opcode(const instruction_info* inst, const operand* operands);
+		void emit_instruction_mod_rm(const instruction_info* inst, const operand* operands);
+		void emit_instruction_sib(const operand* operands);
 		void emit_instruction_prefix(const instruction_info* inst);
 
-		void emit_operands(const operand* operands, u8 operand_count, const instruction_info* inst);
+		void emit_operands(const instruction_info* inst, const operand* operands);
 		void emit_data_operand(u64 data, u8 bit_width);
 		void emit_opcode_mem(const mem& memory);
 
 		static auto find_rex_pair(const instruction_info* inst, const operand* operands) -> std::pair<u8, u8>;
 		static auto find_instruction_info(u32 index, const operand* operands) -> const instruction_info*;
+		static auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
 
 		static auto has_sib_byte(const operand& op1, const operand& op2) -> bool;
 
-		enum mod_mode {
-			INDIRECT,
-			INDIRECT_DISP8,
-			INDIRECT_DISP32,
-			DIRECT
+		enum mod_mode : u8 {
+			INDIRECT        = 0b00,
+			INDIRECT_DISP8  = 0b01,
+			INDIRECT_DISP32 = 0b10,
+			DIRECT          = 0b11
 		};
 
 		static auto sib(u8 scale, u8 index, u8 base) -> u8;
@@ -114,14 +115,12 @@ namespace baremetal {
 	/**
 	 * \brief Checks if \b value can be represented by \b src sign-extended bits in \b dst bits.
 	 * \param value Immediate value to check
-	 * \param original Bit width of the value we're checking
-	 * \param dst Destination bit width
 	 * \param src Source bit width
 	 * \return True if the value is sign-representable in the specified environment, false otherwise.
 	 */
-	auto signed_extend_representable(u64 value, u8 original, u8 dst, u8 src) -> bool;
+	auto sign_extend_representable(u64 value, u8 src) -> bool;
 
-	auto sign_extend(u64 x, u8 x_bits, u8 n) -> u64;
+	auto sign_extend(u64 x, u8 x_bits) -> u64;
 
 	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool;
 } // namespace baremetal

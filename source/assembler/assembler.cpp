@@ -67,27 +67,27 @@ namespace baremetal {
 	}
 
 	auto assembler::find_instruction_info(u32 index, const operand* operands)  -> const instruction_info* {
-		u8 immediate_index = std::numeric_limits<u8>::max();
+		u8 imm_index = std::numeric_limits<u8>::max();
 
+		// locate the first immediate operand
 		for(u8 i = 0; i < 4; ++i) {
 			if(is_operand_imm(operands[i].type)) {
-				immediate_index = i;
+				imm_index = i;
 				break;
 			}
 		}
 
-		if(immediate_index == std::numeric_limits<u8>::max()) {
+		// no immediate operand, return the original variant
+		if(imm_index == std::numeric_limits<u8>::max()) {
 			return &instruction_db[index];
 		}
 
 		// store a list of legal variants, from which we'll pick the best one
 		utility::dynamic_array<const instruction_info*> legal_variants = {};
-		const operand& op = operands[immediate_index];
-		const u8 source_bit_width = get_operand_bit_width(op.type);
-		const imm& source = op.immediate;
+		const imm& imm_op = operands[imm_index].immediate;
 
 		// some instructions have a special optimization index, check if we have it
-		// if we have a valid context index the original index, provided as a parameter, will
+		// if we have a valid context index, the original index, provided as a parameter, will
 		// be replaced by this index
 		if(instruction_db[index].context_index != std::numeric_limits<u16>::max()) {
 			//           [1111111111111111] (65535) is an invalid index => that instruction does not have one
@@ -95,17 +95,17 @@ namespace baremetal {
 			// index     [__XXXXXXXXXXXXXX]
 
 			const u16 context = instruction_db[index].context_index;
-			const u8 kind = static_cast<u8>(context >> 14);
 			const u16 context_index = context & 0b0011111111111111;
 
-			switch(kind) {
+			// switch on the context kind
+			switch(context >> 14) {
 				case 0: {
 					// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
 					// less we can look for a smaller destination
-					if(operands[0].type == operand::OP_REG64 && source.min_bits <= 32) {
+					if(operands[0].type == operand::OP_REG64 && imm_op.min_bits <= 32) {
 						// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64
 						// bits) we can't zero extend 
-						if(source.sign == false) {
+						if(imm_op.sign == false) {
 							index = context_index;
 						}
 					}
@@ -122,13 +122,9 @@ namespace baremetal {
 					break; // we're not using the optimization index, continue
 				}
 				case 2: {
-					// truncate to 8 bits 
+					// truncate to 8 bits, this is only used with imul instructions
 					const u64 truncated = operands[2].immediate.value & 0b011111111;
-					const u64 extend = sign_extend(truncated, 8, 64);
-
-					// utility::console::print("{}\n", truncated);
-					// utility::console::print("{}\n", extend);
-					// utility::console::print("{}\n", op3.immediate.value);
+					const u64 extend = sign_extend(truncated, 8);
 
 					if(extend == operands[2].immediate.value) {
 						return &instruction_db[context_index];
@@ -137,59 +133,53 @@ namespace baremetal {
 					break;
 				}
 				default: {
-					utility::console::print_err("unknown context kind specified ({})\n", kind);
+					ASSERT(false, "unknown context kind");
 				}
 			}
 		}
 
-		u32 current_index = index; // index of the first variant
-		u8 operand_count = instruction_db[current_index].get_operand_count() - 1;
+		u32 current_index = index; // index of the current variant
 
-		// locate all legal variants of our instruction
-		while(true) {
-			for(u8 i = 0; i < operand_count; ++i) {
-				if(!is_operand_of_same_kind(instruction_db[index].operands[i], instruction_db[current_index].operands[i])) {
-					goto end_location;
-				}
-			}
-
-			if(is_operand_imm(instruction_db[current_index].operands[immediate_index])) {
-				legal_variants.push_back(&instruction_db[current_index++]);
-			}
-			else {
-				break;
-			}
+		// locate all legal variants of our instruction, since our instructions are sorted
+		// by their operands we can just increment the index as long as the two variants
+		// are legal
+		while(is_legal_variant(index, current_index, imm_index)) {
+			legal_variants.push_back(&instruction_db[current_index++]);
 		}
 
-end_location:
-
+		// one legal variant
 		if(legal_variants.get_size() == 1) {
-			// one legal variant, use that
 			return legal_variants[0];
 		}
 
-		// sort by the smallest source operands
-		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [immediate_index](const instruction_info* a, const instruction_info* b) {
-			return get_operand_bit_width(a->operands[immediate_index]) < get_operand_bit_width(b->operands[immediate_index]);
+		// sort by the smallest source operands, we need to do this for cases where one of the
+		// variants has a destination operand which isn't a generic register, but a specific
+		// one (ie. an ax register). In these cases we lose the guarantee of them being sorted
+		// from smallest to biggest immediate operands, hence we have to sort them.
+		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [=](auto a, auto b) {
+			const u8 a_width = get_operand_bit_width(a->operands[imm_index]);
+			const u8 b_width = get_operand_bit_width(b->operands[imm_index]);
+
+			return a_width < b_width;
 		});
 
 		// multiple legal variants, determine the best one (since our data is sorted from smallest
 		// source operands to largest, we can exit as soon as we get a valid match)
-		for(const instruction_info* i : legal_variants) {
-			const u8 current_source_bits = get_operand_bit_width(i->operands[immediate_index]);
-			const u8 current_dest_bits = get_operand_bit_width(i->operands[0]);
+		for(const instruction_info* inst : legal_variants) {
+			const u8 src_bits = get_operand_bit_width(inst->operands[imm_index]);
+			const u8 dst_bits = get_operand_bit_width(inst->operands[0]);
 
 			// check if there is a possibility of sign extending the immediate
-			if(current_source_bits < current_dest_bits) {
+			if(src_bits < dst_bits) {
 				// assume we're sign extending
-				if(signed_extend_representable(source.value, source_bit_width, current_dest_bits, current_source_bits)) {
-					return i;
+				if(sign_extend_representable(imm_op.value, src_bits)) {
+					return inst;
 				}
 			}
 
 			// check if the source operand is representable with a smaller immediate
-			if(current_source_bits >= source.min_bits) {
-				return i;
+			if(src_bits >= imm_op.min_bits) {
+				return inst;
 			}
 		}
 
@@ -197,8 +187,20 @@ end_location:
 		return nullptr;
 	}
 
+	auto assembler::is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool {
+		const u8 operand_count = instruction_db[a].get_operand_count() - 1;
+
+		for(u8 i = 0; i < operand_count; ++i) {
+			if(!is_operand_of_same_kind(instruction_db[a].operands[i], instruction_db[b].operands[i])) {
+				return false;
+			}
+		}
+
+		return is_operand_imm(instruction_db[b].operands[imm_index]);
+	}
+
 	void assembler::emit_instruction_prefix(const instruction_info* inst) {
-		if(!inst->has_prefix()) {
+		if(inst->has_prefix() == false) {
 			return; // no prefix
 		}
 
@@ -236,186 +238,151 @@ end_location:
 		}
 	}
 
-	void assembler::emit_instruction_opcode(const instruction_info* inst, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
+	void assembler::emit_instruction_opcode(const instruction_info* inst, const operand* operands) {
 		const bool is_rexw = inst->is_rexw();
-		const operand operands[4] = { op1, op2, op3, op4 };
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
-		// opcode - rex prefix
-		if(is_rexw || is_extended_reg(op1) || is_extended_reg(op2)) {
+		// rex prefix
+		if(is_rexw || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
+			utility::byte rex_part;
+
 			// gp | extended gp | gp
-			if(is_operand_reg(op1.type) && is_extended_gp_reg(op2) && is_operand_reg(op3.type)) {
-				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
-				}
-				else {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
-				}
+			if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 			}
 			// extended gp | register
-			else if(is_extended_gp_reg(op1) && is_operand_reg(op2.type)) {
+			else if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type)) {
 				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 				}
 				else {
-					const utility::byte rex_part = rex(is_rexw, op1.reg, op2.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 				}
 			}
 			// gp | extended gp
-			else if(is_extended_gp_reg(op2) && is_operand_gp_reg(op1.type)) {
+			else if(is_extended_gp_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
 				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 				}
 				else {
-					const utility::byte rex_part = rex(is_rexw, op1.reg, op2.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 				}
 			}
-			// extended gp | mem
-			else if(is_operand_gp_reg(op1.type) && is_operand_mem(op2.type)) {
-				const utility::byte rex_part = rex(is_rexw, op1.reg, op2.memory.base.index, op2.memory.index.index);
-				m_bytes.push_back(rex_part);
+			else if(is_operand_gp_reg(operands[0].type) && is_operand_mem(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
 			}
-			// mem | extended gp
-			else if(is_operand_mem(op1.type) && is_operand_gp_reg(op2.type)) {
-				const utility::byte rex_part = rex(is_rexw, op2.reg, op1.memory.base.index, op1.memory.index.index);
-				m_bytes.push_back(rex_part);
+			else if(is_operand_mem(operands[0].type) && is_operand_gp_reg(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
 			}
 			// extended xmm | xmm
-			else if(is_extended_xmm_reg(op1) && is_operand_xmm(op2.type)) {
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_xmm(operands[1].type)) {
 				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 				}
 				else {
-					const utility::byte rex_part = rex(is_rexw, op1.reg, op2.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 				}
 			}
 			// xmm | extended xmm
-			else if(is_extended_xmm_reg(op2) && is_operand_xmm(op1.type)) {
+			else if(is_extended_xmm_reg(operands[1]) && is_operand_xmm(operands[0].type)) {
 				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 				}
 				else {
-					const utility::byte rex_part = rex(is_rexw, op1.reg, op2.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 				}
 			}
 			// extended xmm | gp
-			else if(is_extended_xmm_reg(op1) && is_operand_gp_reg(op2.type)) {
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_gp_reg(operands[1].type)) {
 				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 				}
 				else {
-					const utility::byte rex_part = rex(is_rexw, op1.reg, op2.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 				}
 			}
 			// gp | extended xmm
-			else if(is_extended_xmm_reg(op2) && is_operand_gp_reg(op1.type)) {
+			else if(is_extended_xmm_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
 				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 				}
 				else {
-					const utility::byte rex_part = rex(is_rexw, op1.reg, op2.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 				}
 			}
 			// extended xmm | imm
-			else if(is_extended_xmm_reg(op1) && is_operand_imm(op2.type)) {
-				const utility::byte rex_part = rex(is_rexw, 0, op1.reg, 0);
-				m_bytes.push_back(rex_part);
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_imm(operands[1].type)) {
+				rex_part = rex(is_rexw, 0, operands[0].reg, 0);
 			}
-			else if(is_extended_xmm_reg(op1) && is_operand_mem(op2.type)) {
-				const utility::byte rex_part = rex(is_rexw, op1.reg, op2.memory.base.index, op2.memory.index.index);
-				m_bytes.push_back(rex_part);
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_mem(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
 			}
-			else if(is_extended_xmm_reg(op2) && is_operand_mem(op1.type)) {
-				const utility::byte rex_part = rex(is_rexw, op2.reg, op1.memory.base.index, op1.memory.index.index);
-				m_bytes.push_back(rex_part);
+			else if(is_extended_xmm_reg(operands[1]) && is_operand_mem(operands[0].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
 			}
-			else if(is_extended_xmm_reg(op2) && is_operand_reg(op1.type)) {
+			else if(is_extended_xmm_reg(operands[1]) && is_operand_reg(operands[0].type)) {
 				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 				}
 				else {
-					const utility::byte rex_part = rex(is_rexw, op1.reg, op2.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 				}
 			}
-			else if(is_extended_xmm_reg(op1) && is_operand_reg(op2.type)) {
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_reg(operands[1].type)) {
 				if(inst->get_direction()) {
-					const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 				}
 				else {
-					const utility::byte rex_part = rex(is_rexw, op1.reg, op2.reg, 0);
-					m_bytes.push_back(rex_part);
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 				}
 			}
 			// gp | xmm
-			else if(is_operand_gp_reg(op1.type) && is_operand_xmm(op2.type)) {
-				const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-				m_bytes.push_back(rex_part);
+			else if(is_operand_gp_reg(operands[0].type) && is_operand_xmm(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 			}
 			// x | creg
-			else if(is_operand_creg(op2.type)) {
-				const utility::byte rex_part = rex(is_rexw, op2.reg, op1.reg, 0);
-				m_bytes.push_back(rex_part);
+			else if(is_operand_creg(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
 			}
 			// creg | x
-			else if(is_operand_creg(op1.type)) {
-				const utility::byte rex_part = rex(is_rexw, op1.reg, op2.reg, 0);
-				m_bytes.push_back(rex_part);
-				}
+			else if(is_operand_creg(operands[0].type)) {
+				rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
 			// reg x
-			else if(is_operand_gp_reg(op1.type)) {
-				const utility::byte rex_part = rex(is_rexw, 0, op1.reg, 0);
-				m_bytes.push_back(rex_part);
+			else if(is_operand_gp_reg(operands[0].type)) {
+				rex_part = rex(is_rexw, 0, operands[0].reg, 0);
 			}
 			// x reg
-			else if(is_operand_gp_reg(op2.type)) {
-				const utility::byte rex_part = rex(is_rexw, 0, op2.reg, 0);
-				m_bytes.push_back(rex_part);
+			else if(is_operand_gp_reg(operands[1].type)) {
+				rex_part = rex(is_rexw, 0, operands[1].reg, 0);
 			}
 			// mem x
-			else if(is_operand_mem(op1.type)) {
-				const utility::byte rex_part = rex(is_rexw, 0, op1.memory.base.index, op1.memory.index.index);
-				m_bytes.push_back(rex_part);
+			else if(is_operand_mem(operands[0].type)) {
+				rex_part = rex(is_rexw, 0, operands[0].memory.base.index, operands[0].memory.index.index);
 			}
 			// mem x
-			else if(is_operand_mem(op2.type)) {
-				const utility::byte rex_part = rex(is_rexw, 0, op2.memory.base.index, op2.memory.index.index);
-				m_bytes.push_back(rex_part);
-				}
+			else if(is_operand_mem(operands[1].type)) {
+				rex_part = rex(is_rexw, 0, operands[1].memory.base.index, operands[1].memory.index.index);
+			}
 			// x x
 			else {
-				const utility::byte rex_part = rex(is_rexw, rx, destination, 0);
-				m_bytes.push_back(rex_part);
+				rex_part = rex(is_rexw, rx, destination, 0);
 			}
+
+			m_bytes.push_back(rex_part);
 		}
-		else if(is_operand_mem(op1.type)) {
-			emit_opcode_mem(op1.memory);
+		else if(is_operand_mem(operands[0].type)) {
+			emit_opcode_mem(operands[0].memory);
 		}
-		else if(is_operand_mem(op2.type)) {
-			emit_opcode_mem(op2.memory);
+		else if(is_operand_mem(operands[1].type)) {
+			emit_opcode_mem(operands[1].memory);
 		}
 
-		// emit the opcode
+		// opcode
 		u64 opcode = inst->opcode;
 
 		if(inst->is_opcode_ext()) {
-			// extract the 3 least significant bits 
+			// extract the 3 least significant reg bits 
 			if(inst->get_direction()) {
 				opcode += destination & 0b00000111;
 			}
@@ -440,13 +407,16 @@ end_location:
 
 	void assembler::emit_opcode_mem(const mem& memory) {
 		// extended base
-		if((memory.has_base && memory.base.index >= 8) || (memory.has_index && memory.index.index >= 8)) {
+		if(
+			(memory.has_base && memory.base.index >= 8) || 
+			(memory.has_index && memory.index.index >= 8)
+		) {
 			m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
 		}
 	}
 
-	void assembler::emit_operands(const operand* operands, u8 operand_count, const instruction_info* inst) {
-		for(u8 i = 0; i < operand_count; ++i) {
+	void assembler::emit_operands(const instruction_info* inst, const operand* operands) {
+		for(u8 i = 0; i < inst->get_operand_count(); ++i) {
 			if(is_operand_imm(operands[i].type)) {
 				// immediate operand
 				emit_data_operand(operands[i].immediate.value, get_operand_bit_width(inst->operands[i]));
@@ -473,13 +443,13 @@ end_location:
 					ty = operand::type::OP_I32;
 				}
 				else if(memory.base.type == REG_RIP) {
-					// calculate the relative (rip) offset
-					ty = operand::type::OP_I32;
+					// calculate the relative (rip) offset, this means we have to calculate the
+					// offset at the end of our current instruction
 
 					// beginning of the instruction
 					i32 new_displacement = static_cast<i32>(displacement.value - (get_current_inst_size() + 4));
 
-					for(u8 j = i; j < operand_count; ++j) {
+					for(u8 j = i; j < inst->get_operand_count(); ++j) {
 						// if we have another operand after the current one, calculate it's size
 						if(is_operand_imm(inst->operands[j])) { // registers are already encoded
 							new_displacement -= get_operand_bit_width(inst->operands[j]) / 8;
@@ -487,6 +457,7 @@ end_location:
 					}
 
 					displacement = imm(new_displacement);
+					ty = operand::type::OP_I32;
 				}
 				else if(displacement.min_bits <= 8) {
 					ty = operand::type::OP_I8;
@@ -500,17 +471,16 @@ end_location:
 		}
 	}
 
-	void assembler::emit_instruction_mod_rm(const instruction_info* inst, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
-		const operand operands[4] = { op1, op2, op3, op4 };
+	void assembler::emit_instruction_mod_rm(const instruction_info* inst, const operand* operands) {
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
-		// mod rm / sib
-		if(inst->is_r() || is_operand_mem(op1.type) || is_operand_mem(op2.type)) {
+		// mod rm / sib byte
+		if(inst->is_r() || is_operand_mem(operands[0].type) || is_operand_mem(operands[1].type)) {
 			utility::byte mod_rm_part;
 
-			if(is_operand_mem(op1.type)) {
-				const bool has_sib = has_sib_byte(op1, op2);
-				const auto memory = op1.memory;
+			if(is_operand_mem(operands[0].type)) {
+				const bool has_sib = has_sib_byte(operands[0], operands[1]);
+				const auto memory = operands[0].memory;
 
 				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
@@ -563,9 +533,9 @@ end_location:
 					}
 				}
 			}
-			else if(is_operand_mem(op2.type)) {
-				const bool has_sib = has_sib_byte(op1, op2);
-				const auto memory = op2.memory;
+			else if(is_operand_mem(operands[1].type)) {
+				const bool has_sib = has_sib_byte(operands[0], operands[1]);
+				const auto memory = operands[1].memory;
 
 				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
@@ -607,20 +577,20 @@ end_location:
 		}
 	}
 
-	void assembler::emit_instruction_sib(const operand& op1, const operand& op2) {
+	void assembler::emit_instruction_sib(const operand* operands) {
 		mem memory;
 
-		if(is_operand_mem(op1.type)) {
-			memory = op1.memory;
+		if(is_operand_mem(operands[0].type)) {
+			memory = operands[0].memory;
 		}
-		else if(is_operand_mem(op2.type)) {
-			memory = op2.memory;
+		else if(is_operand_mem(operands[1].type)) {
+			memory = operands[1].memory;
 		}
 		else {
 			return; // no sib byte
 		}
 
-		const u8 scale = memory.has_base  ? memory.scale       : 0b00;
+		const u8 scale = memory.has_base  ? memory.scale       : 0b000;
 		const u8 index = memory.has_index ? memory.index.index : 0b100;
 		const u8 base   = memory.has_base ? memory.base.index  : 0b101;
 
@@ -630,24 +600,23 @@ end_location:
 	}
 
 	void assembler::emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
+		const operand operands[4] = { op1, op2, op3, op4 };
+
 		// NOTE: operand count can be inferred from overloaded functions
 		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
-		const operand operands[4] = { op1, op2, op3, op4 }; // TODO: pass this instead of the individual operands
 
 		// locate the actual instruction we want to assemble (this doesn't have to match the specified
 		// index, since we can apply optimizations which focus on stuff like shorter encodings)
 		const instruction_info* inst = find_instruction_info(index, operands);
 
-		const u8 operand_count = inst->get_operand_count(); // TODO: infer this
-
 		// emit instruction parts
 		emit_instruction_prefix(inst);
-		emit_instruction_opcode(inst, op1, op2, op3, op4);
-		emit_instruction_mod_rm(inst, op1, op2, op3, op4);
-		emit_instruction_sib(op1, op2);
+		emit_instruction_opcode(inst, operands);
+		emit_instruction_mod_rm(inst, operands);
+		emit_instruction_sib(operands);
 
 		// emit immediate, displacement, and memory offset operands
-		emit_operands(operands, operand_count, inst);
+		emit_operands(inst, operands);
 	}
 
 	auto assembler::has_sib_byte(const operand& op1, const operand& op2) -> bool {
@@ -761,17 +730,17 @@ end_location:
 		return static_cast<u8>(m_bytes.get_size() - m_current_inst_begin);
 	}
 
-	auto signed_extend_representable(u64 value, u8 original, u8 dst, u8 src) -> bool {
+	auto sign_extend_representable(u64 value, u8 src) -> bool {
 		const uint64_t mask = (1ULL << src) - 1;
 		const u64 shrunk = value & mask;
 
-		const u64 extended_source   = sign_extend(shrunk, src, dst);
-		const u64 extended_original = sign_extend(value, original, dst);
+		const u64 extended_source   = sign_extend(shrunk, src);
+		const u64 extended_original = sign_extend(value, 64);
 
 		return extended_source == extended_original;
 	}
 
-	auto sign_extend(u64 x, u8 x_bits, u8 n) -> u64 {
+	auto sign_extend(u64 x, u8 x_bits) -> u64 {
 		if(x >> (x_bits - 1)) {
 			// u8 diff = n - x_bits;
 			return x | (std::numeric_limits<u64>::max() << x_bits);
