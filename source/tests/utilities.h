@@ -1,6 +1,6 @@
 #pragma once
-#include <utility/system/console.h>
 #include <utility/containers/dynamic_string.h>
+#include <utility/system/console.h>
 #include <assembler.h>
 
 using namespace utility::types;
