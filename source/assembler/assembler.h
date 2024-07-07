@@ -50,7 +50,7 @@ namespace baremetal {
 
 #undef INST
 
-		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<utility::byte>&;
+		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<u8>&;
 
 		void clear();
 	private:
@@ -108,7 +108,7 @@ namespace baremetal {
 		void instruction_begin();
 		auto get_current_inst_size() const -> u8;
 	private:
-		utility::dynamic_array<utility::byte> m_bytes;
+		utility::dynamic_array<u8> m_bytes;
 		u64 m_current_inst_begin;
 	};
 

@@ -32,16 +32,16 @@ namespace baremetal::tests {
 		u64 success_count = 0;
 	};
 
-	inline auto bytes_to_string(const utility::dynamic_array<utility::byte>& bytes) -> utility::dynamic_string {
+	inline auto bytes_to_string(const utility::dynamic_array<u8>& bytes) -> utility::dynamic_string {
 		utility::dynamic_string result;
 		result.reserve(bytes.get_size() * 2);
 
 		constexpr char digits[] = "0123456789abcdef";
 
 		for(u64 i = 0; i < bytes.get_size(); ++i) {
-			const utility::byte value = bytes[i];
-			result += (digits[(value >> 4) & utility::byte(0x0F)]);
-			result += (digits[value & utility::byte(0x0F)]);
+			const u8 value = bytes[i];
+			result += (digits[(value >> 4) & 0x0F]);
+			result += (digits[value & 0x0F]);
 		}
 
 		return result;

@@ -8,7 +8,7 @@
 namespace baremetal {
 	assembler::assembler() : m_current_inst_begin(0) {}
 
-	auto assembler::get_bytes() const -> const utility::dynamic_array<utility::byte>& {
+	auto assembler::get_bytes() const -> const utility::dynamic_array<u8>& {
 		return m_bytes;
 	}
 
@@ -242,7 +242,7 @@ namespace baremetal {
 
 		// rex prefix
 		if(is_rexw || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
-			utility::byte rex_part;
+			u8 rex_part;
 
 			// gp | extended gp | gp
 			if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
@@ -474,7 +474,7 @@ namespace baremetal {
 
 		// mod rm / sib byte
 		if(inst->is_r() || is_operand_mem(operands[0].type) || is_operand_mem(operands[1].type)) {
-			utility::byte mod_rm_part;
+			u8 mod_rm_part;
 
 			if(is_operand_mem(operands[0].type)) {
 				const bool has_sib = has_sib_byte(operands[0], operands[1]);
