@@ -67,7 +67,7 @@ namespace baremetal {
 	}
 
 	auto assembler::find_instruction_info(u32 index, const operand* operands)  -> const instruction* {
-		u8 imm_index = std::numeric_limits<u8>::max();
+		u8 imm_index = utility::limits<u8>::max();
 
 		// locate the first immediate operand
 		for(u8 i = 0; i < 4; ++i) {
@@ -78,7 +78,7 @@ namespace baremetal {
 		}
 
 		// no immediate operand, return the original variant
-		if(imm_index == std::numeric_limits<u8>::max()) {
+		if(imm_index == utility::limits<u8>::max()) {
 			return &instruction_db[index];
 		}
 
@@ -741,7 +741,7 @@ namespace baremetal {
 	auto sign_extend(u64 x, u8 x_bits) -> u64 {
 		if(x >> (x_bits - 1)) {
 			// u8 diff = n - x_bits;
-			return x | (std::numeric_limits<u64>::max() << x_bits);
+			return x | (utility::limits<u64>::max() << x_bits);
 		}
 
 		return x;

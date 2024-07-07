@@ -168,7 +168,7 @@ namespace baremetal {
 			return m_prefix != PREFIX_NONE;
 		}
 		constexpr auto has_special_index() const -> bool {
-			return m_special_index != std::numeric_limits<u16>::max();
+			return m_special_index != utility::limits<u16>::max();
 		}
 	private:
 		const char* m_name;

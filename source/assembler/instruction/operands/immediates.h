@@ -7,13 +7,13 @@ namespace baremetal {
 	struct imm {
 		imm() = default;
 		imm(u64 i) {
-			if(i <= std::numeric_limits<u8>::max()) {
+			if(i <= utility::limits<u8>::max()) {
 				min_bits = 8;
 			}
-			else if(i <= std::numeric_limits<u16>::max()) {
+			else if(i <= utility::limits<u16>::max()) {
 				min_bits = 16;
 			}
-			else if(i <= std::numeric_limits<u32>::max()) {
+			else if(i <= utility::limits<u32>::max()) {
 				min_bits = 32;
 			}
 			else {
@@ -30,13 +30,13 @@ namespace baremetal {
 				return;
 			}
 
-			if(i >= std::numeric_limits<i8>::min()) {
+			if(i >= utility::limits<i8>::min()) {
 				min_bits = 8;
 			}
-			else if(i >= std::numeric_limits<i16>::min()) {
+			else if(i >= utility::limits<i16>::min()) {
 				min_bits = 16;
 			}
-			else if(i >= std::numeric_limits<i32>::min()) {
+			else if(i >= utility::limits<i32>::min()) {
 				min_bits = 32;
 			}
 			else {
