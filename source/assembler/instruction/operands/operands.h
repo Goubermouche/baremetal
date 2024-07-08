@@ -29,7 +29,7 @@ namespace baremetal {
 		constexpr operand(mem16 m) : type(OP_MEM16), memory(m) {}
 		constexpr operand(mem8 m) : type(OP_MEM8), memory(m) {}
 
-		constexpr operand(rel32 r) : type(OP_REL32), relocation(r) {}
+		constexpr operand(rel r) : type(OP_REL32), relocation(r) {}
 
 		enum type : u8 {
 			OP_NONE,
@@ -76,18 +76,20 @@ namespace baremetal {
 			OP_ECX,
 			OP_RCX,
 
-			// others
+			// relocations
+			OP_REL8,
+			OP_REL16,
 			OP_REL32,
 		};
 
 		type type;
 
 		union {
-			u8 reg;
+			moff memory_offset;
+			rel relocation;
 			imm immediate;
 			mem memory;
-			moff memory_offset;
-			rel32 relocation;
+			u8 reg;
 		};
 	};
 
@@ -155,11 +157,11 @@ namespace baremetal {
 
 	inline auto is_operand_moff(enum operand::type op) -> bool {
 		switch(op) {
-		case operand::OP_MOFF8:
-		case operand::OP_MOFF16:
-		case operand::OP_MOFF32:
-		case operand::OP_MOFF64:  return true;
-		default: return false;
+			case operand::OP_MOFF8:
+			case operand::OP_MOFF16:
+			case operand::OP_MOFF32:
+			case operand::OP_MOFF64:  return true;
+			default: return false;
 		}
 	}
 
@@ -169,6 +171,15 @@ namespace baremetal {
 			case operand::OP_I16:
 			case operand::OP_I32:
 			case operand::OP_I64:  return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_rel(enum operand::type op) -> bool {
+		switch(op) {
+			case operand::OP_REL8:
+			case operand::OP_REL16:
+			case operand::OP_REL32: return true;
 			default: return false;
 		}
 	}
@@ -232,7 +243,9 @@ namespace baremetal {
 			case operand::OP_DX:          return 16;
 			case operand::OP_ECX:         return 32;
 			case operand::OP_RCX:         return 64;
-			case operand::OP_REL32:        return 8;
+			case operand::OP_REL8:        return 8;
+			case operand::OP_REL16:        return 16;
+			case operand::OP_REL32:        return 32;
 			default:                      return 0;
 		}
 	}
@@ -279,7 +292,9 @@ namespace baremetal {
 			case operand::OP_ECX:         return "ecx";
 			case operand::OP_RCX:         return "rcx";
 
-			case operand::OP_REL32:        return "rel32";
+			case operand::OP_REL8:        return "rel8";
+			case operand::OP_REL16:       return "rel16";
+			case operand::OP_REL32:       return "rel32";
 		}
 
 		return "unknown";

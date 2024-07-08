@@ -145,7 +145,7 @@ class moff {
     offset;
 }
 
-class rel32 {
+class rel {
     constructor(offset) {
         this.offset = offset;
     }
@@ -155,7 +155,7 @@ class rel32 {
     }
 
     get_baremetal_string() {
-        return `rel32(${this.offset})`;
+        return `rel(${this.offset})`;
     }
 
     offset;
@@ -255,6 +255,7 @@ function generate_combinations(operands) {
             new moff('0xFFFFFFFFFFFFFFFF'),
         ]],
         ["al", [ new reg('al') ]],
+        ["cx", [ new reg('cx') ]],
         ["ax", [ new reg('ax') ]],
         ["eax", [ new reg('eax') ]],
         ["rax", [ new reg('rax') ]],
@@ -433,11 +434,17 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(128, 'rsp', 'r15', '0xFFFF', "8"),
             mem.base_index_offset_scale(128, 'r14', 'r15', '0xFFFF', "8"),
         ]],
+        ["rel8", [
+            new rel(0),
+            new rel(1),
+            new rel(-128),
+            new rel(127),
+        ]],
         ["rel32", [
-            new rel32(0),
-            new rel32(1),
-            new rel32(-128),
-            new rel32(127),
+            new rel(0),
+            new rel(1),
+            new rel(-128),
+            new rel(127),
         ]]
     ]);
 

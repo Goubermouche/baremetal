@@ -69,10 +69,56 @@ namespace baremetal {
 		u64 value;
 	};
 
-	struct rel32 {
-		constexpr rel32() = default;
-		constexpr rel32(i32 offset) : value(offset) {}
+	struct rel {
+		rel() = default;
+
+		rel(u32 i) {
+			if(i <= utility::limits<u8>::max()) {
+				min_bits = 8;
+			}
+			else if(i <= utility::limits<u16>::max()) {
+				min_bits = 16;
+			}
+			else {
+				min_bits = 32;
+			}
+
+			value = i;
+			sign = false;
+		}
+
+		rel(i32 i) {
+			if(i >= 0) {
+				*this = rel(static_cast<u32>(i));
+				return;
+			}
+
+			if(i >= utility::limits<i8>::min()) {
+				min_bits = 8;
+			}
+			else if(i >= utility::limits<i16>::min()) {
+				min_bits = 16;
+			}
+			else {
+				min_bits = 32;
+			}
+			
+			value = i;
+			sign = true;
+		}
+
+		template<typename type>
+		rel(type i) {
+			if(std::is_signed_v<type>) {
+				*this = imm(static_cast<i32>(i));
+			}
+			else {
+				*this = imm(static_cast<u32>(i));
+			}
+		}
 
 		i32 value;
+		u8 min_bits; // 8, 16, 32, 64
+		bool sign;
 	};
 } // namespace baremetal

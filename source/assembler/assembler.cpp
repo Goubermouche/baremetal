@@ -419,15 +419,24 @@ namespace baremetal {
 
 	void assembler::emit_operands(const instruction* inst, const operand* operands) {
 		for(u8 i = 0; i < inst->get_operand_count(); ++i) {
-			if(is_operand_imm(operands[i].type)) {
+			const enum operand::type current = inst->get_operand(i);
+
+			if(is_operand_imm(current)) {
 				// immediate operand
-				emit_data_operand(operands[i].immediate.value, get_operand_bit_width(inst->get_operand(i)));
+				emit_data_operand(operands[i].immediate.value, get_operand_bit_width(current));
 			}
-			else if(is_operand_moff(operands[i].type)) {
+			else if(is_operand_moff(current)) {
 				// memory offset operand (always 64-bit)
 				emit_data_operand(operands[i].memory_offset.value, 64);
 			}
-			else if(is_operand_mem(operands[i].type)) {
+			else if(is_operand_rel(current)) {
+				// relocation operand
+				const u8 operand_size = get_operand_bit_width(current);
+				const i32 new_displacement = operands[i].relocation.value - (get_current_inst_size() + operand_size / 8);
+
+				emit_data_operand(new_displacement, operand_size);
+			}
+			else if(is_operand_mem(current)) {
 				// memory displacement operand
 				const mem memory = operands[i].memory;
 				imm displacement = memory.displacement;
@@ -469,10 +478,6 @@ namespace baremetal {
 				}
 
 				emit_data_operand(displacement.value, get_operand_bit_width(ty));
-			}
-			else if(operands[i].type == operand::OP_REL32) {
-				const i32 new_displacement = operands[i].relocation.value - (get_current_inst_size() + 4);
-				emit_data_operand(new_displacement, 32);
 			}
 		}
 	}

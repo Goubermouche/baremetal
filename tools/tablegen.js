@@ -114,6 +114,9 @@ function apply_layout(layout, data, line_prefix, line_postfix) {
 
 function format_instruction_operand(op) {
     switch(op) {
+        case "rel8": 
+        case "rel16": 
+        case "rel32": return "rel";
         default: return op;
     }
 }

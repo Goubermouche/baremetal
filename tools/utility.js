@@ -8,12 +8,14 @@ const { execSync } = require('child_process');
 
 // TODO: this is just omitted for now because we don't have default operand sizes
 // { "name": "push"           , "operands": ["i16"]                   , "opcode": "000068", "rm": "" , "w": ""  , "ri": false, "pp": "66"   },
-// { "name": "jecxz"          , "operands": ["rel8"]                  , "opcode": "0000e3", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL" },
-// { "name": "loop"           , "operands": ["rel8"]                  , "opcode": "0000e2", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL" },
-//  { "name": "loope"          , "operands": ["rel8"]                  , "opcode": "0000e1", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL" },
-// { "name": "loopne"         , "operands": ["rel32"]                  , "opcode": "0000e0", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL" },
 
 const database = [
+    { "name": "loop"           , "operands": ["rel8"]                    , "opcode": "0000e2", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL" },
+    { "name": "loopne"         , "operands": ["rel8"]                    , "opcode": "0000e0", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL" },
+    { "name": "loope"          , "operands": ["rel8"]                    , "opcode": "0000e1", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL" },
+    { "name": "jecxz"          , "operands": ["rel8"]                    , "opcode": "0067e3", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL" },
+
+    { "name": "call"           , "operands": ["rel32"]                   , "opcode": "0000e8", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL"  },
     { "name": "call"           , "operands": ["rel32"]                   , "opcode": "0000e8", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL"  },
     { "name": "ja"             , "operands": ["rel32"]                   , "opcode": "000f87", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL"  },
     { "name": "jae"            , "operands": ["rel32"]                   , "opcode": "000f83", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL"  },
@@ -48,6 +50,8 @@ const database = [
     { "name": "js"             , "operands": ["rel32"]                   , "opcode": "000f88", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL"  },
     { "name": "jz"             , "operands": ["rel32"]                   , "opcode": "000f84", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL"  },
     { "name": "xbegin"         , "operands": ["rel32"]                   , "opcode": "0000c7", "rm": "7", "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL"  },
+
+
     { "name": "adc"            , "operands": ["al", "i8"]                , "opcode": "000014", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL"  },
     { "name": "adc"            , "operands": ["ax", "i16"]               , "opcode": "000015", "rm": "" , "w": ""  , "ri": false, "pp": "66"  , "dir": "NORMAL"  },
     { "name": "adc"            , "operands": ["eax", "i32"]              , "opcode": "000015", "rm": "" , "w": ""  , "ri": false, "pp": ""    , "dir": "NORMAL"  },
