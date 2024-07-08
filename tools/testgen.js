@@ -145,6 +145,22 @@ class moff {
     offset;
 }
 
+class rel32 {
+    constructor(offset) {
+        this.offset = offset;
+    }
+
+    get_nasm_string() {
+        return `${this.offset}`;
+    }
+
+    get_baremetal_string() {
+        return `rel32(${this.offset})`;
+    }
+
+    offset;
+}
+
 function generate_combinations(operands) {
     const operand_map = new Map([
         ["reg8", [
@@ -416,6 +432,12 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(128, 'r15', 'rax', '0xFFFF', "8"),
             mem.base_index_offset_scale(128, 'rsp', 'r15', '0xFFFF', "8"),
             mem.base_index_offset_scale(128, 'r14', 'r15', '0xFFFF', "8"),
+        ]],
+        ["rel32", [
+            new rel32(0),
+            new rel32(1),
+            new rel32(-128),
+            new rel32(127),
         ]]
     ]);
 

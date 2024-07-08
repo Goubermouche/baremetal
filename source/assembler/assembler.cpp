@@ -13,6 +13,10 @@ namespace baremetal {
 	}
 
 	auto assembler::find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8> {
+		if(inst->get_reg_operand_count() == 0) {
+			return { 0, 0 };
+		}
+
 		if(inst->get_operand_count() == 1) {
 			return { 0, operands[0].reg };
 		}
@@ -466,6 +470,10 @@ namespace baremetal {
 
 				emit_data_operand(displacement.value, get_operand_bit_width(ty));
 			}
+			else if(operands[i].type == operand::OP_REL32) {
+				const i32 new_displacement = operands[i].relocation.value - (get_current_inst_size() + 4);
+				emit_data_operand(new_displacement, 32);
+			}
 		}
 	}
 
@@ -590,7 +598,7 @@ namespace baremetal {
 
 		const u8 scale = memory.has_base  ? memory.scale       : 0b000;
 		const u8 index = memory.has_index ? memory.index.index : 0b100;
-		const u8 base   = memory.has_base ? memory.base.index  : 0b101;
+		const u8 base  = memory.has_base ? memory.base.index   : 0b101;
 
 		if(memory.has_index || is_stack_pointer(reg(memory.base)) || memory.has_base == false) {
 			m_bytes.push_back(sib(scale, index, base));

@@ -68,4 +68,11 @@ namespace baremetal {
 
 		u64 value;
 	};
+
+	struct rel32 {
+		constexpr rel32() = default;
+		constexpr rel32(i32 offset) : value(offset) {}
+
+		i32 value;
+	};
 } // namespace baremetal

@@ -129,27 +129,11 @@ function encode_context(id, index) {
 function main() {
     let instructions = utility.database;
 
-    // const new_set = new Set();
-
-    // utility.database.sort((a, b) => {
-    //     return a.name < b.name;
-    // }).forEach(inst => {
-    //    new_set.add(`${inst.name}:${inst.operands.join(":")}`);
-    // })
-
     // let json_table = [];
 
-    // instructions.forEach(inst => {
-    //     const key = `${inst.name}:${inst.operands.join(":")}`;
-    //     let dir = "NORMAL";
-
-    //     if(direction_map_override.has(key)) {
-    //         dir = direction_map_override.get(key);
-    //     }
-    //     else if(direction_map.has(inst.name)) {
-    //         dir = direction_map.get(inst.name);
-    //     }
-
+    // instructions.sort((a, b) => {
+    //     return a.name < b.name;
+    // }).forEach(inst => {
     //     json_table.push([
     //         `"name": "${inst.name}"`,
     //         `"operands": [${inst.operands.map(op => { return `"${op}"`; }).join(", ")}]`,
@@ -158,7 +142,7 @@ function main() {
     //         `"w": "${inst.w}"`,
     //         `"ri": ${inst.ri}`,
     //         `"pp": "${inst.pp}"`,
-    //         `"dir": "${dir}"`
+    //         `"dir": "${inst.dir}"`
     //     ])
     // })
 

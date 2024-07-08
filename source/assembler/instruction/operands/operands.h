@@ -6,13 +6,13 @@ namespace baremetal {
 		constexpr operand() : type(OP_NONE), reg(0) {}
 
 		// immediates
-		constexpr operand(imm i)  : type(OP_I64), immediate(i) {}
+		constexpr operand(imm i) : type(OP_I64), immediate(i) {}
 
 		// registers
-		constexpr operand(reg8  r) : type(OP_REG8 ), reg(r.index) {}
-		constexpr operand(reg16 r) : type(OP_REG16), reg(r.index) {}
-		constexpr operand(reg32 r) : type(OP_REG32), reg(r.index) {}
 		constexpr operand(reg64 r) : type(OP_REG64), reg(r.index) {}
+		constexpr operand(reg32 r) : type(OP_REG32), reg(r.index) {}
+		constexpr operand(reg16 r) : type(OP_REG16), reg(r.index) {}
+		constexpr operand(reg8  r) : type(OP_REG8), reg(r.index) {}
 		constexpr operand(sreg r) : type(OP_SREG), reg(r.index) {}
 		constexpr operand(dreg r) : type(OP_DREG), reg(r.index) {}
 		constexpr operand(creg r) : type(OP_CREG), reg(r.index) {}
@@ -28,6 +28,8 @@ namespace baremetal {
 		constexpr operand(mem32 m) : type(OP_MEM32), memory(m) {}
 		constexpr operand(mem16 m) : type(OP_MEM16), memory(m) {}
 		constexpr operand(mem8 m) : type(OP_MEM8), memory(m) {}
+
+		constexpr operand(rel32 r) : type(OP_REL32), relocation(r) {}
 
 		enum type : u8 {
 			OP_NONE,
@@ -73,6 +75,9 @@ namespace baremetal {
 			OP_DX,
 			OP_ECX,
 			OP_RCX,
+
+			// others
+			OP_REL32,
 		};
 
 		type type;
@@ -82,6 +87,7 @@ namespace baremetal {
 			imm immediate;
 			mem memory;
 			moff memory_offset;
+			rel32 relocation;
 		};
 	};
 
@@ -120,7 +126,7 @@ namespace baremetal {
 			case operand::OP_DX:
 			case operand::OP_ECX:
 			case operand::OP_RCX:
-			case operand::OP_BND:   return true;
+			case operand::OP_BND: return true;
 			default: return false;
 		}
 	}
@@ -226,6 +232,7 @@ namespace baremetal {
 			case operand::OP_DX:          return 16;
 			case operand::OP_ECX:         return 32;
 			case operand::OP_RCX:         return 64;
+			case operand::OP_REL32:        return 8;
 			default:                      return 0;
 		}
 	}
@@ -271,6 +278,8 @@ namespace baremetal {
 			case operand::OP_DX:          return "dx";
 			case operand::OP_ECX:         return "ecx";
 			case operand::OP_RCX:         return "rcx";
+
+			case operand::OP_REL32:        return "rel32";
 		}
 
 		return "unknown";
