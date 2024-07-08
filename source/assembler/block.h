@@ -1,6 +1,7 @@
 #pragma once
-#include "assembler/instruction/instruction.h"
 #include <utility/containers/dynamic_array.h>
+
+#include "assembler/instruction/instruction.h"
 
 namespace baremetal {
 	struct block {

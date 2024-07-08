@@ -150,6 +150,9 @@ namespace baremetal {
                                                     \
   static inline constexpr name name;
 
+	// special registers
+	REGISTER_CLASS_VOID_DECL(rip, 0, REG_RIP);
+
 	// control registers
 	REGISTER_CLASS_CREG_DECL(cr0, 0);
 	REGISTER_CLASS_CREG_DECL(cr1, 1);
@@ -210,7 +213,7 @@ namespace baremetal {
 	REGISTER_CLASS_XMM_DECL(xmm14, 14);
 	REGISTER_CLASS_XMM_DECL(xmm15, 15);
 
-	// 64 bit registers
+	// 64 bit gp registers
 	REGISTER_CLASS_64_DECL(rax, 0);
 	REGISTER_CLASS_64_DECL(rcx, 1);
 	REGISTER_CLASS_64_DECL(rdx, 2);
@@ -228,7 +231,7 @@ namespace baremetal {
 	REGISTER_CLASS_64_DECL(r14, 14);
 	REGISTER_CLASS_64_DECL(r15, 15);
 
-	// 32 bit registers
+	// 32 bit gp registers
 	REGISTER_CLASS_32_DECL(eax, 0);
 	REGISTER_CLASS_32_DECL(ecx, 1);
 	REGISTER_CLASS_32_DECL(edx, 2);
@@ -246,7 +249,7 @@ namespace baremetal {
 	REGISTER_CLASS_32_DECL(r14d, 14);
 	REGISTER_CLASS_32_DECL(r15d, 15);
 
-	// 16 bit registers
+	// 16 bit gp registers
 	REGISTER_CLASS_16_DECL(ax, 0);
 	REGISTER_CLASS_16_DECL(cx, 1);
 	REGISTER_CLASS_16_DECL(dx, 2);
@@ -264,7 +267,7 @@ namespace baremetal {
 	REGISTER_CLASS_16_DECL(r14w, 14);
 	REGISTER_CLASS_16_DECL(r15w, 15);
 
-	// 8 bit registers
+	// 8 bit gp registers
 	REGISTER_CLASS_8_DECL(al, 0);
 	REGISTER_CLASS_8_DECL(cl, 1);
 	REGISTER_CLASS_8_DECL(dl, 2);
@@ -273,9 +276,6 @@ namespace baremetal {
 	REGISTER_CLASS_8_DECL(ch, 5);
 	REGISTER_CLASS_8_DECL(dh, 6);
 	REGISTER_CLASS_8_DECL(bh, 7);
-
-	// special registers
-	REGISTER_CLASS_VOID_DECL(rip, 0, REG_RIP);
 
 	inline auto is_stack_pointer(reg r) -> bool {
 		// TODO: spl

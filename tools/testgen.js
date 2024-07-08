@@ -2,13 +2,11 @@
 
 const os = require('os');
 const path = require('path');
-const utility = require("../utility.js")
+const utility = require("./utility.js")
 const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 
-const OUTPUT_PATH  = path.join(__dirname, "generated_tests.txt");
-const MESSAGE_PATH = path.join(__dirname, "generated_messages.txt");
-const TEST_DIR_PATH = path.join(__dirname, "../../source/tests/tests")
-const TEST_MAIN_PATH = path.join(__dirname, "../../source/tests/main.cpp")
+const TEST_DIR_PATH = path.join(__dirname, "../source/tests/tests")
+const TEST_MAIN_PATH = path.join(__dirname, "../source/tests/main.cpp")
 
 class reg {
     constructor(name) {
@@ -484,7 +482,7 @@ function get_temp_dir(id) {
 if (isMainThread) {
     // main thread
     const start_time = Date.now();
-    const instructions = utility.new_database;
+    const instructions = utility.database;
 
     let messages = [];
     let items = [];
@@ -598,46 +596,7 @@ ${test_runs_text}
 \treturn 0;
 }\n`
 
-utility.write_file(TEST_MAIN_PATH, main_text)
-
-
-            //tests.forEach(test => {
-            //    max_binary_part_len = Math.max(max_binary_part_len, test.binary_part.length);
-            //    max_instruction_part_len = Math.max(max_instruction_part_len, test.instruction_part.length);
-            //})
-        //
-            //let test_file = "";
-        //
-            //tests.forEach(test => {
-            //    test_file += (
-            //        `TEST_INST("` +
-            //        `${`${test.binary_part}"`.padEnd(max_binary_part_len + 1)}, ` +
-            //        `${test.instruction_part.padEnd(max_instruction_part_len)});\n`
-            //    );
-            //})
-
-
-
-            // serialize messages
-
-            //if(messages.length > 0) {
-            //    let message_file = "";
-//
-            //    messages.forEach(message => {
-            //        message_file += message.command + "\n" + message.text + "\n\n";
-            //    })
-//
-            //    utility.write_file(MESSAGE_PATH, message_file);
-            //}
-        
-           // utility.write_file(OUTPUT_PATH, test_file);
-            //console.log(`encountered messages   ${messages.length}`);
-            //console.log(`tests generated in     ${(Date.now() - start_time) / 1000}s`);
-            //console.log(`output stored in       ${OUTPUT_PATH}`);
-//
-            //if(messages.length > 0) {
-            //    console.log(`messages stored in     ${MESSAGE_PATH}`);
-            //}
+            utility.write_file(TEST_MAIN_PATH, main_text)
         }
     }
 

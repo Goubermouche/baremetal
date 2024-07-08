@@ -47,11 +47,7 @@ namespace baremetal {
 			sign = true;
 		}
 
-		// imm(__int128 i) {
-		// 	*this = imm(static_cast<i64>(i));
-		// }
-
-		template<typename type, std::enable_if_t<std::is_integral_v<type>, i32> = 0>
+		template<typename type>
 		imm(type i) {
 			if(std::is_signed_v<type>) {
 				*this = imm(static_cast<i64>(i));
