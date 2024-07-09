@@ -13,6 +13,15 @@ namespace baremetal {
 	}
 
 	auto assembler::find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8> {
+		if(inst->get_encoding_prefix() == ENC_VEX) {
+			std::pair<u8, u8> result = { 0, 0 };
+
+			result.first = operands[0].reg;
+			result.second = operands[2].reg;
+
+			return result;
+		}
+
 		if(inst->get_reg_operand_count() == 0) {
 			return { 0, 0 };
 		}
@@ -201,6 +210,76 @@ namespace baremetal {
 		return is_operand_imm(instruction_db[b].get_operand(imm_index));
 	}
 
+	void assembler::emit_opcode_prefix_vex(const instruction* inst, const operand* operands) {
+		m_bytes.push_back(0xc4); // three byte prefix
+
+		// second byte
+		// ~R          [X_______]
+		// ~X          [_X______]
+		// ~B          [__X_____]
+		// map_select  [___XXXXX]
+		u8 second = 0;
+		const u8 rex = get_instruction_rex(inst, operands);
+
+		const bool r = rex & 0b00000100;
+		const bool x = rex & 0b00000010;
+		const bool b = rex & 0b00000001;
+
+		// ~R inverted REX.r
+		second |= !r << 7;
+
+		// ~X inverted REX.x
+		second |= !x << 6;
+
+		// ~B inverted REX.b
+		second |= !b << 5;
+
+		// map_select
+		second |= 0b00010;
+
+		m_bytes.push_back(second);
+
+		// third byte
+		// W/E   [X_______]
+		// ~vvvv [_XXXX___]
+		// L     [_____X__]
+		// pp    [______XX]
+
+		u8 third = 0;
+
+		// W/E
+		const u8 we = (inst->is_rexw()) << 7;
+		third |= we;
+
+		// vvvv - negation of one of our operands
+		const u8 vvvv = (~operands[1].reg & 0b00001111) << 3;
+		third |= vvvv;
+
+		 // L vector length (0 = 128b, 1 = 256b)
+		const u8 l = 0 << 2;
+		third |= l;
+
+		// pp - implied mandatory prefix
+		const u8 pp = 0;
+		third |= pp;
+
+		m_bytes.push_back(third);
+	}
+
+	void assembler::emit_opcode_prefix_rex(const instruction* inst, const operand* operands) {
+		const bool is_rexw = inst->is_rexw();
+
+		if(is_rexw || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
+			m_bytes.push_back(get_instruction_rex(inst, operands));
+		}
+		else if(is_operand_mem(operands[0].type)) {
+			emit_opcode_prefix_rex_mem(operands[0].memory);
+		}
+		else if(is_operand_mem(operands[1].type)) {
+			emit_opcode_prefix_rex_mem(operands[1].memory);
+		}
+	}
+
 	void assembler::emit_instruction_prefix(const instruction* inst) {
 		if(inst->has_prefix() == false) {
 			return; // no prefix
@@ -241,143 +320,13 @@ namespace baremetal {
 	}
 
 	void assembler::emit_instruction_opcode(const instruction* inst, const operand* operands) {
-		const bool is_rexw = inst->is_rexw();
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
-		// rex prefix
-		if(is_rexw || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
-			u8 rex_part;
-
-			// gp | extended gp | gp
-			if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			// extended gp | register
-			else if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// gp | extended gp
-			else if(is_extended_gp_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			else if(is_operand_gp_reg(operands[0].type) && is_operand_mem(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
-			}
-			else if(is_operand_mem(operands[0].type) && is_operand_gp_reg(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
-			}
-			// extended xmm | xmm
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_xmm(operands[1].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// xmm | extended xmm
-			else if(is_extended_xmm_reg(operands[1]) && is_operand_xmm(operands[0].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// extended xmm | gp
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_gp_reg(operands[1].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// gp | extended xmm
-			else if(is_extended_xmm_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// extended xmm | imm
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_imm(operands[1].type)) {
-				rex_part = rex(is_rexw, 0, operands[0].reg, 0);
-			}
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_mem(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
-			}
-			else if(is_extended_xmm_reg(operands[1]) && is_operand_mem(operands[0].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
-			}
-			else if(is_extended_xmm_reg(operands[1]) && is_operand_reg(operands[0].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_reg(operands[1].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// gp | xmm
-			else if(is_operand_gp_reg(operands[0].type) && is_operand_xmm(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			// x | creg
-			else if(is_operand_creg(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			// creg | x
-			else if(is_operand_creg(operands[0].type)) {
-				rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-			// reg x
-			else if(is_operand_gp_reg(operands[0].type)) {
-				rex_part = rex(is_rexw, 0, operands[0].reg, 0);
-			}
-			// x reg
-			else if(is_operand_gp_reg(operands[1].type)) {
-				rex_part = rex(is_rexw, 0, operands[1].reg, 0);
-			}
-			// mem x
-			else if(is_operand_mem(operands[0].type)) {
-				rex_part = rex(is_rexw, 0, operands[0].memory.base.index, operands[0].memory.index.index);
-			}
-			// mem x
-			else if(is_operand_mem(operands[1].type)) {
-				rex_part = rex(is_rexw, 0, operands[1].memory.base.index, operands[1].memory.index.index);
-			}
-			// x x
-			else {
-				rex_part = rex(is_rexw, rx, destination, 0);
-			}
-
-			m_bytes.push_back(rex_part);
-		}
-		else if(is_operand_mem(operands[0].type)) {
-			emit_opcode_mem(operands[0].memory);
-		}
-		else if(is_operand_mem(operands[1].type)) {
-			emit_opcode_mem(operands[1].memory);
+		// prefix
+		switch(inst->get_encoding_prefix()) {
+			case ENC_REX: emit_opcode_prefix_rex(inst, operands); break;
+			case ENC_VEX: emit_opcode_prefix_vex(inst, operands); break;
+			default: ASSERT(false, "not implemented");
 		}
 
 		// opcode
@@ -407,7 +356,7 @@ namespace baremetal {
 		m_bytes.push_back(byte);
 	}
 
-	void assembler::emit_opcode_mem(const mem& memory) {
+	void assembler::emit_opcode_prefix_rex_mem(const mem& memory) {
 		// extended base
 		if(
 			(memory.has_base && memory.base.index >= 8) || 
@@ -483,6 +432,82 @@ namespace baremetal {
 	}
 
 	void assembler::emit_instruction_mod_rm(const instruction* inst, const operand* operands) {
+		if(const u8 modrm = get_instruction_modrm(inst, operands)) {
+			m_bytes.push_back(modrm); // push if non-zero
+		}
+	}
+
+	void assembler::emit_instruction_sib(const operand* operands) {
+		mem memory;
+
+		if(is_operand_mem(operands[0].type)) {
+			memory = operands[0].memory;
+		}
+		else if(is_operand_mem(operands[1].type)) {
+			memory = operands[1].memory;
+		}
+		else {
+			return; // no sib byte
+		}
+
+		const u8 scale = memory.has_base  ? memory.scale       : 0b000;
+		const u8 index = memory.has_index ? memory.index.index : 0b100;
+		const u8 base  = memory.has_base ? memory.base.index   : 0b101;
+
+		if(memory.has_index || is_stack_pointer(reg(memory.base)) || memory.has_base == false) {
+			m_bytes.push_back(sib(scale, index, base));
+		}
+	}
+
+	void assembler::emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
+		const operand operands[4] = { op1, op2, op3, op4 };
+
+		// NOTE: operand count can be inferred from overloaded functions
+		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
+
+		// locate the actual instruction we want to assemble (this doesn't have to match the specified
+		// index, since we can apply optimizations which focus on stuff like shorter encodings)
+		const instruction* inst = find_instruction_info(index, operands);
+
+		// emit instruction parts
+		emit_instruction_prefix(inst);
+		emit_instruction_opcode(inst, operands);
+		emit_instruction_mod_rm(inst, operands);
+		emit_instruction_sib(operands);
+
+		// emit immediate, displacement, and memory offset operands
+		emit_operands(inst, operands);
+	}
+
+	auto assembler::has_sib_byte(const operand& op1, const operand& op2) -> bool {
+		mem memory;
+
+		if(is_operand_mem(op1.type)) {
+			memory = op1.memory;
+		}
+		else if(is_operand_mem(op2.type)) {
+			memory = op2.memory;
+		}
+		else {
+			return false;
+		}
+
+		if(memory.has_index) {
+			return true;
+		}
+
+		if(is_stack_pointer(reg(memory.base))) {
+			return true;
+		}
+
+		if(memory.has_base == false) {
+			return true; // absolute address
+		}
+
+		return false;
+	}
+
+	auto assembler::get_instruction_modrm(const instruction* inst, const operand* operands) -> u8 {
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
 		// mod rm / sib byte
@@ -560,8 +585,8 @@ namespace baremetal {
 					mod_rm_part = indirect(rx, 0b101); // 101 = RIP-relative
 				}
 				else if(memory.displacement.value == 0) {
-				// no displacement
-				mod_rm_part = indirect(rx, has_sib ? 0b100 : memory.base.index);
+					// no displacement
+					mod_rm_part = indirect(rx, has_sib ? 0b100 : memory.base.index);
 				}
 				else if(memory.displacement.min_bits <= 8) {
 					// 8 bit displacement
@@ -581,81 +606,164 @@ namespace baremetal {
 				}
 			}
 
-			m_bytes.push_back(mod_rm_part);
+			return mod_rm_part;
 		}
-		else if(inst->is_ext()) {
-			m_bytes.push_back(direct(inst->get_ext(), destination));
+
+		if(inst->is_ext()) {
+			return direct(inst->get_ext(), destination);
 		}
+
+		return 0;
 	}
 
-	void assembler::emit_instruction_sib(const operand* operands) {
-		mem memory;
+	auto assembler::get_instruction_rex(const instruction* inst, const operand* operands) -> u8 {
+		// THIS IS UNCHECKED, MAYBE WE'LL HAVE TO RETURN 0
 
-		if(is_operand_mem(operands[0].type)) {
-			memory = operands[0].memory;
+		const bool is_rexw = inst->is_rexw();
+		auto [rx, destination] = find_rex_pair(inst, operands);
+
+		// extended | reg | extended
+		if(is_extended_gp_reg(operands[0]) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
+			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
 		}
+		// extended | reg | extended
+		if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type) && is_extended_gp_reg(operands[2])) {
+			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
+		}
+		// reg | extended | extended
+		if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_extended_gp_reg(operands[2])) {
+			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
+		}
+		// extended | reg | reg
+		if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type) && is_operand_reg(operands[2].type)) {
+			return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+		}
+		// reg | extended | reg
+		if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
+			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
+		}
+		// reg | reg | ext
+		if(is_operand_reg(operands[0].type) && is_operand_reg(operands[1].type) && is_extended_gp_reg(operands[2])) {
+			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
+		}
+		// extended gp | register
+		else if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type)) {
+			if(inst->get_direction()) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			else {
+				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+		}
+		// gp | extended gp
+		else if(is_extended_gp_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
+			if(inst->get_direction()) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			else {
+				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+		}
+		else if(is_operand_gp_reg(operands[0].type) && is_operand_mem(operands[1].type)) {
+			return rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
+		}
+		else if(is_operand_mem(operands[0].type) && is_operand_gp_reg(operands[1].type)) {
+			return rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
+		}
+		// extended xmm | xmm
+		else if(is_extended_xmm_reg(operands[0]) && is_operand_xmm(operands[1].type)) {
+			if(inst->get_direction()) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			else {
+				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+		}
+		// xmm | extended xmm
+		else if(is_extended_xmm_reg(operands[1]) && is_operand_xmm(operands[0].type)) {
+			if(inst->get_direction()) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			else {
+				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+		}
+		// extended xmm | gp
+		else if(is_extended_xmm_reg(operands[0]) && is_operand_gp_reg(operands[1].type)) {
+			if(inst->get_direction()) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			else {
+				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+		}
+		// gp | extended xmm
+		else if(is_extended_xmm_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
+			if(inst->get_direction()) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			else {
+				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+		}
+		// extended xmm | imm
+		else if(is_extended_xmm_reg(operands[0]) && is_operand_imm(operands[1].type)) {
+			return rex(is_rexw, 0, operands[0].reg, 0);
+		}
+		else if(is_extended_xmm_reg(operands[0]) && is_operand_mem(operands[1].type)) {
+			return rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
+		}
+		else if(is_extended_xmm_reg(operands[1]) && is_operand_mem(operands[0].type)) {
+			return rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
+		}
+		else if(is_extended_xmm_reg(operands[1]) && is_operand_reg(operands[0].type)) {
+			if(inst->get_direction()) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			else {
+				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+		}
+		else if(is_extended_xmm_reg(operands[0]) && is_operand_reg(operands[1].type)) {
+			if(inst->get_direction()) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			else {
+				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+		}
+		// gp | xmm
+		else if(is_operand_gp_reg(operands[0].type) && is_operand_xmm(operands[1].type)) {
+			return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+		}
+		// x | creg
+		else if(is_operand_creg(operands[1].type)) {
+			return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+		}
+		// creg | x
+		else if(is_operand_creg(operands[0].type)) {
+			return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+		}
+		// reg x
+		else if(is_operand_gp_reg(operands[0].type)) {
+			return rex(is_rexw, 0, operands[0].reg, 0);
+		}
+		// x reg
+		else if(is_operand_gp_reg(operands[1].type)) {
+			return rex(is_rexw, 0, operands[1].reg, 0);
+		}
+		// mem x
+		else if(is_operand_mem(operands[0].type)) {
+			return rex(is_rexw, 0, operands[0].memory.base.index, operands[0].memory.index.index);
+		}
+		// mem x
 		else if(is_operand_mem(operands[1].type)) {
-			memory = operands[1].memory;
+			return rex(is_rexw, 0, operands[1].memory.base.index, operands[1].memory.index.index);
 		}
+		// x x
 		else {
-			return; // no sib byte
+			return rex(is_rexw, rx, destination, 0);
 		}
-
-		const u8 scale = memory.has_base  ? memory.scale       : 0b000;
-		const u8 index = memory.has_index ? memory.index.index : 0b100;
-		const u8 base  = memory.has_base ? memory.base.index   : 0b101;
-
-		if(memory.has_index || is_stack_pointer(reg(memory.base)) || memory.has_base == false) {
-			m_bytes.push_back(sib(scale, index, base));
-		}
-	}
-
-	void assembler::emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
-		const operand operands[4] = { op1, op2, op3, op4 };
-
-		// NOTE: operand count can be inferred from overloaded functions
-		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
-
-		// locate the actual instruction we want to assemble (this doesn't have to match the specified
-		// index, since we can apply optimizations which focus on stuff like shorter encodings)
-		const instruction* inst = find_instruction_info(index, operands);
-
-		// emit instruction parts
-		emit_instruction_prefix(inst);
-		emit_instruction_opcode(inst, operands);
-		emit_instruction_mod_rm(inst, operands);
-		emit_instruction_sib(operands);
-
-		// emit immediate, displacement, and memory offset operands
-		emit_operands(inst, operands);
-	}
-
-	auto assembler::has_sib_byte(const operand& op1, const operand& op2) -> bool {
-		mem memory;
-
-		if(is_operand_mem(op1.type)) {
-			memory = op1.memory;
-		}
-		else if(is_operand_mem(op2.type)) {
-			memory = op2.memory;
-		}
-		else {
-			return false;
-		}
-
-		if(memory.has_index) {
-			return true;
-		}
-
-		if(is_stack_pointer(reg(memory.base))) {
-			return true;
-		}
-
-		if(memory.has_base == false) {
-			return true; // absolute address
-		}
-
-		return false;
 	}
 
 	void assembler::emit_data_operand(u64 data, u8 bit_width) {

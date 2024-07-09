@@ -59,18 +59,27 @@ namespace baremetal {
 		// opcode
 		void emit_instruction_opcode(const instruction* inst, const operand* operands);
 		void emit_instruction_mod_rm(const instruction* inst, const operand* operands);
-		void emit_instruction_sib(const operand* operands);
 		void emit_instruction_prefix(const instruction* inst);
+		void emit_instruction_sib(const operand* operands);
 
+		// opcode prefixes
+		void emit_opcode_prefix_rex(const instruction* inst, const operand* operands);
+		void emit_opcode_prefix_vex(const instruction* inst, const operand* operands);
+
+		void emit_opcode_prefix_rex_mem(const mem& memory);
+
+		// operands
 		void emit_operands(const instruction* inst, const operand* operands);
 		void emit_data_operand(u64 data, u8 bit_width);
-		void emit_opcode_mem(const mem& memory);
 
 		static auto find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8>;
 		static auto find_instruction_info(u32 index, const operand* operands) -> const instruction*;
-		static auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
 
+		static auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
 		static auto has_sib_byte(const operand& op1, const operand& op2) -> bool;
+
+		static auto get_instruction_modrm(const instruction* inst, const operand* operands) -> u8;
+		static auto get_instruction_rex(const instruction* inst, const operand* operands) -> u8;
 
 		enum mod_mode : u8 {
 			INDIRECT        = 0b00,

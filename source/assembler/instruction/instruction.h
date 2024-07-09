@@ -54,6 +54,11 @@ namespace baremetal {
 		DIR_REVERSE
 	};
 
+	enum encoding : u8 {
+		ENC_REX,
+		ENC_VEX
+	};
+
 #pragma pack(push, 1)
 	struct instruction {
 		constexpr instruction() = default;
@@ -66,12 +71,16 @@ namespace baremetal {
 			u16 context_index,
 			u8 operand_count,
 			direction operand_direction,
+			encoding encoding,
+			u8 opcode2,
 			enum operand::type op1,
 			enum operand::type op2,
 			enum operand::type op3,
 			enum operand::type op4
 		) : m_name(name),
+		m_encoding(encoding),
 		m_opcode(opcode),
+		m_opcode2(opcode2),
 		m_extension(ext),
 		m_prefix(prefix),
 		m_special_index(context_index),
@@ -133,6 +142,9 @@ namespace baremetal {
 		constexpr auto get_opcode() const -> u32 {
 			return m_opcode;
 		}
+		constexpr auto get_opcode2() const -> u8 {
+			return m_opcode2;
+		}
 		constexpr auto get_operand(u8 index) const -> enum operand::type {
 			return m_operands[index];
 		}
@@ -141,6 +153,9 @@ namespace baremetal {
 		}
 		constexpr auto get_special_index() const -> u16 {
 			return m_special_index & 0b0011111111111111;
+		}
+		constexpr auto get_encoding_prefix() const -> encoding {
+			return m_encoding;
 		}
 
 		auto get_imm_operand_count() const -> u8 {
@@ -174,7 +189,9 @@ namespace baremetal {
 		const char* m_name;
 
 		// encoding
+		encoding m_encoding; // REX / VEX / EVEX etc.
 		u32 m_opcode;
+		u8 m_opcode2;
 		u8 m_extension;
 		u8 m_prefix;
 
@@ -194,86 +211,96 @@ namespace baremetal {
 #pragma pack(pop)
 
 // instruction generators
-#define INST_0(name, opcode, ext, prefix, ctx, dir) \
-  instruction(                                      \
-    #name,                                          \
-    opcode,                                         \
-    ext,                                            \
-    prefix,                                         \
-    ctx,                                            \
-    0,                                              \
-    direction::DIR_ ## dir,                         \
-    operand::OP_NONE,                               \
-    operand::OP_NONE,                               \
-    operand::OP_NONE,                               \
-    operand::OP_NONE                                \
-  ),
-
-#define INST_1(name, opcode, ext, prefix, ctx, dir, op1) \
+#define INST_0(name, opcode, ext, prefix, ctx, dir, enc, opcode2) \
   instruction(                                           \
     #name,                                               \
     opcode,                                              \
     ext,                                                 \
     prefix,                                              \
     ctx,                                                 \
-    1,                                                   \
+    0,                                                   \
     direction::DIR_ ## dir,                              \
-    operand::OP_ ## op1,                                 \
+		encoding::ENC_ ## enc,                               \
+		opcode2, \
+    operand::OP_NONE,                                    \
     operand::OP_NONE,                                    \
     operand::OP_NONE,                                    \
     operand::OP_NONE                                     \
   ),
 
-#define INST_2(name, opcode, ext, prefix, ctx, dir, op1, op2) \
+#define INST_1(name, opcode, ext, prefix, ctx, dir, enc, opcode2, op1) \
   instruction(                                                \
     #name,                                                    \
     opcode,                                                   \
     ext,                                                      \
     prefix,                                                   \
     ctx,                                                      \
-    2,                                                        \
+    1,                                                        \
     direction::DIR_ ## dir,                                   \
+		encoding::ENC_ ## enc,                                    \
+		opcode2, \
     operand::OP_ ## op1,                                      \
-    operand::OP_ ## op2,                                      \
+    operand::OP_NONE,                                         \
     operand::OP_NONE,                                         \
     operand::OP_NONE                                          \
   ),
 
-#define INST_3(name, opcode, ext, prefix, ctx, dir, op1, op2, op3) \
+#define INST_2(name, opcode, ext, prefix, ctx, dir, enc, opcode2, op1, op2) \
   instruction(                                                     \
     #name,                                                         \
     opcode,                                                        \
     ext,                                                           \
     prefix,                                                        \
     ctx,                                                           \
-    3,                                                             \
+    2,                                                             \
     direction::DIR_ ## dir,                                        \
+		encoding::ENC_ ## enc,                                         \
+		opcode2, \
     operand::OP_ ## op1,                                           \
     operand::OP_ ## op2,                                           \
-    operand::OP_ ## op3,                                           \
+    operand::OP_NONE,                                              \
     operand::OP_NONE                                               \
   ),
 
-#define INST_4(name, opcode, ext, prefix, ctx, dir, op1, op2, op3, op4) \
+#define INST_3(name, opcode, ext, prefix, ctx, dir, enc, opcode2, op1, op2, op3) \
   instruction(                                                          \
     #name,                                                              \
     opcode,                                                             \
     ext,                                                                \
     prefix,                                                             \
     ctx,                                                                \
-    4,                                                                  \
+    3,                                                                  \
     direction::DIR_ ## dir,                                             \
+		encoding::ENC_ ## enc,                                              \
+		opcode2, \
     operand::OP_ ## op1,                                                \
     operand::OP_ ## op2,                                                \
     operand::OP_ ## op3,                                                \
-    operand::OP_ ## op4                                                 \
+    operand::OP_NONE                                                    \
+  ),
+
+#define INST_4(name, opcode, ext, prefix, ctx, dir, enc, opcode2, op1, op2, op3, op4) \
+  instruction(                                                               \
+    #name,                                                                   \
+    opcode,                                                                  \
+    ext,                                                                     \
+    prefix,                                                                  \
+    ctx,                                                                     \
+    4,                                                                       \
+    direction::DIR_ ## dir,                                                  \
+		encoding::ENC_ ## enc,                                                   \
+		opcode2, \
+    operand::OP_ ## op1,                                                     \
+    operand::OP_ ## op2,                                                     \
+    operand::OP_ ## op3,                                                     \
+    operand::OP_ ## op4                                                      \
   ),
 
 // select which INST_X to call based off of the variable argument count (0-2)
 #define INST_SELECT(count) CONCATENATE(INST_, count)
 #define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
-#define INST(name, opcode, extensions, prefix, context, dir, ...) \
-  INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extensions, prefix, context, dir, __VA_ARGS__)
+#define INST(name, opcode, extensions, prefix, context, dir, enc, opcode2, ...) \
+  INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extensions, prefix, context, dir, enc, opcode2, __VA_ARGS__)
 
 	static constexpr instruction instruction_db[] = {
 		#include "assembler/instruction/databases/instruction_database.inc"
