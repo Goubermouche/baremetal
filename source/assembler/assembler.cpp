@@ -432,82 +432,6 @@ namespace baremetal {
 	}
 
 	void assembler::emit_instruction_mod_rm(const instruction* inst, const operand* operands) {
-		if(const u8 modrm = get_instruction_modrm(inst, operands)) {
-			m_bytes.push_back(modrm); // push if non-zero
-		}
-	}
-
-	void assembler::emit_instruction_sib(const operand* operands) {
-		mem memory;
-
-		if(is_operand_mem(operands[0].type)) {
-			memory = operands[0].memory;
-		}
-		else if(is_operand_mem(operands[1].type)) {
-			memory = operands[1].memory;
-		}
-		else {
-			return; // no sib byte
-		}
-
-		const u8 scale = memory.has_base  ? memory.scale       : 0b000;
-		const u8 index = memory.has_index ? memory.index.index : 0b100;
-		const u8 base  = memory.has_base ? memory.base.index   : 0b101;
-
-		if(memory.has_index || is_stack_pointer(reg(memory.base)) || memory.has_base == false) {
-			m_bytes.push_back(sib(scale, index, base));
-		}
-	}
-
-	void assembler::emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
-		const operand operands[4] = { op1, op2, op3, op4 };
-
-		// NOTE: operand count can be inferred from overloaded functions
-		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
-
-		// locate the actual instruction we want to assemble (this doesn't have to match the specified
-		// index, since we can apply optimizations which focus on stuff like shorter encodings)
-		const instruction* inst = find_instruction_info(index, operands);
-
-		// emit instruction parts
-		emit_instruction_prefix(inst);
-		emit_instruction_opcode(inst, operands);
-		emit_instruction_mod_rm(inst, operands);
-		emit_instruction_sib(operands);
-
-		// emit immediate, displacement, and memory offset operands
-		emit_operands(inst, operands);
-	}
-
-	auto assembler::has_sib_byte(const operand& op1, const operand& op2) -> bool {
-		mem memory;
-
-		if(is_operand_mem(op1.type)) {
-			memory = op1.memory;
-		}
-		else if(is_operand_mem(op2.type)) {
-			memory = op2.memory;
-		}
-		else {
-			return false;
-		}
-
-		if(memory.has_index) {
-			return true;
-		}
-
-		if(is_stack_pointer(reg(memory.base))) {
-			return true;
-		}
-
-		if(memory.has_base == false) {
-			return true; // absolute address
-		}
-
-		return false;
-	}
-
-	auto assembler::get_instruction_modrm(const instruction* inst, const operand* operands) -> u8 {
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
 		// mod rm / sib byte
@@ -606,14 +530,81 @@ namespace baremetal {
 				}
 			}
 
-			return mod_rm_part;
+			m_bytes.push_back(mod_rm_part);
+		}
+		else if(inst->is_ext()) {
+			m_bytes.push_back(direct(inst->get_ext(), destination));
+		}
+	}
+
+	void assembler::emit_instruction_sib(const operand* operands) {
+		mem memory;
+
+		if(is_operand_mem(operands[0].type)) {
+			memory = operands[0].memory;
+		}
+		else if(is_operand_mem(operands[1].type)) {
+			memory = operands[1].memory;
+		}
+		else {
+			return; // no sib byte
 		}
 
-		if(inst->is_ext()) {
-			return direct(inst->get_ext(), destination);
+		const u8 scale = memory.has_base  ? memory.scale       : 0b000;
+		const u8 index = memory.has_index ? memory.index.index : 0b100;
+		const u8 base  = memory.has_base ? memory.base.index   : 0b101;
+
+		if(memory.has_index || is_stack_pointer(reg(memory.base)) || memory.has_base == false) {
+			m_bytes.push_back(sib(scale, index, base));
+		}
+	}
+
+	void assembler::emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
+		const operand operands[4] = { op1, op2, op3, op4 };
+
+		// NOTE: operand count can be inferred from overloaded functions
+		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
+
+		// locate the actual instruction we want to assemble (this doesn't have to match the specified
+		// index, since we can apply optimizations which focus on stuff like shorter encodings)
+		const instruction* inst = find_instruction_info(index, operands);
+
+		// emit instruction parts
+		emit_instruction_prefix(inst);
+		emit_instruction_opcode(inst, operands);
+		emit_instruction_mod_rm(inst, operands);
+		emit_instruction_sib(operands);
+
+		// emit immediate, displacement, and memory offset operands
+		emit_operands(inst, operands);
+	}
+
+	auto assembler::has_sib_byte(const operand& op1, const operand& op2) -> bool {
+		mem memory;
+
+		if(is_operand_mem(op1.type)) {
+			memory = op1.memory;
+		}
+		else if(is_operand_mem(op2.type)) {
+			memory = op2.memory;
+		}
+		else {
+			return false;
 		}
 
-		return 0;
+		if(memory.has_index) {
+			return true;
+		}
+
+		if(is_stack_pointer(reg(memory.base))) {
+			return true;
+		}
+
+		if(memory.has_base == false) {
+			return true; // absolute address
+		}
+
+		return false;
 	}
 
 	auto assembler::get_instruction_rex(const instruction* inst, const operand* operands) -> u8 {
@@ -622,8 +613,12 @@ namespace baremetal {
 		const bool is_rexw = inst->is_rexw();
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
-		// extended | reg | extended
+		// extended | extended | reg
 		if(is_extended_gp_reg(operands[0]) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
+			if(inst->get_encoding_prefix() == ENC_REX) {
+				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+
 			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
 		}
 		// extended | reg | extended
@@ -636,10 +631,18 @@ namespace baremetal {
 		}
 		// extended | reg | reg
 		if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type) && is_operand_reg(operands[2].type)) {
+			if(inst->get_encoding_prefix() == ENC_REX) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+
 			return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 		}
 		// reg | extended | reg
 		if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
+			if(inst->get_encoding_prefix() == ENC_REX) {
+				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+
 			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
 		}
 		// reg | reg | ext

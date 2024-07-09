@@ -132,7 +132,7 @@ function encode_context(id, index) {
 function main() {
     let instructions = utility.database;
 
-    let json_table = [];
+    // let json_table = [];
 
     // instructions.sort((a, b) => {
     //     return a.name < b.name;
@@ -147,8 +147,7 @@ function main() {
     //         `"pp": "${inst.pp}"`,
     //         `"dir": "${inst.dir}"`,
     //         `"enc": "${inst.enc}"`,
-    //         `"ops": ${32}`, // opcode size
-    //         `"opcode2": ${0x0}`
+    //         `"ops": ${inst.ops}`, // opcode size
     //     ])
     // })
 
@@ -256,8 +255,7 @@ function main() {
             `${utility.extract_prefix(inst)}`,
             `${special_index.toString()}`,
             `${inst.dir}`,
-            `${inst.enc}`,
-            `0x${inst.opcode2}`
+            `${inst.enc}`
         ]
 
         let operands = translate_operands_to_inst(inst.operands);

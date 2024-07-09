@@ -630,7 +630,7 @@ ${test_runs_text}
     }
 
     // accept the first parameter as the number of threads we want to use
-    const worker_count = 1; // process.argv[2] ? parseInt(process.argv[2]) : os.cpus().length - 1; 
+    const worker_count = process.argv[2] ? parseInt(process.argv[2]) : os.cpus().length - 1; 
     const chunk_size = Math.ceil(items.length / worker_count);
     let finished_count = 0;
     

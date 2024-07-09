@@ -78,7 +78,6 @@ namespace baremetal {
 		static auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
 		static auto has_sib_byte(const operand& op1, const operand& op2) -> bool;
 
-		static auto get_instruction_modrm(const instruction* inst, const operand* operands) -> u8;
 		static auto get_instruction_rex(const instruction* inst, const operand* operands) -> u8;
 
 		enum mod_mode : u8 {

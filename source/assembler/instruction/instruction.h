@@ -72,7 +72,6 @@ namespace baremetal {
 			u8 operand_count,
 			direction operand_direction,
 			encoding encoding,
-			u8 opcode2,
 			enum operand::type op1,
 			enum operand::type op2,
 			enum operand::type op3,
@@ -80,7 +79,6 @@ namespace baremetal {
 		) : m_name(name),
 		m_encoding(encoding),
 		m_opcode(opcode),
-		m_opcode2(opcode2),
 		m_extension(ext),
 		m_prefix(prefix),
 		m_special_index(context_index),
@@ -142,9 +140,6 @@ namespace baremetal {
 		constexpr auto get_opcode() const -> u32 {
 			return m_opcode;
 		}
-		constexpr auto get_opcode2() const -> u8 {
-			return m_opcode2;
-		}
 		constexpr auto get_operand(u8 index) const -> enum operand::type {
 			return m_operands[index];
 		}
@@ -191,7 +186,6 @@ namespace baremetal {
 		// encoding
 		encoding m_encoding; // REX / VEX / EVEX etc.
 		u32 m_opcode;
-		u8 m_opcode2;
 		u8 m_extension;
 		u8 m_prefix;
 
@@ -211,7 +205,7 @@ namespace baremetal {
 #pragma pack(pop)
 
 // instruction generators
-#define INST_0(name, opcode, ext, prefix, ctx, dir, enc, opcode2) \
+#define INST_0(name, opcode, ext, prefix, ctx, dir, enc) \
   instruction(                                           \
     #name,                                               \
     opcode,                                              \
@@ -221,14 +215,13 @@ namespace baremetal {
     0,                                                   \
     direction::DIR_ ## dir,                              \
 		encoding::ENC_ ## enc,                               \
-		opcode2, \
     operand::OP_NONE,                                    \
     operand::OP_NONE,                                    \
     operand::OP_NONE,                                    \
     operand::OP_NONE                                     \
   ),
 
-#define INST_1(name, opcode, ext, prefix, ctx, dir, enc, opcode2, op1) \
+#define INST_1(name, opcode, ext, prefix, ctx, dir, enc, op1) \
   instruction(                                                \
     #name,                                                    \
     opcode,                                                   \
@@ -238,14 +231,13 @@ namespace baremetal {
     1,                                                        \
     direction::DIR_ ## dir,                                   \
 		encoding::ENC_ ## enc,                                    \
-		opcode2, \
     operand::OP_ ## op1,                                      \
     operand::OP_NONE,                                         \
     operand::OP_NONE,                                         \
     operand::OP_NONE                                          \
   ),
 
-#define INST_2(name, opcode, ext, prefix, ctx, dir, enc, opcode2, op1, op2) \
+#define INST_2(name, opcode, ext, prefix, ctx, dir, enc, op1, op2) \
   instruction(                                                     \
     #name,                                                         \
     opcode,                                                        \
@@ -255,14 +247,13 @@ namespace baremetal {
     2,                                                             \
     direction::DIR_ ## dir,                                        \
 		encoding::ENC_ ## enc,                                         \
-		opcode2, \
     operand::OP_ ## op1,                                           \
     operand::OP_ ## op2,                                           \
     operand::OP_NONE,                                              \
     operand::OP_NONE                                               \
   ),
 
-#define INST_3(name, opcode, ext, prefix, ctx, dir, enc, opcode2, op1, op2, op3) \
+#define INST_3(name, opcode, ext, prefix, ctx, dir, enc, op1, op2, op3) \
   instruction(                                                          \
     #name,                                                              \
     opcode,                                                             \
@@ -272,14 +263,13 @@ namespace baremetal {
     3,                                                                  \
     direction::DIR_ ## dir,                                             \
 		encoding::ENC_ ## enc,                                              \
-		opcode2, \
     operand::OP_ ## op1,                                                \
     operand::OP_ ## op2,                                                \
     operand::OP_ ## op3,                                                \
     operand::OP_NONE                                                    \
   ),
 
-#define INST_4(name, opcode, ext, prefix, ctx, dir, enc, opcode2, op1, op2, op3, op4) \
+#define INST_4(name, opcode, ext, prefix, ctx, dir, enc, op1, op2, op3, op4) \
   instruction(                                                               \
     #name,                                                                   \
     opcode,                                                                  \
@@ -289,7 +279,6 @@ namespace baremetal {
     4,                                                                       \
     direction::DIR_ ## dir,                                                  \
 		encoding::ENC_ ## enc,                                                   \
-		opcode2, \
     operand::OP_ ## op1,                                                     \
     operand::OP_ ## op2,                                                     \
     operand::OP_ ## op3,                                                     \
@@ -299,8 +288,8 @@ namespace baremetal {
 // select which INST_X to call based off of the variable argument count (0-2)
 #define INST_SELECT(count) CONCATENATE(INST_, count)
 #define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
-#define INST(name, opcode, extensions, prefix, context, dir, enc, opcode2, ...) \
-  INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extensions, prefix, context, dir, enc, opcode2, __VA_ARGS__)
+#define INST(name, opcode, extensions, prefix, context, dir, enc, ...) \
+  INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extensions, prefix, context, dir, enc, __VA_ARGS__)
 
 	static constexpr instruction instruction_db[] = {
 		#include "assembler/instruction/databases/instruction_database.inc"
