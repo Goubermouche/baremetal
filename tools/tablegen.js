@@ -147,7 +147,8 @@ function main() {
     //         `"pp": "${inst.pp}"`,
     //         `"dir": "${inst.dir}"`,
     //         `"enc": "${inst.enc}"`,
-    //         `"ops": ${inst.ops}`, // opcode size
+    //         `"ops": ${inst.ops}`,
+    //         `"imp": "${inst.imp}"`
     //     ])
     // })
 
@@ -255,7 +256,8 @@ function main() {
             `${utility.extract_prefix(inst)}`,
             `${special_index.toString()}`,
             `${inst.dir}`,
-            `${inst.enc}`
+            `${inst.enc}`,
+            `${inst.imp}`, 
         ]
 
         let operands = translate_operands_to_inst(inst.operands);

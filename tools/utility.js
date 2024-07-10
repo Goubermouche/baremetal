@@ -19,10 +19,30 @@ const { execSync } = require('child_process');
 // dir: operand direction
 // enc: instruction encoding
 // ops: preferred operand size
+// imp: implied mandatory prefix
 
 const database = [
-    { "name": "andn"           , "operands": ["reg32", "reg32", "reg32"] , "opcode": "0000F2", "rm": "r", "w": false, "ri": false, "pp": ""    , "dir": "NORMAL" , "enc": "VEX", "ops": 128 },
-    { "name": "andn"           , "operands": ["reg32", "reg32", "mem32"] , "opcode": "0000F2", "rm": "r", "w": false, "ri": false, "pp": ""    , "dir": "NORMAL" , "enc": "VEX", "ops": 128 },
+    { "name": "andn"  , "operands": ["reg32", "reg32", "reg32"], "opcode": "0000F2", "rm": "r", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RVM", "ops": 128, "imp": "NONE" },
+    { "name": "andn"  , "operands": ["reg64", "reg64", "reg64"], "opcode": "0000F2", "rm": "r", "w": true , "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RVM", "ops": 128, "imp": "NONE" },
+    { "name": "bextr" , "operands": ["reg32", "reg32", "reg32"], "opcode": "0000F7", "rm": "r", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RMV", "ops": 128, "imp": "NONE" },
+    { "name": "bextr" , "operands": ["reg64", "reg64", "reg64"], "opcode": "0000F7", "rm": "r", "w": true , "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RMV", "ops": 128, "imp": "NONE" },
+    { "name": "blsi"  , "operands": ["reg32", "reg32"]         , "opcode": "0000F3", "rm": "3", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_VM" , "ops": 128, "imp": "NONE" },
+    { "name": "blsi"  , "operands": ["reg64", "reg64"]         , "opcode": "0000F3", "rm": "3", "w": true , "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_VM" , "ops": 128, "imp": "NONE" },
+    { "name": "blsmsk", "operands": ["reg32", "reg32"]         , "opcode": "0000F3", "rm": "2", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_VM" , "ops": 128, "imp": "NONE" },
+    { "name": "blsmsk", "operands": ["reg64", "reg64"]         , "opcode": "0000F3", "rm": "2", "w": true , "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_VM" , "ops": 128, "imp": "NONE" },
+    { "name": "blsr"  , "operands": ["reg32", "reg32"]         , "opcode": "0000F3", "rm": "1", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_VM" , "ops": 128, "imp": "NONE" },
+    { "name": "blsr"  , "operands": ["reg64", "reg64"]         , "opcode": "0000F3", "rm": "1", "w": true , "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_VM" , "ops": 128, "imp": "NONE" },
+    { "name": "bzhi"  , "operands": ["reg32", "reg32", "reg32"], "opcode": "0000F5", "rm": "r", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RMV", "ops": 128, "imp": "NONE" },
+    { "name": "bzhi"  , "operands": ["reg64", "reg64", "reg64"], "opcode": "0000F5", "rm": "r", "w": true , "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RMV", "ops": 128, "imp": "NONE" },
+    { "name": "mulx"  , "operands": ["reg32", "reg32", "reg32"], "opcode": "0000F6", "rm": "r", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RVM", "ops": 128, "imp": "F2" },
+    { "name": "mulx"  , "operands": ["reg64", "reg64", "reg64"], "opcode": "0000F6", "rm": "r", "w": true, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RVM", "ops": 128, "imp": "F2" },
+    { "name": "pdep"  , "operands": ["reg32", "reg32", "reg32"], "opcode": "0000F5", "rm": "r", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RVM", "ops": 128, "imp": "F2" },
+    { "name": "pdep"  , "operands": ["reg64", "reg64", "reg64"], "opcode": "0000F5", "rm": "r", "w": true, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RVM", "ops": 128, "imp": "F2" },
+    { "name": "pext"  , "operands": ["reg32", "reg32", "reg32"], "opcode": "0000F5", "rm": "r", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RVM", "ops": 128, "imp": "F3" },
+    { "name": "pext"  , "operands": ["reg64", "reg64", "reg64"], "opcode": "0000F5", "rm": "r", "w": true, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RVM", "ops": 128, "imp": "F3" },
+    { "name": "rorx"  , "operands": ["reg32", "reg32", "i8"]   , "opcode": "0000F0", "rm": "r", "w": false, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RM", "ops": 128, "imp": "F2" },
+    { "name": "rorx"  , "operands": ["reg64", "reg64", "i8"]   , "opcode": "0000F0", "rm": "r", "w": true, "ri": false, "pp": "", "dir": "NORMAL", "enc": "VEX_RM", "ops": 128, "imp": "F2" },
+
     // { "name": "loop"           , "operands": ["rel8"]                    , "opcode": "0000e2", "rm": "" , "w": false, "ri": false, "pp": ""    , "dir": "NORMAL" , "enc": "REX", "ops": 32  },
     // { "name": "loopne"         , "operands": ["rel8"]                    , "opcode": "0000e0", "rm": "" , "w": false, "ri": false, "pp": ""    , "dir": "NORMAL" , "enc": "REX", "ops": 32  },
     // { "name": "loope"          , "operands": ["rel8"]                    , "opcode": "0000e1", "rm": "" , "w": false, "ri": false, "pp": ""    , "dir": "NORMAL" , "enc": "REX", "ops": 32  },

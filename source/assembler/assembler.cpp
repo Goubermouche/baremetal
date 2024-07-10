@@ -13,11 +13,23 @@ namespace baremetal {
 	}
 
 	auto assembler::find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8> {
-		if(inst->get_encoding_prefix() == ENC_VEX) {
+		if(inst->is_vex()) {
 			std::pair<u8, u8> result = { 0, 0 };
 
-			result.first = operands[0].reg;
-			result.second = operands[2].reg;
+			switch(inst->get_encoding_prefix()) {
+				case ENC_VEX_RVM: {
+					result.first = operands[0].reg;
+					result.second = operands[2].reg;
+					break;
+				}
+				case ENC_VEX_VM:
+				case ENC_VEX_RM:
+				case ENC_VEX_RMV: {
+					result.first = operands[0].reg;
+					result.second = operands[1].reg;
+					break;
+				}
+			}
 
 			return result;
 		}
@@ -251,8 +263,20 @@ namespace baremetal {
 		const u8 we = (inst->is_rexw()) << 7;
 		third |= we;
 
-		// vvvv - negation of one of our operands
-		const u8 vvvv = (~operands[1].reg & 0b00001111) << 3;
+		return;
+
+		// vvvv - negation of one of our v operand
+		u8 vvvv_index = 0;
+
+		switch(inst->get_encoding_prefix()) {
+			case ENC_VEX_RVM: vvvv_index = 1; break;
+			case ENC_VEX_RMV: vvvv_index = 2; break;
+			case ENC_VEX_VM:  vvvv_index = 0; break;
+			case ENC_VEX_RM:  vvvv_index = 0; break;
+		}
+
+		u8 vvvv = (~operands[vvvv_index].reg & 0b00001111) << 3;;
+
 		third |= vvvv;
 
 		 // L vector length (0 = 128b, 1 = 256b)
@@ -260,8 +284,7 @@ namespace baremetal {
 		third |= l;
 
 		// pp - implied mandatory prefix
-		const u8 pp = 0;
-		third |= pp;
+		third |= inst->get_imp();
 
 		m_bytes.push_back(third);
 	}
@@ -323,10 +346,11 @@ namespace baremetal {
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
 		// prefix
-		switch(inst->get_encoding_prefix()) {
-			case ENC_REX: emit_opcode_prefix_rex(inst, operands); break;
-			case ENC_VEX: emit_opcode_prefix_vex(inst, operands); break;
-			default: ASSERT(false, "not implemented");
+		if(inst->is_rex()) {
+			emit_opcode_prefix_rex(inst, operands);
+		}
+		else if(inst->is_vex()) {
+			emit_opcode_prefix_vex(inst, operands);
 		}
 
 		// opcode
@@ -435,7 +459,7 @@ namespace baremetal {
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
 		// mod rm / sib byte
-		if(inst->is_r() || is_operand_mem(operands[0].type) || is_operand_mem(operands[1].type)) {
+		if(inst->is_r() || is_operand_mem(operands[0].type) || is_operand_mem(operands[1].type) || is_operand_mem(operands[2].type)) {
 			u8 mod_rm_part;
 
 			if(is_operand_mem(operands[0].type)) {
@@ -641,11 +665,104 @@ namespace baremetal {
 		return false;
 	}
 
+	auto get_first_extended_reg(const operand* operands) -> u8 {
+		for(u8 i = 0; i < 4; ++i) {
+			if(is_extended_reg(operands[i])) {
+				return i;
+			}
+		}
+
+		// no extended reg, get last regular reg
+		for(u8 i = 4; i-- > 0;) {
+			if(is_operand_reg(operands[i].type)) {
+				return i;
+			}
+		}
+
+		ASSERT(false, "invalid instruction");
+		return 0;
+	}
+
 	auto assembler::get_instruction_rex(const instruction* inst, const operand* operands) -> u8 {
 		// THIS IS UNCHECKED, MAYBE WE'LL HAVE TO RETURN 0
 
 		const bool is_rexw = inst->is_rexw();
 		auto [rx, destination] = find_rex_pair(inst, operands);
+
+		if(inst->is_vex()) {
+			u8 rx = 0;
+			u8 base = 0;
+			u8 index = 0;
+
+			// op[0] is extended? [____X___]
+			// op[1] is extended? [_____X__]
+			// op[2] is extended? [______X_]
+			// op[3] is extended? [_______X]
+			u8 index_byte = 0;
+
+			index_byte |= is_extended_reg(operands[0]) << 3;
+			index_byte |= is_extended_reg(operands[1]) << 2;
+			index_byte |= is_extended_reg(operands[2]) << 1;
+			index_byte |= is_extended_reg(operands[3]) << 0;
+
+			switch(inst->get_encoding_prefix()) {
+				case ENC_VEX_RVM: {
+					switch(index_byte) {
+						case 0b0001000:
+						case 0b0001110:
+						case 0b0000000: rx = operands[0].reg; base = operands[1].reg; break;
+						case 0b0001100:
+						case 0b0000010: rx = operands[1].reg; base = operands[2].reg; break;
+						case 0b0001010:
+						case 0b0000110: rx = operands[0].reg; base = operands[2].reg; break;
+						case 0b0000100: rx = operands[2].reg; base = operands[0].reg; break;
+						default: ASSERT(false, "unhandled rex case");
+					}
+
+					break;
+				}
+				case ENC_VEX_RMV: {
+					switch(index_byte) {
+						case 0b0001000:
+						case 0b0001010:
+						case 0b0001100:
+						case 0b0001110:
+						case 0b0000000:
+						case 0b0000010: rx = operands[0].reg; base = operands[1].reg; break;
+						case 0b0000110: rx = operands[0].reg; base = operands[2].reg; break;
+						case 0b0000100: rx = operands[2].reg; base = operands[1].reg; break;
+						default: ASSERT(false, "unhandled rex case");
+					}
+
+					break;
+				}
+				case ENC_VEX_VM: {
+					switch(index_byte) {
+						case 0b0001000: rx = operands[1].reg; base = operands[1].reg; break;
+						case 0b0001100: rx = 0;               base = operands[1].reg; break;
+						case 0b0000000: rx = operands[0].reg; base = operands[1].reg; break;
+						case 0b0000100: rx = operands[2].reg; base = operands[1].reg; break;
+						default: ASSERT(false, "unhandled rex case");
+					}
+
+					break;
+				}
+				case ENC_VEX_RM: {
+					switch(index_byte) {
+						case 0b0001000: rx = operands[1].reg; base = operands[1].reg; break;
+						case 0b0001100: rx = 0;               base = operands[1].reg; break;
+						case 0b0000000: rx = operands[1].reg; base = operands[0].reg; break;
+						case 0b0000100: rx = operands[2].reg; base = operands[1].reg; break;
+						default: ASSERT(false, "unhandled rex case");
+					}
+
+					break;
+				}
+				default: ASSERT(false, "unhandled rex case");
+			}
+
+			return rex(is_rexw, rx, base, index);
+		}
 
 		// extended | extended | reg
 		if(is_extended_gp_reg(operands[0]) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
