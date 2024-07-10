@@ -148,7 +148,8 @@ function main() {
     //         `"dir": "${inst.dir}"`,
     //         `"enc": "${inst.enc}"`,
     //         `"ops": ${inst.ops}`,
-    //         `"imp": "${inst.imp}"`
+    //         `"imp": "${inst.imp}"`,
+    //         `"ilo": "${inst.ilo}"`
     //     ])
     // })
 
@@ -258,6 +259,7 @@ function main() {
             `${inst.dir}`,
             `${inst.enc}`,
             `${inst.imp}`, 
+            `0x${inst.ilo}`, 
         ]
 
         let operands = translate_operands_to_inst(inst.operands);

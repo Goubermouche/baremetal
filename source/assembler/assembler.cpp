@@ -247,8 +247,16 @@ namespace baremetal {
 		second |= !b << 5;
 
 		// map_select
-		second |= 0b00010;
+		u8 map_select = 0;
 
+		switch(inst->get_ilo()) {
+			case 0x0f:   map_select = 0b01; break;
+			case 0x0f38: map_select = 0b10; break;
+			case 0x0f3a: map_select = 0b11; break;
+			default: ASSERT(false, "unknown ilo");
+		}
+
+		second |= map_select;
 		m_bytes.push_back(second);
 
 		// third byte
@@ -263,19 +271,15 @@ namespace baremetal {
 		const u8 we = (inst->is_rexw()) << 7;
 		third |= we;
 
-		return;
-
 		// vvvv - negation of one of our v operand
-		u8 vvvv_index = 0;
+		u8 vvvv = 0;
 
 		switch(inst->get_encoding_prefix()) {
-			case ENC_VEX_RVM: vvvv_index = 1; break;
-			case ENC_VEX_RMV: vvvv_index = 2; break;
-			case ENC_VEX_VM:  vvvv_index = 0; break;
-			case ENC_VEX_RM:  vvvv_index = 0; break;
+			case ENC_VEX_RVM: vvvv = (~operands[1].reg & 0b00001111) << 3; break;
+			case ENC_VEX_RMV: vvvv = (~operands[2].reg & 0b00001111) << 3; break;
+			case ENC_VEX_VM:  vvvv = (~operands[0].reg & 0b00001111) << 3; break;
+			case ENC_VEX_RM:  vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
 		}
-
-		u8 vvvv = (~operands[vvvv_index].reg & 0b00001111) << 3;;
 
 		third |= vvvv;
 
@@ -738,10 +742,10 @@ namespace baremetal {
 				}
 				case ENC_VEX_VM: {
 					switch(index_byte) {
+						case 0b0000000:
+						case 0b0000100: rx = operands[0].reg; base = operands[1].reg; break;
 						case 0b0001000: rx = operands[1].reg; base = operands[1].reg; break;
 						case 0b0001100: rx = 0;               base = operands[1].reg; break;
-						case 0b0000000: rx = operands[0].reg; base = operands[1].reg; break;
-						case 0b0000100: rx = operands[2].reg; base = operands[1].reg; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 
@@ -749,10 +753,10 @@ namespace baremetal {
 				}
 				case ENC_VEX_RM: {
 					switch(index_byte) {
-						case 0b0001000: rx = operands[1].reg; base = operands[1].reg; break;
-						case 0b0001100: rx = 0;               base = operands[1].reg; break;
+						case 0b0001000:
+						case 0b0001100:
+						case 0b0000100: rx = operands[0].reg; base = operands[1].reg; break;
 						case 0b0000000: rx = operands[1].reg; base = operands[0].reg; break;
-						case 0b0000100: rx = operands[2].reg; base = operands[1].reg; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 
