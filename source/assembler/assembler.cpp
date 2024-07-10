@@ -439,7 +439,7 @@ namespace baremetal {
 			u8 mod_rm_part;
 
 			if(is_operand_mem(operands[0].type)) {
-				const bool has_sib = has_sib_byte(operands[0], operands[1]);
+				const bool has_sib = has_sib_byte(operands);
 				const auto memory = operands[0].memory;
 
 				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
@@ -494,8 +494,36 @@ namespace baremetal {
 				}
 			}
 			else if(is_operand_mem(operands[1].type)) {
-				const bool has_sib = has_sib_byte(operands[0], operands[1]);
+				const bool has_sib = has_sib_byte(operands);
 				const auto memory = operands[1].memory;
+
+				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
+
+				// right mem
+				if(memory.has_base == false) {
+					// absolute address
+					mod_rm_part = indirect(rx, 0b100); // 100 = SIB byte
+				}
+				else if(memory.base.type == REG_RIP) {
+					// rip reg
+					mod_rm_part = indirect(rx, 0b101); // 101 = RIP-relative
+				}
+				else if(memory.displacement.value == 0) {
+					// no displacement
+					mod_rm_part = indirect(rx, has_sib ? 0b100 : memory.base.index);
+				}
+				else if(memory.displacement.min_bits <= 8) {
+					// 8 bit displacement
+					mod_rm_part = indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index);
+				}
+				else {
+					// 32 bit displacement
+					mod_rm_part = indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index);
+				}
+			}
+			else if(is_operand_mem(operands[2].type)) {
+				const bool has_sib = has_sib_byte(operands);
+				const auto memory = operands[2].memory;
 
 				ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
@@ -546,6 +574,9 @@ namespace baremetal {
 		else if(is_operand_mem(operands[1].type)) {
 			memory = operands[1].memory;
 		}
+		else if(is_operand_mem(operands[2].type)) {
+			memory = operands[2].memory;
+		}
 		else {
 			return; // no sib byte
 		}
@@ -579,14 +610,17 @@ namespace baremetal {
 		emit_operands(inst, operands);
 	}
 
-	auto assembler::has_sib_byte(const operand& op1, const operand& op2) -> bool {
+	auto assembler::has_sib_byte(const operand* operands) -> bool {
 		mem memory;
 
-		if(is_operand_mem(op1.type)) {
-			memory = op1.memory;
+		if(is_operand_mem(operands[0].type)) {
+			memory = operands[0].memory;
 		}
-		else if(is_operand_mem(op2.type)) {
-			memory = op2.memory;
+		else if(is_operand_mem(operands[1].type)) {
+			memory = operands[1].memory;
+		}
+		else if(is_operand_mem(operands[2].type)) {
+			memory = operands[2].memory;
 		}
 		else {
 			return false;
@@ -645,9 +679,19 @@ namespace baremetal {
 
 			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
 		}
+		// extended | reg
+		if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type)) {
+			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
+		}
 		// reg | reg | ext
 		if(is_operand_reg(operands[0].type) && is_operand_reg(operands[1].type) && is_extended_gp_reg(operands[2])) {
 			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
+		}
+		if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_mem(operands[2].type)) {
+			return rex(is_rexw, operands[0].reg, operands[2].memory.base.index, operands[2].memory.index.index);
+		}
+		if(is_operand_reg(operands[0].type) && is_operand_reg(operands[1].type) && is_operand_mem(operands[2].type)) {
+			return rex(is_rexw, operands[1].reg, operands[2].memory.base.index, operands[2].memory.index.index);
 		}
 		// extended gp | register
 		else if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type)) {
@@ -682,6 +726,7 @@ namespace baremetal {
 				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
 			}
 		}
+		
 		// xmm | extended xmm
 		else if(is_extended_xmm_reg(operands[1]) && is_operand_xmm(operands[0].type)) {
 			if(inst->get_direction()) {
