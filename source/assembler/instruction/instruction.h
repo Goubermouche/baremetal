@@ -217,6 +217,24 @@ namespace baremetal {
 			return m_variant;
 		}
 
+		auto get_mem_operand() const -> u8 {
+			if(is_operand_mem(m_operands[0])) { return 0; }
+			if(is_operand_mem(m_operands[1])) { return 1; }
+			if(is_operand_mem(m_operands[2])) { return 2; }
+			if(is_operand_mem(m_operands[3])) { return 3; }
+
+			return 0;
+		}
+
+		auto has_mem_operand() const -> bool {
+			if(is_operand_mem(m_operands[0])) { return true; }
+			if(is_operand_mem(m_operands[1])) { return true; }
+			if(is_operand_mem(m_operands[2])) { return true; }
+			if(is_operand_mem(m_operands[3])) { return true; }
+
+			return false;
+		}
+
 		constexpr auto has_prefix() const -> bool {
 			return m_prefix != PREFIX_NONE;
 		}

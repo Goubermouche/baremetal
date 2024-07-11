@@ -3,14 +3,14 @@
 #include "assembler/instruction/operands/registers.h"
 
 namespace baremetal {
-	struct mem {
-		enum scale : u8 {
-			SCALE_1 = 0b00,
-			SCALE_2 = 0b01,
-			SCALE_4 = 0b10,
-			SCALE_8 = 0b11
-		};
+	enum scale : u8 {
+		SCALE_1 = 0b00,
+		SCALE_2 = 0b01,
+		SCALE_4 = 0b10,
+		SCALE_8 = 0b11
+	};
 
+	struct mem {
 		// this can't be a reg64 since it can contain special registers (ie. rip)
 		reg base;
 		reg64 index;

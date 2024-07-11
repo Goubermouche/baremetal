@@ -703,18 +703,41 @@ namespace baremetal {
 		return 0;
 	}
 
+	auto encode_operand_type(const operand& op) -> u16 {
+		if(is_operand_mem(op.type)) {
+			return 0b11;
+		}
+
+		if(is_operand_imm(op.type)) {
+			return 0b00;
+		}
+
+		if(is_operand_xmm(op.type)) {
+			return 0b10;
+		}
+
+		return 0b01;
+	}
+
 	auto assembler::get_instruction_rex(const instruction* inst, const operand* operands) -> u8 {
 		// THIS IS UNCHECKED, MAYBE WE'LL HAVE TO RETURN 0
-
 		const bool is_rexw = inst->is_rexw();
-		auto [rx, destination] = find_rex_pair(inst, operands);
+
+		u8 rx = 0;
+		u8 base = 0;
+		u8 index = 0;
+		u16 index_byte = 0;
+
+		// figure out the index bit first
+		if(inst->has_mem_operand()) {
+			const mem mem = operands[inst->get_mem_operand()].memory;
+
+			if(mem.has_index) {
+				index = mem.index.index;
+			}
+		}
 
 		if(inst->is_vex()) {
-			u8 rx = 0;
-			u8 base = 0;
-			u8 index = 0;
-			u8 index_byte = 0;
-
 			const u8 registers[4] = {
 				extract_operand_reg(operands[0]),
 				extract_operand_reg(operands[1]),
@@ -734,14 +757,14 @@ namespace baremetal {
 			switch(inst->get_encoding_prefix()) {
 				case ENC_VEX_RVM: {
 					switch(index_byte) {
-						case 0b0001000:
-						case 0b0001110:
-						case 0b0000000: rx = registers[0]; base = registers[1]; break;
-						case 0b0001100:
-						case 0b0000010: rx = registers[1]; base = registers[2]; break;
-						case 0b0001010:
-						case 0b0000110: rx = registers[0]; base = registers[2]; break;
-						case 0b0000100: rx = registers[2]; base = registers[0]; break;
+						case 0b00001000:
+						case 0b00001110:
+						case 0b00000000: rx = registers[0]; base = registers[1]; break;
+						case 0b00001100:
+						case 0b00000010: rx = registers[1]; base = registers[2]; break;
+						case 0b00001010:
+						case 0b00000110: rx = registers[0]; base = registers[2]; break;
+						case 0b00000100: rx = registers[2]; base = registers[0]; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 
@@ -749,14 +772,14 @@ namespace baremetal {
 				}
 				case ENC_VEX_RMV: {
 					switch(index_byte) {
-						case 0b0001000:
-						case 0b0001010:
-						case 0b0001100:
-						case 0b0001110:
-						case 0b0000000:
-						case 0b0000010: rx = registers[0]; base = registers[1]; break;
-						case 0b0000110: rx = registers[0]; base = registers[2]; break;
-						case 0b0000100: rx = registers[2]; base = registers[1]; break;
+						case 0b00001000:
+						case 0b00001010:
+						case 0b00001100:
+						case 0b00001110:
+						case 0b00000000:
+						case 0b00000010: rx = registers[0]; base = registers[1]; break;
+						case 0b00000110: rx = registers[0]; base = registers[2]; break;
+						case 0b00000100: rx = registers[2]; base = registers[1]; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 
@@ -764,10 +787,10 @@ namespace baremetal {
 				}
 				case ENC_VEX_VM: {
 					switch(index_byte) {
-						case 0b0000000:
-						case 0b0000100: rx = registers[0]; base = registers[1]; break;
-						case 0b0001000: rx = registers[1]; base = registers[1]; break;
-						case 0b0001100: rx = 0;            base = registers[1]; break;
+						case 0b00000000:
+						case 0b00000100: rx = registers[0]; base = registers[1]; break;
+						case 0b00001000: rx = registers[1]; base = registers[1]; break;
+						case 0b00001100: rx = 0;            base = registers[1]; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 
@@ -775,10 +798,10 @@ namespace baremetal {
 				}
 				case ENC_VEX_RM: {
 					switch(index_byte) {
-						case 0b0001000:
-						case 0b0001100:
-						case 0b0000100: rx = registers[0]; base = registers[1]; break;
-						case 0b0000000: rx = registers[1]; base = registers[0]; break;
+						case 0b00001000:
+						case 0b00001100:
+						case 0b00000100: rx = registers[0]; base = registers[1]; break;
+						case 0b00000000: rx = registers[1]; base = registers[0]; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 
@@ -786,140 +809,165 @@ namespace baremetal {
 				}
 				default: ASSERT(false, "unhandled rex case");
 			}
-
-			return rex(is_rexw, rx, base, index);
 		}
+		else {
+			const u8 registers[4] = {
+				extract_operand_reg(operands[0]),
+				extract_operand_reg(operands[1]),
+				extract_operand_reg(operands[2]),
+				extract_operand_reg(operands[3]),
+			};
 
-		if(is_rexw || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
-			u8 rex_part;
+			// KK = kind
+			// 00 = imm
+			// 01 = gpr
+			// 10 = xmm
+			// 11 = mem
 
-			// gp | extended gp | gp
-			if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			// op[0] type         [KK__________]
+			// op[0] is extended? [__X_________]
+			// op[1] type         [___KK_______]
+			// op[1] is extended? [_____X______]
+			// op[2] type         [______KK____]
+			// op[2] is extended? [________X___]
+			// op[3] type         [_________KK_]
+			// op[3] is extended? [___________X]
+
+			index_byte |= encode_operand_type(operands[0]) << 10;
+			index_byte |= (registers[0] >= 8) << 9;
+			index_byte |= encode_operand_type(operands[1]) << 7;
+			index_byte |= (registers[1] >= 8) << 6;
+			index_byte |= encode_operand_type(operands[2]) << 4;
+			index_byte |= (registers[2] >= 8) << 3;
+			index_byte |= encode_operand_type(operands[3]) << 1;
+			index_byte |= (registers[3] >= 8) << 0;
+
+			const u8 operand_count = inst->get_operand_count();
+			const u8 a = inst->get_direction() ? 0 : 1;
+			const u8 b = inst->get_direction() ? 1 : 0;
+
+			if(operand_count == 0) {
+				return rex(is_rexw, 0, 0, 0);
 			}
-			// extended gp | register
-			else if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// gp | extended gp
-			else if(is_extended_gp_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			else if(is_operand_gp_reg(operands[0].type) && is_operand_mem(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
-			}
-			else if(is_operand_mem(operands[0].type) && is_operand_gp_reg(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
-			}
-			// extended xmm | xmm
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_xmm(operands[1].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// xmm | extended xmm
-			else if(is_extended_xmm_reg(operands[1]) && is_operand_xmm(operands[0].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// extended xmm | gp
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_gp_reg(operands[1].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// gp | extended xmm
-			else if(is_extended_xmm_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
-			}
-			// extended xmm | imm
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_imm(operands[1].type)) {
-				rex_part = rex(is_rexw, 0, operands[0].reg, 0);
-			}
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_mem(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
-			}
-			else if(is_extended_xmm_reg(operands[1]) && is_operand_mem(operands[0].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
-			}
-			else if(is_extended_xmm_reg(operands[1]) && is_operand_reg(operands[0].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+
+			if(operand_count == 1 || operand_count == 2 || operand_count == 4) {
+				switch(index_byte) {
+					case 0b010'000'010'010:
+					case 0b110'000'010'010:
+					case 0b011'011'010'010:
+					case 0b111'011'010'010:
+					case 0b110'010'010'010:
+					case 0b010'010'010'010:
+					case 0b011'110'010'010:
+					case 0b011'111'010'010:
+					case 0b010'110'010'010:
+					case 0b010'111'010'010:
+					case 0b100'101'010'010:
+					case 0b101'100'010'010:
+					case 0b101'101'010'010:
+					case 0b101'110'010'010:
+					case 0b101'111'010'010:
+					case 0b101'010'010'010:
+					case 0b011'101'010'010:
+					case 0b010'100'010'010:
+					case 0b100'011'010'010:
+					case 0b101'011'010'010:
+					case 0b100'010'010'010:
+					case 0b100'110'010'010:
+					case 0b100'111'010'010:
+					case 0b111'101'010'010:
+					case 0b100'101'000'010:
+					case 0b101'100'000'010:
+					case 0b101'101'000'010:
+					case 0b101'110'000'010:
+					case 0b101'111'000'010:
+					case 0b010'101'000'010:
+					case 0b011'100'000'010:
+					case 0b011'101'000'010:
+					case 0b110'101'000'010:
+					case 0b111'101'000'010:
+					case 0b010'100'000'010:
+					case 0b101'000'000'010:
+					case 0b100'101'000'000:
+					case 0b101'100'000'000:
+					case 0b101'101'000'000: rx = registers[0]; base = registers[1]; break;
+					case 0b011'000'010'010:
+					case 0b111'000'010'010:
+					case 0b110'011'010'010:
+					case 0b111'010'010'010:
+					case 0b110'101'010'010:
+					case 0b101'000'010'010: rx = registers[1]; base = registers[0]; break;
+					case 0b010'011'010'010:
+					case 0b011'010'010'010:
+					case 0b010'101'010'010:
+					case 0b011'100'010'010: rx = registers[b]; base = registers[a]; break;
+					default: ASSERT(false, "unhandled rex case");
 				}
 			}
-			else if(is_extended_xmm_reg(operands[0]) && is_operand_reg(operands[1].type)) {
-				if(inst->get_direction()) {
-					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			else if(operand_count == 3) {
+				switch(index_byte) {
+					case 0b010'000'010'010:
+					case 0b110'000'010'010:
+					case 0b011'011'010'010:
+					case 0b111'011'010'010:
+					case 0b110'010'010'010:
+					case 0b010'010'010'010:
+					case 0b011'110'010'010:
+					case 0b011'111'010'010:
+					case 0b010'110'010'010:
+					case 0b010'111'010'010:
+					case 0b100'101'010'010:
+					case 0b101'100'010'010:
+					case 0b101'101'010'010:
+					case 0b101'110'010'010:
+					case 0b101'111'010'010:
+					case 0b100'101'000'010:
+					case 0b101'100'000'010:
+					case 0b101'101'000'010:
+					case 0b101'110'000'010:
+					case 0b101'111'000'010:
+					case 0b011'101'000'010:
+					case 0b111'101'000'010:
+					case 0b010'100'000'010:
+					case 0b110'100'000'010:
+					case 0b100'011'000'010:
+					case 0b101'010'000'010:
+					case 0b101'011'000'010:
+					case 0b100'010'000'010:
+					case 0b010'010'000'010:
+					case 0b011'011'000'010:
+					case 0b100'110'000'010:
+					case 0b100'111'000'010:
+					case 0b110'010'000'010:
+					case 0b011'110'000'010:
+					case 0b011'111'000'010:
+					case 0b010'110'000'010:
+					case 0b010'111'000'010:
+					case 0b111'011'000'010: rx = registers[0]; base = registers[1]; break;
+					case 0b011'000'010'010:
+					case 0b111'000'010'010:
+					case 0b111'010'010'010:
+					case 0b110'101'000'010:
+					case 0b101'000'000'010:
+					case 0b111'100'000'010:
+					case 0b110'011'000'010:
+					case 0b111'010'000'010: rx = registers[1]; base = registers[0]; break;
+					case 0b010'011'010'010:
+					case 0b011'010'010'010:
+					case 0b110'011'010'010:
+					case 0b010'101'000'010:
+					case 0b011'100'000'010:
+					case 0b011'010'000'010:
+					case 0b010'011'000'010: rx = registers[b]; base = registers[a]; break;
+					default: ASSERT(false, "unhandled rex case");
 				}
-				else {
-					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-				}
 			}
-			// gp | xmm
-			else if(is_operand_gp_reg(operands[0].type) && is_operand_xmm(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			// x | creg
-			else if(is_operand_creg(operands[1].type)) {
-				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			// creg | x
-			else if(is_operand_creg(operands[0].type)) {
-				rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-			// reg x
-			else if(is_operand_gp_reg(operands[0].type)) {
-				rex_part = rex(is_rexw, 0, operands[0].reg, 0);
-			}
-			// x reg
-			else if(is_operand_gp_reg(operands[1].type)) {
-				rex_part = rex(is_rexw, 0, operands[1].reg, 0);
-			}
-			// mem x
-			else if(is_operand_mem(operands[0].type)) {
-				rex_part = rex(is_rexw, 0, operands[0].memory.base.index, operands[0].memory.index.index);
-			}
-			// mem x
-			else if(is_operand_mem(operands[1].type)) {
-				rex_part = rex(is_rexw, 0, operands[1].memory.base.index, operands[1].memory.index.index);
-			}
-			// x x
 			else {
-				rex_part = rex(is_rexw, rx, destination, 0);
+				ASSERT(false, "unhandled op count");
 			}
-
-			return rex_part;
 		}
 
-		return 0;
+		return rex(is_rexw, rx, base, index);
 	}
 
 	void assembler::emit_data_operand(u64 data, u8 bit_width) {
