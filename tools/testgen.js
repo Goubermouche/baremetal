@@ -86,12 +86,12 @@ class mem {
 
     // base + index + offset
     static base_index_offset(bit_width, base, index, offset) {
-        return new mem(mem_type.base_offset, bit_width, base, offset, index, "");
+        return new mem(mem_type.base_index_offset, bit_width, base, offset, index, "");
     }
 
     // base + index * scale + offset
     static base_index_offset_scale(bit_width, base, index, offset, scale) {
-        return new mem(mem_type.base_offset, bit_width, base, offset, index, scale);
+        return new mem(mem_type.base_index_offset_scale, bit_width, base, offset, index, scale);
     }
 
     get_nasm_string() {
