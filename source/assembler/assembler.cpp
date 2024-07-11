@@ -462,6 +462,10 @@ namespace baremetal {
 	void assembler::emit_instruction_mod_rm(const instruction* inst, const operand* operands) {
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
+		if(inst->has_variant()) {
+			rx = inst->get_variant();
+		}
+
 		// mod rm / sib byte
 		if(inst->is_r() || is_operand_mem(operands[0].type) || is_operand_mem(operands[1].type) || is_operand_mem(operands[2].type)) {
 			u8 mod_rm_part;
@@ -687,6 +691,18 @@ namespace baremetal {
 		return 0;
 	}
 
+	auto extract_operand_reg(const operand& op) -> u8 {
+		if(is_operand_reg(op.type)) {
+			return op.reg;
+		}
+
+		if(is_operand_mem(op.type) && op.memory.has_base) {
+			return op.memory.base.index;
+		}
+
+		return 0;
+	}
+
 	auto assembler::get_instruction_rex(const instruction* inst, const operand* operands) -> u8 {
 		// THIS IS UNCHECKED, MAYBE WE'LL HAVE TO RETURN 0
 
@@ -697,29 +713,35 @@ namespace baremetal {
 			u8 rx = 0;
 			u8 base = 0;
 			u8 index = 0;
+			u8 index_byte = 0;
+
+			const u8 registers[4] = {
+				extract_operand_reg(operands[0]),
+				extract_operand_reg(operands[1]),
+				extract_operand_reg(operands[2]),
+				extract_operand_reg(operands[3]),
+			};
 
 			// op[0] is extended? [____X___]
 			// op[1] is extended? [_____X__]
 			// op[2] is extended? [______X_]
 			// op[3] is extended? [_______X]
-			u8 index_byte = 0;
-
-			index_byte |= is_extended_reg(operands[0]) << 3;
-			index_byte |= is_extended_reg(operands[1]) << 2;
-			index_byte |= is_extended_reg(operands[2]) << 1;
-			index_byte |= is_extended_reg(operands[3]) << 0;
+			index_byte |= (registers[0] >= 8) << 3;
+			index_byte |= (registers[1] >= 8) << 2;
+			index_byte |= (registers[2] >= 8) << 1;
+			index_byte |= (registers[3] >= 8) << 0;
 
 			switch(inst->get_encoding_prefix()) {
 				case ENC_VEX_RVM: {
 					switch(index_byte) {
 						case 0b0001000:
 						case 0b0001110:
-						case 0b0000000: rx = operands[0].reg; base = operands[1].reg; break;
+						case 0b0000000: rx = registers[0]; base = registers[1]; break;
 						case 0b0001100:
-						case 0b0000010: rx = operands[1].reg; base = operands[2].reg; break;
+						case 0b0000010: rx = registers[1]; base = registers[2]; break;
 						case 0b0001010:
-						case 0b0000110: rx = operands[0].reg; base = operands[2].reg; break;
-						case 0b0000100: rx = operands[2].reg; base = operands[0].reg; break;
+						case 0b0000110: rx = registers[0]; base = registers[2]; break;
+						case 0b0000100: rx = registers[2]; base = registers[0]; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 
@@ -732,9 +754,9 @@ namespace baremetal {
 						case 0b0001100:
 						case 0b0001110:
 						case 0b0000000:
-						case 0b0000010: rx = operands[0].reg; base = operands[1].reg; break;
-						case 0b0000110: rx = operands[0].reg; base = operands[2].reg; break;
-						case 0b0000100: rx = operands[2].reg; base = operands[1].reg; break;
+						case 0b0000010: rx = registers[0]; base = registers[1]; break;
+						case 0b0000110: rx = registers[0]; base = registers[2]; break;
+						case 0b0000100: rx = registers[2]; base = registers[1]; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 
@@ -743,9 +765,9 @@ namespace baremetal {
 				case ENC_VEX_VM: {
 					switch(index_byte) {
 						case 0b0000000:
-						case 0b0000100: rx = operands[0].reg; base = operands[1].reg; break;
-						case 0b0001000: rx = operands[1].reg; base = operands[1].reg; break;
-						case 0b0001100: rx = 0;               base = operands[1].reg; break;
+						case 0b0000100: rx = registers[0]; base = registers[1]; break;
+						case 0b0001000: rx = registers[1]; base = registers[1]; break;
+						case 0b0001100: rx = 0;            base = registers[1]; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 
@@ -755,8 +777,8 @@ namespace baremetal {
 					switch(index_byte) {
 						case 0b0001000:
 						case 0b0001100:
-						case 0b0000100: rx = operands[0].reg; base = operands[1].reg; break;
-						case 0b0000000: rx = operands[1].reg; base = operands[0].reg; break;
+						case 0b0000100: rx = registers[0]; base = registers[1]; break;
+						case 0b0000000: rx = registers[1]; base = registers[0]; break;
 						default: ASSERT(false, "unhandled rex case");
 					}
 

@@ -149,7 +149,8 @@ function main() {
     //         `"enc": "${inst.enc}"`,
     //         `"ops": ${inst.ops}`,
     //         `"imp": "${inst.imp}"`,
-    //         `"ilo": "${inst.ilo}"`
+    //         `"ilo": "${inst.ilo}"`,
+    //         `"var": ${inst.var}`,
     //     ])
     // })
 
@@ -260,6 +261,7 @@ function main() {
             `${inst.enc}`,
             `${inst.imp}`, 
             `0x${inst.ilo}`, 
+            `${inst.var}`, 
         ]
 
         let operands = translate_operands_to_inst(inst.operands);
