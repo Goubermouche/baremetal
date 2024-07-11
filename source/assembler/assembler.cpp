@@ -790,171 +790,136 @@ namespace baremetal {
 			return rex(is_rexw, rx, base, index);
 		}
 
-		// extended | extended | reg
-		if(is_extended_gp_reg(operands[0]) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
-			if(inst->get_encoding_prefix() == ENC_REX) {
-				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+		if(is_rexw || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
+			u8 rex_part;
+
+			// gp | extended gp | gp
+			if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			// extended gp | register
+			else if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type)) {
+				if(inst->get_direction()) {
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+				}
+				else {
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+				}
+			}
+			// gp | extended gp
+			else if(is_extended_gp_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
+				if(inst->get_direction()) {
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+				}
+				else {
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+				}
+			}
+			else if(is_operand_gp_reg(operands[0].type) && is_operand_mem(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
+			}
+			else if(is_operand_mem(operands[0].type) && is_operand_gp_reg(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
+			}
+			// extended xmm | xmm
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_xmm(operands[1].type)) {
+				if(inst->get_direction()) {
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+				}
+				else {
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+				}
+			}
+			// xmm | extended xmm
+			else if(is_extended_xmm_reg(operands[1]) && is_operand_xmm(operands[0].type)) {
+				if(inst->get_direction()) {
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+				}
+				else {
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+				}
+			}
+			// extended xmm | gp
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_gp_reg(operands[1].type)) {
+				if(inst->get_direction()) {
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+				}
+				else {
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+				}
+			}
+			// gp | extended xmm
+			else if(is_extended_xmm_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
+				if(inst->get_direction()) {
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+				}
+				else {
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+				}
+			}
+			// extended xmm | imm
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_imm(operands[1].type)) {
+				rex_part = rex(is_rexw, 0, operands[0].reg, 0);
+			}
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_mem(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
+			}
+			else if(is_extended_xmm_reg(operands[1]) && is_operand_mem(operands[0].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
+			}
+			else if(is_extended_xmm_reg(operands[1]) && is_operand_reg(operands[0].type)) {
+				if(inst->get_direction()) {
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+				}
+				else {
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+				}
+			}
+			else if(is_extended_xmm_reg(operands[0]) && is_operand_reg(operands[1].type)) {
+				if(inst->get_direction()) {
+					rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+				}
+				else {
+					rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+				}
+			}
+			// gp | xmm
+			else if(is_operand_gp_reg(operands[0].type) && is_operand_xmm(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			// x | creg
+			else if(is_operand_creg(operands[1].type)) {
+				rex_part = rex(is_rexw, operands[1].reg, operands[0].reg, 0);
+			}
+			// creg | x
+			else if(is_operand_creg(operands[0].type)) {
+				rex_part = rex(is_rexw, operands[0].reg, operands[1].reg, 0);
+			}
+			// reg x
+			else if(is_operand_gp_reg(operands[0].type)) {
+				rex_part = rex(is_rexw, 0, operands[0].reg, 0);
+			}
+			// x reg
+			else if(is_operand_gp_reg(operands[1].type)) {
+				rex_part = rex(is_rexw, 0, operands[1].reg, 0);
+			}
+			// mem x
+			else if(is_operand_mem(operands[0].type)) {
+				rex_part = rex(is_rexw, 0, operands[0].memory.base.index, operands[0].memory.index.index);
+			}
+			// mem x
+			else if(is_operand_mem(operands[1].type)) {
+				rex_part = rex(is_rexw, 0, operands[1].memory.base.index, operands[1].memory.index.index);
+			}
+			// x x
+			else {
+				rex_part = rex(is_rexw, rx, destination, 0);
 			}
 
-			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
+			return rex_part;
 		}
-		// extended | reg | extended
-		if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type) && is_extended_gp_reg(operands[2])) {
-			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
-		}
-		// reg | extended | extended
-		if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_extended_gp_reg(operands[2])) {
-			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
-		}
-		// extended | reg | reg
-		if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type) && is_operand_reg(operands[2].type)) {
-			if(inst->get_encoding_prefix() == ENC_REX) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
 
-			return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-		}
-		// reg | extended | reg
-		if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_reg(operands[2].type)) {
-			if(inst->get_encoding_prefix() == ENC_REX) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-
-			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
-		}
-		// extended | reg
-		if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type)) {
-			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
-		}
-		// reg | reg | ext
-		if(is_operand_reg(operands[0].type) && is_operand_reg(operands[1].type) && is_extended_gp_reg(operands[2])) {
-			return rex(is_rexw, operands[0].reg, operands[2].reg, 0);
-		}
-		if(is_operand_reg(operands[0].type) && is_extended_gp_reg(operands[1]) && is_operand_mem(operands[2].type)) {
-			return rex(is_rexw, operands[0].reg, operands[2].memory.base.index, operands[2].memory.index.index);
-		}
-		if(is_operand_reg(operands[0].type) && is_operand_reg(operands[1].type) && is_operand_mem(operands[2].type)) {
-			return rex(is_rexw, operands[1].reg, operands[2].memory.base.index, operands[2].memory.index.index);
-		}
-		// extended gp | register
-		else if(is_extended_gp_reg(operands[0]) && is_operand_reg(operands[1].type)) {
-			if(inst->get_direction()) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			else {
-				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-		}
-		// gp | extended gp
-		else if(is_extended_gp_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
-			if(inst->get_direction()) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			else {
-				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-		}
-		else if(is_operand_gp_reg(operands[0].type) && is_operand_mem(operands[1].type)) {
-			return rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
-		}
-		else if(is_operand_mem(operands[0].type) && is_operand_gp_reg(operands[1].type)) {
-			return rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
-		}
-		// extended xmm | xmm
-		else if(is_extended_xmm_reg(operands[0]) && is_operand_xmm(operands[1].type)) {
-			if(inst->get_direction()) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			else {
-				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-		}
-		
-		// xmm | extended xmm
-		else if(is_extended_xmm_reg(operands[1]) && is_operand_xmm(operands[0].type)) {
-			if(inst->get_direction()) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			else {
-				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-		}
-		// extended xmm | gp
-		else if(is_extended_xmm_reg(operands[0]) && is_operand_gp_reg(operands[1].type)) {
-			if(inst->get_direction()) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			else {
-				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-		}
-		// gp | extended xmm
-		else if(is_extended_xmm_reg(operands[1]) && is_operand_gp_reg(operands[0].type)) {
-			if(inst->get_direction()) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			else {
-				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-		}
-		// extended xmm | imm
-		else if(is_extended_xmm_reg(operands[0]) && is_operand_imm(operands[1].type)) {
-			return rex(is_rexw, 0, operands[0].reg, 0);
-		}
-		else if(is_extended_xmm_reg(operands[0]) && is_operand_mem(operands[1].type)) {
-			return rex(is_rexw, operands[0].reg, operands[1].memory.base.index, operands[1].memory.index.index);
-		}
-		else if(is_extended_xmm_reg(operands[1]) && is_operand_mem(operands[0].type)) {
-			return rex(is_rexw, operands[1].reg, operands[0].memory.base.index, operands[0].memory.index.index);
-		}
-		else if(is_extended_xmm_reg(operands[1]) && is_operand_reg(operands[0].type)) {
-			if(inst->get_direction()) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			else {
-				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-		}
-		else if(is_extended_xmm_reg(operands[0]) && is_operand_reg(operands[1].type)) {
-			if(inst->get_direction()) {
-				return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-			}
-			else {
-				return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-			}
-		}
-		// gp | xmm
-		else if(is_operand_gp_reg(operands[0].type) && is_operand_xmm(operands[1].type)) {
-			return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-		}
-		// x | creg
-		else if(is_operand_creg(operands[1].type)) {
-			return rex(is_rexw, operands[1].reg, operands[0].reg, 0);
-		}
-		// creg | x
-		else if(is_operand_creg(operands[0].type)) {
-			return rex(is_rexw, operands[0].reg, operands[1].reg, 0);
-		}
-		// reg x
-		else if(is_operand_gp_reg(operands[0].type)) {
-			return rex(is_rexw, 0, operands[0].reg, 0);
-		}
-		// x reg
-		else if(is_operand_gp_reg(operands[1].type)) {
-			return rex(is_rexw, 0, operands[1].reg, 0);
-		}
-		// mem x
-		else if(is_operand_mem(operands[0].type)) {
-			return rex(is_rexw, 0, operands[0].memory.base.index, operands[0].memory.index.index);
-		}
-		// mem x
-		else if(is_operand_mem(operands[1].type)) {
-			return rex(is_rexw, 0, operands[1].memory.base.index, operands[1].memory.index.index);
-		}
-		// x x
-		else {
-			return rex(is_rexw, rx, destination, 0);
-		}
+		return 0;
 	}
 
 	void assembler::emit_data_operand(u64 data, u8 bit_width) {
