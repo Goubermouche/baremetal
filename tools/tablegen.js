@@ -1,6 +1,8 @@
 // generates the contents of instruction_database.inc and assembler_database.inc
+
 "use strict"
 
+const database = require("./database.js");
 const utility = require("./utility.js")
 
 function is_immediate(op) {
@@ -64,54 +66,6 @@ function translate_operands_to_inst(operands) {
     });
 }
 
-function calculate_layout(data) {
-    let layout = [];
-
-    data.forEach(row => {
-        while(layout.length < row.length) {
-            layout.push(0);
-        }
-
-        row.forEach((element, column_i) => {
-            layout[column_i] = Math.max(layout[column_i], element.length);
-        });
-    });
-
-    return layout;
-}
-
-function apply_layout(layout, data, line_prefix, line_postfix) {
-    let result = "";
-    let layout_width = 0;
-
-    layout.forEach(l => {
-        layout_width += l + 2;
-    });
-
-    layout_width -= 2;
-
-    console.log(layout_width);
-
-    data.forEach(row => {
-        result += line_prefix;
-        let row_arr = [];
-
-        row.forEach((element, column_i) => {
-            row_arr.push(element.padEnd(layout[column_i], ' '));
-            if(column_i + 1 !== row.length) {}
-            else {
-                result += row_arr.join(", ").padEnd(layout_width)
-            }
-        })
-
-        
-        result += line_postfix;
-        result += '\n';
-    })
-
-    return result;
-}
-
 function format_instruction_operand(op) {
     switch(op) {
         case "rel8": 
@@ -130,37 +84,9 @@ function encode_context(id, index) {
 }
 
 function main() {
-    let instructions = utility.database;
+    let instructions = database.instructions;
 
-    // let json_table = [];
-
-    // instructions.sort((a, b) => {
-    //     return a.name < b.name;
-    // }).forEach(inst => {
-    //     json_table.push([
-    //         `"name": "${inst.name}"`,
-    //         `"operands": [${inst.operands.map(op => { return `"${op}"`; }).join(", ")}]`,
-    //         `"opcode": "${inst.opcode}"`,
-    //         `"rm": "${inst.rm}"`,
-    //         `"w": ${inst.w}`,
-    //         `"ri": ${inst.ri}`,
-    //         `"pp": "${inst.pp}"`,
-    //         `"dir": "${inst.dir}"`,
-    //         `"enc": "${inst.enc}"`,
-    //         `"ops": ${inst.ops}`,
-    //         `"imp": "${inst.imp}"`,
-    //         `"ilo": "${inst.ilo}"`,
-    //         `"var": ${inst.var}`,
-    //     ])
-    // })
-
-    // const json_layout = calculate_layout(json_table);
-    // const json_text = apply_layout(json_layout, json_table, "    { ", " },");
-
-    // console.log(`[\n${json_text.substring(0, json_text.length - 2)}\n]`)
-
-    // return;
-
+    // sort instructions (special order, dictated by imm operands)
     instructions.sort((a, b) => {
         if (a.name < b.name) return -1;
         if (a.name > b.name) return 1;
@@ -186,6 +112,7 @@ function main() {
     let last_destination = undefined;
     let last_inst_name = "";
 
+    // precalculate instruction indices
     instructions.forEach((inst, i) => {
         if(last_inst_name != inst.name) {
             current_index = i;
@@ -217,6 +144,7 @@ function main() {
 
     let instruction_db = [];
 
+    // instruction database table
     instructions.forEach(inst => {
         let special_index = 65535; // u16 max
 
@@ -273,10 +201,11 @@ function main() {
         instruction_db.push(row);
     })
 
-    const instruction_db_layout = calculate_layout(instruction_db);
-    const instruction_db_text = apply_layout(instruction_db_layout, instruction_db, "INST(", ")");
-    let assembler_db = [];
+    const instruction_db_layout = utility.calculate_layout(instruction_db);
+    const instruction_db_text = utility.apply_layout(instruction_db_layout, instruction_db, "INST(", ")");
+    let assembler_db = [];¨
 
+    // assembler database table
     indices.forEach((value, key) => {
         let row = [
             `${value.toString()}`
@@ -301,8 +230,8 @@ function main() {
         assembler_db.push(row);
     })
 
-    const assembler_db_layout = calculate_layout(assembler_db);
-    const assembler_db_text = apply_layout(assembler_db_layout, assembler_db, "INST(", ")");
+    const assembler_db_layout = utility.calculate_layout(assembler_db);
+    const assembler_db_text = utility.apply_layout(assembler_db_layout, assembler_db, "INST(", ")");
 
     console.log(instruction_db_text)
     console.log(assembler_db_text)

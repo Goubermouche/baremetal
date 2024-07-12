@@ -2,8 +2,9 @@
 
 const os = require('os');
 const path = require('path');
-const utility = require("./utility.js")
+const utility = require("./utility.js");
 const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
+const database= require("./database.js");
 
 const TEST_DIR_PATH = path.join(__dirname, "../source/tests/tests")
 const TEST_MAIN_PATH = path.join(__dirname, "../source/tests/main.cpp")
@@ -511,7 +512,7 @@ function get_temp_dir(id) {
 if (isMainThread) {
     // main thread
     const start_time = Date.now();
-    const instructions = utility.database;
+    const instructions = database.instructions;
 
     let messages = [];
     let items = [];
