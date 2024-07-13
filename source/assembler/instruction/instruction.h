@@ -64,6 +64,56 @@ namespace baremetal {
 		ENC_VEX_RM,
 	};
 
+	enum instruction_extension : u32 {
+		IEX_NONE = 0,
+		IEX_X64,
+		IEX_ADX,
+		IEX_MPX,
+		IEX_MMX,
+		IEX_SSE,
+		IEX_SSE2,
+		IEX_SSE3,
+		IEX_SSSE3,
+		IEX_SSE4_1,
+		IEX_SSE4_2,
+		IEX_AESNI,
+		IEX_BMI,
+		IEX_BMI2,
+		IEX_SMAP,
+		IEX_CLFLUSH,
+		IEX_CLFLUSHOPT,
+		IEX_CLWB,
+		IEX_CLZERO,
+		IEX_CMOV,
+		IEX_I1486,
+		IEX_CMPXCHG16B,
+		IEX_CMPXCHG8B,
+		IEX_SSE4A,
+		IEX_3DNOW,
+		IEX_FXSR,
+		IEX_LZCNT,
+		IEX_LAHFSAHF,
+		IEX_MMX2,
+		IEX_MOVBE,
+		IEX_XMM, // 
+		IEX_PCLMULQDQ,
+		IEX_POPCNT,
+		IEX_PREFETCHW,
+		IEX_FSGSBASE,
+		IEX_PREFETCHW1,
+		IEX_RDRAND,
+		IEX_RDSEED,
+		IEX_RDTSC,
+		IEX_RDTSCP,
+		IEX_SHA,
+		IEX_I486,
+		IEX_RTM,
+		IEX_XSAVE,
+		IEX_XSAVEC,
+		IEX_XSAVES,
+		IEX_XSAVEOPT,
+	};
+
 	enum implied_mandatory_prefix : u8 {
 		IMP_NONE = 0b00,
 		IMP_66   = 0b01,
@@ -370,7 +420,7 @@ namespace baremetal {
 // select which INST_X to call based off of the variable argument count (0-2)
 #define INST_SELECT(count) CONCATENATE(INST_, count)
 #define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
-#define INST(name, opcode, extensions, prefix, context, dir, enc, imp, ilo, var, ...) \
+#define INST(name, opcode, extensions, prefix, context, dir, enc, imp, ilo, var, iext, ...) \
   INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extensions, prefix, context, dir, enc, imp, ilo, var, __VA_ARGS__)
 
 	static constexpr instruction instruction_db[] = {

@@ -16,16 +16,17 @@ function is_immediate(op) {
 }
 
 function get_operand_order(value) {
-    const operand_order = [
-        "i8", "i16", "i32", "i64",
-        "al", "cl", "reg8",
-        "ax", "dx", "reg16",
-        "eax", "ecx", "reg32", 
-        "rax", "rcx", "reg64",
-        "xmm", "mem128", "bnd",
-        "moff8", "moff16", "moff32", "moff64",
-        "mem8", "mem16", "mem32", "mem64"
-    ];
+        const operand_order = [
+            "1", "i8", "i16", "i32", "i64",
+            "al", "cl", "reg8",
+            "ax", "dx",  "cx","reg16",
+            "eax", "ecx", "reg32", 
+            "rax", "rcx", "reg64",
+            "xmm", "mem128", "bnd", "mmx", "sreg", "dreg", "creg",
+            "moff8", "moff16", "moff32", "moff64",
+            "mem8", "mem16", "mem32", "mem64", "mem128",
+            "mem_address", "rel8", "rel32"
+        ];
 
     const index = operand_order.indexOf(value);
     return index === -1 ? operand_order.length : index;
@@ -83,6 +84,26 @@ function encode_context(id, index) {
     return (id << 14) | index;
 }
 
+function get_imm_index(operands) {
+    if(is_immediate(operands[3])) {
+        return 3;
+    }
+
+    if(is_immediate(operands[2])) {
+        return 2;
+    }
+
+    if(is_immediate(operands[1])) {
+        return 1;
+    }
+
+    if(is_immediate(operands[0])) {
+        return 0;
+    }
+
+    return undefined;
+}
+
 function main() {
     let instructions = database.instructions;
 
@@ -109,35 +130,58 @@ function main() {
     let indices = new Map();
     let dest_to_source = new Map();
     let current_index = 0;
-    let last_destination = undefined;
     let last_inst_name = "";
+    let last_operands = undefined;
+    let is_imm_mode = false;
 
     // precalculate instruction indices
     instructions.forEach((inst, i) => {
+        // new instruction
         if(last_inst_name != inst.name) {
             current_index = i;
         }
 
-        dest_to_source.set(`${inst.name}:${inst.operands.join(":")}`, i);
+        const key = `${inst.name}:${inst.operands.join(":")}`;
+        dest_to_source.set(key, i);
 
-        if((inst.operands.length ===  1 && is_immediate(inst.operands[0])) || (inst.operands.length > 1 && last_destination === inst.operands[0])) {
-            if(inst.operands.length === 1 ?  is_immediate(inst.operands[0]) :  is_immediate(inst.operands[1])) {}
-            else {
+        const imm_index = get_imm_index(inst.operands);
+
+        let operands = translate_operands_to_baremetal(inst.operands).join(":");
+
+        if(imm_index !== undefined) {
+            if(is_imm_mode == false) {
+                is_imm_mode = true;
+                current_index = i;
+            }
+            else if(operands != last_operands) {
                 current_index = i;
             }
         }
         else {
+            is_imm_mode = false;
             current_index = i;
         }
 
+        last_operands = operands;
+
+        // if((inst.operands.length ===  1 && is_immediate(inst.operands[0])) || (inst.operands.length > 1 && last_destination === inst.operands[0])) {
+        //     if(inst.operands.length === 1 ?  is_immediate(inst.operands[0]) :  is_immediate(inst.operands[1])) {}
+        //     else {
+        //         current_index = i;
+        //     }
+        // }
+        // else {
+        //     current_index = i;
+        // }
 
         // don't encode these in the assembler database
         if(inst.operands.length === 2 && inst.operands[1] === "1") {
             return;
         }
 
-        last_destination = inst.operands[0];
         last_inst_name = inst.name;
+
+
 
         indices.set(`${inst.name}${inst.operands.length > 0 ? "," : ""}${translate_operands_to_baremetal(inst.operands).join(",")}`, current_index);
     });
@@ -179,6 +223,8 @@ function main() {
             }
         }
 
+        //let extensions = inst.ext.map(e => { return "IEX_" + e}).join(" | ");
+
         let row = [
             `${utility.format_instruction_name(inst.name)}`, 
             `0x${inst.opcode}`,
@@ -190,6 +236,8 @@ function main() {
             `${inst.imp}`, 
             `0x${inst.ilo}`, 
             `${inst.var}`, 
+            "IEX_NONE"
+            // `${extensions.length == 0 ? "IEX_NONE" : extensions}`,
         ]
 
         let operands = translate_operands_to_inst(inst.operands);
@@ -203,7 +251,7 @@ function main() {
 
     const instruction_db_layout = utility.calculate_layout(instruction_db);
     const instruction_db_text = utility.apply_layout(instruction_db_layout, instruction_db, "INST(", ")");
-    let assembler_db = [];¨
+    let assembler_db = [];
 
     // assembler database table
     indices.forEach((value, key) => {

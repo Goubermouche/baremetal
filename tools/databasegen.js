@@ -10,7 +10,7 @@ let json_table = [];
 database.instructions.forEach(inst => {
     json_table.push([
         `"name": "${inst.name}"`,
-        `"ext": []`,
+        // `"ext": [${inst.ext.map(op => { return `"${op}"`; }).join(", ")}]`,
         `"operands": [${inst.operands.map(op => { return `"${op}"`; }).join(", ")}]`,
         `"opcode": "${inst.opcode}"`,
         `"rm": "${inst.rm}"`,
@@ -26,7 +26,9 @@ database.instructions.forEach(inst => {
     ])
 })
 
-json_table.sort();
+json_table.sort((a, b) => {
+    return a.name < b.name;
+});
 
 // calculate the new table alignment
 const json_layout = utility.calculate_layout(json_table);
