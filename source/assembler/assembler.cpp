@@ -29,6 +29,7 @@ namespace baremetal {
 					result.second = operands[1].reg;
 					break;
 				}
+				default: ASSERT(false, "unhandled rex case");
 			}
 
 			return result;
@@ -122,7 +123,7 @@ namespace baremetal {
 				case 0: {
 					// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
 					// less we can look for a smaller destination
-					if(operands[0].type == operand::OP_REG64 && imm_op.min_bits <= 32) {
+					if(operands[0].type == OP_REG64 && imm_op.min_bits <= 32) {
 						// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64
 						// bits) we can't zero extend 
 						if(imm_op.sign == false) {
@@ -177,8 +178,8 @@ namespace baremetal {
 		// one (ie. an ax register). In these cases we lose the guarantee of them being sorted
 		// from smallest to biggest immediate operands, hence we have to sort them.
 		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [=](auto a, auto b) {
-			const u8 a_width = get_operand_bit_width(a->get_operand(imm_index));
-			const u8 b_width = get_operand_bit_width(b->get_operand(imm_index));
+			const u16 a_width = get_operand_bit_width(a->get_operand(imm_index));
+			const u16 b_width = get_operand_bit_width(b->get_operand(imm_index));
 
 			return a_width < b_width;
 		});
@@ -186,13 +187,15 @@ namespace baremetal {
 		// multiple legal variants, determine the best one (since our data is sorted from smallest
 		// source operands to largest, we can exit as soon as we get a valid match)
 		for(const instruction* inst : legal_variants) {
-			const u8 src_bits = get_operand_bit_width(inst->get_operand(imm_index));
-			const u8 dst_bits = get_operand_bit_width(inst->get_operand(0));
+			const u16 src_bits = get_operand_bit_width(inst->get_operand(imm_index));
+			const u16 dst_bits = get_operand_bit_width(inst->get_operand(0));
 
 			// check if there is a possibility of sign extending the immediate
 			if(src_bits < dst_bits) {
+				ASSERT(src_bits <= utility::limits<u8>::max(), "invalid range");
+
 				// assume we're sign extending
-				if(sign_extend_representable(imm_op.value, src_bits)) {
+				if(sign_extend_representable(imm_op.value, static_cast<u8>(src_bits))) {
 					return inst;
 				}
 			}
@@ -268,17 +271,18 @@ namespace baremetal {
 		u8 third = 0;
 
 		// W/E
-		const u8 we = (inst->is_rexw()) << 7;
+		const u8 we = static_cast<u8>((inst->is_rexw()) << 7);
 		third |= we;
 
 		// vvvv - negation of one of our v operand
 		u8 vvvv = 0;
 
 		switch(inst->get_encoding_prefix()) {
-			case ENC_VEX_RVM: vvvv = (~operands[1].reg & 0b00001111) << 3; break;
-			case ENC_VEX_RMV: vvvv = (~operands[2].reg & 0b00001111) << 3; break;
-			case ENC_VEX_VM:  vvvv = (~operands[0].reg & 0b00001111) << 3; break;
+			case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].reg & 0b00001111) << 3); break;
+			case ENC_VEX_RMV: vvvv = static_cast<u8>((~operands[2].reg & 0b00001111) << 3); break;
+			case ENC_VEX_VM:  vvvv = static_cast<u8>((~operands[0].reg & 0b00001111) << 3); break;
 			case ENC_VEX_RM:  vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
+			default: ASSERT(false, "unhandled vex prefix");
 		}
 
 		third |= vvvv;
@@ -396,7 +400,7 @@ namespace baremetal {
 
 	void assembler::emit_operands(const instruction* inst, const operand* operands) {
 		for(u8 i = 0; i < inst->get_operand_count(); ++i) {
-			const enum operand::type current = inst->get_operand(i);
+			const operand_type current = inst->get_operand(i);
 
 			if(is_operand_imm(current)) {
 				// immediate operand
@@ -408,7 +412,7 @@ namespace baremetal {
 			}
 			else if(is_operand_rel(current)) {
 				// relocation operand
-				const u8 operand_size = get_operand_bit_width(current);
+				const u16 operand_size = get_operand_bit_width(current);
 				const i32 new_displacement = operands[i].relocation.value - (get_current_inst_size() + operand_size / 8);
 
 				emit_data_operand(new_displacement, operand_size);
@@ -425,33 +429,29 @@ namespace baremetal {
 				}
 
 				// determine the displacement size
-				enum operand::type ty;
+				operand_type ty = OP_I32;
 
-				if(memory.has_base == false) {
-					ty = operand::type::OP_I32;
-				}
-				else if(memory.base.type == REG_RIP) {
-					// calculate the relative (rip) offset, this means we have to calculate the
-					// offset at the end of our current instruction
+				if(memory.has_base) {
+					if(memory.base.type == REG_RIP) {
+						// calculate the relative (rip) offset, this means we have to calculate the
+						// offset at the end of our current instruction
 
-					// beginning of the instruction
-					i32 new_displacement = static_cast<i32>(displacement.value - (get_current_inst_size() + 4));
+						// beginning of the instruction
+						i32 new_displacement = static_cast<i32>(displacement.value - (get_current_inst_size() + 4));
 
-					for(u8 j = i; j < inst->get_operand_count(); ++j) {
-						// if we have another operand after the current one, calculate it's size
-						if(is_operand_imm(inst->get_operand(j))) { // registers are already encoded
-							new_displacement -= get_operand_bit_width(inst->get_operand(j)) / 8;
+						for(u8 j = i; j < inst->get_operand_count(); ++j) {
+							// if we have another operand after the current one, calculate it's size
+							if(is_operand_imm(inst->get_operand(j))) { // registers are already encoded
+								new_displacement -= get_operand_bit_width(inst->get_operand(j)) / 8;
+							}
 						}
-					}
 
-					displacement = imm(new_displacement);
-					ty = operand::type::OP_I32;
-				}
-				else if(displacement.min_bits <= 8) {
-					ty = operand::type::OP_I8;
-				}
-				else {
-					ty = operand::type::OP_I32;
+						displacement = imm(new_displacement);
+						ty = OP_I32;
+					}
+					else if(displacement.min_bits <= 8) {
+						ty = OP_I8;
+					}
 				}
 
 				emit_data_operand(displacement.value, get_operand_bit_width(ty));
@@ -970,8 +970,8 @@ namespace baremetal {
 		return rex(is_rexw, rx, base, index);
 	}
 
-	void assembler::emit_data_operand(u64 data, u8 bit_width) {
-		for(u8 i = 0; i < bit_width / 8; ++i) {
+	void assembler::emit_data_operand(u64 data, u16 bit_width) {
+		for(u16 i = 0; i < bit_width / 8; ++i) {
 			m_bytes.push_back(data >> (i * 8) & 0xFF);
 		}
 	}
@@ -1072,13 +1072,13 @@ namespace baremetal {
 		return x;
 	}
 
-	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool {
+	auto is_operand_of_same_kind(operand_type a, operand_type b) -> bool {
 		switch(a) {
 			// don't just consider regular equalities, focus on register bit widths as well
-			case operand::OP_AL:  return b == operand::OP_AL  || b == operand::OP_CL  || b == operand::OP_REG8;  // 8 bits
-			case operand::OP_AX:  return b == operand::OP_AX  || b == operand::OP_DX  || b == operand::OP_REG16; // 16 bits
-			case operand::OP_EAX: return b == operand::OP_EAX || b == operand::OP_ECX || b == operand::OP_REG32; // 32 bits
-			case operand::OP_RAX: return b == operand::OP_RAX || b == operand::OP_RCX || b == operand::OP_REG64; // 64 bits
+			case OP_AL:  return b == OP_AL  || b == OP_CL  || b == OP_REG8;  // 8 bits
+			case OP_AX:  return b == OP_AX  || b == OP_DX  || b == OP_REG16; // 16 bits
+			case OP_EAX: return b == OP_EAX || b == OP_ECX || b == OP_REG32; // 32 bits
+			case OP_RAX: return b == OP_RAX || b == OP_RCX || b == OP_REG64; // 64 bits
 			default: return a == b; // regular compares
 		}
 	}

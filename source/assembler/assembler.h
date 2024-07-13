@@ -6,9 +6,9 @@ namespace baremetal {
 		assembler();
 
 // function generators
-#define INST_0(index, name)                 \
-  void name() {                             \
-    emit_instruction(index, {}, {}, {}, {});\
+#define INST_0(index, name)                  \
+  void name() {                              \
+    emit_instruction(index, {}, {}, {}, {}); \
   }
 
 #define INST_1(index, name, op1)                      \
@@ -21,9 +21,9 @@ namespace baremetal {
     emit_instruction(index, destination, source, {}, {}); \
   }
 
-#define INST_3(index, name, op1, op2, op3)               \
-  void name(struct op1 a, struct op2 b, struct op3 c) {  \
-    emit_instruction(index, a, b, c, {});                \
+#define INST_3(index, name, op1, op2, op3)              \
+  void name(struct op1 a, struct op2 b, struct op3 c) { \
+    emit_instruction(index, a, b, c, {});               \
   }
 
 #define INST_4(index, name, op1, op2, op3,  op4)                       \
@@ -70,7 +70,7 @@ namespace baremetal {
 
 		// operands
 		void emit_operands(const instruction* inst, const operand* operands);
-		void emit_data_operand(u64 data, u8 bit_width);
+		void emit_data_operand(u64 data, u16 bit_width);
 
 		static auto find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8>;
 		static auto find_instruction_info(u32 index, const operand* operands) -> const instruction*;
@@ -130,5 +130,5 @@ namespace baremetal {
 
 	auto sign_extend(u64 x, u8 x_bits) -> u64;
 
-	auto is_operand_of_same_kind(enum operand::type a, enum operand::type b) -> bool;
+	auto is_operand_of_same_kind(operand_type a, operand_type b) -> bool;
 } // namespace baremetal

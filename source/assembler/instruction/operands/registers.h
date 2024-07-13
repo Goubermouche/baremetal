@@ -5,18 +5,19 @@ namespace baremetal {
 	using namespace utility::types;
 
 	enum reg_type : u8 {
-		REG_GP_8,
+		REG_GP_8 = 1,
 		REG_GP_16,
 		REG_GP_32,
 		REG_GP_64,
-		REG_XMM,
-		REG_BND,
 		REG_MMX,
+		REG_XMM,
+		REG_YMM,
+		REG_ZMM_L, // zmm0-zmm15
+		REG_ZMM_H, // zmm16-zmm31
 		REG_SREG, // segment registers
 		REG_DREG, // debug registers
 		REG_CREG, // control registers
-
-		// special registers
+		REG_BND,
 		REG_RIP
 	};
 
@@ -41,6 +42,26 @@ namespace baremetal {
 	struct xmm : reg {
 		constexpr xmm() = default;
 		constexpr explicit xmm(u8 i) : reg(i, REG_XMM) {}
+	};
+
+	struct ymm : reg {
+		constexpr ymm() = default;
+		constexpr explicit ymm(u8 i) : reg(i, REG_YMM) {}
+	};
+
+	struct zmm : reg {
+		constexpr zmm() = default;
+		constexpr explicit zmm(u8 i,reg_type ty) : reg(i, ty) {}
+	};
+
+	struct zmm_low : zmm {
+		constexpr zmm_low() = default;
+		constexpr explicit zmm_low(u8 i) : zmm(i, REG_ZMM_L) {}
+	};
+
+	struct zmm_high : zmm {
+		constexpr zmm_high() = default;
+		constexpr explicit zmm_high(u8 i) : zmm(i, REG_ZMM_H) {}
 	};
 
 	struct mmx : reg {
@@ -106,6 +127,27 @@ namespace baremetal {
     constexpr name() : xmm(index) {}         \
   };                                         \
                                              \
+  static inline constexpr name name;
+
+#define REGISTER_CLASS_YMM_DECL(name, index) \
+  struct name : ymm {                        \
+    constexpr name() : ymm(index) {}         \
+  };                                         \
+                                             \
+  static inline constexpr name name;
+
+#define REGISTER_CLASS_ZMM_L_DECL(name, index) \
+  struct name : zmm_low {                      \
+    constexpr name() : zmm_low(index) {}       \
+  };                                           \
+                                               \
+  static inline constexpr name name;
+
+#define REGISTER_CLASS_ZMM_H_DECL(name, index) \
+  struct name : zmm_high {                     \
+    constexpr name() : zmm_high(index) {}      \
+  };                                           \
+                                               \
   static inline constexpr name name;
 
 #define REGISTER_CLASS_BND_DECL(name, index) \
@@ -194,6 +236,58 @@ namespace baremetal {
 	REGISTER_CLASS_MMX_DECL(mm5, 5);
 	REGISTER_CLASS_MMX_DECL(mm6, 6);
 	REGISTER_CLASS_MMX_DECL(mm7, 7);
+
+	// zmm registers
+	REGISTER_CLASS_ZMM_L_DECL(zmm0, 0);
+	REGISTER_CLASS_ZMM_L_DECL(zmm1, 1);
+	REGISTER_CLASS_ZMM_L_DECL(zmm2, 2);
+	REGISTER_CLASS_ZMM_L_DECL(zmm3, 3);
+	REGISTER_CLASS_ZMM_L_DECL(zmm4, 4);
+	REGISTER_CLASS_ZMM_L_DECL(zmm5, 5);
+	REGISTER_CLASS_ZMM_L_DECL(zmm6, 6);
+	REGISTER_CLASS_ZMM_L_DECL(zmm7, 7);
+	REGISTER_CLASS_ZMM_L_DECL(zmm8, 8);
+	REGISTER_CLASS_ZMM_L_DECL(zmm9, 9);
+	REGISTER_CLASS_ZMM_L_DECL(zmm10, 10);
+	REGISTER_CLASS_ZMM_L_DECL(zmm11, 11);
+	REGISTER_CLASS_ZMM_L_DECL(zmm12, 12);
+	REGISTER_CLASS_ZMM_L_DECL(zmm13, 13);
+	REGISTER_CLASS_ZMM_L_DECL(zmm14, 14);
+	REGISTER_CLASS_ZMM_L_DECL(zmm15, 15);
+	REGISTER_CLASS_ZMM_H_DECL(zmm16, 16);
+	REGISTER_CLASS_ZMM_H_DECL(zmm17, 17);
+	REGISTER_CLASS_ZMM_H_DECL(zmm18, 18);
+	REGISTER_CLASS_ZMM_H_DECL(zmm19, 19);
+	REGISTER_CLASS_ZMM_H_DECL(zmm20, 20);
+	REGISTER_CLASS_ZMM_H_DECL(zmm21, 21);
+	REGISTER_CLASS_ZMM_H_DECL(zmm22, 22);
+	REGISTER_CLASS_ZMM_H_DECL(zmm23, 23);
+	REGISTER_CLASS_ZMM_H_DECL(zmm24, 24);
+	REGISTER_CLASS_ZMM_H_DECL(zmm25, 25);
+	REGISTER_CLASS_ZMM_H_DECL(zmm26, 26);
+	REGISTER_CLASS_ZMM_H_DECL(zmm27, 27);
+	REGISTER_CLASS_ZMM_H_DECL(zmm28, 28);
+	REGISTER_CLASS_ZMM_H_DECL(zmm29, 29);
+	REGISTER_CLASS_ZMM_H_DECL(zmm30, 30);
+	REGISTER_CLASS_ZMM_H_DECL(zmm31, 31);
+
+	// ymm registers
+	REGISTER_CLASS_YMM_DECL(ymm0, 0);
+	REGISTER_CLASS_YMM_DECL(ymm1, 1);
+	REGISTER_CLASS_YMM_DECL(ymm2, 2);
+	REGISTER_CLASS_YMM_DECL(ymm3, 3);
+	REGISTER_CLASS_YMM_DECL(ymm4, 4);
+	REGISTER_CLASS_YMM_DECL(ymm5, 5);
+	REGISTER_CLASS_YMM_DECL(ymm6, 6);
+	REGISTER_CLASS_YMM_DECL(ymm7, 7);
+	REGISTER_CLASS_YMM_DECL(ymm8, 8);
+	REGISTER_CLASS_YMM_DECL(ymm9, 9);
+	REGISTER_CLASS_YMM_DECL(ymm10, 10);
+	REGISTER_CLASS_YMM_DECL(ymm11, 11);
+	REGISTER_CLASS_YMM_DECL(ymm12, 12);
+	REGISTER_CLASS_YMM_DECL(ymm13, 13);
+	REGISTER_CLASS_YMM_DECL(ymm14, 14);
+	REGISTER_CLASS_YMM_DECL(ymm15, 15);
 
 	// xmm registers
 	REGISTER_CLASS_XMM_DECL(xmm0, 0);
