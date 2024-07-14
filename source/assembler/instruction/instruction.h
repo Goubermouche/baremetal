@@ -6,15 +6,15 @@
 namespace baremetal {
 	enum extension : u8 {
 		EXT_NONE = 0b00000000,
-		EXT_0 = 0b00000001, // /0
-		EXT_1 = 0b00000010, // /1
-		EXT_2 = 0b00000011, // /2
-		EXT_3 = 0b00000100, // /3
-		EXT_4 = 0b00000101, // /4
-		EXT_5 = 0b00000110, // /5
-		EXT_6 = 0b00000111, // /6
-		EXT_7 = 0b00001000, // /7
-		EXT_R = 0b00010000, // /r (mod rm byte exists, and any register can be used)
+		EXT_0    = 0b00000001, // /0
+		EXT_1    = 0b00000010, // /1
+		EXT_2    = 0b00000011, // /2
+		EXT_3    = 0b00000100, // /3
+		EXT_4    = 0b00000101, // /4
+		EXT_5    = 0b00000110, // /5
+		EXT_6    = 0b00000111, // /6
+		EXT_7    = 0b00001000, // /7
+		EXT_R    = 0b00010000, // /r (mod rm byte exists, and any register can be used)
 
 		// flags
 		EXT_REXW = 0b00100000,
@@ -66,52 +66,63 @@ namespace baremetal {
 
 	enum instruction_extension : u32 {
 		IEX_NONE = 0,
+
 		IEX_X64,
-		IEX_ADX,
-		IEX_MPX,
+
+		// simd
 		IEX_MMX,
+		IEX_MMX2,
+		IEX_3DNOW,
 		IEX_SSE,
 		IEX_SSE2,
 		IEX_SSE3,
 		IEX_SSSE3,
 		IEX_SSE4_1,
 		IEX_SSE4_2,
+		IEX_SSE4A,
+
+		// aes / sha
 		IEX_AESNI,
+		IEX_SHA,
+
+		// bmi
 		IEX_BMI,
 		IEX_BMI2,
+
+		// transactional mem
+		IEX_RTM,
+
+		// xsave
+		IEX_XSAVE,
+		IEX_XSAVEC,
+		IEX_XSAVES,
+		IEX_XSAVEOPT,
+
+		// others
+		IEX_ADX,
+		IEX_MPX,
 		IEX_SMAP,
 		IEX_CLFLUSH,
 		IEX_CLFLUSHOPT,
 		IEX_CLWB,
 		IEX_CLZERO,
 		IEX_CMOV,
-		IEX_I1486,
 		IEX_CMPXCHG16B,
 		IEX_CMPXCHG8B,
-		IEX_SSE4A,
-		IEX_3DNOW,
 		IEX_FXSR,
 		IEX_LZCNT,
 		IEX_LAHFSAHF,
-		IEX_MMX2,
 		IEX_MOVBE,
-		IEX_XMM, // 
 		IEX_PCLMULQDQ,
 		IEX_POPCNT,
 		IEX_PREFETCHW,
-		IEX_FSGSBASE,
 		IEX_PREFETCHW1,
+		IEX_FSGSBASE,
 		IEX_RDRAND,
 		IEX_RDSEED,
 		IEX_RDTSC,
 		IEX_RDTSCP,
-		IEX_SHA,
 		IEX_I486,
-		IEX_RTM,
-		IEX_XSAVE,
-		IEX_XSAVEC,
-		IEX_XSAVES,
-		IEX_XSAVEOPT,
 	};
 
 	enum implied_mandatory_prefix : u8 {

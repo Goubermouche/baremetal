@@ -54,16 +54,6 @@ namespace baremetal {
 		constexpr explicit zmm(u8 i,reg_type ty) : reg(i, ty) {}
 	};
 
-	struct zmm_low : zmm {
-		constexpr zmm_low() = default;
-		constexpr explicit zmm_low(u8 i) : zmm(i, REG_ZMM_L) {}
-	};
-
-	struct zmm_high : zmm {
-		constexpr zmm_high() = default;
-		constexpr explicit zmm_high(u8 i) : zmm(i, REG_ZMM_H) {}
-	};
-
 	struct mmx : reg {
 		constexpr mmx() = default;
 		constexpr explicit mmx(u8 i) : reg(i, REG_MMX) {}
@@ -136,18 +126,18 @@ namespace baremetal {
                                              \
   static inline constexpr name name;
 
-#define REGISTER_CLASS_ZMM_L_DECL(name, index) \
-  struct name : zmm_low {                      \
-    constexpr name() : zmm_low(index) {}       \
-  };                                           \
-                                               \
+#define REGISTER_CLASS_ZMM_L_DECL(name, index)  \
+  struct name : zmm {                           \
+    constexpr name() : zmm(index, REG_ZMM_L) {} \
+  };                                            \
+                                                \
   static inline constexpr name name;
 
-#define REGISTER_CLASS_ZMM_H_DECL(name, index) \
-  struct name : zmm_high {                     \
-    constexpr name() : zmm_high(index) {}      \
-  };                                           \
-                                               \
+#define REGISTER_CLASS_ZMM_H_DECL(name, index)  \
+  struct name : zmm {                           \
+    constexpr name() : zmm(index, REG_ZMM_H) {} \
+  };                                            \
+                                                \
   static inline constexpr name name;
 
 #define REGISTER_CLASS_BND_DECL(name, index) \
@@ -202,6 +192,7 @@ namespace baremetal {
 	REGISTER_CLASS_CREG_DECL(cr3, 3);
 	REGISTER_CLASS_CREG_DECL(cr4, 4);
 	REGISTER_CLASS_CREG_DECL(cr8, 8);
+	// cr5, cr6, cr7 are typically not implemented
 
 	// debug registers
 	REGISTER_CLASS_DREG_DECL(dr0, 0);
@@ -212,6 +203,7 @@ namespace baremetal {
 	REGISTER_CLASS_DREG_DECL(dr5, 5);
 	REGISTER_CLASS_DREG_DECL(dr6, 6);
 	REGISTER_CLASS_DREG_DECL(dr7, 7);
+	// dr8 to dr15 are typically not implemented
 
 	// segment registers
 	REGISTER_CLASS_SREG_DECL(es, 0);
@@ -288,6 +280,22 @@ namespace baremetal {
 	REGISTER_CLASS_YMM_DECL(ymm13, 13);
 	REGISTER_CLASS_YMM_DECL(ymm14, 14);
 	REGISTER_CLASS_YMM_DECL(ymm15, 15);
+	REGISTER_CLASS_YMM_DECL(ymm16, 16);
+	REGISTER_CLASS_YMM_DECL(ymm17, 17);
+	REGISTER_CLASS_YMM_DECL(ymm18, 18);
+	REGISTER_CLASS_YMM_DECL(ymm19, 19);
+	REGISTER_CLASS_YMM_DECL(ymm20, 20);
+	REGISTER_CLASS_YMM_DECL(ymm21, 21);
+	REGISTER_CLASS_YMM_DECL(ymm22, 22);
+	REGISTER_CLASS_YMM_DECL(ymm23, 23);
+	REGISTER_CLASS_YMM_DECL(ymm24, 24);
+	REGISTER_CLASS_YMM_DECL(ymm25, 25);
+	REGISTER_CLASS_YMM_DECL(ymm26, 26);
+	REGISTER_CLASS_YMM_DECL(ymm27, 27);
+	REGISTER_CLASS_YMM_DECL(ymm28, 28);
+	REGISTER_CLASS_YMM_DECL(ymm29, 29);
+	REGISTER_CLASS_YMM_DECL(ymm30, 30);
+	REGISTER_CLASS_YMM_DECL(ymm31, 31);
 
 	// xmm registers
 	REGISTER_CLASS_XMM_DECL(xmm0, 0);
@@ -366,13 +374,38 @@ namespace baremetal {
 	REGISTER_CLASS_8_DECL(cl, 1);
 	REGISTER_CLASS_8_DECL(dl, 2);
 	REGISTER_CLASS_8_DECL(bl, 3);
+
+	// when any the REX prefix is used, SPL, BPL, SIL and DIL are used, otherwise, without any REX
+	// prefix AH, CH, DH and BH are used
+	REGISTER_CLASS_8_DECL(spl, 0);
+	REGISTER_CLASS_8_DECL(bpl, 1);
+	REGISTER_CLASS_8_DECL(sil, 2);
+	REGISTER_CLASS_8_DECL(dil, 3);
+
 	REGISTER_CLASS_8_DECL(ah, 4);
 	REGISTER_CLASS_8_DECL(ch, 5);
 	REGISTER_CLASS_8_DECL(dh, 6);
 	REGISTER_CLASS_8_DECL(bh, 7);
+	REGISTER_CLASS_8_DECL(r8b, 8);
+	REGISTER_CLASS_8_DECL(r9b, 9);
+	REGISTER_CLASS_8_DECL(r10b, 10);
+	REGISTER_CLASS_8_DECL(r11b, 11);
+	REGISTER_CLASS_8_DECL(r12b, 12);
+	REGISTER_CLASS_8_DECL(r13b, 13);
+	REGISTER_CLASS_8_DECL(r14b, 14);
+	REGISTER_CLASS_8_DECL(r15b, 15);
+
+	inline auto is_gp_reg(reg r) {
+		switch(r.type) {
+			case REG_GP_8:
+			case REG_GP_16:
+			case REG_GP_32:
+			case REG_GP_64: return true;
+			default: return false;
+		}
+	}
 
 	inline auto is_stack_pointer(reg r) -> bool {
-		// TODO: spl
-		return r.index == rsp.index; // rsp, esp, sp
+		return r.index == rsp.index && is_gp_reg(r);
 	}
 } // namespace baremetal

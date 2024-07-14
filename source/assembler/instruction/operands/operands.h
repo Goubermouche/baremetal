@@ -40,7 +40,7 @@ namespace baremetal {
 		OP_MOFF32,
 		OP_MOFF64,
 
-		// concrete registers
+		// specific registers
 		OP_AL,
 		OP_AX,
 		OP_EAX,
