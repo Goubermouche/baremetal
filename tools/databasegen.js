@@ -12,17 +12,19 @@ database.instructions.forEach(inst => {
         `"name": "${inst.name}"`,
         // `"ext": [${inst.ext.map(op => { return `"${op}"`; }).join(", ")}]`,
         `"operands": [${inst.operands.map(op => { return `"${op}"`; }).join(", ")}]`,
+        `"enc": "${inst.enc}"`,
         `"opcode": "${inst.opcode}"`,
         `"rm": "${inst.rm}"`,
         `"w": ${inst.w}`,
         `"ri": ${inst.ri}`,
         `"pp": "${inst.pp}"`,
         `"dir": "${inst.dir}"`,
-        `"enc": "${inst.enc}"`,
         `"ops": ${inst.ops}`,
         `"imp": "${inst.imp}"`,
         `"ilo": "${inst.ilo}"`,
         `"var": ${inst.var}`,
+        `"ext": [${inst.ext.map(op => { return `"${op}"`; }).join(", ")}]`,
+
     ])
 })
 
