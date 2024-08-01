@@ -410,3 +410,5 @@ source/tests/*
 
 # except utilities.h
 !source/tests/utilities.h
+
+compile_commands.json
