@@ -399,7 +399,7 @@ FodyWeavers.xsd
 *.vcxproj
 *.vcxproj.filters
 
-.sln
+*.sln
 
 generated_*.*
 Makefile
