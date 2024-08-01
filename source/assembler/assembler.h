@@ -6,7 +6,7 @@ namespace baremetal {
 		assembler();
 
 // function generators
-#define INST_0(index, name)                  \
+#define INST_0(index, name, empty)                  \
   void name() {                              \
     emit_instruction(index, {}, {}, {}, {}); \
   }

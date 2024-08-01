@@ -2,6 +2,8 @@
 
 "use strict"
 
+const { argv } = require('node:process');
+
 const database = require("./database.js");
 const utility = require("./utility.js")
 
@@ -105,6 +107,9 @@ function get_imm_index(operands) {
 }
 
 function main() {
+    const assembler_db_path = process.argv[2];
+    const instruction_db_path = process.argv[3]; 
+
     let instructions = database.instructions;
 
     // sort instructions (special order, dictated by imm operands)
@@ -281,8 +286,8 @@ function main() {
     const assembler_db_layout = utility.calculate_layout(assembler_db);
     const assembler_db_text = utility.apply_layout(assembler_db_layout, assembler_db, "INST(", ")");
 
-    console.log(instruction_db_text)
-    console.log(assembler_db_text)
+    utility.write_file(assembler_db_path, assembler_db_text);
+    utility.write_file(instruction_db_path, instruction_db_text);
 }
 
 main();

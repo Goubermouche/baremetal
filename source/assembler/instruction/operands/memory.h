@@ -18,7 +18,7 @@ namespace baremetal {
 		bool has_base = false;
 		bool has_index = false;
 
-		scale scale = SCALE_1;
+		scale s = SCALE_1;
 		imm displacement;
 	};
 
@@ -53,7 +53,7 @@ namespace baremetal {
     memory.index = index_reg;                                                                                    \
     memory.has_index = true;                                                                                     \
     memory.displacement = offset;                                                                                \
-    memory.scale = s;                                                                                            \
+    memory.s = s;                                                                                            \
     return memory;                                                                                               \
   }                                                                                                              \
 };

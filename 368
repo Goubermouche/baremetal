@@ -333,7 +333,7 @@ namespace baremetal {
 #pragma pack(pop)
 
 // instruction generators
-#define INST_0(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var, empty) \
+#define INST_0(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var) \
   instruction(                                                          \
     #name,                                                              \
     opcode,                                                             \
@@ -352,7 +352,7 @@ namespace baremetal {
     OP_NONE                                                             \
   ),
 
-#define INST_1(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var,  op1) \
+#define INST_1(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var, op1) \
   instruction(                                                               \
     #name,                                                                   \
     opcode,                                                                  \
@@ -390,7 +390,7 @@ namespace baremetal {
     OP_NONE                                                                       \
   ),
 
-#define INST_3(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var,op1, op2, op3) \
+#define INST_3(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var, op1, op2, op3) \
   instruction(                                                                         \
     #name,                                                                             \
     opcode,                                                                            \

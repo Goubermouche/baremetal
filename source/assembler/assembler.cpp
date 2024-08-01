@@ -18,15 +18,15 @@ namespace baremetal {
 
 			switch(inst->get_encoding_prefix()) {
 				case ENC_VEX_RVM: {
-					result.first = operands[0].reg;
-					result.second = operands[2].reg;
+					result.first = operands[0].r;
+					result.second = operands[2].r;
 					break;
 				}
 				case ENC_VEX_VM:
 				case ENC_VEX_RM:
 				case ENC_VEX_RMV: {
-					result.first = operands[0].reg;
-					result.second = operands[1].reg;
+					result.first = operands[0].r;
+					result.second = operands[1].r;
 					break;
 				}
 				default: ASSERT(false, "unhandled rex case");
@@ -40,29 +40,29 @@ namespace baremetal {
 		}
 
 		if(inst->get_operand_count() == 1) {
-			return { 0, operands[0].reg };
+			return { 0, operands[0].r };
 		}
 
 		if(inst->get_operand_count() == 3 && inst->get_imm_operand_count() == 0) {
 			std::pair<u8, u8> result = { 0, 0 };
 
 			if(inst->get_reg_operand_count() == 3) {
-				return { operands[1].reg, operands[0].reg };
+				return { operands[1].r, operands[0].r };
 			}
 
 			i8 i = 0;
 
 			for(; i < 4; ++i) {
 				if(is_operand_reg(operands[i].type)) {
-					result.first = operands[i].reg;
-					result.second = operands[i].reg;
+					result.first = operands[i].r;
+					result.second = operands[i].r;
 					break;
 				}
 			}
 
 			for(; i < 4; ++i) {
 				if(is_operand_reg(operands[i].type)) {
-					result.first = operands[i].reg;
+					result.first = operands[i].r;
 					break;
 				}
 			}
@@ -76,15 +76,15 @@ namespace baremetal {
 
 		while(i-- > 0) {
 			if(is_operand_reg(operands[i].type)) {
-				result.first = operands[i].reg;
-				result.second = operands[i].reg;
+				result.first = operands[i].r;
+				result.second = operands[i].r;
 				break;
 			}
 		}
 
 		while(i-- > 0) {
 			if(is_operand_reg(operands[i].type)) {
-				result.second = operands[i].reg;
+				result.second = operands[i].r;
 				break;
 			}
 		}
@@ -278,9 +278,9 @@ namespace baremetal {
 		u8 vvvv = 0;
 
 		switch(inst->get_encoding_prefix()) {
-			case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].reg & 0b00001111) << 3); break;
-			case ENC_VEX_RMV: vvvv = static_cast<u8>((~operands[2].reg & 0b00001111) << 3); break;
-			case ENC_VEX_VM:  vvvv = static_cast<u8>((~operands[0].reg & 0b00001111) << 3); break;
+			case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
+			case ENC_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
+			case ENC_VEX_VM:  vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
 			case ENC_VEX_RM:  vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
 			default: ASSERT(false, "unhandled vex prefix");
 		}
@@ -613,7 +613,7 @@ namespace baremetal {
 			return; // no sib byte
 		}
 
-		const u8 scale = memory.has_base  ? memory.scale       : 0b000;
+		const u8 scale = memory.has_base  ? memory.s       : 0b000;
 		const u8 index = memory.has_index ? memory.index.index : 0b100;
 		const u8 base  = memory.has_base ? memory.base.index   : 0b101;
 
@@ -693,7 +693,7 @@ namespace baremetal {
 
 	auto extract_operand_reg(const operand& op) -> u8 {
 		if(is_operand_reg(op.type)) {
-			return op.reg;
+			return op.r;
 		}
 
 		if(is_operand_mem(op.type) && op.memory.has_base) {

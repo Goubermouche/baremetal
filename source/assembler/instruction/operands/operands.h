@@ -57,7 +57,7 @@ namespace baremetal {
 	};
 
 	struct operand {
-		constexpr operand() : type(OP_NONE), reg(0) {}
+		constexpr operand() : type(OP_NONE), r(0) {}
 
 		// immediates
 		constexpr operand(imm i) : type(OP_I64), immediate(i) {}
@@ -77,7 +77,7 @@ namespace baremetal {
 		static_assert(static_cast<u8>(REG_DREG) == static_cast<u8>(OP_DREG));
 		static_assert(static_cast<u8>(REG_CREG) == static_cast<u8>(OP_CREG));
 
-		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), reg(r.index) {}
+		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
 
 		// memory
 		constexpr operand(mem_address m) : type(OP_MEM_ADDRESS), memory(m) {}
@@ -97,7 +97,7 @@ namespace baremetal {
 			rel relocation;
 			imm immediate;
 			mem memory;
-			u8 reg;
+			u8 r; // register
 		};
 	};
 
@@ -197,7 +197,7 @@ namespace baremetal {
 
 	inline auto is_extended_reg(const operand& op) -> bool {
 		if(is_operand_reg(op.type)) {
-			return op.reg >= 8;
+			return op.r >= 8;
 		}
 
 		return false;
@@ -205,7 +205,7 @@ namespace baremetal {
 
 	inline auto is_extended_xmm_reg(const operand& op) -> bool {
 		if(is_operand_xmm(op.type)) {
-			return op.reg >= 8;
+			return op.r >= 8;
 		}
 
 		return false;
@@ -213,7 +213,7 @@ namespace baremetal {
 
 	inline auto is_extended_gp_reg(const operand& op) -> bool {
 		if(is_operand_gp_reg(op.type)) {
-			return op.reg >= 8;
+			return op.r >= 8;
 		}
 
 		return false;

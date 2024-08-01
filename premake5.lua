@@ -1,6 +1,6 @@
 workspace "assembler"
     architecture "x64"
-    cppdialect "C++20"
+    -- cppdialect "C++20"
     language "C++"
 
     configurations { "Release", "Debug" }
@@ -10,6 +10,8 @@ workspace "assembler"
     -- buildoptions { "-fsanitize=address" }
     -- linkoptions { "-fsanitize=address" }
     -- debugformat "C7"
+
+    buildoptions("-std=gnu++20")
 
     flags {
         "MultiProcessorCompile"
@@ -55,5 +57,8 @@ workspace "assembler"
         includedirs { "source", "source/utility/", "source/assembler" }
         links { "utility", "assembler" }
 
+  filter "toolset:g++ or clang"
+    buildoptions("-Wa", "-mbig-obj")
+  filter "toolset:msvc"
         buildoptions("/bigobj")
 

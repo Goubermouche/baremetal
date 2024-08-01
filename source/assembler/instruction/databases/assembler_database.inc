@@ -1,4 +1,3 @@
-
 INST(0   , adc            , al         , imm                    )
 INST(1   , adc            , reg8       , imm                    )
 INST(2   , adc            , reg8       , reg8                   )
