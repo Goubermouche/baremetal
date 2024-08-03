@@ -11,7 +11,7 @@ workspace "assembler"
     -- linkoptions { "-fsanitize=address" }
     -- debugformat "C7"
 
-    buildoptions("-std=gnu++20")
+    buildoptions("-std=gnu++20", "-g")
 
     flags {
         "MultiProcessorCompile"

@@ -1,12 +1,124 @@
 #include "assembler.h"
 
+#include "assembler/instruction/instruction.h"
 #include "instruction/operands/operands.h"
+#include "assembler/parser.h"
 
 #include <utility/algorithms/sort.h>
 #include <utility/assert.h>
 
 namespace baremetal {
 	assembler::assembler() : m_current_inst_begin(0) {}
+
+	void assembler::assemble(const utility::dynamic_string& assembly) {
+		m_assembly = utility::dynamic_string(assembly);
+		m_asm_i = 0;
+		
+		while(m_asm_i < assembly.get_size()) {
+			if(parse_line() == false) {
+				return;
+			}
+		}
+	}
+
+	auto is_operand_match(u32 inst_i, operand* operands, u8 operand_count) -> bool {
+		const instruction& inst = instruction_db[inst_i];
+
+		for(u8 i = 0; i < operand_count; ++i) {
+			if(inst.get_operand(i) != operands[i].type) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	auto assembler::parse_line() -> bool {
+		// read the instruction name
+		char identifier[100];
+		u8 identifier_i = 0;
+
+		while(!utility::is_space(m_assembly[m_asm_i])) {
+			identifier[identifier_i++] = m_assembly[m_asm_i++];
+		}
+
+		m_asm_i++;
+		
+		identifier[identifier_i] = '\0';
+
+		// find the first instruction with our name
+		const u32 first = find_instruction_by_name(identifier);
+
+		if(first == utility::limits<u32>::max()) {
+			utility::console::print("unknown instruction '{}' found, stopping\n", identifier);
+			return false;
+		}
+
+		// parse operands
+		utility::dynamic_string operand_str;
+		operand operands[4] = {{}};
+		u8 operand_i = 0;
+
+		utility::console::print("'{}'\n", m_assembly);
+
+		auto emit_operand = [&]() {
+			const auto kw = get_keyword_type(operand_str.trim());
+
+			switch(kw) {
+				// registers
+				case KW_CR0 ... KW_R15B: operands[operand_i++] = keyword_to_register(kw); break; 
+				default: ASSERT(false, "unexpected keyword: {}\n", (i32)kw);
+			}
+
+			operand_str.clear();
+		};
+
+		while(true) {
+			if(m_assembly[m_asm_i] == '\n' || m_asm_i + 1 == m_assembly.get_size()) {
+				emit_operand();
+				break;
+			}
+
+			if(m_assembly[m_asm_i] == ',') {
+				emit_operand();
+				m_asm_i++;
+				continue;
+			}
+
+			operand_str += m_assembly[m_asm_i++];
+		}
+
+		m_asm_i++;
+		u32 instruction_i = first;
+
+		// locate the specific variant (dumb linear search)
+		while(utility::compare_strings(instruction_db[instruction_i].get_name(), instruction_db[first].get_name()) == 0) {
+			if(is_operand_match(instruction_i, operands, operand_i)) {
+				emit_instruction(instruction_i, operands[0], operands[1], operands[2], operands[3]);
+				return true;
+			}
+
+			instruction_i++;
+		}
+
+		utility::console::print("no instruction variant with the specified operands was found\n");
+		return false;
+	}
+
+	auto assembler::find_instruction_by_name(const char* name) -> u32 {
+		// look for the first instruction with that name, just a dumb linear search for the sake of simplicity
+		// TODO: update this to a more performant search	
+		// TODO: this can be in the instruction.h file
+		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
+
+		for(u32 i = 0; i < db_size; ++i) {
+			if(utility::compare_strings(name, instruction_db[i].get_name()) == 0) {
+				return i;
+			}
+		}
+
+		return utility::limits<u32>::max();
+	}
 
 	auto assembler::get_bytes() const -> const utility::dynamic_array<u8>& {
 		return m_bytes;
@@ -1045,6 +1157,9 @@ namespace baremetal {
 	}
 
 	void assembler::clear() {
+		m_assembly.clear();
+		m_asm_i = 0;
+
 		m_bytes.clear();
 		m_current_inst_begin = 0;
 	}

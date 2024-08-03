@@ -6,7 +6,7 @@ const utility = require("./utility.js");
 const { Worker, isMainThread, parentPort, workerData } = require('worker_threads');
 const database= require("./database.js");
 
-const TEST_DIR_PATH = path.join(__dirname, "../source/tests/tests")
+const TEST_PATH = path.join(__dirname, "../source/tests/tests.txt")
 const TEST_MAIN_PATH = path.join(__dirname, "../source/tests/main.cpp")
 
 class reg {
@@ -512,7 +512,7 @@ function get_temp_dir(id) {
 if (isMainThread) {
     // main thread
     const start_time = Date.now();
-    const instructions = database.instructions;
+    const instructions = database.instructions.filter((inst) => inst.name === "mov");
 
     let messages = [];
     let items = [];
@@ -540,12 +540,6 @@ if (isMainThread) {
             console.log("generating layout...");
 
             let name_to_tests = new Map();
-
-            utility.create_directory(TEST_DIR_PATH);
-
-            // clear the directory
-            utility.delete_files_in_directory(TEST_DIR_PATH);
-            
             tests.forEach(test => {
                 if(name_to_tests.has(test.name)) {
                     name_to_tests.get(test.name).push({
@@ -561,72 +555,15 @@ if (isMainThread) {
                 }
             })
 
-            for(let [name, tests] of name_to_tests) {
-                let max_binary_part_len = 0;
-                let max_instruction_part_len = 0;
-
-                tests.forEach(test => {
-                    max_binary_part_len = Math.max(max_binary_part_len, test.binary_part.length);
-                    max_instruction_part_len = Math.max(max_instruction_part_len, test.instruction_part.length);
-                })
-
-                let test_file = "";
-                tests.forEach(test => {
-                    test_file += (
-                        `\t\tTEST_INST("` +
-                        `${`${test.binary_part}"`.padEnd(max_binary_part_len + 1)}, ` +
-                        `${test.instruction_part.padEnd(max_instruction_part_len)});\n`
-                    );
-                })
-
-                const text = `#pragma once
-#include "tests/utilities.h"
-
-namespace baremetal::tests {
-\tinline auto run_test_${name}() -> test_result {
-\t\tutility::dynamic_string string;
-\t\tassembler assembler;
-\t\ttest_result result;
-
-${test_file}
-\t\treturn result;
-\t}
-} // namespace baremetal::tests\n`;
-
-                const filepath = path.join(TEST_DIR_PATH, `${name}.h`);
-                utility.write_file(filepath, text);
-            }
-
-            let includes = [];
-            let test_runs = [];
+            let test_file = "";
 
             for(let [name, tests] of name_to_tests) {
-                includes.push(`#include "tests/tests/${name}.h"`);
-                test_runs.push(`\tTEST(${name});`);
+                tests.forEach(test => {
+                    test_file += `${test.instruction_part} ;${test.binary_part}\n`;
+                })
             }
 
-            includes.sort();
-            test_runs.sort();
-
-            const includes_text = includes.join("\n");
-            const test_runs_text = test_runs.join("\n");
-
-            const main_text = `${includes_text}
-
-using namespace baremetal::tests;
-
-auto main() -> i32 {
-\tu64 total_success = 0;
-\tu64 total_fail = 0;
-
-${test_runs_text}
-
-\tutility::console::print("tests finished ({}/{})\\n", total_success, total_success + total_fail);
-
-\treturn 0;
-}\n`
-
-            utility.write_file(TEST_MAIN_PATH, main_text)
+            utility.write_file(TEST_PATH, test_file);
         }
     }
 
@@ -718,7 +655,7 @@ ${test_runs_text}
             tests.push({
                 name: utility.format_instruction_name(inst.name),
                 binary_part: result.data,
-                instruction_part: `${utility.format_instruction_name(inst.name)}(${inst.baremetal})`
+                instruction_part: `${inst.name} ${inst.operands}`
             });
         }
     });

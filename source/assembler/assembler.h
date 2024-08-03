@@ -1,5 +1,6 @@
 #pragma once
 #include "assembler/block.h"
+#include <utility/containers/dynamic_string.h>
 
 namespace baremetal {
 	struct assembler {
@@ -51,9 +52,14 @@ namespace baremetal {
 #undef INST
 
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<u8>&;
-
+		
+		void assemble(const utility::dynamic_string& assembly); 
 		void clear();
 	private:
+		// parsing
+		auto parse_line() -> bool;
+		auto find_instruction_by_name(const char* name) -> u32;
+
 		void emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
 
 		// opcode
@@ -116,6 +122,10 @@ namespace baremetal {
 		void instruction_begin();
 		auto get_current_inst_size() const -> u8;
 	private:
+		// parsing
+		utility::dynamic_string m_assembly;
+		u64 m_asm_i;
+
 		utility::dynamic_array<u8> m_bytes;
 		u64 m_current_inst_begin;
 	};

@@ -220,6 +220,9 @@ namespace baremetal {
 			const u8 masked = m_extension & 0b00011111;
 			return masked - 1;
 		}
+		constexpr auto get_name() const -> const char* {
+			return m_name;
+		}
 		constexpr auto get_direction() const -> bool {
 			return m_operand_direction == DIR_NORMAL;
 		}
