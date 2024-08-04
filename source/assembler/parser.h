@@ -186,10 +186,16 @@ namespace baremetal {
 		KW_R12B,
 		KW_R13B,
 		KW_R14B,
-		KW_R15B
+		KW_R15B,
+
+		// types
+		KW_BYTE,
+		KW_WORD,
+		KW_DWORD,
+		KW_QWORD,
 	};
 
-	auto keyword_to_register(keyword_type kw) -> operand;
+	auto keyword_to_register(keyword_type kw) -> reg;
 	auto get_keyword_type(const utility::dynamic_string& str) -> keyword_type;
 	auto parse_operand(const utility::dynamic_string& str) -> operand;
 } // namespace baremetal

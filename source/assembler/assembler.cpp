@@ -3,6 +3,8 @@
 #include "assembler/instruction/instruction.h"
 #include "instruction/operands/operands.h"
 #include "assembler/parser.h"
+#include "utility/containers/dynamic_string.h"
+#include "utility/system/console.h"
 
 #include <utility/algorithms/sort.h>
 #include <utility/assert.h>
@@ -25,7 +27,8 @@ namespace baremetal {
 		const instruction& inst = instruction_db[inst_i];
 
 		for(u8 i = 0; i < operand_count; ++i) {
-			if(inst.get_operand(i) != operands[i].type) {
+			// if the operands at a given index are both imm we ignore their difference
+			if((inst.get_operand(i) != operands[i].type) && !(is_operand_imm(inst.get_operand(i)) && is_operand_imm(operands[i].type))) {
 				return false;
 			}
 		}
@@ -62,12 +65,58 @@ namespace baremetal {
 		utility::console::print("'{}'\n", m_assembly);
 
 		auto emit_operand = [&]() {
-			const auto kw = get_keyword_type(operand_str.trim());
+			operand_str = operand_str.trim();
+			const auto kw = get_keyword_type(operand_str);
 
 			switch(kw) {
 				// registers
-				case KW_CR0 ... KW_R15B: operands[operand_i++] = keyword_to_register(kw); break; 
-				default: ASSERT(false, "unexpected keyword: {}\n", (i32)kw);
+				case KW_CR0 ... KW_R15B: operands[operand_i++] = operand(keyword_to_register(kw)); break;
+				case KW_NONE: {
+					// handle literals
+					if(utility::is_digit(operand_str[0])) {
+						char* end; // temp, no error checking for now, just pass tests
+						u64 num = strtoull(operand_str.get_data(), &end, 10);
+						operands[operand_i++] = operand(imm(num));
+						break;
+					}
+					else if(operand_str[0] == '-') {
+						char* end; // temp, no error checking for now, just pass tests
+						i64 num = strtoll(operand_str.get_data(), &end, 10);
+						operands[operand_i++] = operand(imm(num));
+						break;
+					}
+
+					// imm
+					//  0xHEX
+					// +0xHEX
+					// -0xHEX
+					//  BASE10
+					// +BASE10
+					// -BASE10
+
+					// memory operands
+					//[imm]
+					//[base imm]
+					//[base+index*scale]
+					//[base+index*scale imm]
+					utility::dynamic_string type_str = "";
+					u8 type_str_i = 0;
+
+					while(operand_str[type_str_i] != ' ') {
+						type_str += operand_str[type_str_i++];
+					}
+
+					type_str_i++;
+
+					utility::console::print("{}\n", type_str);
+
+					utility::dynamic_string displacement_str = "";
+
+					type_str_i++; // [
+					
+
+				}
+				default: ASSERT(false, "unexpected keyword: {} ({})\n", operand_str, (i32)kw);
 			}
 
 			operand_str.clear();
@@ -78,7 +127,7 @@ namespace baremetal {
 				emit_operand();
 				break;
 			}
-
+			
 			if(m_assembly[m_asm_i] == ',') {
 				emit_operand();
 				m_asm_i++;
@@ -102,6 +151,14 @@ namespace baremetal {
 		}
 
 		utility::console::print("no instruction variant with the specified operands was found\n");
+		utility::console::print("operands are:\n");
+
+		for(u8 i = 0; i < operand_i; ++i) {
+			utility::console::print("{} ", (i32)operands[i].type);
+		}
+		
+		utility::console::print("\n");
+
 		return false;
 	}
 

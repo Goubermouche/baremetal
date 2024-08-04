@@ -53,7 +53,7 @@ namespace baremetal {
     memory.index = index_reg;                                                                                    \
     memory.has_index = true;                                                                                     \
     memory.displacement = offset;                                                                                \
-    memory.s = s;                                                                                            \
+    memory.s = s;                                                                                                \
     return memory;                                                                                               \
   }                                                                                                              \
 };
