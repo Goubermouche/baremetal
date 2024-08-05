@@ -1,4 +1,5 @@
 #pragma once
+#include "assembler/instruction/operands/immediates.h"
 #include "assembler/instruction/operands/operands.h"
 
 #include <utility/containers/dynamic_string.h> 
@@ -193,6 +194,33 @@ namespace baremetal {
 		KW_WORD,
 		KW_DWORD,
 		KW_QWORD,
+
+		KW_EOF,
+		KW_LBRACKET,
+		KW_RBRACKET,
+		KW_PLUS,
+		KW_MINUS,
+		KW_COMMA,
+		KW_NEWLINE,
+
+		KW_IDENTIFIER,
+		KW_NUMBER,
+	};
+
+	class lexer {
+		public:
+			void set_text(const utility::dynamic_string& text);
+			auto get_next_token() -> keyword_type;
+		private:
+			auto get_next_char() -> char;
+		private:
+			u64 m_index;
+			utility::dynamic_string m_text;
+			char m_current_char;
+		public:
+			keyword_type current;
+			imm current_immediate;
+			utility::dynamic_string current_string;
 	};
 
 	auto keyword_to_register(keyword_type kw) -> reg;

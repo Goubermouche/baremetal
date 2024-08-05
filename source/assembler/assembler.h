@@ -1,5 +1,7 @@
 #pragma once
 #include "assembler/block.h"
+#include "assembler/parser.h"
+
 #include <utility/containers/dynamic_string.h>
 
 namespace baremetal {
@@ -57,7 +59,7 @@ namespace baremetal {
 		void clear();
 	private:
 		// parsing
-		auto parse_line() -> bool;
+		void assemble_instruction();
 		auto find_instruction_by_name(const char* name) -> u32;
 
 		void emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
@@ -123,6 +125,7 @@ namespace baremetal {
 		auto get_current_inst_size() const -> u8;
 	private:
 		// parsing
+		lexer m_lex;
 		utility::dynamic_string m_assembly;
 		u64 m_asm_i;
 

@@ -3,6 +3,7 @@
 #include "assembler/instruction/instruction.h"
 #include "instruction/operands/operands.h"
 #include "assembler/parser.h"
+#include "parser.h"
 #include "utility/containers/dynamic_string.h"
 #include "utility/system/console.h"
 
@@ -11,17 +12,6 @@
 
 namespace baremetal {
 	assembler::assembler() : m_current_inst_begin(0) {}
-
-	void assembler::assemble(const utility::dynamic_string& assembly) {
-		m_assembly = utility::dynamic_string(assembly);
-		m_asm_i = 0;
-		
-		while(m_asm_i < assembly.get_size()) {
-			if(parse_line() == false) {
-				return;
-			}
-		}
-	}
 
 	auto is_operand_match(u32 inst_i, operand* operands, u8 operand_count) -> bool {
 		const instruction& inst = instruction_db[inst_i];
@@ -36,115 +26,59 @@ namespace baremetal {
 		return true;
 	}
 
-	auto assembler::parse_line() -> bool {
-		// read the instruction name
-		char identifier[100];
-		u8 identifier_i = 0;
+	void assembler::assemble(const utility::dynamic_string& assembly) {
+		m_lex.set_text(assembly);
+		m_lex.get_next_token();
 
-		while(!utility::is_space(m_assembly[m_asm_i])) {
-			identifier[identifier_i++] = m_assembly[m_asm_i++];
+		while(m_lex.current != KW_EOF) {
+			assemble_instruction();
 		}
+	}
 
-		m_asm_i++;
-		
-		identifier[identifier_i] = '\0';
+	void assembler::assemble_instruction() {
+		utility::dynamic_string instruction_identifier;
 
-		// find the first instruction with our name
-		const u32 first = find_instruction_by_name(identifier);
+		ASSERT(m_lex.current == KW_IDENTIFIER, "expected identifier\n");
+		instruction_identifier = utility::dynamic_string(m_lex.current_string);
+
+		const u32 first = find_instruction_by_name(instruction_identifier.get_data());
 
 		if(first == utility::limits<u32>::max()) {
-			utility::console::print("unknown instruction '{}' found, stopping\n", identifier);
-			return false;
+			utility::console::print("unknown instruction '{}' found, stopping\n", instruction_identifier);
+			return;
 		}
 
-		// parse operands
-		utility::dynamic_string operand_str;
 		operand operands[4] = {{}};
 		u8 operand_i = 0;
 
-		utility::console::print("'{}'\n", m_assembly);
+		// operands
+		while(m_lex.get_next_token() != KW_EOF) {
+			switch (m_lex.current) {
+				case KW_CR0 ... KW_R15B: operands[operand_i++] = operand(keyword_to_register(m_lex.current)); break;
+				case KW_NUMBER:          operands[operand_i++] = operand(m_lex.current_immediate); break;
+				case KW_MINUS: {
+					m_lex.get_next_token();
+					ASSERT(m_lex.current == KW_NUMBER, "expected number\n");
 
-		auto emit_operand = [&]() {
-			operand_str = operand_str.trim();
-			const auto kw = get_keyword_type(operand_str);
-
-			switch(kw) {
-				// registers
-				case KW_CR0 ... KW_R15B: operands[operand_i++] = operand(keyword_to_register(kw)); break;
-				case KW_NONE: {
-					// handle literals
-					if(utility::is_digit(operand_str[0])) {
-						char* end; // temp, no error checking for now, just pass tests
-						u64 num = strtoull(operand_str.get_data(), &end, 10);
-						operands[operand_i++] = operand(imm(num));
-						break;
-					}
-					else if(operand_str[0] == '-') {
-						char* end; // temp, no error checking for now, just pass tests
-						i64 num = strtoll(operand_str.get_data(), &end, 10);
-						operands[operand_i++] = operand(imm(num));
-						break;
-					}
-
-					// imm
-					//  0xHEX
-					// +0xHEX
-					// -0xHEX
-					//  BASE10
-					// +BASE10
-					// -BASE10
-
-					// memory operands
-					//[imm]
-					//[base imm]
-					//[base+index*scale]
-					//[base+index*scale imm]
-					utility::dynamic_string type_str = "";
-					u8 type_str_i = 0;
-
-					while(operand_str[type_str_i] != ' ') {
-						type_str += operand_str[type_str_i++];
-					}
-
-					type_str_i++;
-
-					utility::console::print("{}\n", type_str);
-
-					utility::dynamic_string displacement_str = "";
-
-					type_str_i++; // [
-					
-
+					operands[operand_i++] = operand(imm(-m_lex.current_immediate.value));
+					break;
 				}
-				default: ASSERT(false, "unexpected keyword: {} ({})\n", operand_str, (i32)kw);
-			}
+				default: ASSERT(false, "unexpected token '{}'\n", (i32)m_lex.current);
+				// case KW_BYTE ... KW_QWORD: {}
+			};
 
-			operand_str.clear();
-		};
-
-		while(true) {
-			if(m_assembly[m_asm_i] == '\n' || m_asm_i + 1 == m_assembly.get_size()) {
-				emit_operand();
+			if(m_lex.get_next_token() != KW_COMMA) {
 				break;
 			}
-			
-			if(m_assembly[m_asm_i] == ',') {
-				emit_operand();
-				m_asm_i++;
-				continue;
-			}
-
-			operand_str += m_assembly[m_asm_i++];
 		}
 
-		m_asm_i++;
 		u32 instruction_i = first;
 
 		// locate the specific variant (dumb linear search)
 		while(utility::compare_strings(instruction_db[instruction_i].get_name(), instruction_db[first].get_name()) == 0) {
 			if(is_operand_match(instruction_i, operands, operand_i)) {
 				emit_instruction(instruction_i, operands[0], operands[1], operands[2], operands[3]);
-				return true;
+				return;
 			}
 
 			instruction_i++;
@@ -158,8 +92,6 @@ namespace baremetal {
 		}
 		
 		utility::console::print("\n");
-
-		return false;
 	}
 
 	auto assembler::find_instruction_by_name(const char* name) -> u32 {

@@ -1,7 +1,105 @@
 #include "parser.h"
+#include "utility/types.h"
 #include <utility/containers/map.h>
 
 namespace baremetal {
+	void lexer::set_text(const utility::dynamic_string& text) {
+		m_index = 0;
+		m_text = utility::dynamic_string(text);
+		get_next_char();
+	}
+
+	auto lexer::get_next_char() -> char {
+		if(m_index + 1 >= m_text.get_size()) {
+			m_current_char = utility::g_eof;
+			return utility::g_eof;
+		}
+
+		m_current_char = m_text[m_index++];
+		return m_current_char;
+	}
+
+	auto lexer::get_next_token() -> keyword_type {
+		current_string.clear();
+
+		// consume spaces
+		while(utility::is_space(m_current_char)) { get_next_char(); }
+
+		// numbers
+		if(utility::is_digit(m_current_char)) {
+			i32 base = 10;
+
+			if(m_current_char == '0') {
+				get_next_char();
+
+				// hex
+				if(m_current_char == 'x') {
+					base = 16;
+					get_next_char();
+
+					while(utility::is_digit_hex(m_current_char)) {
+						current_string += m_current_char;
+						get_next_char();
+					}
+
+					goto parse_number;
+				}
+				else if(m_current_char == 'b') {
+					base = 2;
+					get_next_char();
+
+					while(utility::is_digit_hex(m_current_char)) {
+						current_string += m_current_char;
+						get_next_char();
+					}
+
+					goto parse_number;
+				}
+			}
+
+			while(utility::is_digit(m_current_char)) {
+				current_string += m_current_char;
+				get_next_char();
+			}
+
+parse_number:
+			char* end;
+			u64 num = strtoull(current_string.get_data(), &end, base);
+			current_immediate = imm(num);
+			return current = KW_NUMBER;
+		}
+
+		// keyword or identifier
+		if(utility::is_alpha(m_current_char)) {
+			while(utility::is_alphanum(m_current_char)) {
+				current_string += m_current_char;
+				get_next_char();
+			}
+
+			const auto kw = get_keyword_type(current_string);
+		
+			if(kw != KW_NONE) {
+				return current = kw;
+			}
+
+			return current = KW_IDENTIFIER;
+		}
+
+		// special characters
+		switch(m_current_char) {
+			case ',': get_next_char(); return current = KW_COMMA;
+			case '[': get_next_char(); return current = KW_LBRACKET;
+			case ']': get_next_char(); return current = KW_RBRACKET;
+			case '+': get_next_char(); return current = KW_PLUS;
+			case '-': get_next_char(); return current = KW_MINUS;
+			case '\n': get_next_char(); return current = KW_NEWLINE;
+			case utility::g_eof: return current = KW_EOF;
+		}
+
+		ASSERT(false, "unknown character: '{}'\n", (i32)m_current_char);
+		return {};
+	}
+
 	auto keyword_to_register(keyword_type kw) -> reg {
 		switch(kw) {
 			case KW_CR0: return creg(0);
