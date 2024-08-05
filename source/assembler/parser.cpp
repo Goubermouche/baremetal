@@ -92,6 +92,8 @@ parse_number:
 			case ']': get_next_char(); return current = KW_RBRACKET;
 			case '+': get_next_char(); return current = KW_PLUS;
 			case '-': get_next_char(); return current = KW_MINUS;
+			case '*': get_next_char(); return current = KW_ASTERISK;
+			case '$': get_next_char(); return current = KW_DOLLARSIGN;
 			case '\n': get_next_char(); return current = KW_NEWLINE;
 			case utility::g_eof: return current = KW_EOF;
 		}
@@ -430,8 +432,8 @@ parse_number:
 			{ "r10",   KW_R10,   },
 			{ "r11",   KW_R11,   },
 			{ "r12",   KW_R12,   },
-			{ "13",    KW_R13,   },
-			{ "14",    KW_R14,   },
+			{ "r13",    KW_R13,   },
+			{ "r14",    KW_R14,   },
 			{ "r15",   KW_R15,   },
 			{ "eax",   KW_EAX,   },
 			{ "ecx",   KW_ECX,   },
@@ -491,6 +493,10 @@ parse_number:
 			{ "word" , KW_WORD  },
 			{ "dword", KW_DWORD },
 			{ "qword", KW_QWORD },
+			{ "QWORD", KW_QWORD },
+
+			// keywords
+			{ "rel"  , KW_REL   },
 		};
 		
 		const auto it = operand_map.find(str);

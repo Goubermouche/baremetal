@@ -9,47 +9,47 @@ namespace baremetal {
 		assembler();
 
 // function generators
-#define INST_0(index, name, empty)                  \
-  void name() {                              \
-    emit_instruction(index, {}, {}, {}, {}); \
-  }
+// #define INST_0(index, name, empty)                  \
+//   void name() {                              \
+//     emit_instruction(index, {}, {}, {}, {}); \
+//   }
+// 
+// #define INST_1(index, name, op1)                      \
+//   void name(struct op1 destination) {                 \
+//     emit_instruction(index, destination, {}, {}, {}); \
+//   }
+// 
+// #define INST_2(index, name, op1, op2)                     \
+//   void name(struct op1 destination, struct op2 source) {  \
+//     emit_instruction(index, destination, source, {}, {}); \
+//   }
+// 
+// #define INST_3(index, name, op1, op2, op3)              \
+//   void name(struct op1 a, struct op2 b, struct op3 c) { \
+//     emit_instruction(index, a, b, c, {});               \
+//   }
+// 
+// #define INST_4(index, name, op1, op2, op3,  op4)                       \
+//   void name(struct op1 a, struct op2 b, struct op3 c, struct op4 d) {  \
+//     emit_instruction(index, a, b, c, d);                               \
+//   }
+// 
+// // select which INST_X to call based off of the variable argument count (0-2)
+// #define INST_SELECT(count) CONCATENATE(INST_, count)
+// #define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
+// #define INST(index, name, ...) INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), index, name, __VA_ARGS__)
+// 
+// // assembler database
+// #include "assembler/instruction/databases/assembler_database.inc"
 
-#define INST_1(index, name, op1)                      \
-  void name(struct op1 destination) {                 \
-    emit_instruction(index, destination, {}, {}, {}); \
-  }
+// #undef INST_0
+// #undef INST_1
+// #undef INST_2
+// #undef INST_3
+// #undef INST_4
 
-#define INST_2(index, name, op1, op2)                     \
-  void name(struct op1 destination, struct op2 source) {  \
-    emit_instruction(index, destination, source, {}, {}); \
-  }
-
-#define INST_3(index, name, op1, op2, op3)              \
-  void name(struct op1 a, struct op2 b, struct op3 c) { \
-    emit_instruction(index, a, b, c, {});               \
-  }
-
-#define INST_4(index, name, op1, op2, op3,  op4)                       \
-  void name(struct op1 a, struct op2 b, struct op3 c, struct op4 d) {  \
-    emit_instruction(index, a, b, c, d);                               \
-  }
-
-// select which INST_X to call based off of the variable argument count (0-2)
-#define INST_SELECT(count) CONCATENATE(INST_, count)
-#define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
-#define INST(index, name, ...) INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), index, name, __VA_ARGS__)
-
-// assembler database
-#include "assembler/instruction/databases/assembler_database.inc"
-
-#undef INST_0
-#undef INST_1
-#undef INST_2
-#undef INST_3
-#undef INST_4
-
-#undef INST_SELECT
-#undef INST_HELPER
+// #undef INST_SELECT
+// #undef INST_HELPER
 
 #undef INST
 
@@ -58,8 +58,13 @@ namespace baremetal {
 		void assemble(const utility::dynamic_string& assembly); 
 		void clear();
 	private:
+		enum mem_parser_mode : u8 {
+			MPM_NONE,
+			MPM_SCALE,
+		};
 		// parsing
-		void assemble_instruction();
+		auto assemble_instruction() -> bool;
+		void parse_next_mem_part(mem& memory, mem_parser_mode mode);
 		auto find_instruction_by_name(const char* name) -> u32;
 
 		void emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4);

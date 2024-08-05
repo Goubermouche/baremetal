@@ -77,7 +77,16 @@ namespace baremetal {
 		static_assert(static_cast<u8>(REG_DREG) == static_cast<u8>(OP_DREG));
 		static_assert(static_cast<u8>(REG_CREG) == static_cast<u8>(OP_CREG));
 
-		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
+		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {
+			//if(r.type == rax.type && r.index == rax.index) { type = OP_RAX; }
+			//else if(r.type == eax.type && r.index == eax.index) { type = OP_EAX; }
+			//else if(r.type == al.type && r.index == al.index) { type = OP_AL; }
+			//else if(r.type == ax.type && r.index == ax.index) { type = OP_AX; }
+			//else if(r.type == cl.type && r.index == cl.index) { type = OP_CL; }
+			//else if(r.type == dx.type && r.index == dx.index) { type = OP_DX; }
+			//else if(r.type == ecx.type && r.index == ecx.index) { type = OP_ECX; }
+			//else if(r.type == rcx.type && r.index == rcx.index) { type = OP_RCX; }
+		}
 
 		// memory
 		constexpr operand(mem_address m) : type(OP_MEM_ADDRESS), memory(m) {}

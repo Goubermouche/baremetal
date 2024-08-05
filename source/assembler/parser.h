@@ -200,11 +200,15 @@ namespace baremetal {
 		KW_RBRACKET,
 		KW_PLUS,
 		KW_MINUS,
+		KW_ASTERISK,
 		KW_COMMA,
 		KW_NEWLINE,
+		KW_DOLLARSIGN,
 
 		KW_IDENTIFIER,
 		KW_NUMBER,
+
+		KW_REL,
 	};
 
 	class lexer {

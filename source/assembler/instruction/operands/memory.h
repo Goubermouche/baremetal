@@ -13,7 +13,7 @@ namespace baremetal {
 	struct mem {
 		// this can't be a reg64 since it can contain special registers (ie. rip)
 		reg base;
-		reg64 index;
+		reg index;
 
 		bool has_base = false;
 		bool has_index = false;

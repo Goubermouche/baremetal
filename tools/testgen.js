@@ -512,7 +512,8 @@ function get_temp_dir(id) {
 if (isMainThread) {
     // main thread
     const start_time = Date.now();
-    const instructions = database.instructions.filter((inst) => inst.name === "mov");
+    // const instructions = database.instructions.filter((inst) => inst.name === "mov");
+    const instructions = database.instructions;
 
     let messages = [];
     let items = [];

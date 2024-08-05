@@ -230,11 +230,11 @@ function bit_width_to_name(bit_width) {
 
 function format_instruction_name(name) {
     switch (name) {
-        case "xor": return "xor_";
-        case "int": return "int_";
-        case "not": return "not_";
-        case "and": return "and_";
-        case "or": return "or_";
+        // case "xor": return "xor_";
+        // case "int": return "int_";
+        // case "not": return "not_";
+        // case "and": return "and_";
+        // case "or": return "or_";
         default: return name;
     }
 }

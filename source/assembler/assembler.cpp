@@ -13,12 +13,32 @@
 namespace baremetal {
 	assembler::assembler() : m_current_inst_begin(0) {}
 
-	auto is_operand_match(u32 inst_i, operand* operands, u8 operand_count) -> bool {
+	auto inst_match(operand_type a, operand b) -> bool{
+		switch(a) {
+			case OP_AL:   return b.type == OP_REG8 && b.r == al.index;
+			case OP_AX:   return b.type == OP_REG16 && b.r == ax.index;
+			case OP_EAX:  return b.type == OP_REG32 && b.r == eax.index;
+			case OP_RAX:  return b.type == OP_REG64 && b.r == rax.index;
+			case OP_CL:   return b.type == OP_REG8 && b.r == cl.index;
+			case OP_DX:   return b.type == OP_REG16 && b.r == dx.index;
+			case OP_ECX:  return b.type == OP_REG32 && b.r == ecx.index;
+			case OP_RCX:  return b.type == OP_REG64 && b.r == rcx.index;
+			case OP_MEM_ADDRESS: return b.type == OP_MEM128;
+			default: return a == b.type;
+		}
+	}
+
+	auto is_operand_match(u32 inst_i, operand* operands) -> bool {
 		const instruction& inst = instruction_db[inst_i];
 
-		for(u8 i = 0; i < operand_count; ++i) {
+		for(u8 i = 0; i < 4; ++i) {
 			// if the operands at a given index are both imm we ignore their difference
-			if((inst.get_operand(i) != operands[i].type) && !(is_operand_imm(inst.get_operand(i)) && is_operand_imm(operands[i].type))) {
+			if(
+				!(inst_match(inst.get_operand(i), operands[i])) &&
+				!(is_operand_imm(inst.get_operand(i)) && is_operand_imm(operands[i].type)) &&
+				!(is_operand_moff(inst.get_operand(i)) && is_operand_moff(operands[i].type)) &&
+				!(is_operand_rel(inst.get_operand(i)) && is_operand_imm(operands[i].type))
+			) {
 				return false;
 			}
 		}
@@ -31,21 +51,88 @@ namespace baremetal {
 		m_lex.get_next_token();
 
 		while(m_lex.current != KW_EOF) {
-			assemble_instruction();
+			if(assemble_instruction() == false) {
+				return;
+			}
 		}
 	}
 
-	void assembler::assemble_instruction() {
+	void assembler::parse_next_mem_part(mem& memory, mem_parser_mode mode) {
+		switch(m_lex.current) {
+			case KW_NUMBER: {
+				if(mode == MPM_SCALE) {
+					u8 value = static_cast<u8>(m_lex.current_immediate.value);
+					
+					switch(value) {
+						case 1: memory.s = SCALE_1; break;
+						case 2: memory.s = SCALE_2; break;
+						case 4: memory.s = SCALE_4; break;
+						case 8: memory.s = SCALE_8; break;
+						default: ASSERT(false, "invalid scale value\n");
+					}
+				}
+				else {
+					memory.displacement = m_lex.current_immediate;
+				}
+
+				break;
+			} 
+			case KW_CR0 ... KW_R15B: {
+				if(memory.has_base) {
+					memory.index = keyword_to_register(m_lex.current);
+					memory.has_index = true;
+				}
+				else {
+					memory.base = keyword_to_register(m_lex.current);
+					memory.has_base = true;
+				}
+
+				break;
+			}
+			case KW_REL: {
+				m_lex.get_next_token();
+				ASSERT(m_lex.current == KW_DOLLARSIGN, "expected $\n");
+
+				memory.base = rip;
+				memory.has_base = true;
+				break;
+			}
+			case KW_RBRACKET: return;
+			default: ASSERT(false, "unexpected token in memory operand\n");
+		}
+
+		mem_parser_mode next_mode = MPM_NONE;
+
+		switch(m_lex.get_next_token()) {
+			case KW_PLUS: m_lex.get_next_token(); break;
+			case KW_ASTERISK: m_lex.get_next_token(); next_mode = MPM_SCALE; break;
+			default: {}
+		}
+
+		parse_next_mem_part(memory, next_mode);
+	}
+
+#define PARSER_VERIFY(expected)                  \
+  if(m_lex.current != expected) {                \
+    utility::console::print("{}\n", m_assembly); \
+    return false;                                \
+  }
+
+#define PARSER_EXIT()                            \
+  utility::console::print("unexpected token\n"); \
+  return false;
+
+	auto assembler::assemble_instruction() -> bool {
 		utility::dynamic_string instruction_identifier;
 
-		ASSERT(m_lex.current == KW_IDENTIFIER, "expected identifier\n");
+		PARSER_VERIFY(KW_IDENTIFIER);
 		instruction_identifier = utility::dynamic_string(m_lex.current_string);
 
 		const u32 first = find_instruction_by_name(instruction_identifier.get_data());
 
 		if(first == utility::limits<u32>::max()) {
 			utility::console::print("unknown instruction '{}' found, stopping\n", instruction_identifier);
-			return;
+			return false;
 		}
 
 		operand operands[4] = {{}};
@@ -54,16 +141,67 @@ namespace baremetal {
 		// operands
 		while(m_lex.get_next_token() != KW_EOF) {
 			switch (m_lex.current) {
+				// registers
 				case KW_CR0 ... KW_R15B: operands[operand_i++] = operand(keyword_to_register(m_lex.current)); break;
+				// numerical literals
 				case KW_NUMBER:          operands[operand_i++] = operand(m_lex.current_immediate); break;
 				case KW_MINUS: {
 					m_lex.get_next_token();
-					ASSERT(m_lex.current == KW_NUMBER, "expected number\n");
+					PARSER_VERIFY(KW_NUMBER);
 
-					operands[operand_i++] = operand(imm(-m_lex.current_immediate.value));
+					operands[operand_i++] = operand(imm(-static_cast<i64>(m_lex.current_immediate.value)));
 					break;
 				}
-				default: ASSERT(false, "unexpected token '{}'\n", (i32)m_lex.current);
+				case KW_LBRACKET: {
+					switch(m_lex.get_next_token()) {
+						case KW_BYTE ... KW_QWORD: {
+							m_lex.get_next_token();
+							PARSER_VERIFY(KW_NUMBER);
+
+							operands[operand_i++] = operand(moff(m_lex.current_immediate.value));
+							m_lex.get_next_token();
+							PARSER_VERIFY(KW_RBRACKET);
+							break;
+						}
+						default: {
+							// large mem operand
+							operand memory = mem128();
+
+							parse_next_mem_part(memory.memory, MPM_NONE);
+
+							PARSER_VERIFY(KW_RBRACKET);
+							operands[operand_i++] = memory;
+							break;
+						}
+					}
+					break;
+				}
+				// memory operands
+				case KW_BYTE ... KW_QWORD: {
+					keyword_type mem_type = m_lex.current;
+
+					m_lex.get_next_token();
+					PARSER_VERIFY(KW_LBRACKET);
+
+					operand memory;
+
+					switch(mem_type) {
+						case KW_BYTE: memory = mem8(); break;
+						case KW_WORD: memory = mem16(); break;
+						case KW_DWORD: memory = mem32(); break;
+						case KW_QWORD: memory = mem64(); break;
+						default: ASSERT(false, "unreachable\n");
+					}
+
+					m_lex.get_next_token();
+					parse_next_mem_part(memory.memory, MPM_NONE); 
+
+					PARSER_VERIFY(KW_RBRACKET);
+
+					operands[operand_i++] = memory;
+					break;
+				}
+				default: PARSER_EXIT();
 				// case KW_BYTE ... KW_QWORD: {}
 			};
 
@@ -76,9 +214,20 @@ namespace baremetal {
 
 		// locate the specific variant (dumb linear search)
 		while(utility::compare_strings(instruction_db[instruction_i].get_name(), instruction_db[first].get_name()) == 0) {
-			if(is_operand_match(instruction_i, operands, operand_i)) {
+			if(is_operand_match(instruction_i, operands)) {
+				for(u8 j = 0; j < operand_i; ++j) {
+					if(is_operand_rel(instruction_db[instruction_i].get_operand(j))) {
+						rel r =rel(static_cast<i32>(operands[j].immediate.value));
+						operands[j].type = instruction_db[instruction_i].get_operand(j);
+						operands[j].relocation = r; 
+					}
+				}
+
+				// utility::console::print("{}\n", instruction_i);
+
+				// utility::console::print("instruction: {}\n", instruction_i);
 				emit_instruction(instruction_i, operands[0], operands[1], operands[2], operands[3]);
-				return;
+				return true;
 			}
 
 			instruction_i++;
@@ -92,6 +241,7 @@ namespace baremetal {
 		}
 		
 		utility::console::print("\n");
+		return false;
 	}
 
 	auto assembler::find_instruction_by_name(const char* name) -> u32 {
