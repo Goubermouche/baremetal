@@ -64,7 +64,7 @@ namespace baremetal {
 		};
 		// parsing
 		auto assemble_instruction() -> bool;
-		void parse_next_mem_part(mem& memory, mem_parser_mode mode);
+		auto parse_memory(mem& memory) -> bool;
 		auto find_instruction_by_name(const char* name) -> u32;
 
 		void emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4);

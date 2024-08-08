@@ -7,7 +7,8 @@ namespace baremetal {
 		SCALE_1 = 0b00,
 		SCALE_2 = 0b01,
 		SCALE_4 = 0b10,
-		SCALE_8 = 0b11
+		SCALE_8 = 0b11,
+		SCALE_NONE
 	};
 
 	struct mem {

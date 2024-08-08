@@ -5,6 +5,7 @@ namespace baremetal {
 	using namespace utility::types;
 
 	enum reg_type : u8 {
+		REG_NONE = 0,
 		REG_GP_8 = 1,
 		REG_GP_16,
 		REG_GP_32,
@@ -24,6 +25,9 @@ namespace baremetal {
 	struct reg {
 		constexpr reg() : index(0), type() {}
 		constexpr explicit reg(u8 index, reg_type ty) : index(index), type(ty) {}
+		constexpr auto is_valid() const -> bool { return index != utility::limits<u8>::max(); }
+		constexpr static auto create_invalid() -> reg { return reg(utility::limits<u8>::max(), REG_NONE); }
+
 		u8 index;
 		reg_type type;
 	};
