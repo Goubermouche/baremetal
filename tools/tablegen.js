@@ -18,20 +18,22 @@ function is_immediate(op) {
 }
 
 function get_operand_order(value) {
-        const operand_order = [
-            "1", "i8", "i16", "i32", "i64",
-            "al", "cl", "reg8",
-            "ax", "dx",  "cx","reg16",
-            "eax", "ecx", "reg32", 
-            "rax", "rcx", "reg64",
-            "xmm", "mem128", "bnd", "mmx", "sreg", "dreg", "creg",
-            "moff8", "moff16", "moff32", "moff64",
-            "mem8", "mem16", "mem32", "mem64", "mem128",
-            "mem_address", "rel8", "rel32"
-        ];
+	const operand_order = [
+		"1", "i8", "i16", "i32", "i64",
+		"al", "cl", "reg8",
+		"ax", "dx",  "cx","reg16",
+		"eax", "ecx", "reg32", 
+		"rax", "rcx", "reg64",
+		"xmm", "mem128", 
+		"ymm", "mem256",
+		"bnd", "mmx", "sreg", "dreg", "creg",
+		"moff8", "moff16", "moff32", "moff64",
+		"mem8", "mem16", "mem32", "mem64", "mem128",
+		"mem_address", "rel8", "rel32"
+	];
 
-    const index = operand_order.indexOf(value);
-    return index === -1 ? operand_order.length : index;
+	const index = operand_order.indexOf(value);
+	return index === -1 ? operand_order.length : index;
 }
 
 function translate_operands_to_baremetal(operands) {
@@ -50,6 +52,7 @@ function translate_operands_to_baremetal(operands) {
             case "m32":    return "mem32"
             case "m64":    return "mem64"
             case "m128":   return "mem128"
+            case "m256":   return "mem256"
             case "1":      return "imm"
             default: return op;
         }
@@ -64,6 +67,7 @@ function translate_operands_to_inst(operands) {
             case "m32":  return "MEM32";
             case "m64":  return "MEM64";
             case "m128": return "MEM128";
+            case "m256": return "MEM256";
             default:     return op;
         }
     });

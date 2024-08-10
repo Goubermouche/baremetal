@@ -57,6 +57,8 @@ namespace baremetal {
 	enum encoding : u8 {
 		// rex
 		ENC_REX,
+		ENC_REX_RM,
+
 		// vex
 		ENC_VEX_RVM,
 		ENC_VEX_RMV,

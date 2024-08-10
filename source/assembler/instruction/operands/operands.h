@@ -27,6 +27,7 @@ namespace baremetal {
 		OP_MEM32,
 		OP_MEM64,
 		OP_MEM128,
+		OP_MEM256,
 
 		// immediates
 		OP_I8,
@@ -91,6 +92,7 @@ namespace baremetal {
 		// memory
 		constexpr operand(mem_address m) : type(OP_MEM_ADDRESS), memory(m) {}
 		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
+		constexpr operand(mem256 m) : type(OP_MEM256), memory(m) {}
 		constexpr operand(mem128 m) : type(OP_MEM128), memory(m) {}
 		constexpr operand(mem64 m) : type(OP_MEM64), memory(m) {}
 		constexpr operand(mem32 m) : type(OP_MEM32), memory(m) {}
@@ -170,7 +172,8 @@ namespace baremetal {
 			case OP_MEM16:
 			case OP_MEM32:
 			case OP_MEM64:
-			case OP_MEM128:  return true;
+			case OP_MEM128:
+			case OP_MEM256:  return true;
 			default: return false;
 		}
 	}
@@ -267,6 +270,7 @@ namespace baremetal {
 			case OP_MEM128:
 			case OP_XMM:         return 128;
 			case OP_ZMM_H:
+			case OP_MEM256:
 			case OP_YMM:         return 256;
 			case OP_ZMM_L:       return 512;
 		}
@@ -293,6 +297,7 @@ namespace baremetal {
 			case OP_MEM32:       return "m32";
 			case OP_MEM64:       return "m64";
 			case OP_MEM128:      return "m128";
+			case OP_MEM256:      return "m256";
 			case OP_I8:          return "i8";
 			case OP_I16:         return "i16";
 			case OP_I32:         return "i32";

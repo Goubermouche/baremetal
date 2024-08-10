@@ -68,7 +68,6 @@ namespace baremetal {
   utility::console::print("unexpected token\n"); \
   return false;
 
-
 	auto imm_to_scale(const imm& i) -> scale {
 		switch(i.value) {
 			case 1: return  SCALE_1;
@@ -86,13 +85,15 @@ namespace baremetal {
 		bool scale_mode = false;
 		bool imm_set = false;
 
+		// TODO: this still doesn't work with negative operands
+
 		// entry
 		while(true) {
 			switch(m_lex.current) {
 				// register
 				case KW_CR0 ... KW_R15B: {
-					// scale * reg
 					if(scale_mode && imm_set) {
+						// scale * reg
 						memory.index = keyword_to_register(m_lex.current);
 						memory.has_index = true;
 
@@ -114,6 +115,7 @@ namespace baremetal {
 					break;
 				}
 				case KW_REL: {
+					// rel $
 					m_lex.get_next_token();
 					PARSER_VERIFY(KW_DOLLARSIGN);
 					current_reg = rip;
@@ -126,11 +128,13 @@ namespace baremetal {
 				case KW_PLUS: {
 					if(current_reg.is_valid()) {
 						if(memory.has_base) {
+							// index * 1
 							memory.index = current_reg;
 							memory.has_index = true;
 							memory.s = SCALE_1;
 						}
 						else {
+							// base
 							memory.base = current_reg;
 							memory.has_base = true;
 						}
@@ -138,15 +142,20 @@ namespace baremetal {
 						current_reg = reg::create_invalid();
 					}
 					else if(imm_set) {
+						// displacement
 						memory.displacement = current_imm;
 						imm_set = false;
 					}
 
 					break;
 				}
+				case KW_MINUS: {
+					ASSERT(false, "not implemented\n");
+					break;
+				}
 				case KW_NUMBER: {
-					// reg * scale
 					if(scale_mode && current_reg.is_valid()) {
+						// reg * scale
 						memory.index = current_reg;
 						memory.has_index = true;
 
@@ -171,16 +180,19 @@ namespace baremetal {
 				case KW_RBRACKET: {
 					if(current_reg.is_valid()) {
 						if(memory.has_base) {
+							// index * 1
 							memory.index = current_reg;
 							memory.has_index = true;
 							memory.s = SCALE_1;
 						}
 						else {
+							// base
 							memory.base = current_reg;
 							memory.has_base = true;
 						}
 					}
 					else if(imm_set) {
+						// displacement
 						memory.displacement = current_imm;
 					}
 
@@ -269,7 +281,6 @@ namespace baremetal {
 
 					m_lex.get_next_token();
 					parse_memory(memory.memory);
-					// parse_next_mem_part(memory.memory, MPM_NONE); 
 
 					PARSER_VERIFY(KW_RBRACKET);
 
@@ -277,7 +288,6 @@ namespace baremetal {
 					break;
 				}
 				default: PARSER_EXIT();
-				// case KW_BYTE ... KW_QWORD: {}
 			};
 
 			if(m_lex.get_next_token() != KW_COMMA) {
@@ -616,7 +626,7 @@ namespace baremetal {
 
 		// pp - implied mandatory prefix
 		third |= inst->get_imp();
-
+		
 		m_bytes.push_back(third);
 	}
 

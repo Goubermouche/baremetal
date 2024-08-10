@@ -150,3 +150,4 @@ namespace baremetal {
 
 	auto is_operand_of_same_kind(operand_type a, operand_type b) -> bool;
 } // namespace baremetal
+
