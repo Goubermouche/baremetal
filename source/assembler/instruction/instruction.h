@@ -55,15 +55,20 @@ namespace baremetal {
 	};
 
 	enum encoding : u8 {
+		// has VEX.vvvv [_______X]
+		// encoding     [XXXXXXX_]
+		ENC_VEX_NO_VVVV  = 0b00000001,
+
 		// rex
-		ENC_REX,
-		ENC_REX_RM,
+		ENC_REX          = 0b00000010,
+		ENC_REX_RM       = 0b00000100,
 
 		// vex
-		ENC_VEX_RVM,
-		ENC_VEX_RMV,
-		ENC_VEX_VM,
-		ENC_VEX_RM,
+		ENC_VEX_RVM      = 0b00000110,
+		ENC_VEX_RMV      = 0b00001000,
+		ENC_VEX_VM       = 0b00001010,
+		ENC_VEX_RM       = 0b00001100,
+		ENC_VEX_RMI      = 0b00001110,
 	};
 
 	enum instruction_extension : u32 {
@@ -148,7 +153,7 @@ namespace baremetal {
 			u16 context_index,
 			u8 operand_count,
 			direction operand_direction,
-			encoding encoding,
+			u8 encoding,
 			implied_mandatory_prefix imp,
 			operand_type op1,
 			operand_type op2,
@@ -200,17 +205,18 @@ namespace baremetal {
 				m_extension & EXT_7;
 		}
 		constexpr auto is_vex() const -> bool {
-			switch(m_encoding) {
+			switch(get_encoding_prefix()) {
 				case ENC_VEX_RVM:
 				case ENC_VEX_RMV:
 				case ENC_VEX_VM: 
+				case ENC_VEX_RMI: 
 				case ENC_VEX_RM: return true;
 				default: return false;
 			}
 		}
 
 		constexpr auto is_rex() const -> bool {
-			switch(m_encoding) {
+			switch(get_encoding_prefix()) {
 				case ENC_REX: return true;
 				default: return false;
 			}
@@ -250,7 +256,10 @@ namespace baremetal {
 			return m_special_index & 0b0011111111111111;
 		}
 		constexpr auto get_encoding_prefix() const -> encoding {
-			return m_encoding;
+			return (encoding)(m_encoding & 0b11111110);
+		}
+		constexpr auto has_vex_vvvv() const -> bool {
+			return !(m_encoding & ENC_VEX_NO_VVVV); 
 		}
 
 		auto get_imm_operand_count() const -> u8 {
@@ -314,7 +323,7 @@ namespace baremetal {
 		const char* m_name;
 
 		// encoding
-		encoding m_encoding; // REX / VEX / EVEX etc.
+		u8 m_encoding; // REX / VEX / EVEX etc.
 		u32 m_opcode;
 		u16 m_ilo; // implied leading opcode
 		u8 m_extension;
@@ -349,7 +358,7 @@ namespace baremetal {
     ctx,                                                                \
     0,                                                                  \
     direction::DIR_ ## dir,                                             \
-    encoding::ENC_ ## enc,                                              \
+    enc,                                                                \
     IMP_ ## imp,                                                        \
     OP_NONE,                                                            \
     OP_NONE,                                                            \
@@ -368,7 +377,7 @@ namespace baremetal {
     ctx,                                                                     \
     1,                                                                       \
     direction::DIR_ ## dir,                                                  \
-		encoding::ENC_ ## enc,                                                   \
+		enc,                                                                     \
     IMP_ ## imp,                                                             \
     OP_ ## op1,                                                              \
     OP_NONE,                                                                 \
@@ -387,7 +396,7 @@ namespace baremetal {
     ctx,                                                                          \
     2,                                                                            \
     direction::DIR_ ## dir,                                                       \
-		encoding::ENC_ ## enc,                                                        \
+		enc,                                                                          \
 		IMP_ ## imp,                                                                  \
     OP_ ## op1,                                                                   \
     OP_ ## op2,                                                                   \
@@ -406,7 +415,7 @@ namespace baremetal {
     ctx,                                                                               \
     3,                                                                                 \
     direction::DIR_ ## dir,                                                            \
-		encoding::ENC_ ## enc,                                                             \
+		enc,                                                                               \
 		IMP_ ## imp,                                                                       \
     OP_ ## op1,                                                                        \
     OP_ ## op2,                                                                        \
@@ -425,7 +434,7 @@ namespace baremetal {
     ctx,                                                                                    \
     4,                                                                                      \
     direction::DIR_ ## dir,                                                                 \
-		encoding::ENC_ ## enc,                                                                  \
+		enc,                                                                                    \
 		IMP_ ## imp,                                                                            \
     OP_ ## op1,                                                                             \
     OP_ ## op2,                                                                             \

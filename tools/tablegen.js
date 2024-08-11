@@ -241,7 +241,7 @@ function main() {
             `${utility.extract_prefix(inst)}`,
             `${special_index.toString()}`,
             `${inst.dir}`,
-            `${inst.enc}`,
+            `${inst.enc.map((e) => "ENC_" + e).join(" | ")}`,
             `${inst.imp}`, 
             `0x${inst.ilo}`, 
             `${inst.var}`, 

@@ -357,12 +357,13 @@ namespace baremetal {
 				}
 				case ENC_VEX_VM:
 				case ENC_VEX_RM:
+				case ENC_VEX_RMI:
 				case ENC_VEX_RMV: {
 					result.first = operands[0].r;
 					result.second = operands[1].r;
 					break;
 				}
-				default: ASSERT(false, "unhandled rex case");
+				default: ASSERT(false, "unhandled rex case 0");
 			}
 
 			return result;
@@ -610,12 +611,18 @@ namespace baremetal {
 		// vvvv - negation of one of our v operand
 		u8 vvvv = 0;
 
-		switch(inst->get_encoding_prefix()) {
-			case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
-			case ENC_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
-			case ENC_VEX_VM:  vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
-			case ENC_VEX_RM:  vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
-			default: ASSERT(false, "unhandled vex prefix");
+		if(inst->has_vex_vvvv()) {
+			switch(inst->get_encoding_prefix()) {
+				case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
+				case ENC_VEX_RMI: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
+				case ENC_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
+				case ENC_VEX_VM:  vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
+				case ENC_VEX_RM:  vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
+				default: ASSERT(false, "unhandled vex prefix");
+			}
+		}
+		else {
+			vvvv = 0b01111000;
 		}
 
 		third |= vvvv;
@@ -1070,6 +1077,7 @@ namespace baremetal {
 			}
 		}
 
+
 		if(inst->is_vex()) {
 			const u8 registers[4] = {
 				extract_operand_reg(operands[0]),
@@ -1087,7 +1095,23 @@ namespace baremetal {
 			index_byte |= (registers[2] >= 8) << 1;
 			index_byte |= (registers[3] >= 8) << 0;
 
+			// utility::console::print("here {}\n", (int)index_byte);
 			switch(inst->get_encoding_prefix()) {
+				case ENC_VEX_RMI: {
+					switch(index_byte) {
+						case 0b00001000:
+						case 0b00001110:
+						case 0b00000000: rx = registers[0]; base = registers[1]; break;
+						case 0b00001100: rx = registers[1]; base = registers[0]; break;
+						case 0b00000010: rx = registers[1]; base = registers[2]; break;
+						case 0b00001010:
+						case 0b00000110: rx = registers[0]; base = registers[2]; break;
+						case 0b00000100: rx = registers[2]; base = registers[1]; break;
+						default: ASSERT(false, "unhandled rex case 1");
+					}
+
+					break;
+				}
 				case ENC_VEX_RVM: {
 					switch(index_byte) {
 						case 0b00001000:
@@ -1098,7 +1122,7 @@ namespace baremetal {
 						case 0b00001010:
 						case 0b00000110: rx = registers[0]; base = registers[2]; break;
 						case 0b00000100: rx = registers[2]; base = registers[0]; break;
-						default: ASSERT(false, "unhandled rex case");
+						default: ASSERT(false, "unhandled rex case 1");
 					}
 
 					break;
@@ -1113,7 +1137,7 @@ namespace baremetal {
 						case 0b00000010: rx = registers[0]; base = registers[1]; break;
 						case 0b00000110: rx = registers[0]; base = registers[2]; break;
 						case 0b00000100: rx = registers[2]; base = registers[1]; break;
-						default: ASSERT(false, "unhandled rex case");
+						default: ASSERT(false, "unhandled rex case 2");
 					}
 
 					break;
@@ -1124,7 +1148,7 @@ namespace baremetal {
 						case 0b00000100: rx = registers[0]; base = registers[1]; break;
 						case 0b00001000: rx = registers[1]; base = registers[1]; break;
 						case 0b00001100: rx = 0;            base = registers[1]; break;
-						default: ASSERT(false, "unhandled rex case");
+						default: ASSERT(false, "unhandled rex case 3");
 					}
 
 					break;
@@ -1135,12 +1159,12 @@ namespace baremetal {
 						case 0b00001100:
 						case 0b00000100: rx = registers[0]; base = registers[1]; break;
 						case 0b00000000: rx = registers[1]; base = registers[0]; break;
-						default: ASSERT(false, "unhandled rex case");
+						default: ASSERT(false, "unhandled rex case 4");
 					}
 
 					break;
 				}
-				default: ASSERT(false, "unhandled rex case");
+				default: ASSERT(false, "unhandled rex case 5");
 			}
 		}
 		else {
@@ -1234,7 +1258,7 @@ namespace baremetal {
 					case 0b011'010'010'010:
 					case 0b010'101'010'010:
 					case 0b011'100'010'010: rx = registers[b]; base = registers[a]; break;
-					default: ASSERT(false, "unhandled rex case");
+					default: ASSERT(false, "unhandled rex case 6");
 				}
 			}
 			else if(operand_count == 3) {
@@ -1292,7 +1316,7 @@ namespace baremetal {
 					case 0b011'100'000'010:
 					case 0b011'010'000'010:
 					case 0b010'011'000'010: rx = registers[b]; base = registers[a]; break;
-					default: ASSERT(false, "unhandled rex case");
+					default: ASSERT(false, "unhandled rex case 7");
 				}
 			}
 			else {

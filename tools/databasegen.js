@@ -12,7 +12,7 @@ database.instructions.forEach(inst => {
         `"name": "${inst.name}"`,
         // `"ext": [${inst.ext.map(op => { return `"${op}"`; }).join(", ")}]`,
         `"operands": [${inst.operands.map(op => { return `"${op}"`; }).join(", ")}]`,
-        `"enc": "${inst.enc}"`,
+        `"enc": [${inst.enc.map(e => { return `"${e}"`; }).join(", ")}]`,
         `"opcode": "${inst.opcode}"`,
         `"rm": "${inst.rm}"`,
         `"w": ${inst.w}`,
@@ -24,7 +24,6 @@ database.instructions.forEach(inst => {
         `"ilo": "${inst.ilo}"`,
         `"var": ${inst.var}`,
         `"ext": [${inst.ext.map(op => { return `"${op}"`; }).join(", ")}]`,
-
     ])
 })
 
