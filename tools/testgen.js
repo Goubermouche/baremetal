@@ -192,6 +192,13 @@ function generate_combinations(operands) {
             new reg('xmm1'),
             new reg('xmm2'),
             new reg('xmm15')
+        ]], 
+			  ["ymm", [
+            new reg('ymm0'),
+            new reg('ymm1'),
+            new reg('ymm2'),
+            new reg('ymm15'),
+            // new reg('ymm31') - TODO: EVEX
         ]],
         ["mmx", [
             new reg('mm0'),
@@ -435,6 +442,29 @@ function generate_combinations(operands) {
             mem.base_index_offset_scale(128, 'rsp', 'r15', '0xFFFF', "8"),
             mem.base_index_offset_scale(128, 'r14', 'r15', '0xFFFF', "8"),
         ]],
+				["mem256", [
+            mem.absolute(256, '0x0'),
+            mem.absolute(256, '0xFF'),
+            mem.absolute(256, '0xFFFF'),
+            mem.rip_relative(256, '0x0'),
+            mem.rip_relative(256, '0xFF'),
+            mem.rip_relative(256, '0xFFFF'),
+            mem.register_indirect(256, 'rax'),
+            mem.base_offset(256, 'rax', '0x0'),
+            mem.base_offset(256, 'rax', '0xFFFF'),
+            mem.base_offset(256, 'r15', '0xFFFF'),
+            mem.base_index_offset(256, 'rax', 'rsi', '0x0'),
+            mem.base_index_offset(256, 'rax', 'rsi', '0xFFFF'),
+            mem.base_index_offset(256, 'r15', 'rsi', '0xFFFF'),
+            mem.base_index_offset(256, 'rax', 'r15', '0xFFFF'),
+            mem.base_index_offset_scale(256, 'rax', 'rsi', '0xFFFF', "2"),
+            mem.base_index_offset_scale(256, 'rax', 'rsi', '0xFFFF', "4"),
+            mem.base_index_offset_scale(256, 'rax', 'rsi', '0xFFFF', "8"),
+            mem.base_index_offset_scale(256, 'rsp', 'rax', '0xFFFF', "8"),
+            mem.base_index_offset_scale(256, 'r15', 'rax', '0xFFFF', "8"),
+            mem.base_index_offset_scale(256, 'rsp', 'r15', '0xFFFF', "8"),
+            mem.base_index_offset_scale(256, 'r14', 'r15', '0xFFFF', "8"),
+        ]],
         ["rel8", [
             new rel(0),
             new rel(1),
@@ -449,26 +479,27 @@ function generate_combinations(operands) {
         ]]
     ]);
 
-    function generate(operands, index) {
-        if (index === operands.length) {
-            return [[]];
-        }
+  function generate(operands, index) {
+		if (index === operands.length) {
+			return [[]];
+		}
 
-        const current = operands[index];
-        const current_array = operand_map.get(current.toString()) || [];
-        const remaining = generate(operands, index + 1);
-        const combinations = [];
+    const current = operands[index];
+		console.log(operands.length);
+    const current_array = operand_map.get(current.toString()) || [];
+    const remaining = generate(operands, index + 1);
+    const combinations = [];
 
-        for(const value of current_array) {
-            for(const combination of remaining) {
-                combinations.push([value, ...combination]);
-            }
-        }
-
-        return combinations;
+    for(const value of current_array) {
+      for(const combination of remaining) {
+        combinations.push([value, ...combination]);
+      }
     }
 
-    return generate(operands, 0);
+    return combinations;
+  }
+
+  return generate(operands, 0);
 }
 
 function compile_instruction(instruction, temp_dir, bin_dir, asm_dir) {
@@ -478,15 +509,6 @@ function compile_instruction(instruction, temp_dir, bin_dir, asm_dir) {
     try {
         utility.write_file(asm_dir, assembly);
         utility.execute(command);
-        const message = utility.read_file(temp_dir);
-
-        // if(message.length > 0) {
-        //     // throw message;
-        //     return {
-        //         id: "message",
-        //         data: message
-        //     }
-        // }
     } catch(err) {
         throw err;
     }
@@ -498,50 +520,48 @@ function compile_instruction(instruction, temp_dir, bin_dir, asm_dir) {
 }
 
 function get_asm_dir(id) {
-    return path.join(__dirname, `temp${id}.asm`);
+  return path.join(__dirname, `temp${id}.asm`);
 }
 
 function get_bin_dir(id) {
-    return path.join(__dirname, `temp${id}.bin`);
+  return path.join(__dirname, `temp${id}.bin`);
 }
 
 function get_temp_dir(id) {
-    return path.join(__dirname, `temp${id}.txt`);
+  return path.join(__dirname, `temp${id}.txt`);
 }
 
 if (isMainThread) {
-    // main thread
-    const start_time = Date.now();
-    // const instructions = database.instructions.filter((inst) => inst.name === "mov");
-    const instructions = database.instructions;
+	// main thread
+  // const instructions = database.instructions.filter((inst) => inst.name === "mov");
+  const instructions = database.instructions;
 
-    let messages = [];
-    let items = [];
-    let tests = [];
+  let messages = [];
+  let items = [];
+  let tests = [];
 
-    // generate the various combinations we'll need to assemble
-    instructions.forEach((inst, index) => {
-        let operands_combinations = generate_combinations(inst.operands);
+  // generate the various combinations we'll need to assemble
+  instructions.forEach((inst) => {
+    let operands_combinations = generate_combinations(inst.operands);
 
-        operands_combinations.forEach((combination, combinationIndex) => {
-                items.push({
-                    name: inst.name,
-                    operands: combination.map(op => op.get_nasm_string()).join(", "),
-                    baremetal: combination.map(op => op.get_baremetal_string()).join(", "),
-                });
-           
-        });
+    operands_combinations.forEach((combination) => {
+      items.push({
+        name: inst.name,
+        operands: combination.map(op => op.get_nasm_string()).join(", "),
+        baremetal: combination.map(op => op.get_baremetal_string()).join(", "),
+      }); 
     });
+  });
 
-    function finished_processing(data) {
-        tests = tests.concat(data);
+  function finished_processing(data) {
+    tests = tests.concat(data);
 
-        if(tests.length === items.length) {
-            // generate the final layout
-            console.log("generating layout...");
+    if(tests.length === items.length) {
+      // generate the final layout
+      console.log("generating layout...");
 
-            let name_to_tests = new Map();
-            tests.forEach(test => {
+      let name_to_tests = new Map();
+      tests.forEach(test => {
                 if(name_to_tests.has(test.name)) {
                     name_to_tests.get(test.name).push({
                         binary_part: test.binary_part,

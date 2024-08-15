@@ -139,6 +139,12 @@ namespace baremetal {
 		IMP_F2   = 0b11
 	};
 
+	enum inst_size : u8 {
+		OPS_64,
+		OPS_128,
+		OPS_256
+	};
+
 #pragma pack(push, 1)
 	struct instruction {
 		constexpr instruction() = default;
@@ -154,6 +160,7 @@ namespace baremetal {
 			u8 operand_count,
 			direction operand_direction,
 			u8 encoding,
+			inst_size ops,
 			implied_mandatory_prefix imp,
 			operand_type op1,
 			operand_type op2,
@@ -166,6 +173,7 @@ namespace baremetal {
 		m_extension(ext),
 		m_prefix(prefix),
 		m_variant(variant),
+		m_ops(ops),
 		m_imp(imp),
 		m_special_index(context_index),
 		m_operand_count(operand_count),
@@ -258,6 +266,9 @@ namespace baremetal {
 		constexpr auto get_encoding_prefix() const -> encoding {
 			return (encoding)(m_encoding & 0b11111110);
 		}
+		constexpr auto get_ops() const -> inst_size {
+			return m_ops;
+		}
 		constexpr auto has_vex_vvvv() const -> bool {
 			return !(m_encoding & ENC_VEX_NO_VVVV); 
 		}
@@ -329,6 +340,7 @@ namespace baremetal {
 		u8 m_extension;
 		u8 m_prefix;
 		u8 m_variant; // 8 == none
+		inst_size m_ops;
 		implied_mandatory_prefix m_imp;
 
 		// some instructions have a special optimization index, which points to an alternative variant
@@ -347,26 +359,27 @@ namespace baremetal {
 #pragma pack(pop)
 
 // instruction generators
-#define INST_0(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var, empty) \
-  instruction(                                                          \
-    #name,                                                              \
-    opcode,                                                             \
-    ilo,                                                                \
-    ext,                                                                \
-    prefix,                                                             \
-    var,                                                                \
-    ctx,                                                                \
-    0,                                                                  \
-    direction::DIR_ ## dir,                                             \
-    enc,                                                                \
-    IMP_ ## imp,                                                        \
-    OP_NONE,                                                            \
-    OP_NONE,                                                            \
-    OP_NONE,                                                            \
-    OP_NONE                                                             \
+#define INST_0(name, opcode, ext, prefix, ctx, dir, enc, ops, imp, ilo, var, empty) \
+  instruction(                                                                      \
+    #name,                                                                          \
+    opcode,                                                                         \
+    ilo,                                                                            \
+    ext,                                                                            \
+    prefix,                                                                         \
+    var,                                                                            \
+    ctx,                                                                            \
+    0,                                                                              \
+    direction::DIR_ ## dir,                                                         \
+    enc,                                                                            \
+		OPS_ ## ops,                                                                    \
+    IMP_ ## imp,                                                                    \
+    OP_NONE,                                                                        \
+    OP_NONE,                                                                        \
+    OP_NONE,                                                                        \
+    OP_NONE                                                                         \
   ),
 
-#define INST_1(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var,  op1) \
+#define INST_1(name, opcode, ext, prefix, ctx, dir, enc, ops, imp, ilo, var,  op1) \
   instruction(                                                               \
     #name,                                                                   \
     opcode,                                                                  \
@@ -378,6 +391,7 @@ namespace baremetal {
     1,                                                                       \
     direction::DIR_ ## dir,                                                  \
 		enc,                                                                     \
+		OPS_ ## ops,                                                             \
     IMP_ ## imp,                                                             \
     OP_ ## op1,                                                              \
     OP_NONE,                                                                 \
@@ -385,7 +399,7 @@ namespace baremetal {
     OP_NONE                                                                  \
   ),
 
-#define INST_2(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var, op1, op2) \
+#define INST_2(name, opcode, ext, prefix, ctx, dir, enc, ops, imp, ilo, var, op1, op2) \
   instruction(                                                                    \
     #name,                                                                        \
     opcode,                                                                       \
@@ -397,6 +411,7 @@ namespace baremetal {
     2,                                                                            \
     direction::DIR_ ## dir,                                                       \
 		enc,                                                                          \
+		OPS_ ## ops,                                                                  \
 		IMP_ ## imp,                                                                  \
     OP_ ## op1,                                                                   \
     OP_ ## op2,                                                                   \
@@ -404,7 +419,7 @@ namespace baremetal {
     OP_NONE                                                                       \
   ),
 
-#define INST_3(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var,op1, op2, op3) \
+#define INST_3(name, opcode, ext, prefix, ctx, dir, enc, ops, imp, ilo, var,op1, op2, op3) \
   instruction(                                                                         \
     #name,                                                                             \
     opcode,                                                                            \
@@ -416,6 +431,7 @@ namespace baremetal {
     3,                                                                                 \
     direction::DIR_ ## dir,                                                            \
 		enc,                                                                               \
+		OPS_ ## ops,                                                                       \
 		IMP_ ## imp,                                                                       \
     OP_ ## op1,                                                                        \
     OP_ ## op2,                                                                        \
@@ -423,7 +439,7 @@ namespace baremetal {
     OP_NONE                                                                            \
   ),
 
-#define INST_4(name, opcode, ext, prefix, ctx, dir, enc, imp, ilo, var, op1, op2, op3, op4) \
+#define INST_4(name, opcode, ext, prefix, ctx, dir, enc, ops, imp, ilo, var, op1, op2, op3, op4) \
   instruction(                                                                              \
     #name,                                                                                  \
     opcode,                                                                                 \
@@ -435,6 +451,7 @@ namespace baremetal {
     4,                                                                                      \
     direction::DIR_ ## dir,                                                                 \
 		enc,                                                                                    \
+		OPS_ ## ops,                                                                            \
 		IMP_ ## imp,                                                                            \
     OP_ ## op1,                                                                             \
     OP_ ## op2,                                                                             \
@@ -445,8 +462,8 @@ namespace baremetal {
 // select which INST_X to call based off of the variable argument count (0-2)
 #define INST_SELECT(count) CONCATENATE(INST_, count)
 #define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
-#define INST(name, opcode, extensions, prefix, context, dir, enc, imp, ilo, var, iext, ...) \
-  INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extensions, prefix, context, dir, enc, imp, ilo, var, __VA_ARGS__)
+#define INST(name, opcode, extensions, prefix, context, dir, enc, imp, ilo, var, ops, iext, ...) \
+  INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), name, opcode, extensions, prefix, context, dir, enc, ops, imp, ilo, var, __VA_ARGS__)
 
 	static constexpr instruction instruction_db[] = {
 		#include "assembler/instruction/databases/instruction_database.inc"

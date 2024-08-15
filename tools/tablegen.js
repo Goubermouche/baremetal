@@ -244,7 +244,8 @@ function main() {
             `${inst.enc.map((e) => "ENC_" + e).join(" | ")}`,
             `${inst.imp}`, 
             `0x${inst.ilo}`, 
-            `${inst.var}`, 
+            `${inst.var}`,
+            `${inst.ops}`,
             "IEX_NONE"
             // `${extensions.length == 0 ? "IEX_NONE" : extensions}`,
         ]

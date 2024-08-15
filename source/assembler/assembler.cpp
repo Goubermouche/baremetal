@@ -627,8 +627,9 @@ namespace baremetal {
 
 		third |= vvvv;
 
-		 // L vector length (0 = 128b, 1 = 256b)
-		const u8 l = 0 << 2;
+		// L vector length (0 = 128b, 1 = 256b)
+		bool vector_len = inst->get_ops() == OPS_256;
+		const u8 l = (0b000000001 & vector_len) << 2;
 		third |= l;
 
 		// pp - implied mandatory prefix
