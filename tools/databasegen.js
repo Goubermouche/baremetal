@@ -8,27 +8,26 @@ const utility = require("./utility.js")
 let json_table = [];
 
 database.instructions.forEach(inst => {
-    json_table.push([
-        `"name": "${inst.name}"`,
-        // `"ext": [${inst.ext.map(op => { return `"${op}"`; }).join(", ")}]`,
-        `"operands": [${inst.operands.map(op => { return `"${op}"`; }).join(", ")}]`,
-        `"enc": [${inst.enc.map(e => { return `"${e}"`; }).join(", ")}]`,
-        `"opcode": "${inst.opcode}"`,
-        `"rm": "${inst.rm}"`,
-        `"w": ${inst.w}`,
-        `"ri": ${inst.ri}`,
-        `"pp": "${inst.pp}"`,
-        `"dir": "${inst.dir}"`,
-        `"ops": ${inst.ops}`,
-        `"imp": "${inst.imp}"`,
-        `"ilo": "${inst.ilo}"`,
-        `"var": ${inst.var}`,
-        `"ext": [${inst.ext.map(op => { return `"${op}"`; }).join(", ")}]`,
-    ])
+	json_table.push([
+		`"name": "${inst.name}"`,
+		`"operands": [${inst.operands.map(op => { return `"${op}"`; }).join(", ")}]`,
+		`"enc": [${inst.enc.map(e => { return `"${e}"`; }).join(", ")}]`,
+		`"opcode": "${inst.opcode}"`,
+		`"rm": "${inst.rm}"`,
+		`"w": ${inst.w}`,
+		`"ri": ${inst.ri}`,
+		`"pp": "${inst.pp}"`,
+		`"dir": "${inst.dir}"`,
+		`"ops": ${inst.ops}`,
+		`"imp": "${inst.imp}"`,
+		`"ilo": "${inst.ilo}"`,
+		`"var": ${inst.var}`,
+		`"ext": [${inst.ext.map(op => { return `"${op}"`; }).join(", ")}]`,
+	])
 })
 
 json_table.sort((a, b) => {
-    return a.name < b.name;
+	return a.name < b.name;
 });
 
 // calculate the new table alignment
