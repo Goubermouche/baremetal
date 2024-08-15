@@ -140,6 +140,7 @@ namespace baremetal {
 	};
 
 	enum inst_size : u8 {
+		OPS_32,
 		OPS_64,
 		OPS_128,
 		OPS_256

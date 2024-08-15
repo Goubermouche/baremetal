@@ -38,7 +38,8 @@ namespace baremetal {
 				!(inst_match(inst.get_operand(i), operands[i])) &&
 				!(is_operand_imm(inst.get_operand(i)) && is_operand_imm(operands[i].type)) &&
 				!(is_operand_moff(inst.get_operand(i)) && is_operand_moff(operands[i].type)) &&
-				!(is_operand_rel(inst.get_operand(i)) && is_operand_imm(operands[i].type))
+				!(is_operand_rel(inst.get_operand(i)) && is_operand_imm(operands[i].type)) &&
+				!(inst.get_operand(i) == OP_MEM256 && operands[i].type == OP_MEM128) // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
 			) {
 				return false;
 			}
@@ -301,9 +302,10 @@ namespace baremetal {
 		while(utility::compare_strings(instruction_db[instruction_i].get_name(), instruction_db[first].get_name()) == 0) {
 			if(is_operand_match(instruction_i, operands)) {
 				for(u8 j = 0; j < operand_i; ++j) {
+					operands[j].type = instruction_db[instruction_i].get_operand(j); // HACK: just modify all instructions to the actual type (relocations, mem256)
+
 					if(is_operand_rel(instruction_db[instruction_i].get_operand(j))) {
 						rel r = rel(static_cast<i32>(operands[j].immediate.value));
-						operands[j].type = instruction_db[instruction_i].get_operand(j);
 						operands[j].relocation = r; 
 					}
 				}
