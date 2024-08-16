@@ -1,57 +1,13 @@
 #pragma once
-#include "assembler/block.h"
+#include "assembler/instruction/instruction.h"
 #include "assembler/parser.h"
 
 #include <utility/containers/dynamic_string.h>
+#include <utility/containers/dynamic_array.h>
 
 namespace baremetal {
 	struct assembler {
 		assembler();
-
-// function generators
-// #define INST_0(index, name, empty)                  \
-//   void name() {                              \
-//     emit_instruction(index, {}, {}, {}, {}); \
-//   }
-// 
-// #define INST_1(index, name, op1)                      \
-//   void name(struct op1 destination) {                 \
-//     emit_instruction(index, destination, {}, {}, {}); \
-//   }
-// 
-// #define INST_2(index, name, op1, op2)                     \
-//   void name(struct op1 destination, struct op2 source) {  \
-//     emit_instruction(index, destination, source, {}, {}); \
-//   }
-// 
-// #define INST_3(index, name, op1, op2, op3)              \
-//   void name(struct op1 a, struct op2 b, struct op3 c) { \
-//     emit_instruction(index, a, b, c, {});               \
-//   }
-// 
-// #define INST_4(index, name, op1, op2, op3,  op4)                       \
-//   void name(struct op1 a, struct op2 b, struct op3 c, struct op4 d) {  \
-//     emit_instruction(index, a, b, c, d);                               \
-//   }
-// 
-// // select which INST_X to call based off of the variable argument count (0-2)
-// #define INST_SELECT(count) CONCATENATE(INST_, count)
-// #define INST_HELPER(count, name, ...) EXPAND(INST_SELECT(count)(name, __VA_ARGS__))
-// #define INST(index, name, ...) INST_HELPER(GET_ARG_COUNT(__VA_ARGS__), index, name, __VA_ARGS__)
-// 
-// // assembler database
-// #include "assembler/instruction/databases/assembler_database.inc"
-
-// #undef INST_0
-// #undef INST_1
-// #undef INST_2
-// #undef INST_3
-// #undef INST_4
-
-// #undef INST_SELECT
-// #undef INST_HELPER
-
-#undef INST
 
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<u8>&;
 		
@@ -93,6 +49,7 @@ namespace baremetal {
 		static auto has_sib_byte(const operand* operands) -> bool;
 
 		static auto get_instruction_rex(const instruction* inst, const operand* operands) -> u8;
+		static auto get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8;
 
 		enum mod_mode : u8 {
 			INDIRECT        = 0b00,

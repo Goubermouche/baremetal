@@ -644,18 +644,19 @@ namespace baremetal {
 		m_bytes.push_back(0x62); // always the same, derived from an unused opcode
 
 		// second byte
-		// ~R  [X_______]
-		// ~X  [_X______]
-		// ~B  [__X_____]
-		// ~R' [___X____]
-		//     [____00__]
-		//     [______XX]
+		// ~R         [X_______]
+		// ~X         [_X______]
+		// ~B         [__X_____]
+		// ~R'        [___X____]
+		//            [____00__]
+		// map select [______XX]
 		u8 second = 0;
 		const u8 rex = get_instruction_rex(inst, operands);
 
 		const bool r = rex & 0b00000100;
 		const bool x = rex & 0b00000010;
 		const bool b = rex & 0b00000001;
+		const bool rr = get_mod_rm_reg(inst, operands) & 0b00001000; 
 
 		// ~R inverted REX.r
 		second |= !r << 7;
@@ -667,11 +668,20 @@ namespace baremetal {
 		second |= !b << 5;
 
 		// ~R' inverted R (reg)
-		second |= 1 << 4; // TODO
+		second |= !rr << 4;
 
-		// m1 and m0
-		second |= 1 << 1; // TODO
-		second |= 1 << 0; // TODO
+		// map_select
+		u8 map_select = 0;
+
+		switch(inst->get_ilo()) {
+			case 0x0f:   map_select = 0b01; break;
+			case 0x0f38: map_select = 0b10; break;
+			case 0x0f3a: map_select = 0b11; break;
+			default: ASSERT(false, "unknown ilo");
+		}
+
+		second |= map_select;
+
 		m_bytes.push_back(second);
 		
 		// third byte
@@ -705,7 +715,13 @@ namespace baremetal {
 		third |= 1 << 2;
 
 		// operand size and operand prefixes
-		third |= 0b00000011; // TODO
+		if(inst->get_prefix() & OPERAND_SIZE_OVERRIDE) {
+			third |= 0b00000001;
+		}
+		else {
+			ASSERT(false, "unexpected prefix\n");
+		} 
+
 		m_bytes.push_back(third);
 
 		// fourth
@@ -717,6 +733,26 @@ namespace baremetal {
 		// operand mask register (k0–k7) for vector instructions                          [_____XXX]
 		
 		u8 fourth = 0;
+
+		// operand size and type
+		u8 ll = 0;
+
+		if(inst->get_ops() == OPS_128) {
+			ll = 0b00000010;
+		}
+		else if(inst->get_ops() == OPS_256) {
+			ll = 0b00000001;
+		}
+		else {
+			ASSERT(false, "unepxected operand size\n");
+		}
+
+
+
+		fourth |= ll << 5;
+
+
+
 		m_bytes.push_back(fourth); // TODO
 	}
 
@@ -735,6 +771,10 @@ namespace baremetal {
 	}
 
 	void assembler::emit_instruction_prefix(const instruction* inst) {
+		if(inst->is_vex() || inst->is_evex()) {
+			return;
+		}
+
 		if(inst->has_prefix() == false) {
 			return; // no prefix
 		}
@@ -1164,6 +1204,46 @@ namespace baremetal {
 		return 0b01;
 	}
 
+	auto assembler::get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8 {
+		auto [rx, destination] = find_rex_pair(inst, operands);
+
+		if(inst->has_variant()) {
+			rx = inst->get_variant();
+		}
+
+		// mod rm / sib byte
+		if(inst->is_r() || is_operand_mem(operands[0].type) || is_operand_mem(operands[1].type) || is_operand_mem(operands[2].type)) {
+			if(is_operand_mem(operands[0].type)) {
+				// 32 bit displacement
+				if(inst->is_ext()) {
+					return inst->get_ext();
+				}
+				else {
+					return rx;
+				}
+			}
+			else if(is_operand_mem(operands[1].type)) {
+				return rx;
+			}
+			else if(is_operand_mem(operands[2].type)) {
+				return rx;
+			}
+			else {
+				if(inst->get_direction()) {
+					return rx;
+				}
+				else {
+					return destination;
+				}
+			}
+		}
+		else if(inst->is_ext()) {
+			return inst->get_ext();
+		}
+
+		return 0;
+	} 
+
 	auto assembler::get_instruction_rex(const instruction* inst, const operand* operands) -> u8 {
 		// THIS IS UNCHECKED, MAYBE WE'LL HAVE TO RETURN 0
 		const bool is_rexw = inst->is_rexw();
@@ -1480,7 +1560,7 @@ namespace baremetal {
 		// registers 8 - 16 extended registers
 
 		// mod  [XX______] (addressing mode)
-		// rx   [__XXX___]
+		// reg  [__XXX___]
 		// rm   [_____XXX]
 
 		return static_cast<u8>((rm & 7) | ((rx & 7) << 3) | (mod << 6));
