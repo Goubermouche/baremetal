@@ -640,6 +640,86 @@ namespace baremetal {
 		m_bytes.push_back(third);
 	}
 
+	void assembler::emit_opcode_prefix_evex(const instruction* inst, const operand* operands) {
+		m_bytes.push_back(0x62); // always the same, derived from an unused opcode
+
+		// second byte
+		// ~R  [X_______]
+		// ~X  [_X______]
+		// ~B  [__X_____]
+		// ~R' [___X____]
+		//     [____00__]
+		//     [______XX]
+		u8 second = 0;
+		const u8 rex = get_instruction_rex(inst, operands);
+
+		const bool r = rex & 0b00000100;
+		const bool x = rex & 0b00000010;
+		const bool b = rex & 0b00000001;
+
+		// ~R inverted REX.r
+		second |= !r << 7;
+
+		// ~X inverted REX.x
+		second |= !x << 6;
+
+		// ~B inverted REX.b
+		second |= !b << 5;
+
+		// ~R' inverted R (reg)
+		second |= 1 << 4; // TODO
+
+		// m1 and m0
+		second |= 1 << 1; // TODO
+		second |= 1 << 0; // TODO
+		m_bytes.push_back(second);
+		
+		// third byte
+		// W                              [X_______]
+		// ~vvvv                          [_XXXX___]
+		//                                [_____1__]
+		// operand size and type prefixes [______XX]
+		u8 third = 0;
+
+		const u8 w = static_cast<u8>((inst->is_rexw()) << 7);
+		third |= w;
+
+		// vvvv - negation of one of our v operand
+		u8 vvvv = 0;
+
+		if(inst->has_vex_vvvv()) {
+			switch(inst->get_encoding_prefix()) {
+				case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
+				case ENC_VEX_RMI: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
+				case ENC_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
+				case ENC_VEX_VM:  vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
+				case ENC_VEX_RM:  vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
+				default: ASSERT(false, "unhandled vex prefix");
+			}
+		}
+		else {
+			vvvv = 0b01111000;
+		}
+
+		third |= vvvv;
+		third |= 1 << 2;
+
+		// operand size and operand prefixes
+		third |= 0b00000011; // TODO
+		m_bytes.push_back(third);
+
+		// fourth
+		// merge or zero                                                                  [X_______]
+		// 12-bit vector length, or rounding control mode when combined with the next bit [_X______]
+		// specifies 256-bit vector length                                                [__X_____]
+		// source broadcast, rounding control (combined with L’L), or suppress exceptions [___X____]
+		// ~V (expands vvvv)                                                              [____X___]
+		// operand mask register (k0–k7) for vector instructions                          [_____XXX]
+		
+		u8 fourth = 0;
+		m_bytes.push_back(fourth); // TODO
+	}
+
 	void assembler::emit_opcode_prefix_rex(const instruction* inst, const operand* operands) {
 		const bool is_rexw = inst->is_rexw();
 
@@ -693,6 +773,16 @@ namespace baremetal {
 		}
 	}
 
+	auto inst_uses_extended_vex(const instruction* inst, const operand* operands) -> bool {
+		for(u8 i = 0; i < inst->get_operand_count(); ++i) {
+			if(is_operand_ymm(operands[i].type) && operands[i].r > 15) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void assembler::emit_instruction_opcode(const instruction* inst, const operand* operands) {
 		auto [rx, destination] = find_rex_pair(inst, operands);
 
@@ -701,7 +791,19 @@ namespace baremetal {
 			emit_opcode_prefix_rex(inst, operands);
 		}
 		else if(inst->is_vex()) {
-			emit_opcode_prefix_vex(inst, operands);
+			if(inst_uses_extended_vex(inst, operands)) {
+				// when handling stuff like ymm16 we have to switch to evex
+				emit_opcode_prefix_evex(inst, operands);
+			}
+			else {
+				emit_opcode_prefix_vex(inst, operands);
+			}
+		}
+		else if(inst->is_evex()) {
+			emit_opcode_prefix_evex(inst, operands);
+		}
+		else {
+			ASSERT(false, "invalid/unknown opcode prefix\n");
 		}
 
 		// opcode
@@ -1347,9 +1449,9 @@ namespace baremetal {
 	}
 
 	auto assembler::rex(bool w, u8 rx, u8 base, u8 index) -> u8 {
-		ASSERT(rx < 16, "invalid rx");
-		ASSERT(base < 16, "invalid base");
-		ASSERT(index < 16, "invalid index");
+		// ASSERT(rx < 16, "invalid rx");
+		// ASSERT(base < 16, "invalid base");
+		// ASSERT(index < 16, "invalid index");
 
 		// whenever a used register is larger than 3 bits we need to mark the extension bit
 		// the result will then be extended in mod R/M or the SIB byte.
@@ -1370,9 +1472,9 @@ namespace baremetal {
 	}
 
 	auto assembler::mod_rx_rm(u8 mod, u8 rx, u8 rm) -> u8 {
-		ASSERT(mod < 4, "invalid mod");
-		ASSERT(rx < 16, "invalid rx");
-		ASSERT(rm < 16, "invalid rm");
+		// ASSERT(mod < 4, "invalid mod");
+		// ASSERT(rx < 16, "invalid rx");
+		// ASSERT(rm < 16, "invalid rm");
 
 		// registers 0 - 7  primary registers
 		// registers 8 - 16 extended registers

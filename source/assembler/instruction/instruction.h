@@ -223,6 +223,9 @@ namespace baremetal {
 				default: return false;
 			}
 		}
+		constexpr auto is_evex() const -> bool {
+			return false;
+		}
 
 		constexpr auto is_rex() const -> bool {
 			switch(get_encoding_prefix()) {

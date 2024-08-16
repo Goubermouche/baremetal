@@ -78,6 +78,7 @@ namespace baremetal {
 		// opcode prefixes
 		void emit_opcode_prefix_rex(const instruction* inst, const operand* operands);
 		void emit_opcode_prefix_vex(const instruction* inst, const operand* operands);
+		void emit_opcode_prefix_evex(const instruction* inst, const operand* operands);
 
 		void emit_opcode_prefix_rex_mem(const mem& memory);
 

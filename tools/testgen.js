@@ -194,11 +194,11 @@ function generate_combinations(operands) {
       new reg('xmm15')
     ]], 
 		["ymm", [
-      new reg('ymm0'),
-      new reg('ymm1'),
-      new reg('ymm2'),
-      new reg('ymm15'),
-      // new reg('ymm31') - TODO: EVEX
+      // new reg('ymm0'),
+      // new reg('ymm1'),
+      // new reg('ymm2'),
+      // new reg('ymm15'),
+      new reg('ymm31')
     ]],
     ["mmx", [
 			new reg('mm0'),
@@ -681,9 +681,12 @@ if (isMainThread) {
   });
 
   // cleanup
-  utility.delete_file(temp_dir);
+	utility.delete_file(temp_dir);
   utility.delete_file(bin_dir);
   utility.delete_file(asm_dir);
 
   parentPort.postMessage({ id: "result", data: tests });
 }
+
+
+

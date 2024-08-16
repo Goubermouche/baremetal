@@ -128,6 +128,10 @@ namespace baremetal {
 		return op == OP_XMM;
 	}
 
+	inline auto is_operand_ymm(operand_type op) -> bool {
+		return op == OP_YMM;
+	}
+
 	inline auto is_operand_reg(operand_type op) -> bool {
 		switch(op) {
 			case OP_REG8:
