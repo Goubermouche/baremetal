@@ -49,6 +49,10 @@ namespace baremetal {
 		static auto has_sib_byte(const operand* operands) -> bool;
 
 		static auto get_instruction_rex(const instruction* inst, const operand* operands) -> u8;
+		static auto get_instruction_rex_rex(const instruction* inst, const operand* operands) -> u8;
+		static auto get_instruction_rex_vex(const instruction* inst, const operand* operands) -> u8;
+		static auto get_instruction_rex_evex(const instruction* inst, const operand* operands) -> u8;
+
 		static auto get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8;
 
 		enum mod_mode : u8 {
