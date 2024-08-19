@@ -194,10 +194,10 @@ function generate_combinations(operands) {
       new reg('xmm15')
     ]], 
 		["ymm", [
-      // new reg('ymm0'),
-      // new reg('ymm1'),
-      // new reg('ymm2'),
-      // new reg('ymm15'),
+      new reg('ymm0'),
+      new reg('ymm1'),
+      new reg('ymm2'),
+      new reg('ymm15'),
       new reg('ymm31')
     ]],
     ["mmx", [

@@ -656,7 +656,7 @@ namespace baremetal {
 		const bool r = rex & 0b00000100;
 		const bool x = rex & 0b00000010;
 		const bool b = rex & 0b00000001;
-		const bool rr = get_mod_rm_reg(inst, operands) & 0b00001000;
+		const bool rr = get_mod_rm_reg(inst, operands) & 0b00010000;
 
 		// ~R inverted REX.r
 		second |= !r << 7;
@@ -733,6 +733,19 @@ namespace baremetal {
 		// operand mask register (k0–k7) for vector instructions                          [_____XXX]
 		
 		u8 fourth = 0;
+
+		// ~V
+		bool v = true;
+
+		if(inst->has_vex_vvvv()) {
+			switch(inst->get_encoding_prefix()) {
+				case ENC_VEX_RVM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
+				default: ASSERT(false, "unhandled evex prefix");
+			}
+		}
+
+		fourth |= !v << 3;
+	
 
 		// operand size and type
 		u8 ll = 0;
@@ -1576,9 +1589,9 @@ namespace baremetal {
 						base = registers[1];
 						
 						// minor hack - when all of our registers are > 15 (ie. ymm31), we have to use an index
-						if(operands[2].r > 15) {
-							index = registers[2];
-						}
+						// if(operands[0].r > 15 && operands[1].r > 15 && operands[2].r > 15) {
+						// 	index = registers[2];
+						// }
 						break;
 					}
 					case 0b00001000:
@@ -1589,6 +1602,10 @@ namespace baremetal {
 					case 0b00000110: rx = registers[0]; base = registers[2]; break;
 					case 0b00000100: rx = registers[2]; base = registers[0]; break;
 					default: ASSERT(false, "unhandled rex case 1");
+				}
+
+				if(operands[2].r > 15) {
+					index = registers[2];
 				}
 
 				break;
