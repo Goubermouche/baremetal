@@ -90,6 +90,8 @@ parse_number:
 			case ',': get_next_char(); return current = KW_COMMA;
 			case '[': get_next_char(); return current = KW_LBRACKET;
 			case ']': get_next_char(); return current = KW_RBRACKET;
+			case '{': get_next_char(); return current = KW_LBRACE;
+			case '}': get_next_char(); return current = KW_RBRACE;
 			case '+': get_next_char(); return current = KW_PLUS;
 			case '-': get_next_char(); return current = KW_MINUS;
 			case '*': get_next_char(); return current = KW_ASTERISK;

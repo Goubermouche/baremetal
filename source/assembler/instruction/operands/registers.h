@@ -32,6 +32,12 @@ namespace baremetal {
 		reg_type type;
 	};
 
+	struct masked_reg {
+		u8 index;
+		u8 k;
+		bool z;
+	};
+
 #define REGISTER_GP_DECL(bits)                                         \
   struct reg ## bits : reg {                                           \
     constexpr reg ## bits () = default;                                \

@@ -55,6 +55,9 @@ namespace baremetal {
 		OP_REL8,
 		OP_REL16,
 		OP_REL32,
+
+		OP_XMM_K, // masked XMM reg xmm{k}{z}
+		OP_XMM_KZ, // masked XMM reg xmm{k}{z}
 	};
 
 	struct operand {
@@ -109,6 +112,7 @@ namespace baremetal {
 			imm immediate;
 			mem memory;
 			u8 r; // register
+			masked_reg mr;
 		};
 	};
 
@@ -139,6 +143,8 @@ namespace baremetal {
 			case OP_REG32:
 			case OP_REG64:
 			case OP_XMM:
+			case OP_XMM_KZ:
+			case OP_XMM_K:
 			case OP_YMM:
 			case OP_ZMM_L:
 			case OP_ZMM_H:
@@ -155,6 +161,14 @@ namespace baremetal {
 			case OP_ECX:
 			case OP_RCX:
 			case OP_BND: return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_masked(operand_type op) -> bool {
+		switch(op) {
+			case OP_XMM_K:
+			case OP_XMM_KZ: return true;
 			default: return false;
 		}
 	}
@@ -272,7 +286,9 @@ namespace baremetal {
 			case OP_RAX:
 			case OP_I64:         return 64;
 			case OP_MEM128:
-			case OP_XMM:         return 128;
+			case OP_XMM:
+			case OP_XMM_K:
+			case OP_XMM_KZ:      return 128;
 			case OP_ZMM_H:
 			case OP_MEM256:
 			case OP_YMM:         return 256;
@@ -290,6 +306,8 @@ namespace baremetal {
 			case OP_REG32:       return "r32";
 			case OP_REG64:       return "r64";
 			case OP_XMM:         return "xmm";
+			case OP_XMM_KZ:      return "xmm{k}{z}";
+			case OP_XMM_K:      return "xmm{k}";
 			case OP_MMX:         return "mmx";
 			case OP_BND:         return "bnd";
 			case OP_SREG:        return "sreg";

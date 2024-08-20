@@ -2,10 +2,12 @@
 
 #include "assembler/instruction/instruction.h"
 #include "assembler/instruction/operands/memory.h"
+#include "assembler/instruction/operands/registers.h"
 #include "instruction/operands/operands.h"
 #include "assembler/parser.h"
 #include "parser.h"
 #include "utility/containers/dynamic_string.h"
+#include "utility/containers/map.h"
 #include "utility/system/console.h"
 
 #include <utility/algorithms/sort.h>
@@ -59,10 +61,10 @@ namespace baremetal {
 		}
 	}
 
-#define PARSER_VERIFY(expected)                  \
-  if(m_lex.current != expected) {                \
-    utility::console::print("{}\n", m_assembly); \
-    return false;                                \
+#define PARSER_VERIFY(expected)																						 \
+  if(m_lex.current != expected) {                                 				 \
+    utility::console::print("unexpected token: {}\n", (i32)m_lex.current); \
+    return false;                                                          \
   }
 
 #define PARSER_EXIT()                            \
@@ -77,6 +79,42 @@ namespace baremetal {
 			case 8: return  SCALE_8;
 			default: utility::console::print_err("invalid memory scale specified\n"); return SCALE_NONE;
 		}
+	}
+
+	auto assembler::parse_mask_reg(operand& op) -> bool {
+		if(m_lex.get_next_token() == KW_LBRACE) {
+			m_lex.get_next_token();
+			
+			char c = m_lex.current_string[0];
+
+			switch(c) {
+				case 'k': {
+					ASSERT(m_lex.current_string.get_size() == 2, "invalid mask register specified\n");
+					char* end;
+					op.mr.k  = static_cast<u8>(strtoul(m_lex.current_string.get_data() + 1, &end, 10));
+					ASSERT(op.mr.k < 8, "invalid mask register specified\n");
+
+					op.type = OP_XMM_K;
+
+					break;
+				}
+				case 'z': {
+					ASSERT(m_lex.current_string.get_size() == 1, "invalid mask register specified\n");
+					op.mr.z = true;
+					op.type = OP_XMM_KZ; // this only seems to be used with 'k'
+					break;
+				}
+
+				default: utility::console::print_err("unknown mask register specified\n"); return false;
+			}
+
+			m_lex.get_next_token();
+			PARSER_VERIFY(KW_RBRACE);
+
+			return true;
+		}
+
+		return false;
 	}
 
 	auto assembler::parse_memory(mem& memory) -> bool {
@@ -229,14 +267,26 @@ namespace baremetal {
 		while(m_lex.get_next_token() != KW_EOF) {
 			switch (m_lex.current) {
 				// registers
-				case KW_CR0 ... KW_R15B: operands[operand_i++] = operand(keyword_to_register(m_lex.current)); break;
+				case KW_CR0 ... KW_R15B: { 
+					operands[operand_i] = operand(keyword_to_register(m_lex.current));
+					
+					while(parse_mask_reg(operands[operand_i])) {}
+
+					operand_i++;
+					break;
+				}
 				// numerical literals
-				case KW_NUMBER:          operands[operand_i++] = operand(m_lex.current_immediate); break;
+				case KW_NUMBER: {
+					operands[operand_i++] = operand(m_lex.current_immediate);
+					m_lex.get_next_token();
+					break;
+				}
 				case KW_MINUS: {
 					m_lex.get_next_token();
 					PARSER_VERIFY(KW_NUMBER);
 
 					operands[operand_i++] = operand(imm(-static_cast<i64>(m_lex.current_immediate.value)));
+					m_lex.get_next_token();
 					break;
 				}
 				case KW_LBRACKET: {
@@ -261,6 +311,8 @@ namespace baremetal {
 							break;
 						}
 					}
+
+					m_lex.get_next_token();
 					break;
 				}
 				// memory operands
@@ -286,20 +338,23 @@ namespace baremetal {
 					PARSER_VERIFY(KW_RBRACKET);
 
 					operands[operand_i++] = memory;
+
+					m_lex.get_next_token();
 					break;
 				}
 				default: PARSER_EXIT();
 			};
 
-			if(m_lex.get_next_token() != KW_COMMA) {
+			if(m_lex.current != KW_COMMA) {
 				break;
 			}
 		}
 
 		u32 instruction_i = first;
+		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
 
 		// locate the specific variant (dumb linear search)
-		while(utility::compare_strings(instruction_db[instruction_i].get_name(), instruction_db[first].get_name()) == 0) {
+		while(instruction_i < db_size && utility::compare_strings(instruction_db[instruction_i].get_name(), instruction_db[first].get_name()) == 0) {
 			if(is_operand_match(instruction_i, operands)) {
 				for(u8 j = 0; j < operand_i; ++j) {
 					operands[j].type = instruction_db[instruction_i].get_operand(j); // HACK: just modify all instructions to the actual type (relocations, mem256)
@@ -348,10 +403,11 @@ namespace baremetal {
 	}
 
 	auto assembler::find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8> {
-		if(inst->is_vex()) {
+		if(inst->is_vex() || inst->is_evex()) {
 			std::pair<u8, u8> result = { 0, 0 };
 
 			switch(inst->get_encoding_prefix()) {
+				case ENC_EVEX_RVM:
 				case ENC_VEX_RVM: {
 					result.first = operands[0].r;
 					result.second = operands[2].r;
@@ -640,6 +696,27 @@ namespace baremetal {
 		m_bytes.push_back(third);
 	}
 
+
+	auto get_masked_operand(const instruction* inst, const operand* operands) -> masked_reg {
+		for(u8 i = 0; i < inst->get_operand_count(); ++i) {
+			if(is_operand_masked(operands[i].type)) {
+				return operands[i].mr;
+			}
+		}
+
+		return {};
+	}
+
+	auto has_masked_operand(const instruction* inst, const operand* operands) -> bool {
+		for(u8 i = 0; i < inst->get_operand_count(); ++i) {
+			if(is_operand_masked(operands[i].type)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	void assembler::emit_opcode_prefix_evex(const instruction* inst, const operand* operands) {
 		m_bytes.push_back(0x62); // always the same, derived from an unused opcode
 
@@ -699,6 +776,7 @@ namespace baremetal {
 
 		if(inst->has_vex_vvvv()) {
 			switch(inst->get_encoding_prefix()) {
+				case ENC_EVEX_RVM:		
 				case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 				case ENC_VEX_RMI: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
 				case ENC_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
@@ -739,28 +817,39 @@ namespace baremetal {
 
 		if(inst->has_vex_vvvv()) {
 			switch(inst->get_encoding_prefix()) {
+				case ENC_EVEX_RVM:
 				case ENC_VEX_RVM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
 				default: ASSERT(false, "unhandled evex prefix");
 			}
 		}
 
 		fourth |= !v << 3;
-	
 
-		// operand size and type
-		u8 ll = 0;
+		if(has_masked_operand(inst, operands)) {
+			masked_reg r = get_masked_operand(inst, operands);
 
-		if(inst->get_ops() == OPS_128) {
-			ll = 0b00000010;
-		}
-		else if(inst->get_ops() == OPS_256) {
-			ll = 0b00000001;
+			// merge or zero
+			fourth |= (r.z & 0b00000001) << 7;
+
+			// operand mask register
+			fourth |= r.k;
 		}
 		else {
-			ASSERT(false, "unepxected operand size\n");
-		}
+			// operand size and type
+			u8 ll = 0;
 
-		fourth |= ll << 5;
+			if(inst->get_ops() == OPS_128) {
+				ll = 0b00000010;
+			}
+			else if(inst->get_ops() == OPS_256) {
+				ll = 0b00000001;
+			}
+			else {
+				ASSERT(false, "unepxected operand size\n");
+			}
+
+			fourth |= ll << 5;
+		}
 
 		m_bytes.push_back(fourth);
 	}
@@ -1582,7 +1671,8 @@ namespace baremetal {
 
 				break;
 			}
-			case ENC_VEX_RVM: {
+			case ENC_VEX_RVM:
+			case ENC_EVEX_RVM: {
 				switch(index_byte) {
 					case 0b00001110: {
 						rx = registers[0]; 

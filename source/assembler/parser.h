@@ -195,9 +195,12 @@ namespace baremetal {
 		KW_DWORD,
 		KW_QWORD,
 
+		// special characters
 		KW_EOF,
-		KW_LBRACKET,
-		KW_RBRACKET,
+		KW_LBRACKET, // [ 
+		KW_RBRACKET, // ]
+		KW_LBRACE,   // {
+		KW_RBRACE,   // }
 		KW_PLUS,
 		KW_MINUS,
 		KW_ASTERISK,

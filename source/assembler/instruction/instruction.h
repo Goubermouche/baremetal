@@ -69,6 +69,9 @@ namespace baremetal {
 		ENC_VEX_VM       = 0b00001010,
 		ENC_VEX_RM       = 0b00001100,
 		ENC_VEX_RMI      = 0b00001110,
+
+		// evex
+		ENC_EVEX_RVM     = 0b00010000,
 	};
 
 	enum instruction_extension : u32 {
@@ -224,7 +227,10 @@ namespace baremetal {
 			}
 		}
 		constexpr auto is_evex() const -> bool {
-			return false;
+			switch(get_encoding_prefix()) {
+				case ENC_EVEX_RVM: return true;
+				default: return false;
+			}
 		}
 
 		constexpr auto is_rex() const -> bool {

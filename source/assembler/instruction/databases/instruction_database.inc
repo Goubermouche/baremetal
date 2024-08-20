@@ -1932,6 +1932,7 @@ INST(vaeskeygenassist , 0x0000DF, EXT_R              , PREFIX_NONE              
 INST(vaeskeygenassist , 0x0000DF, EXT_R              , PREFIX_NONE                  , 65535, NORMAL , ENC_VEX_RMI | ENC_VEX_NO_VVVV, 66  , 0x0F3A, 8, 128, IEX_NONE, XMM        , MEM128     , I8        )
 INST(vgf2p8affineinvqb, 0x0000CF, EXT_R | EXT_REXW   , OPERAND_SIZE_OVERRIDE        , 65535, NORMAL , ENC_VEX_RVM                  , 66  , 0x0F3A, 8, 128, IEX_NONE, XMM        , XMM        , XMM   , I8)
 INST(vgf2p8affineinvqb, 0x0000CF, EXT_R | EXT_REXW   , OPERAND_SIZE_OVERRIDE        , 65535, NORMAL , ENC_VEX_RVM                  , 66  , 0x0F3A, 8, 128, IEX_NONE, XMM        , XMM        , MEM128, I8)
+INST(vgf2p8affineinvqb, 0x0000CF, EXT_R | EXT_REXW   , OPERAND_SIZE_OVERRIDE        , 65535, NORMAL , ENC_EVEX_RVM                 , 66  , 0x0F3A, 8, 128, IEX_NONE, XMM_KZ     , XMM        , XMM   , I8)
 INST(vgf2p8affineinvqb, 0x0000CF, EXT_R | EXT_REXW   , OPERAND_SIZE_OVERRIDE        , 65535, NORMAL , ENC_VEX_RVM                  , 66  , 0x0F3A, 8, 256, IEX_NONE, YMM        , YMM        , YMM   , I8)
 INST(vgf2p8affineinvqb, 0x0000CF, EXT_R | EXT_REXW   , OPERAND_SIZE_OVERRIDE        , 65535, NORMAL , ENC_VEX_RVM                  , 66  , 0x0F3A, 8, 256, IEX_NONE, YMM        , YMM        , MEM256, I8)
 INST(vgf2p8affineqb   , 0x0000CE, EXT_R | EXT_REXW   , OPERAND_SIZE_OVERRIDE        , 65535, NORMAL , ENC_VEX_RVM                  , 66  , 0x0F3A, 8, 128, IEX_NONE, XMM        , XMM        , XMM   , I8)
