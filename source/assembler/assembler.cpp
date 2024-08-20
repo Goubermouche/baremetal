@@ -94,14 +94,20 @@ namespace baremetal {
 					op.mr.k  = static_cast<u8>(strtoul(m_lex.current_string.get_data() + 1, &end, 10));
 					ASSERT(op.mr.k < 8, "invalid mask register specified\n");
 
-					op.type = OP_XMM_K;
+					if(is_operand_xmm(op.type)) { op.type = OP_XMM_K; }
+					else if(is_operand_ymm(op.type)) { op.type = OP_YMM_K; }
+					else if(is_operand_zmm(op.type)) { op.type = OP_ZMM_K; }
 
 					break;
 				}
 				case 'z': {
 					ASSERT(m_lex.current_string.get_size() == 1, "invalid mask register specified\n");
 					op.mr.z = true;
-					op.type = OP_XMM_KZ; // this only seems to be used with 'k'
+
+					if(is_operand_xmm(op.type)) { op.type = OP_XMM_KZ; }
+					else if(is_operand_ymm(op.type)) { op.type = OP_YMM_KZ; }
+					else if(is_operand_zmm(op.type)) { op.type = OP_ZMM_KZ; }
+
 					break;
 				}
 
@@ -833,6 +839,14 @@ namespace baremetal {
 
 			// operand mask register
 			fourth |= r.k;
+
+			// operand size and type
+			if(inst->get_ops() == OPS_256) {
+				fourth |= 0b00100000;
+			}
+			else if(inst->get_ops() == OPS_512) {
+				fourth |= 0b01000000;
+			}
 		}
 		else {
 			// operand size and type

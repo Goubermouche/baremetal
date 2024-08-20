@@ -146,7 +146,8 @@ namespace baremetal {
 		OPS_32,
 		OPS_64,
 		OPS_128,
-		OPS_256
+		OPS_256,
+		OPS_512,
 	};
 
 #pragma pack(push, 1)

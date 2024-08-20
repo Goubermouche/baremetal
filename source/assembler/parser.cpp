@@ -143,38 +143,38 @@ parse_number:
 			case KW_MM6: return mmx(6);
 			case KW_MM7: return mmx(7);
 
-			case KW_ZMM0: return zmm(0, REG_ZMM_L);
-			case KW_ZMM1: return zmm(1, REG_ZMM_L);
-			case KW_ZMM2: return zmm(2, REG_ZMM_L);
-			case KW_ZMM3: return zmm(3, REG_ZMM_L);
-			case KW_ZMM4: return zmm(4, REG_ZMM_L);
-			case KW_ZMM5: return zmm(5, REG_ZMM_L);
-			case KW_ZMM6: return zmm(6, REG_ZMM_L);
-			case KW_ZMM7: return zmm(7, REG_ZMM_L);
-			case KW_ZMM8: return zmm(8, REG_ZMM_L);
-			case KW_ZMM9: return zmm(9, REG_ZMM_L);
-			case KW_ZMM10: return zmm(10, REG_ZMM_L);
-			case KW_ZMM11: return zmm(11, REG_ZMM_L);
-			case KW_ZMM12: return zmm(12, REG_ZMM_L);
-			case KW_ZMM13: return zmm(13, REG_ZMM_L);
-			case KW_ZMM14: return zmm(14, REG_ZMM_L);
-			case KW_ZMM15: return zmm(15, REG_ZMM_L);
-			case KW_ZMM16: return zmm(16, REG_ZMM_H);
-			case KW_ZMM17: return zmm(17, REG_ZMM_H);
-			case KW_ZMM18: return zmm(18, REG_ZMM_H);
-			case KW_ZMM19: return zmm(19, REG_ZMM_H);
-			case KW_ZMM20: return zmm(20, REG_ZMM_H);
-			case KW_ZMM21: return zmm(21, REG_ZMM_H);
-			case KW_ZMM22: return zmm(22, REG_ZMM_H);
-			case KW_ZMM23: return zmm(23, REG_ZMM_H);
-			case KW_ZMM24: return zmm(24, REG_ZMM_H);
-			case KW_ZMM25: return zmm(25, REG_ZMM_H);
-			case KW_ZMM26: return zmm(26, REG_ZMM_H);
-			case KW_ZMM27: return zmm(27, REG_ZMM_H);
-			case KW_ZMM28: return zmm(28, REG_ZMM_H);
-			case KW_ZMM29: return zmm(29, REG_ZMM_H);
-			case KW_ZMM30: return zmm(30, REG_ZMM_H);
-			case KW_ZMM31: return zmm(31, REG_ZMM_H);
+			case KW_ZMM0: return zmm(0, REG_ZMM);
+			case KW_ZMM1: return zmm(1, REG_ZMM);
+			case KW_ZMM2: return zmm(2, REG_ZMM);
+			case KW_ZMM3: return zmm(3, REG_ZMM);
+			case KW_ZMM4: return zmm(4, REG_ZMM);
+			case KW_ZMM5: return zmm(5, REG_ZMM);
+			case KW_ZMM6: return zmm(6, REG_ZMM);
+			case KW_ZMM7: return zmm(7, REG_ZMM);
+			case KW_ZMM8: return zmm(8, REG_ZMM);
+			case KW_ZMM9: return zmm(9, REG_ZMM);
+			case KW_ZMM10: return zmm(10, REG_ZMM);
+			case KW_ZMM11: return zmm(11, REG_ZMM);
+			case KW_ZMM12: return zmm(12, REG_ZMM);
+			case KW_ZMM13: return zmm(13, REG_ZMM);
+			case KW_ZMM14: return zmm(14, REG_ZMM);
+			case KW_ZMM15: return zmm(15, REG_ZMM);
+			case KW_ZMM16: return zmm(16, REG_ZMM);
+			case KW_ZMM17: return zmm(17, REG_ZMM);
+			case KW_ZMM18: return zmm(18, REG_ZMM);
+			case KW_ZMM19: return zmm(19, REG_ZMM);
+			case KW_ZMM20: return zmm(20, REG_ZMM);
+			case KW_ZMM21: return zmm(21, REG_ZMM);
+			case KW_ZMM22: return zmm(22, REG_ZMM);
+			case KW_ZMM23: return zmm(23, REG_ZMM);
+			case KW_ZMM24: return zmm(24, REG_ZMM);
+			case KW_ZMM25: return zmm(25, REG_ZMM);
+			case KW_ZMM26: return zmm(26, REG_ZMM);
+			case KW_ZMM27: return zmm(27, REG_ZMM);
+			case KW_ZMM28: return zmm(28, REG_ZMM);
+			case KW_ZMM29: return zmm(29, REG_ZMM);
+			case KW_ZMM30: return zmm(30, REG_ZMM);
+			case KW_ZMM31: return zmm(31, REG_ZMM);
 
 			case KW_YMM0:  return ymm(0);
 			case KW_YMM1:  return ymm(1);
@@ -341,7 +341,7 @@ parse_number:
 			{ "mm5",   KW_MM5,   },
 			{ "mm6",   KW_MM6,   },
 			{ "mm7",   KW_MM7,   },
-			{ "zmmi0", KW_ZMM0,  },
+			{ "zmm0",  KW_ZMM0,  },
 			{ "zmm1",  KW_ZMM1,  },
 			{ "zmm2",  KW_ZMM2,  },
 			{ "zmm3",  KW_ZMM3,  },

@@ -196,6 +196,16 @@ function generate_combinations(operands) {
       reg.mask_kz('xmm1', 'k1', 'z'),
       reg.mask_kz('xmm2', 'k2', 'z'),
       reg.mask_kz('xmm15', 'k7', 'z')
+    ]],
+		["ymm_kz", [
+      reg.mask_kz('ymm1', 'k1', 'z'),
+      reg.mask_kz('ymm2', 'k2', 'z'),
+      reg.mask_kz('ymm15', 'k7', 'z')
+    ]],
+		["zmm_kz", [
+      reg.mask_kz('zmm1', 'k1', 'z'),
+      reg.mask_kz('zmm2', 'k2', 'z'),
+      reg.mask_kz('zmm15', 'k7', 'z')
     ]],  
 		["ymm", [
       reg.normal('ymm0'),
@@ -203,6 +213,13 @@ function generate_combinations(operands) {
       reg.normal('ymm2'),
       reg.normal('ymm15'),
       reg.normal('ymm31')
+    ]],
+		["zmm", [
+      reg.normal('zmm0'),
+      reg.normal('zmm1'),
+      reg.normal('zmm2'),
+      reg.normal('zmm15'),
+      reg.normal('zmm31')
     ]],
     ["mmx", [
 			reg.normal('mm0'),
@@ -468,6 +485,29 @@ function generate_combinations(operands) {
     	mem.base_index_offset_scale(256, 'r15', 'rax', '0xFFFF', "8"),
     	mem.base_index_offset_scale(256, 'rsp', 'r15', '0xFFFF', "8"),
     	mem.base_index_offset_scale(256, 'r14', 'r15', '0xFFFF', "8"),
+    ]],
+		["mem256", [
+			mem.absolute(512, '0x0'),
+    	mem.absolute(512, '0xFF'),
+    	mem.absolute(512, '0xFFFF'),
+    	mem.rip_relative(512, '0x0'),
+    	mem.rip_relative(512, '0xFF'),
+    	mem.rip_relative(512, '0xFFFF'),
+    	mem.register_indirect(512, 'rax'),
+    	mem.base_offset(512, 'rax', '0x0'),
+    	mem.base_offset(512, 'rax', '0xFFFF'),
+    	mem.base_offset(512, 'r15', '0xFFFF'),
+    	mem.base_index_offset(512, 'rax', 'rsi', '0x0'),
+    	mem.base_index_offset(512, 'rax', 'rsi', '0xFFFF'),
+    	mem.base_index_offset(512, 'r15', 'rsi', '0xFFFF'),
+    	mem.base_index_offset(512, 'rax', 'r15', '0xFFFF'),
+    	mem.base_index_offset_scale(512, 'rax', 'rsi', '0xFFFF', "2"),
+    	mem.base_index_offset_scale(512, 'rax', 'rsi', '0xFFFF', "4"),
+    	mem.base_index_offset_scale(512, 'rax', 'rsi', '0xFFFF', "8"),
+    	mem.base_index_offset_scale(512, 'rsp', 'rax', '0xFFFF', "8"),
+    	mem.base_index_offset_scale(512, 'r15', 'rax', '0xFFFF', "8"),
+    	mem.base_index_offset_scale(512, 'rsp', 'r15', '0xFFFF', "8"),
+    	mem.base_index_offset_scale(512, 'r14', 'r15', '0xFFFF', "8"),
     ]],
     ["rel8", [
       new rel(0),

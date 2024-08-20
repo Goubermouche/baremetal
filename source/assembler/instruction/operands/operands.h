@@ -13,8 +13,7 @@ namespace baremetal {
 		OP_MMX,
 		OP_XMM,
 		OP_YMM,
-		OP_ZMM_L, // zmm0-zmm15
-		OP_ZMM_H, // zmm16-zmm31
+		OP_ZMM,
 		OP_SREG,  // segment registers
 		OP_DREG,  // debug registers
 		OP_CREG,  // control registers
@@ -28,6 +27,7 @@ namespace baremetal {
 		OP_MEM64,
 		OP_MEM128,
 		OP_MEM256,
+		OP_MEM512,
 
 		// immediates
 		OP_I8,
@@ -56,8 +56,12 @@ namespace baremetal {
 		OP_REL16,
 		OP_REL32,
 
-		OP_XMM_K, // masked XMM reg xmm{k}{z}
+		OP_XMM_K, // masked XMM reg xmm{k}
 		OP_XMM_KZ, // masked XMM reg xmm{k}{z}
+		OP_YMM_K, // masked YMM reg xmm{k}
+		OP_YMM_KZ, // masked YMM reg xmm{k}{z}
+		OP_ZMM_K, // masked ZMM reg xmm{k}
+		OP_ZMM_KZ, // masked ZMM reg xmm{k}{z}
 	};
 
 	struct operand {
@@ -73,24 +77,9 @@ namespace baremetal {
 		static_assert(static_cast<u8>(REG_GP_64) == static_cast<u8>(OP_REG64));
 		static_assert(static_cast<u8>(REG_XMM) == static_cast<u8>(OP_XMM));
 		static_assert(static_cast<u8>(REG_YMM) == static_cast<u8>(OP_YMM));
-		static_assert(static_cast<u8>(REG_ZMM_L) == static_cast<u8>(OP_ZMM_L));
-		static_assert(static_cast<u8>(REG_ZMM_H) == static_cast<u8>(OP_ZMM_H));
-		static_assert(static_cast<u8>(REG_BND) == static_cast<u8>(OP_BND));
 		static_assert(static_cast<u8>(REG_MMX) == static_cast<u8>(OP_MMX));
-		static_assert(static_cast<u8>(REG_SREG) == static_cast<u8>(OP_SREG));
-		static_assert(static_cast<u8>(REG_DREG) == static_cast<u8>(OP_DREG));
-		static_assert(static_cast<u8>(REG_CREG) == static_cast<u8>(OP_CREG));
 
-		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {
-			//if(r.type == rax.type && r.index == rax.index) { type = OP_RAX; }
-			//else if(r.type == eax.type && r.index == eax.index) { type = OP_EAX; }
-			//else if(r.type == al.type && r.index == al.index) { type = OP_AL; }
-			//else if(r.type == ax.type && r.index == ax.index) { type = OP_AX; }
-			//else if(r.type == cl.type && r.index == cl.index) { type = OP_CL; }
-			//else if(r.type == dx.type && r.index == dx.index) { type = OP_DX; }
-			//else if(r.type == ecx.type && r.index == ecx.index) { type = OP_ECX; }
-			//else if(r.type == rcx.type && r.index == rcx.index) { type = OP_RCX; }
-		}
+		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
 
 		// memory
 		constexpr operand(mem_address m) : type(OP_MEM_ADDRESS), memory(m) {}
@@ -129,11 +118,15 @@ namespace baremetal {
 	}
 
 	inline auto is_operand_xmm(operand_type op) -> bool {
-		return op == OP_XMM;
+		return op == OP_XMM || op == OP_XMM_K || op == OP_XMM_KZ;
 	}
 
 	inline auto is_operand_ymm(operand_type op) -> bool {
-		return op == OP_YMM;
+		return op == OP_YMM || op == OP_YMM_KZ || op == OP_YMM_K;
+	}
+
+	inline auto is_operand_zmm(operand_type op) -> bool {
+		return op == OP_ZMM || op == OP_ZMM_K || op == OP_ZMM_KZ;
 	}
 
 	inline auto is_operand_reg(operand_type op) -> bool {
@@ -146,8 +139,11 @@ namespace baremetal {
 			case OP_XMM_KZ:
 			case OP_XMM_K:
 			case OP_YMM:
-			case OP_ZMM_L:
-			case OP_ZMM_H:
+			case OP_YMM_K:
+			case OP_YMM_KZ:
+			case OP_ZMM:
+			case OP_ZMM_K:
+			case OP_ZMM_KZ:
 			case OP_MMX:
 			case OP_SREG:
 			case OP_DREG:
@@ -167,6 +163,10 @@ namespace baremetal {
 
 	inline auto is_operand_masked(operand_type op) -> bool {
 		switch(op) {
+			case OP_ZMM_K:
+			case OP_ZMM_KZ:
+			case OP_YMM_K:
+			case OP_YMM_KZ:
 			case OP_XMM_K:
 			case OP_XMM_KZ: return true;
 			default: return false;
@@ -191,7 +191,8 @@ namespace baremetal {
 			case OP_MEM32:
 			case OP_MEM64:
 			case OP_MEM128:
-			case OP_MEM256:  return true;
+			case OP_MEM256:
+			case OP_MEM512:  return true;
 			default: return false;
 		}
 	}
@@ -289,10 +290,14 @@ namespace baremetal {
 			case OP_XMM:
 			case OP_XMM_K:
 			case OP_XMM_KZ:      return 128;
-			case OP_ZMM_H:
 			case OP_MEM256:
+			case OP_YMM_K:         
+			case OP_YMM_KZ:         
 			case OP_YMM:         return 256;
-			case OP_ZMM_L:       return 512;
+			case OP_ZMM_K:
+			case OP_ZMM_KZ:
+			case OP_MEM512:
+			case OP_ZMM:       return 512;
 		}
 
 		return 0; // unreachable
@@ -320,6 +325,7 @@ namespace baremetal {
 			case OP_MEM64:       return "m64";
 			case OP_MEM128:      return "m128";
 			case OP_MEM256:      return "m256";
+			case OP_MEM512:      return "m512";
 			case OP_I8:          return "i8";
 			case OP_I16:         return "i16";
 			case OP_I32:         return "i32";
@@ -340,8 +346,11 @@ namespace baremetal {
 			case OP_REL16:       return "rel16";
 			case OP_REL32:       return "rel32";
 			case OP_YMM:         return "ymm";
-			case OP_ZMM_L:       
-			case OP_ZMM_H:       return "zmm";
+			case OP_YMM_K:       return "ymm{k}";
+			case OP_YMM_KZ:      return "ymm{k}{z}";
+			case OP_ZMM:         return "zmm";
+			case OP_ZMM_K:       return "zmm{k}";
+			case OP_ZMM_KZ:      return "zmm{k}{z}";
 		}
 
 		return "unknown";

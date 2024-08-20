@@ -13,8 +13,7 @@ namespace baremetal {
 		REG_MMX,
 		REG_XMM,
 		REG_YMM,
-		REG_ZMM_L, // zmm0-zmm15
-		REG_ZMM_H, // zmm16-zmm31
+		REG_ZMM,
 		REG_SREG, // segment registers
 		REG_DREG, // debug registers
 		REG_CREG, // control registers
@@ -136,18 +135,11 @@ namespace baremetal {
                                              \
   static inline constexpr name name;
 
-#define REGISTER_CLASS_ZMM_L_DECL(name, index)  \
-  struct name : zmm {                           \
-    constexpr name() : zmm(index, REG_ZMM_L) {} \
-  };                                            \
-                                                \
-  static inline constexpr name name;
-
-#define REGISTER_CLASS_ZMM_H_DECL(name, index)  \
-  struct name : zmm {                           \
-    constexpr name() : zmm(index, REG_ZMM_H) {} \
-  };                                            \
-                                                \
+#define REGISTER_CLASS_ZMM_DECL(name, index)  \
+  struct name : zmm {                         \
+    constexpr name() : zmm(index, REG_ZMM) {} \
+  };                                          \
+                                              \
   static inline constexpr name name;
 
 #define REGISTER_CLASS_BND_DECL(name, index) \
@@ -240,38 +232,38 @@ namespace baremetal {
 	REGISTER_CLASS_MMX_DECL(mm7, 7);
 
 	// zmm registers
-	REGISTER_CLASS_ZMM_L_DECL(zmm0, 0);
-	REGISTER_CLASS_ZMM_L_DECL(zmm1, 1);
-	REGISTER_CLASS_ZMM_L_DECL(zmm2, 2);
-	REGISTER_CLASS_ZMM_L_DECL(zmm3, 3);
-	REGISTER_CLASS_ZMM_L_DECL(zmm4, 4);
-	REGISTER_CLASS_ZMM_L_DECL(zmm5, 5);
-	REGISTER_CLASS_ZMM_L_DECL(zmm6, 6);
-	REGISTER_CLASS_ZMM_L_DECL(zmm7, 7);
-	REGISTER_CLASS_ZMM_L_DECL(zmm8, 8);
-	REGISTER_CLASS_ZMM_L_DECL(zmm9, 9);
-	REGISTER_CLASS_ZMM_L_DECL(zmm10, 10);
-	REGISTER_CLASS_ZMM_L_DECL(zmm11, 11);
-	REGISTER_CLASS_ZMM_L_DECL(zmm12, 12);
-	REGISTER_CLASS_ZMM_L_DECL(zmm13, 13);
-	REGISTER_CLASS_ZMM_L_DECL(zmm14, 14);
-	REGISTER_CLASS_ZMM_L_DECL(zmm15, 15);
-	REGISTER_CLASS_ZMM_H_DECL(zmm16, 16);
-	REGISTER_CLASS_ZMM_H_DECL(zmm17, 17);
-	REGISTER_CLASS_ZMM_H_DECL(zmm18, 18);
-	REGISTER_CLASS_ZMM_H_DECL(zmm19, 19);
-	REGISTER_CLASS_ZMM_H_DECL(zmm20, 20);
-	REGISTER_CLASS_ZMM_H_DECL(zmm21, 21);
-	REGISTER_CLASS_ZMM_H_DECL(zmm22, 22);
-	REGISTER_CLASS_ZMM_H_DECL(zmm23, 23);
-	REGISTER_CLASS_ZMM_H_DECL(zmm24, 24);
-	REGISTER_CLASS_ZMM_H_DECL(zmm25, 25);
-	REGISTER_CLASS_ZMM_H_DECL(zmm26, 26);
-	REGISTER_CLASS_ZMM_H_DECL(zmm27, 27);
-	REGISTER_CLASS_ZMM_H_DECL(zmm28, 28);
-	REGISTER_CLASS_ZMM_H_DECL(zmm29, 29);
-	REGISTER_CLASS_ZMM_H_DECL(zmm30, 30);
-	REGISTER_CLASS_ZMM_H_DECL(zmm31, 31);
+	REGISTER_CLASS_ZMM_DECL(zmm0, 0);
+	REGISTER_CLASS_ZMM_DECL(zmm1, 1);
+	REGISTER_CLASS_ZMM_DECL(zmm2, 2);
+	REGISTER_CLASS_ZMM_DECL(zmm3, 3);
+	REGISTER_CLASS_ZMM_DECL(zmm4, 4);
+	REGISTER_CLASS_ZMM_DECL(zmm5, 5);
+	REGISTER_CLASS_ZMM_DECL(zmm6, 6);
+	REGISTER_CLASS_ZMM_DECL(zmm7, 7);
+	REGISTER_CLASS_ZMM_DECL(zmm8, 8);
+	REGISTER_CLASS_ZMM_DECL(zmm9, 9);
+	REGISTER_CLASS_ZMM_DECL(zmm10, 10);
+	REGISTER_CLASS_ZMM_DECL(zmm11, 11);
+	REGISTER_CLASS_ZMM_DECL(zmm12, 12);
+	REGISTER_CLASS_ZMM_DECL(zmm13, 13);
+	REGISTER_CLASS_ZMM_DECL(zmm14, 14);
+	REGISTER_CLASS_ZMM_DECL(zmm15, 15);
+	REGISTER_CLASS_ZMM_DECL(zmm16, 16);
+	REGISTER_CLASS_ZMM_DECL(zmm17, 17);
+	REGISTER_CLASS_ZMM_DECL(zmm18, 18);
+	REGISTER_CLASS_ZMM_DECL(zmm19, 19);
+	REGISTER_CLASS_ZMM_DECL(zmm20, 20);
+	REGISTER_CLASS_ZMM_DECL(zmm21, 21);
+	REGISTER_CLASS_ZMM_DECL(zmm22, 22);
+	REGISTER_CLASS_ZMM_DECL(zmm23, 23);
+	REGISTER_CLASS_ZMM_DECL(zmm24, 24);
+	REGISTER_CLASS_ZMM_DECL(zmm25, 25);
+	REGISTER_CLASS_ZMM_DECL(zmm26, 26);
+	REGISTER_CLASS_ZMM_DECL(zmm27, 27);
+	REGISTER_CLASS_ZMM_DECL(zmm28, 28);
+	REGISTER_CLASS_ZMM_DECL(zmm29, 29);
+	REGISTER_CLASS_ZMM_DECL(zmm30, 30);
+	REGISTER_CLASS_ZMM_DECL(zmm31, 31);
 
 	// ymm registers
 	REGISTER_CLASS_YMM_DECL(ymm0, 0);
