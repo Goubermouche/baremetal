@@ -24,7 +24,7 @@ function get_operand_order(value) {
 		"ax", "dx",  "cx","reg16",
 		"eax", "ecx", "reg32", 
 		"rax", "rcx", "reg64",
-		"xmm", "mem128", 
+		"xmm", "xmm_kz", "mem128", 
 		"ymm", "mem256",
 		"bnd", "mmx", "sreg", "dreg", "creg",
 		"moff8", "moff16", "moff32", "moff64",

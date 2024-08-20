@@ -7,22 +7,41 @@ const { Worker, isMainThread, parentPort, workerData } = require('worker_threads
 const database= require("./database.js");
 
 const TEST_PATH = path.join(__dirname, "../source/tests/tests.txt")
-const TEST_MAIN_PATH = path.join(__dirname, "../source/tests/main.cpp")
+
+const reg_type = Object.freeze({
+	regular:  0,
+	mask_kz:  1,
+});
 
 class reg {
-  constructor(name) {
+  constructor(type, name, k, z) {
     this.name = name;
+		this.type = type;
+		this.k_reg = k;
+		this.z_reg = z;
   }
+
+	static normal(name) {
+		return new reg(reg_type.regular, name);
+	}
+
+	static mask_kz(name, k, z) {
+		return new reg(reg_type.mask_kz, name, k, z);
+	}
 
   get_nasm_string() {
-    return this.name;
-  }
+		switch(this.type) {
+			case reg_type.regular: return this.name;
+			case reg_type.mask_kz: return `${this.name}{${this.k_reg}}{${this.z_reg}}`;
+		}
 
-  get_baremetal_string() {
     return this.name;
   }
 
   name;
+	type;
+	k_reg;
+	z_reg;
 }
 
 class imm {
@@ -108,19 +127,6 @@ class mem {
     }
   }
 
-  get_baremetal_string() {
-    const bw = this.bit_width === 0 ? "_address" : this.bit_width.toString();
-    
-    switch (this.type) {
-      case mem_type.absolute: return `mem${bw}::absolute(${this.offset})`;
-      case mem_type.rip_relative: return `mem${bw}::ptr(${this.base}, ${this.offset})`;
-      case mem_type.register_indirect: return `mem${bw}::ptr(${this.base})`;
-      case mem_type.base_offset: return `mem${bw}::ptr(${this.base}, ${this.offset})`;
-      case mem_type.base_index_offset: return `mem${bw}::ptr(${this.base}, ${this.index}, SCALE_1, ${this.offset})`;
-      case mem_type.base_index_offset_scale: return `mem${bw}::ptr(${this.base}, ${this.index}, SCALE_${this.scale}, ${this.offset})`;
-    }
-  }
-
   type;
   bit_width;
 
@@ -139,10 +145,6 @@ class moff {
     return `[QWORD ${this.offset}]`;
   }
 
-  get_baremetal_string() {
-    return `moff(${this.offset})`;
-  }
-
   offset;
 }
 
@@ -155,84 +157,86 @@ class rel {
     return `${this.offset}`;
   }
 
-  get_baremetal_string() {
-    return `rel(${this.offset})`;
-  }
-
   offset;
 }
 
 function generate_combinations(operands) {
   const operand_map = new Map([
     ["reg8", [
-      new reg('cl'),
-      new reg('dl'),
-      new reg('bl'),
+      reg.normal('cl'),
+      reg.normal('dl'),
+      reg.normal('bl'),
     ]],
     ["reg16", [
-      new reg('cx'),
-      new reg('dx'),
-      new reg('bx'),
-      new reg('r15w'),
+      reg.normal('cx'),
+      reg.normal('dx'),
+      reg.normal('bx'),
+      reg.normal('r15w'),
     ]],
     ["reg32", [
-      new reg('ecx'),
-      new reg('edx'),
-      new reg('ebx'),
-      new reg('r15d'),
+      reg.normal('ecx'),
+      reg.normal('edx'),
+      reg.normal('ebx'),
+      reg.normal('r15d'),
     ]],
     ["reg64", [
-      new reg('rcx'),
-      new reg('rdx'),
-      new reg('rbx'),
-      new reg('r15'),
+      reg.normal('rcx'),
+      reg.normal('rdx'),
+      reg.normal('rbx'),
+      reg.normal('r15'),
     ]],
     ["xmm", [
-      new reg('xmm0'),
-      new reg('xmm1'),
-      new reg('xmm2'),
-      new reg('xmm15')
-    ]], 
+      reg.normal('xmm0'),
+      reg.normal('xmm1'),
+      reg.normal('xmm2'),
+      reg.normal('xmm15')
+    ]],
+		["xmm_kz", [
+			// NOTE: k0 isn't valid
+      reg.mask_kz('xmm1', 'k1', 'z'),
+      reg.mask_kz('xmm2', 'k2', 'z'),
+      reg.mask_kz('xmm15', 'k7', 'z')
+    ]],  
 		["ymm", [
-      new reg('ymm0'),
-      new reg('ymm1'),
-      new reg('ymm2'),
-      new reg('ymm15'),
-      new reg('ymm31')
+      reg.normal('ymm0'),
+      reg.normal('ymm1'),
+      reg.normal('ymm2'),
+      reg.normal('ymm15'),
+      reg.normal('ymm31')
     ]],
     ["mmx", [
-			new reg('mm0'),
-      new reg('mm1'),
-      new reg('mm2'),
-      new reg('mm7')
+			reg.normal('mm0'),
+      reg.normal('mm1'),
+      reg.normal('mm2'),
+      reg.normal('mm7')
     ]],
     ["bnd", [
-      new reg('bnd0'),
-      new reg('bnd1'),
-      new reg('bnd2'),
-      new reg('bnd3')
+      reg.normal('bnd0'),
+      reg.normal('bnd1'),
+      reg.normal('bnd2'),
+      reg.normal('bnd3')
     ]],
     ["sreg", [
-      new reg('cs'),
-      new reg('ds'),
-      new reg('es'),
-      new reg('ss'),
-      new reg('fs'),
-      new reg('gs')
+      reg.normal('cs'),
+      reg.normal('ds'),
+      reg.normal('es'),
+      reg.normal('ss'),
+      reg.normal('fs'),
+      reg.normal('gs')
     ]],
     ["dreg", [
-      new reg('dr0'),
-      new reg('dr1'),
-      new reg('dr2'),
-      new reg('dr3'),
-      new reg('dr7'),
+      reg.normal('dr0'),
+      reg.normal('dr1'),
+      reg.normal('dr2'),
+      reg.normal('dr3'),
+      reg.normal('dr7'),
     ]],
     ["creg", [
-      new reg('cr0'),
-      new reg('cr1'),
-      new reg('cr2'),
-      new reg('cr3'),
-      new reg('cr8'),
+      reg.normal('cr0'),
+      reg.normal('cr1'),
+      reg.normal('cr2'),
+      reg.normal('cr3'),
+      reg.normal('cr8'),
     ]],
     ["moff8", [
       new moff('0'),
@@ -546,8 +550,7 @@ if (isMainThread) {
     operands_combinations.forEach((combination) => {
       items.push({
         name: inst.name,
-        operands: combination.map(op => op.get_nasm_string()).join(", "),
-        baremetal: combination.map(op => op.get_baremetal_string()).join(", "),
+        operands: combination.map(op => op.get_nasm_string()).join(", ")
       }); 
     });
   });
