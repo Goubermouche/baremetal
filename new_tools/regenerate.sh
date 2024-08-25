@@ -4,6 +4,8 @@
 # - db.json
 # - instruction_database.inc
 
-sh ./convert_db.sh
-sh ./table_generator.sh
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+
+bash "$SCRIPT_DIR/convert_db.sh"
+bash "$SCRIPT_DIR/table_generator.sh"
 

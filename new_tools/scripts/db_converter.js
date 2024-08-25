@@ -53,7 +53,7 @@ function extract_inst_operands(inst) {
 	const replacements = [
     { s: 'ib/ub', r: 'i8' },
     { s: 'iw/uw', r: 'i16' },
-    { s: 'iw/ud', r: 'i32' },
+    { s: 'id/ud', r: 'i32' },
     { s: 'iq/uq', r: 'i64' },
     { s: 'ib', r: 'i8' },
     { s: 'iw', r: 'i16' },

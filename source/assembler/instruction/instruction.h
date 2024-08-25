@@ -389,7 +389,6 @@ ENCN_R,
 		OPN_R32,
 		OPN_M64,
 		OPN_R64,
-		OPN_UD, // TEMP
 		OPN_M16,
 		OPN_R16,
 		OPN_R8,
@@ -428,7 +427,6 @@ ENCN_R,
 		OPN_CS,
 		OPN_CL,
 		OPN_1,  // TEMP
-
 	};
 
 
