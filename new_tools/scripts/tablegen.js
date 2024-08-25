@@ -4,6 +4,16 @@
 const utility = require("./utility.js")
 const fs = require('fs');
 
+const constant_base = 2; // base for constants, such as flags, this can decrease the overall size of the generated file.
+
+function get_base_prefix() {
+	switch(constant_base) {
+		case 2: return '0b';
+		case 16: return '0x';
+		default: console.error(`unknown constant base '${p}'`);
+	}
+}
+
 function get_operand_order(value) {
 	// const operand_order = [
 	// 	"1", "i8", "i16", "i32", "i64",
@@ -26,9 +36,17 @@ function get_operand_order(value) {
 	}
 
 	const operand_order = [
-		'm32', 'r64', 'r32', 'mem', 'bnd', 'i8', 'm16', 'cl', 'm8', 'm64', 'r16', '1', 'rel32', 'rel16', 'dx',
-		'al', 'eax', 'ax', 'm512', 'r8', 'ud', 'i16', 'i32', 'rax', 'sreg', 'creg', 'dreg', 'gs', 'es', 'fs', 'ds',
-		'ss', 'cs', 'moff64', 'moff8', 'i64', 'moff16', 'moff32', 'rel8', 'm16_16', 'm16_32', 'm16_64'
+		'1', 'i8', 'i16', 'i32', 'i64',
+		'al', 'cl', 'r8', 
+		'ax', 'dx', 'r16',
+		'eax','r32',
+		'rax', 'r64',
+		'bnd', 'creg', 'dreg',
+		'es', 'cs', 'ss', 'ds', 'fs', 'gs', 'sreg', 
+		'moff8', 'moff16', 'moff32', 'moff64',
+		'm8', 'm16', 'm32', 'm64', 'm512',
+		'mem',  'rel8', 'rel16', 'rel32',
+		'm16_16', 'm16_32', 'm16_64'
 	];
 
 	const index = operand_order.indexOf(value);
@@ -72,7 +90,7 @@ function get_instruction_prefix(prefix_arr) {
 		}
 	});
 
-	return prefix.toString(2).padStart(8, '0');
+	return prefix.toString(constant_base);
 }
 
 function get_instruction_flags(inst) {
@@ -104,7 +122,7 @@ function get_instruction_flags(inst) {
 		default: console.error(`unknown instruction ri '${inst.ri}'`);
 	}
 
-	return flags.toString(2).padStart(8, '0');
+	return flags.toString(constant_base);
 }
 
 function main() {
@@ -151,9 +169,9 @@ function main() {
 
 		row.push(`"${inst.name}"`);			                      // name
 		row.push(`ENCN_${inst.enc}`);    	                    // encoding
-		row.push(`0b${get_instruction_prefix(inst.prefix)}`);	// prefix
+		row.push(`${get_base_prefix()}${get_instruction_prefix(inst.prefix)}`);	// prefix
 		row.push(`0x${inst.opcode}`);	                        // opcode
-		row.push(`0b${get_instruction_flags(inst)}`);	        // flags
+		row.push(`${get_base_prefix()}${get_instruction_flags(inst)}`);	        // flags
 
 		// operands
 		inst.operands.forEach(op => {

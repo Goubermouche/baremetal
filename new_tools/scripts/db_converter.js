@@ -1,3 +1,4 @@
+const utility = require("./utility.js")
 const fs = require('fs');
 
 function escape_exp(string) {
@@ -244,84 +245,81 @@ function extract_encoding(enc) {
 	return result;
 }
 
-if(process.argv.length != 3) {
-	console.error(`expected 1 argument but got ${process.argv.length - 2} arguments instead`);
-	process.exit(1);
-}
-
-let db;
-
-try {
-  const data = fs.readFileSync(process.argv[2], 'utf8');
-  db = JSON.parse(data);
-} catch (err) {
-  console.error('Error reading the file:', err);
-}
-
-let instructions = [];
-
-db.instructions.forEach(group => {
-	group.data.forEach(inst => {
-		const combinations = generate_combinations(extract_inst_operands(inst.inst));
-
-		let variant = {
-			name: combinations[0][0],
-			operands: [],
-			enc: extract_encoding(inst.op),
-			extension: [],
-			category: group.category
-		};
-
-		combinations.forEach(comb => {
-			variant.extension = [];
-
-			if(group.ext) {
-				variant.extension.push(group.ext);
-			}
-
-			if(inst.ext) {
-				variant.extension.push(inst.ext);
-			}
-
-			if(group.arch) {
-				variant.extension.push(group.arch);
-			}
-
-			if(inst.arch) {
-				variant.extension.push(inst.arch);
-			}
-	
-			variant.operands = comb.slice(1);
-			instructions.push(variant);
-		});
-	});
-});
-
-gp_inst = [];
-
-instructions.forEach(inst => {
-	if(inst.category.includes('GP')) {
-		gp_inst.push(inst);
+function main() {
+	if(process.argv.length != 3) {
+		console.error(`expected 1 argument but got ${process.argv.length - 2} arguments instead`);
+		return 1;
 	}
-});
 
+	let db;
+	
+	try {
+	  const data = fs.readFileSync(process.argv[2], 'utf8');
+	  db = JSON.parse(data);
+	} catch (err) {
+	  console.error('error reading source database', err);
+	}
+	
+	let instructions = [];
+	
+	db.instructions.forEach(group => {
+		group.data.forEach(inst => {
+			const combinations = generate_combinations(extract_inst_operands(inst.inst));
+	
+			let variant = {
+				name: combinations[0][0],
+				operands: [],
+				enc: extract_encoding(inst.op),
+				extension: [],
+				category: group.category
+			};
+	
+			combinations.forEach(comb => {
+				variant.extension = [];
+	
+				if(group.ext) { variant.extension.push(group.ext); }
+				if(inst.ext) { variant.extension.push(inst.ext); }
+				if(group.arch) { variant.extension.push(group.arch); }
+				if(inst.arch) { variant.extension.push(inst.arch); }
+	
+				variant.operands = comb.slice(1);
+				instructions.push(variant);
+			});
+		});
+	})
 
-let rows = [];
+	gp_inst = [];
+	
+	instructions.forEach(inst => {
+		if(inst.category.includes('GP')) {
+			gp_inst.push(inst);
+		}
+	});
+	
+	let rows = [];
+	
+	gp_inst.forEach(inst => {
+		let row = [];
+	
+		row.push(`"name": "${inst.name}"`);
+		row.push(`"operands": [${inst.operands.map(op => `"${op}"`).join(", ")}]`);
+		row.push(`"enc": "${inst.enc.enc}"`);
+		row.push(`"opcode": "${inst.enc.opcode.join('')}"`);
+		row.push(`"prefix": [${inst.enc.prefix.map(p => `"${p}"`).join(", ")}]`);
+		row.push(`"rexw": ${inst.enc.rexw}`);
+		row.push(`"rm": "${inst.enc.rm === undefined ? "" : inst.enc.rm}"`);
+		row.push(`"ri": "${inst.enc.opcode_extend === undefined ? "" : inst.enc.opcode_extend}"`);
+		
+		rows.push(row);
+	});
 
-gp_inst.forEach(inst => {
-	let row = [];
+	const db_layout = utility.calculate_layout(rows);
+	const db_text = utility.apply_layout(db_layout, rows, '\t{ ', ' },');
 
-	row.push(`"name": "${inst.name}"`);
-	row.push(`"operands": [${inst.operands.map(op => `"${op}"`).join(", ")}]`);
-	row.push(`"enc": "${inst.enc.enc}"`);
-	row.push(`"opcode": "${inst.enc.opcode.join('').padStart(6, '0')}"`);
-	row.push(`"prefix": [${inst.enc.prefix.map(p => `"${p}"`).join(", ")}]`);
-	row.push(`"rexw": ${inst.enc.rexw}`);
-	row.push(`"rm": "${inst.enc.rm === undefined ? "" : inst.enc.rm}"`);
-	row.push(`"ri": "${inst.enc.opcode_extend === undefined ? "" : inst.enc.opcode_extend}"`);
+	console.log(`[\n${db_text.slice(0, -2)}\n]\n`);
 
-	rows.push(`\t{ ${row.join(', ')} }`);
-});
+	return 0;
+}
 
+process.exit(main());
 
-console.log(`[\n${rows.join(',\n')}\n]\n`);
