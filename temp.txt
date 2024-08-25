@@ -1,0 +1,8 @@
+==== Building utility (debug) ====
+==== Building assembler (debug) ====
+assembler.cpp
+block.cpp
+Linking assembler
+==== Building tests (debug) ====
+main.cpp
+Linking tests

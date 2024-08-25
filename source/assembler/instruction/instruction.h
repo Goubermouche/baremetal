@@ -369,6 +369,100 @@ namespace baremetal {
 	};
 #pragma pack(pop)
 
+	enum encn : u8 {
+		ENCN_NORMAL,
+		ENCN_MR,
+		ENCN_M,
+		ENCN_RM,
+ENCN_RVM,
+ENCN_RMV,
+ENCN_VM,
+ENCN_MVR,
+ENCN_R,
+
+	};
+
+	enum opn : u8 {
+		OPN_NONE,
+		OPN_I8,
+		OPN_M32,
+		OPN_R32,
+		OPN_M64,
+		OPN_R64,
+		OPN_UD, // TEMP
+		OPN_M16,
+		OPN_R16,
+		OPN_R8,
+		OPN_I16,
+		OPN_M8,
+		OPN_I32,
+		OPN_AL,
+		OPN_EAX,
+		OPN_AX,
+		OPN_RAX,
+		OPN_BND,
+		OPN_MIB,
+		OPN_MEM,
+		OPN_REL32,
+		OPN_REL16,
+		OPN_M128,
+		OPN_DX,
+		OPN_REL8,
+		OPN_M16_16,
+		OPN_M16_32,
+		OPN_M16_64,
+		OPN_CREG,
+		OPN_DREG,
+		OPN_I64,
+		OPN_SREG,
+		OPN_MOFF8,
+		OPN_MOFF32,
+		OPN_MOFF16,
+		OPN_MOFF64,
+		OPN_M512,
+		OPN_GS,
+		OPN_ES,
+		OPN_FS,
+		OPN_SS,
+		OPN_DS,
+		OPN_CS,
+		OPN_CL,
+		OPN_1,  // TEMP
+
+	};
+
+
+	struct ins {
+		const char* name;
+		encn encoding;
+		u8 prefix;
+		u32 opcode;
+		u8 flags;
+		opn operands[4];
+
+	};
+
+	// new tooling
+	static constexpr auto inst(const char* name, encn encoding, u8 prefix, u32 opcode, u8 flags, opn op1 = OPN_NONE, opn op2 = OPN_NONE, opn op3 = OPN_NONE, opn op4 = OPN_NONE) -> ins {
+		ins result; 
+
+		result.name = name;
+		result.encoding = encoding;
+		result.prefix = prefix;
+		result.opcode = opcode;
+		result.flags = flags;
+		result.operands[0] = op1;
+		result.operands[1] = op2;
+		result.operands[2] = op3;
+		result.operands[3] = op4;
+
+		return result;
+	}
+
+	static constexpr ins inst_db[] = {
+		#include "assembler/instruction/databases/database.inc"
+	};
+
 // instruction generators
 #define INST_0(name, opcode, ext, prefix, ctx, dir, enc, ops, imp, ilo, var, empty) \
   instruction(                                                                      \
