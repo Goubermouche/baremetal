@@ -16,32 +16,35 @@
 namespace baremetal {
 	assembler::assembler() : m_current_inst_begin(0) {}
 
-	auto inst_match(operand_type a, operand b) -> bool{
+	auto inst_match(opn a, opn_data b) -> bool{
 		switch(a) {
-			case OP_AL:          return b.type == OP_REG8 && b.r == al.index;
-			case OP_AX:          return b.type == OP_REG16 && b.r == ax.index;
-			case OP_EAX:         return b.type == OP_REG32 && b.r == eax.index;
-			case OP_RAX:         return b.type == OP_REG64 && b.r == rax.index;
-			case OP_CL:          return b.type == OP_REG8 && b.r == cl.index;
-			case OP_DX:          return b.type == OP_REG16 && b.r == dx.index;
-			case OP_ECX:         return b.type == OP_REG32 && b.r == ecx.index;
-			case OP_RCX:         return b.type == OP_REG64 && b.r == rcx.index;
-			case OP_MEM_ADDRESS: return b.type == OP_MEM128;
+			case OPN_FS:          return b.type == OPN_SREG && b.r == fs.index;
+			case OPN_GS:          return b.type == OPN_SREG && b.r == gs.index;
+			case OPN_AL:          return b.type == OPN_R8 && b.r == al.index;
+			case OPN_AX:          return b.type == OPN_R16 && b.r == ax.index;
+			case OPN_EAX:         return b.type == OPN_R32 && b.r == eax.index;
+			case OPN_RAX:         return b.type == OPN_R64 && b.r == rax.index;
+			case OPN_CL:          return b.type == OPN_R8 && b.r == cl.index;
+			case OPN_DX:          return b.type == OPN_R16 && b.r == dx.index;
+			case OPN_ECX:         return b.type == OPN_R32 && b.r == ecx.index;
+			case OPN_RCX:         return b.type == OPN_R64 && b.r == rcx.index;
+			case OPN_MEM:         return b.type == OPN_M128;
 			default: return a == b.type;
 		}
 	}
 
-	auto is_operand_match(u32 inst_i, operand* operands) -> bool {
-		const instruction& inst = instruction_db[inst_i];
+	auto is_operand_match(u32 inst_i, opn_data* operands) -> bool {
+		const ins& inst = inst_db[inst_i];
 
 		for(u8 i = 0; i < 4; ++i) {
 			// if the operands at a given index are both imm we ignore their difference
 			if(
-				!(inst_match(inst.get_operand(i), operands[i])) &&
-				!(is_operand_imm(inst.get_operand(i)) && is_operand_imm(operands[i].type)) &&
-				!(is_operand_moff(inst.get_operand(i)) && is_operand_moff(operands[i].type)) &&
-				!(is_operand_rel(inst.get_operand(i)) && is_operand_imm(operands[i].type)) &&
-				!(inst.get_operand(i) == OP_MEM256 && operands[i].type == OP_MEM128) // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
+				!(inst_match(inst.operands[i], operands[i])) &&
+				!(is_operand_imm(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
+				!(is_operand_moff(inst.operands[i]) && is_operand_moff(operands[i].type)) &&
+				!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
+				!(inst.operands[i] == OPN_M256 && operands[i].type == OPN_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
+				!(inst.operands[i] == OPN_M512 && operands[i].type == OPN_M128) // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
 			) {
 				return false;
 			}
@@ -50,15 +53,17 @@ namespace baremetal {
 		return true;
 	}
 
-	void assembler::assemble(const utility::dynamic_string& assembly) {
+	auto assembler::assemble(const utility::dynamic_string& assembly) -> bool {
 		m_lex.set_text(assembly);
 		m_lex.get_next_token();
 
 		while(m_lex.current != KW_EOF) {
 			if(assemble_instruction() == false) {
-				return;
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 #define PARSER_VERIFY(expected)																						 \
@@ -81,7 +86,7 @@ namespace baremetal {
 		}
 	}
 
-	auto assembler::parse_mask_reg(operand& op) -> bool {
+	auto assembler::parse_mask_reg(opn_data& op) -> bool {
 		if(m_lex.get_next_token() == KW_LBRACE) {
 			m_lex.get_next_token();
 			
@@ -94,9 +99,9 @@ namespace baremetal {
 					op.mr.k  = static_cast<u8>(strtoul(m_lex.current_string.get_data() + 1, &end, 10));
 					ASSERT(op.mr.k < 8, "invalid mask register specified\n");
 
-					if(is_operand_xmm(op.type)) { op.type = OP_XMM_K; }
-					else if(is_operand_ymm(op.type)) { op.type = OP_YMM_K; }
-					else if(is_operand_zmm(op.type)) { op.type = OP_ZMM_K; }
+					if(is_operand_xmm(op.type)) { op.type = OPN_XMM_K; }
+					else if(is_operand_ymm(op.type)) { op.type = OPN_YMM_K; }
+					else if(is_operand_zmm(op.type)) { op.type = OPN_ZMM_K; }
 
 					break;
 				}
@@ -104,9 +109,9 @@ namespace baremetal {
 					ASSERT(m_lex.current_string.get_size() == 1, "invalid mask register specified\n");
 					op.mr.z = true;
 
-					if(is_operand_xmm(op.type)) { op.type = OP_XMM_KZ; }
-					else if(is_operand_ymm(op.type)) { op.type = OP_YMM_KZ; }
-					else if(is_operand_zmm(op.type)) { op.type = OP_ZMM_KZ; }
+					if(is_operand_xmm(op.type)) { op.type = OPN_XMM_KZ; }
+					else if(is_operand_ymm(op.type)) { op.type = OPN_YMM_KZ; }
+					else if(is_operand_zmm(op.type)) { op.type = OPN_ZMM_KZ; }
 
 					break;
 				}
@@ -266,7 +271,7 @@ namespace baremetal {
 			return false;
 		}
 
-		operand operands[4] = {{}};
+		opn_data operands[4] = {{}};
 		u8 operand_i = 0;
 
 		// operands
@@ -274,7 +279,7 @@ namespace baremetal {
 			switch (m_lex.current) {
 				// registers
 				case KW_CR0 ... KW_R15B: { 
-					operands[operand_i] = operand(keyword_to_register(m_lex.current));
+					operands[operand_i] = opn_data(keyword_to_register(m_lex.current));
 					
 					while(parse_mask_reg(operands[operand_i])) {}
 
@@ -283,7 +288,7 @@ namespace baremetal {
 				}
 				// numerical literals
 				case KW_NUMBER: {
-					operands[operand_i++] = operand(m_lex.current_immediate);
+					operands[operand_i++] = opn_data(m_lex.current_immediate);
 					m_lex.get_next_token();
 					break;
 				}
@@ -291,7 +296,7 @@ namespace baremetal {
 					m_lex.get_next_token();
 					PARSER_VERIFY(KW_NUMBER);
 
-					operands[operand_i++] = operand(imm(-static_cast<i64>(m_lex.current_immediate.value)));
+					operands[operand_i++] = opn_data(imm(-static_cast<i64>(m_lex.current_immediate.value)));
 					m_lex.get_next_token();
 					break;
 				}
@@ -301,14 +306,14 @@ namespace baremetal {
 							m_lex.get_next_token();
 							PARSER_VERIFY(KW_NUMBER);
 
-							operands[operand_i++] = operand(moff(m_lex.current_immediate.value));
+							operands[operand_i++] = opn_data(moff(m_lex.current_immediate.value));
 							m_lex.get_next_token();
 							PARSER_VERIFY(KW_RBRACKET);
 							break;
 						}
 						default: {
 							// large mem operand
-							operand memory = mem128();
+							opn_data memory = mem128();
 
 							parse_memory(memory.memory);
 
@@ -328,7 +333,7 @@ namespace baremetal {
 					m_lex.get_next_token();
 					PARSER_VERIFY(KW_LBRACKET);
 
-					operand memory;
+					opn_data memory;
 
 					switch(mem_type) {
 						case KW_BYTE: memory = mem8(); break;
@@ -357,21 +362,21 @@ namespace baremetal {
 		}
 
 		u32 instruction_i = first;
-		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
+		constexpr u32 db_size = sizeof(inst_db) / sizeof(ins);
 
 		// locate the specific variant (dumb linear search)
-		while(instruction_i < db_size && utility::compare_strings(instruction_db[instruction_i].get_name(), instruction_db[first].get_name()) == 0) {
+		while(instruction_i < db_size && utility::compare_strings(inst_db[instruction_i].name, inst_db[first].name) == 0) {
 			if(is_operand_match(instruction_i, operands)) {
 				for(u8 j = 0; j < operand_i; ++j) {
-					operands[j].type = instruction_db[instruction_i].get_operand(j); // HACK: just modify all instructions to the actual type (relocations, mem256)
+					operands[j].type = inst_db[instruction_i].operands[j]; // HACK: just modify all instructions to the actual type (relocations, mem256)
 
-					if(is_operand_rel(instruction_db[instruction_i].get_operand(j))) {
+					if(is_operand_rel(inst_db[instruction_i].operands[j])) {
 						rel r = rel(static_cast<i32>(operands[j].immediate.value));
 						operands[j].relocation = r; 
 					}
 				}
 
-				emit_instruction(instruction_i, operands[0], operands[1], operands[2], operands[3]);
+				// emit_instruction(instruction_i, operands[0], operands[1], operands[2], operands[3]);
 				return true;
 			}
 
@@ -379,7 +384,7 @@ namespace baremetal {
 		}
 
 		utility::console::print("no instruction variant with the specified operands was found\n");
-		utility::console::print("operands are:\n");
+		utility::console::print("operands are:\n{} ", instruction_identifier);
 
 		for(u8 i = 0; i < operand_i; ++i) {
 			utility::console::print("{} ", (i32)operands[i].type);
@@ -393,10 +398,10 @@ namespace baremetal {
 		// look for the first instruction with that name, just a dumb linear search for the sake of simplicity
 		// TODO: update this to a more performant search	
 		// TODO: this can be in the instruction.h file
-		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
+		constexpr u32 db_size = sizeof(inst_db) / sizeof(ins);
 
 		for(u32 i = 0; i < db_size; ++i) {
-			if(utility::compare_strings(name, instruction_db[i].get_name()) == 0) {
+			if(utility::compare_strings(name, inst_db[i].name) == 0) {
 				return i;
 			}
 		}

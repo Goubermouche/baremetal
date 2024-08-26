@@ -11,7 +11,7 @@ namespace baremetal {
 
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<u8>&;
 		
-		void assemble(const utility::dynamic_string& assembly); 
+		auto assemble(const utility::dynamic_string& assembly) -> bool; 
 		void clear();
 	private:
 		enum mem_parser_mode : u8 {
@@ -21,7 +21,7 @@ namespace baremetal {
 		// parsing
 		auto assemble_instruction() -> bool;
 		auto parse_memory(mem& memory) -> bool;
-		auto parse_mask_reg(operand& operand) -> bool;
+		auto parse_mask_reg(opn_data& operand) -> bool;
 		auto find_instruction_by_name(const char* name) -> u32;
 
 		void emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4);

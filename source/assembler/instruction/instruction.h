@@ -391,14 +391,24 @@ namespace baremetal {
 
 	enum opn : u8 {
 		OPN_NONE,
+
+		OPN_R8,
+		OPN_R16,
+		OPN_R32,
+		OPN_R64,
+		OPN_MM,
+		OPN_XMM,
+		OPN_YMM,
+		OPN_ZMM,
+		OPN_SREG,
+		OPN_DREG,
+		OPN_CREG,
+		OPN_BND,
+
 		OPN_I8,
 		OPN_M32,
-		OPN_R32,
 		OPN_M64,
-		OPN_R64,
 		OPN_M16,
-		OPN_R16,
-		OPN_R8,
 		OPN_I16,
 		OPN_M8,
 		OPN_I32,
@@ -406,21 +416,18 @@ namespace baremetal {
 		OPN_EAX,
 		OPN_AX,
 		OPN_RAX,
-		OPN_BND,
 		OPN_MIB,
 		OPN_MEM,
 		OPN_REL32,
 		OPN_REL16,
 		OPN_M128,
+		OPN_M256,
 		OPN_DX,
 		OPN_REL8,
 		OPN_M16_16,
 		OPN_M16_32,
 		OPN_M16_64,
-		OPN_CREG,
-		OPN_DREG,
 		OPN_I64,
-		OPN_SREG,
 		OPN_MOFF8,
 		OPN_MOFF32,
 		OPN_MOFF16,
@@ -434,6 +441,15 @@ namespace baremetal {
 		OPN_CS,
 		OPN_CL,
 		OPN_1,
+		OPN_ECX,
+		OPN_RCX,
+
+		OPN_XMM_K, // masked XMM reg xmm{k}
+		OPN_XMM_KZ, // masked XMM reg xmm{k}{z}
+		OPN_YMM_K, // masked YMM reg xmm{k}
+		OPN_YMM_KZ, // masked YMM reg xmm{k}{z}
+		OPN_ZMM_K, // masked ZMM reg xmm{k}
+		OPN_ZMM_KZ, // masked ZMM reg xmm{k}{z},
 	};
 
 	enum rmn : u8 {
@@ -446,7 +462,7 @@ namespace baremetal {
 		RMN_4,
 		RMN_5,
 		RMN_6,
-		RMN_7,
+		RMN_7opn_data,
 	};
 
 	struct ins {
@@ -458,8 +474,8 @@ namespace baremetal {
 			return flags & 0b01100000;
 		}
 		
-		constexpr auto get_rm() const ->rmn {
-			return (flags & 0b00011110) >> 1;
+		constexpr auto get_rm() const -> rmn {
+			return static_cast<rmn>((flags & 0b00011110) >> 1);
 		}
 
 		const char* name;
@@ -489,6 +505,47 @@ namespace baremetal {
 
 	static constexpr ins inst_db[] = {
 		#include "assembler/instruction/databases/database.inc"
+	};
+	
+	struct opn_data {
+		constexpr opn_data() : type(OPN_NONE), r(0) {}
+
+		// immediates
+		constexpr opn_data(imm i) : type(OPN_I64), immediate(i) {}
+
+		// registers
+		static_assert(static_cast<u8>(REG_GP_8) == static_cast<u8>(OP_REG8));
+		static_assert(static_cast<u8>(REG_GP_16) == static_cast<u8>(OP_REG16));
+		static_assert(static_cast<u8>(REG_GP_32) == static_cast<u8>(OP_REG32));
+		static_assert(static_cast<u8>(REG_GP_64) == static_cast<u8>(OP_REG64));
+		static_assert(static_cast<u8>(REG_XMM) == static_cast<u8>(OP_XMM));
+		static_assert(static_cast<u8>(REG_YMM) == static_cast<u8>(OP_YMM));
+		static_assert(static_cast<u8>(REG_MMX) == static_cast<u8>(OP_MMX));
+
+		constexpr opn_data(reg r) : type(static_cast<opn>(r.type)), r(r.index) {}
+
+		// memory
+		constexpr opn_data(mem_address m) : type(OPN_MEM), memory(m) {}
+		constexpr opn_data(moff m) : type(OPN_MOFF64), memory_offset(m) {}
+		constexpr opn_data(mem256 m) : type(OPN_M256), memory(m) {}
+		constexpr opn_data(mem128 m) : type(OPN_M128), memory(m) {}
+		constexpr opn_data(mem64 m) : type(OPN_M64), memory(m) {}
+		constexpr opn_data(mem32 m) : type(OPN_M32), memory(m) {}
+		constexpr opn_data(mem16 m) : type(OPN_M16), memory(m) {}
+		constexpr opn_data(mem8 m) : type(OPN_M8), memory(m) {}
+
+		constexpr opn_data(rel r) : type(OPN_REL32), relocation(r) {}
+
+		opn type;
+
+		union {
+			moff memory_offset;
+			rel relocation;
+			imm immediate;
+			mem memory;
+			u8 r; // register
+			masked_reg mr; // masked register
+		};
 	};
 
 // instruction generators
@@ -601,6 +658,61 @@ namespace baremetal {
 	static constexpr instruction instruction_db[] = {
 		#include "assembler/instruction/databases/instruction_database.inc"
 	};
+
+inline auto is_operand_xmm(opn op) -> bool {
+	return op == OPN_XMM || op == OPN_XMM_K || op == OPN_XMM_KZ;
+}
+
+inline auto is_operand_ymm(opn op) -> bool {
+	return op == OPN_YMM || op == OPN_YMM_KZ || op == OPN_YMM_K;
+}
+
+inline auto is_operand_zmm(opn op) -> bool {
+	return op == OPN_ZMM || op == OPN_ZMM_K || op == OPN_ZMM_KZ;
+}
+
+inline auto is_operand_mem(opn op) -> bool {
+		switch(op) {
+			case OPN_MEM:
+			case OPN_M8:
+			case OPN_M16:
+			case OPN_M32:
+			case OPN_M64:
+			case OPN_M128:
+			case OPN_M256:
+			case OPN_M512:  return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_moff(opn op) -> bool {
+		switch(op) {
+			case OPN_MOFF8:
+			case OPN_MOFF16:
+			case OPN_MOFF32:
+			case OPN_MOFF64:  return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_imm(opn op) -> bool {
+		switch(op) {
+			case OPN_I8:
+			case OPN_I16:
+			case OPN_I32:
+			case OPN_I64:  return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_rel(opn op) -> bool {
+		switch(op) {
+			case OPN_REL8:
+			case OPN_REL16:
+			case OPN_REL32: return true;
+			default: return false;
+		}
+	}
 
 #undef INST_0
 #undef INST_1
