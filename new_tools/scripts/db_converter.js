@@ -49,8 +49,13 @@ function replace_all(input, rules) {
 }
 
 function extract_inst_operands(inst) {
-	const rm = ['x:', 'r:', 'w:', 'R:', 'X:', 'W:', '~', '[127:16]', '[31:0]', '[15:0]', ',', '[127:64]', '[127:32]', '[63:0]', '[7:0]', '[ilock|xacqrel]', '[bnd|repIgnore]', '[ilock|xacquire]', '[lock|xacqrel]', '[rep|repne]', '[lock]', '[bnd]', '[xrelease]', '[rep]'].map(r => escape_exp(r));
-	const masks = ['{kz}', '{k}'];
+	const rm = [
+		'x:', 'r:', 'w:', 'R:', 'X:', 'W:', '~', '[127:16]', '[31:0]', '[15:0]', ',',
+		'[127:64]', '[127:32]', '[63:0]', '[7:0]', '[ilock|xacqrel]', '[bnd|repIgnore]',
+		'[ilock|xacquire]', '[lock|xacqrel]', '[rep|repne]', '[lock]', '[bnd]', '[xrelease]',
+		'[rep]'
+	].map(r => escape_exp(r));
+
 	const replacements = [
     { s: 'ib/ub', r: 'i8' },
     { s: 'iw/uw', r: 'i16' },
@@ -65,6 +70,8 @@ function extract_inst_operands(inst) {
     { s: 'ud', r: 'i32' },
     { s: 'uq', r: 'i64' },
 	];
+
+	const masks = ['{kz}', '{k}'];
 
 	let parts = inst.split(/[\s,]+/).map(p => remove_str(p, rm)).filter(p => p !== '').map(p => replace_all(p, replacements)).filter(p => !(/^<.*>$/.test(p))).filter(p => !(/^[^\(]+\([^\)]+\)$/.test(p)));
 	let result = [];

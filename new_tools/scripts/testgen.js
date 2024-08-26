@@ -137,11 +137,32 @@ function generate_combinations(operands) {
 	return generate(operands, 0);
 }
 
+function format_time(ms) {
+  let total_seconds = Math.floor(ms / 1000);
+  let hours = Math.floor(total_seconds / 3600);
+  let minutes = Math.floor((total_seconds % 3600) / 60);
+  let seconds = total_seconds % 60;
+  let formatted_time = '';
+
+  if(hours > 0) {
+      formatted_time += `${hours}h `;
+  }
+
+  if(minutes > 0 || hours > 0) {
+      formatted_time += `${minutes}m `;
+  }
+
+  formatted_time += `${seconds}s`;
+	return formatted_time.trim();
+}
+
 function main() {
-	// handle inputs
-	if(process.argv.length != 4) {
-		console.error(`expected 2 arguments but got ${process.argv.length - 2} arguments instead`);
-		return 1;
+	let start_time = Date.now()
+
+	// handle inputs 
+	if(process.argv.length != 5) {
+		console.error(`expected 3 arguments but got ${process.argv.length - 2} arguments instead`);
+		process.exit(1);
 	}
 	
 	let instructions;
@@ -207,23 +228,14 @@ function main() {
 	// run all worker threads
 	Promise.all(worker_promises)
 		.then(result => {
-			let total_errors = 0;
+			let error_text = '';
+			let test_text = '';
 
 			result.forEach(res => {
-				total_errors += res.errors.length;
-			});
-
-			if(total_errors > 0) {
-				console.error(`encountered ${total_errors} errors`);
-
-				result.forEach(res => {
-					res.errors.forEach(err => {
-						console.error(err);
-					});
+				res.errors.forEach(err => {
+					error_text += `${err}`; 
 				});
-			}
-
-			let test_text = '';
+			});
 
 			result.forEach(res => {
 				res.results.forEach(res => {
@@ -232,6 +244,18 @@ function main() {
 			});
 
 			utility.write_file(process.argv[3], test_text);
+
+			if(error_text.length > 0) {
+				const now = new Date();
+				const timestamp = now.toISOString().replace(/:/g, '-').substring(0, 19).replace(/:/g, '-');
+				const error_path = path.join(process.argv[4], `log_${timestamp}.txt`) 
+
+				console.error(`encountered errors (see ${error_path} for more information)`);
+				utility.write_file(error_path, error_text);
+			}
+
+			console.log(`testgen finished (${format_time(Date.now() - start_time)})`);
+
 			process.exit(0);
 		})
 		.catch(error => {

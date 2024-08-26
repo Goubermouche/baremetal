@@ -13,13 +13,13 @@ function assemble_test(test, bin_path, asm_path, temp_path) {
 		utility.write_file(asm_path, assembly);
 		utility.execute(command);
 	} catch(error) {
-		errors.push(`${test} (${utility.read_file(temp_path)})`);
+		errors.push(`${test} ${utility.read_file(temp_path)}`);
 	}
 
 	try {
 		results.push(`${test} ;${utility.read_file_hex(bin_path)}`);
 	} catch(error) {
-		errors.push(`${test} (${utility.read_file(temp_path)})`);
+		errors.push(`${test} ${utility.read_file(temp_path)}`);
 	}
 }
 
