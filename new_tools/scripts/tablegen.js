@@ -45,7 +45,7 @@ function get_operand_order(value) {
 		'es', 'cs', 'ss', 'ds', 'fs', 'gs', 'sreg', 
 		'moff8', 'moff16', 'moff32', 'moff64',
 		'm8', 'm16', 'm32', 'm64', 'm512',
-		'mem',  'rel8', 'rel16', 'rel32',
+		'mem', 'rel8', 'rel16', 'rel32',
 		'm16_16', 'm16_32', 'm16_64'
 	];
 
@@ -132,7 +132,6 @@ function main() {
 		return 1;
 	}
 	
-	const source = process.argv[2];
 	let instruction_table = [];
 	let instructions;
 	
@@ -167,10 +166,10 @@ function main() {
 	instructions.forEach(inst => {
 		let row = [];
 
-		row.push(`"${inst.name}"`);			                      // name
-		row.push(`ENCN_${inst.enc}`);    	                    // encoding
+		row.push(`"${inst.name}"`);			                                        // name
+		row.push(`ENCN_${inst.enc}`);    	                                      // encoding
 		row.push(`${get_base_prefix()}${get_instruction_prefix(inst.prefix)}`);	// prefix
-		row.push(`0x${inst.opcode}`);	                        // opcode
+		row.push(`0x${inst.opcode}`);	                                          // opcode
 		row.push(`${get_base_prefix()}${get_instruction_flags(inst)}`);	        // flags
 
 		// operands

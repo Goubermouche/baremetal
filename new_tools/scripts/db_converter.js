@@ -263,6 +263,10 @@ function main() {
 	let instructions = [];
 	
 	db.instructions.forEach(group => {
+		if(group.deprecated) {
+			return; // skip deprecated groups
+		}
+
 		group.data.forEach(inst => {
 			const combinations = generate_combinations(extract_inst_operands(inst.inst));
 	
@@ -291,7 +295,7 @@ function main() {
 	gp_inst = [];
 	
 	instructions.forEach(inst => {
-		if(inst.category.includes('GP')) {
+		if(inst.category.includes('GP') && !inst.extension.includes('X86')) {
 			gp_inst.push(inst);
 		}
 	});

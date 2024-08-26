@@ -1,3 +1,7 @@
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require('child_process');
+
 function calculate_layout(data) {
   let layout = [];
 
@@ -44,7 +48,47 @@ function apply_layout(layout, data, line_prefix, line_postfix) {
   return result;
 }
 
+function get_asm_path(id) {
+  return path.join(__dirname, `temp${id}.asm`);
+}
+
+function get_bin_path(id) {
+  return path.join(__dirname, `temp${id}.bin`);
+}
+
+function get_temp_path(id) {
+  return path.join(__dirname, `temp${id}.txt`);
+}
+
+function write_file(path, data) {
+  fs.writeFileSync(path, data);
+};
+
+function delete_file(path) {
+  return fs.unlinkSync(path)
+}
+
+function read_file(path) {
+  return fs.readFileSync(path, 'utf8');
+};
+
+function read_file_hex(path) {
+  return fs.readFileSync(path, 'hex');
+};
+
+function execute(cmd) {
+  return execSync(cmd, { encoding: 'utf8' });
+}
+
 module.exports = {
 	apply_layout,
-	calculate_layout
+	calculate_layout,
+	get_asm_path,
+	get_bin_path,
+	get_temp_path,
+	write_file,
+	delete_file,
+	read_file,
+	read_file_hex,
+	execute
 }

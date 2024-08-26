@@ -731,5 +731,3 @@ if (isMainThread) {
   parentPort.postMessage({ id: "result", data: tests });
 }
 
-
-
