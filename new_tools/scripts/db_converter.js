@@ -101,6 +101,7 @@ function extract_inst_operands(inst) {
 function extract_encoding(enc) {
 	let parts = enc.split(' ');
 	let met_opcode = false;
+	let is_special = false;
 
 	let result = {
 		opcode: [],
@@ -109,8 +110,6 @@ function extract_encoding(enc) {
 		enc: undefined, // encoding id
 		rm: undefined, // /r or /1 /2 /3 ...
 		opcode_extend: undefined, // opcode + i or r
-		ilo: undefined, 
-		imp: undefined,
 		size: undefined, 
 	};
 
@@ -118,8 +117,8 @@ function extract_encoding(enc) {
 		let part = parts[i];
 
 		// prefixes
-		if(met_opcode === false && ['F0', 'F2', 'F3', '2E', '36', '3E', '26' ,'64' ,'65' ,'2E', '3E', '66', '67'].some(p => p === part)) {
-			result.prefix.push(part)
+		if(is_special === false && met_opcode === false && ['F0', 'F2', 'F3', '2E', '36', '3E', '26' ,'64' ,'65' ,'2E', '3E', '66', '67'].some(p => p === part)) {
+			result.prefix.push(part);
 		}
 		else if(is_hex(part)) {
 			met_opcode = true;
@@ -143,10 +142,11 @@ function extract_encoding(enc) {
 		else if(['ib', 'iw', 'id', 'iq', 'cw', 'moff'].some(i => i == part)) {}
 		else if(part.startsWith('VEX')) {
 			let pp = part.split('.');
+			is_special = true;
 
 			for(let p of pp) {
 				if(p === 'VEX') {
-					result.enc = 'VEX_' + result.enc ? result.enc : '';
+					result.enc = ['VEX', result.enc].filter(e => { return e !== undefined; }).join('_');
 				}
 				else if(p === 'W1') {
 					result.rexw = true;
@@ -161,10 +161,10 @@ function extract_encoding(enc) {
 					result.size = 256;
 				}
 				else if(['0F38', '0F', '0F3A'].some(i => i == p)) {
-					result.ilo = p;
+					result.opcode.push(p);
 				}
 				else if(['66', 'F3', 'F2'].some(i => i == p)) {
-					result.imp = p;
+					result.prefix.push(p);
 				}				
 				else if(p === 'WIG') {}
 				else if(p === 'LIG') {}				
@@ -179,10 +179,11 @@ function extract_encoding(enc) {
 		}
 		else if(part.startsWith('EVEX')) {
 			let pp = part.split('.');
+			is_special = true;
 
 			for(let p of pp) {
 				if(p === 'EVEX') {
-					result.enc = 'EVEX_' + result.enc ? result.enc : '';
+					result.enc = ['EVEX', result.enc].filter(e => { return e !== undefined; }).join('_');
 				}
 				else if(p === 'W1') {
 					result.rexw = true;
@@ -196,10 +197,10 @@ function extract_encoding(enc) {
 				else if(p === 'MAP5') {}
 				else if(p === 'MAP6') {}
 				else if(['0F38', '0F', '0F3A'].some(i => i == p)) {
-					result.ilo = p;
+					result.opcode.push(p);
 				}
 				else if(['66', 'F3', 'F2'].some(i => i == p)) {
-					result.imp = p;
+					result.prefix.push(p);
 				}				
 				else if(p === '128') {
 					result.size = 128;
@@ -217,10 +218,11 @@ function extract_encoding(enc) {
 		}
 		else if(part.startsWith('XOP')) {
 			let pp = part.split('.');
+			is_special = true;
 
 			for(let p of pp) {
 				if(p === 'XOP') {
-					result.enc = 'XOP_' + result.enc ? result.enc : '';
+					result.enc = ['XOP', result.enc].filter(e => { return e !== undefined; }).join('_');
 				}
 				else if(p === 'L0') {}
 				else if(p === 'L1') {}

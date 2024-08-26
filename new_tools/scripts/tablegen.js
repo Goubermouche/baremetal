@@ -169,7 +169,8 @@ function main() {
 		row.push(`"${inst.name}"`);			                                        // name
 		row.push(`ENCN_${inst.enc}`);    	                                      // encoding
 		row.push(`${get_base_prefix()}${get_instruction_prefix(inst.prefix)}`);	// prefix
-		row.push(`0x${inst.opcode}`);	                                          // opcode
+		//row.push(`0x${inst.opcode.padStart(6, '0')}`);                          // opcode
+		row.push(`0x${inst.opcode}`);                          // opcode
 		row.push(`${get_base_prefix()}${get_instruction_flags(inst)}`);	        // flags
 
 		// operands

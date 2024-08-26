@@ -374,12 +374,19 @@ namespace baremetal {
 		ENCN_MR,
 		ENCN_M,
 		ENCN_RM,
-ENCN_RVM,
-ENCN_RMV,
-ENCN_VM,
-ENCN_MVR,
-ENCN_R,
-
+		ENCN_RVM,
+		ENCN_RMV,
+		ENCN_VM,
+		ENCN_MVR,
+		ENCN_R,
+		ENCN_VEX_RVM,
+		ENCN_VEX_RMV,
+		ENCN_XOP_VM,
+		ENCN_VEX,
+		ENCN_VEX_MVR,
+		ENCN_VEX_VM,
+		ENCN_VEX_RM,
+		ENCN_XOP,
 	};
 
 	enum opn : u8 {
@@ -426,18 +433,41 @@ ENCN_R,
 		OPN_DS,
 		OPN_CS,
 		OPN_CL,
-		OPN_1,  // TEMP
+		OPN_1,
 	};
 
+	enum rmn : u8 {
+		RMN_NONE = 0,
+		RMN_R,
+		RMN_0,
+		RMN_1,
+		RMN_2,
+		RMN_3,
+		RMN_4,
+		RMN_5,
+		RMN_6,
+		RMN_7,
+	};
 
 	struct ins {
+		constexpr auto is_rexw() const -> bool {
+			return flags & 0b00000001;
+		}
+
+		constexpr auto is_ri() const -> bool {
+			return flags & 0b01100000;
+		}
+		
+		constexpr auto get_rm() const ->rmn {
+			return (flags & 0b00011110) >> 1;
+		}
+
 		const char* name;
 		encn encoding;
 		u8 prefix;
 		u32 opcode;
 		u8 flags;
 		opn operands[4];
-
 	};
 
 	// new tooling
