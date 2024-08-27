@@ -3,6 +3,7 @@
 #include "assembler/instruction/instruction.h"
 #include "assembler/instruction/operands/memory.h"
 #include "assembler/instruction/operands/registers.h"
+#include "instruction/instruction.h"
 #include "instruction/operands/operands.h"
 #include "assembler/parser.h"
 #include "parser.h"
@@ -376,7 +377,7 @@ namespace baremetal {
 					}
 				}
 
-				// emit_instruction(instruction_i, operands[0], operands[1], operands[2], operands[3]);
+				emit_instruction(instruction_i, operands);
 				return true;
 			}
 
@@ -495,7 +496,7 @@ namespace baremetal {
 		return result;
 	}
 
-	auto assembler::find_instruction_info(u32 index, const operand* operands)  -> const instruction* {
+	auto assembler::find_instruction_info(u32 index, const opn_data* operands)  -> const ins* {
 		u8 imm_index = utility::limits<u8>::max();
 
 		// locate the first immediate operand
@@ -508,25 +509,25 @@ namespace baremetal {
 
 		// no immediate operand, return the original variant
 		if(imm_index == utility::limits<u8>::max()) {
-			return &instruction_db[index];
+			return &inst_db[index];
 		}
 
 		// store a list of legal variants, from which we'll pick the best one
-		utility::dynamic_array<const instruction*> legal_variants = {};
+		utility::dynamic_array<const ins*> legal_variants = {};
 		const imm& imm_op = operands[imm_index].immediate;
 
 		// some instructions have a special optimization index, check if we have it
 		// if we have a valid context index, the original index, provided as a parameter, will
 		// be replaced by this index
-		if(instruction_db[index].has_special_index()) {
-			const u16 context_index = instruction_db[index].get_special_index();
+		if(inst_db[index].has_special_index()) {
+			const u16 context_index = inst_db[index].get_special_index();
 
 			// switch on the context kind
-			switch(instruction_db[index].get_special_kind()) {
+			switch(inst_db[index].get_special_kind()) {
 				case 0: {
 					// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
 					// less we can look for a smaller destination
-					if(operands[0].type == OP_REG64 && imm_op.min_bits <= 32) {
+					if(operands[0].type == OPN_R64 && imm_op.min_bits <= 32) {
 						// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64
 						// bits) we can't zero extend 
 						if(imm_op.sign == false) {
@@ -540,7 +541,7 @@ namespace baremetal {
 					// if we have a source operand which is equal to 1, we can use a shorter encoding, in basically all
 					// cases we can just return, since the operand is effectively removed
 					if(operands[1].immediate.value == 1) {
-						return &instruction_db[context_index];
+						return &inst_db[context_index];
 					}
 
 					break; // we're not using the optimization index, continue
@@ -551,7 +552,7 @@ namespace baremetal {
 					const u64 extend = sign_extend(truncated, 8);
 
 					if(extend == operands[2].immediate.value) {
-						return &instruction_db[context_index];
+						return &inst_db[context_index];
 					}
 
 					break;
@@ -568,7 +569,7 @@ namespace baremetal {
 		// by their operands we can just increment the index as long as the two variants
 		// are legal
 		while(is_legal_variant(index, current_index, imm_index)) {
-			legal_variants.push_back(&instruction_db[current_index++]);
+			legal_variants.push_back(&inst_db[current_index++]);
 		}
 
 		// one legal variant
@@ -581,17 +582,17 @@ namespace baremetal {
 		// one (ie. an ax register). In these cases we lose the guarantee of them being sorted
 		// from smallest to biggest immediate operands, hence we have to sort them.
 		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [=](auto a, auto b) {
-			const u16 a_width = get_operand_bit_width(a->get_operand(imm_index));
-			const u16 b_width = get_operand_bit_width(b->get_operand(imm_index));
+			const u16 a_width = get_operand_bit_width(a->operands[imm_index]);
+			const u16 b_width = get_operand_bit_width(b->operands[imm_index]);
 
 			return a_width < b_width;
 		});
 
 		// multiple legal variants, determine the best one (since our data is sorted from smallest
 		// source operands to largest, we can exit as soon as we get a valid match)
-		for(const instruction* inst : legal_variants) {
-			const u16 src_bits = get_operand_bit_width(inst->get_operand(imm_index));
-			const u16 dst_bits = get_operand_bit_width(inst->get_operand(0));
+		for(const ins* inst : legal_variants) {
+			const u16 src_bits = get_operand_bit_width(inst->operands[imm_index]);
+			const u16 dst_bits = get_operand_bit_width(inst->operands[0]);
 
 			// check if there is a possibility of sign extending the immediate
 			if(src_bits < dst_bits) {
@@ -614,18 +615,15 @@ namespace baremetal {
 	}
 
 	auto assembler::is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool {
-		const u8 operand_count = instruction_db[a].get_operand_count() - 1;
+		const u8 operand_count = inst_db[a].operand_count - 1;
 
 		for(u8 i = 0; i < operand_count; ++i) {
-			if(!is_operand_of_same_kind(
-				instruction_db[a].get_operand(i), 
-				instruction_db[b].get_operand(i)
-			)) {
+			if(!is_operand_of_same_kind(inst_db[a].operands[i], inst_db[b].operands[i])) {
 				return false;
 			}
 		}
 
-		return is_operand_imm(instruction_db[b].get_operand(imm_index));
+		return is_operand_imm(inst_db[b].operands[imm_index]);
 	}
 
 	void assembler::emit_opcode_prefix_vex(const instruction* inst, const operand* operands) {
@@ -1224,24 +1222,26 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4) {
-		const operand operands[4] = { op1, op2, op3, op4 };
-
+	void assembler::emit_instruction(u32 index, const opn_data* operands) {
 		// NOTE: operand count can be inferred from overloaded functions
 		instruction_begin(); // mark the instruction start (used for rip-relative addressing)
 
 		// locate the actual instruction we want to assemble (this doesn't have to match the specified
 		// index, since we can apply optimizations which focus on stuff like shorter encodings)
-		const instruction* inst = find_instruction_info(index, operands);
+		const ins* inst = find_instruction_info(index, operands);
 
-		// emit instruction parts
-		emit_instruction_prefix(inst);
-		emit_instruction_opcode(inst, operands);
-		emit_instruction_mod_rm(inst, operands);
-		emit_instruction_sib(operands);
+		if(inst == nullptr) {
+			utility::console::print("err\n");
+		}
 
-		// emit immediate, displacement, and memory offset operands
-		emit_operands(inst, operands);
+		// // emit instruction parts
+		// emit_instruction_prefix(inst);
+		// emit_instruction_opcode(inst, operands);
+		// emit_instruction_mod_rm(inst, operands);
+		// emit_instruction_sib(operands);
+
+		// // emit immediate, displacement, and memory offset operands
+		// emit_operands(inst, operands);
 	}
 
 	auto assembler::has_sib_byte(const operand* operands) -> bool {
@@ -1906,13 +1906,13 @@ namespace baremetal {
 		return x;
 	}
 
-	auto is_operand_of_same_kind(operand_type a, operand_type b) -> bool {
+	auto is_operand_of_same_kind(opn a, opn b) -> bool {
 		switch(a) {
 			// don't just consider regular equalities, focus on register bit widths as well
-			case OP_AL:  return b == OP_AL  || b == OP_CL  || b == OP_REG8;  // 8 bits
-			case OP_AX:  return b == OP_AX  || b == OP_DX  || b == OP_REG16; // 16 bits
-			case OP_EAX: return b == OP_EAX || b == OP_ECX || b == OP_REG32; // 32 bits
-			case OP_RAX: return b == OP_RAX || b == OP_RCX || b == OP_REG64; // 64 bits
+			case OPN_AL:  return b == OPN_AL  || b == OPN_CL  || b == OPN_R8;  // 8 bits
+			case OPN_AX:  return b == OPN_AX  || b == OPN_DX  || b == OPN_R16; // 16 bits
+			case OPN_EAX: return b == OPN_EAX || b == OPN_ECX || b == OPN_R32; // 32 bits
+			case OPN_RAX: return b == OPN_RAX || b == OPN_RCX || b == OPN_R64; // 64 bits
 			default: return a == b; // regular compares
 		}
 	}

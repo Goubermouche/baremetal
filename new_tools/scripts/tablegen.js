@@ -125,6 +125,47 @@ function get_instruction_flags(inst) {
 	return flags.toString(constant_base);
 }
 
+function encode_special(id, index) {
+  if (id < 0 || id > 3 || index < 0 || index > 16383) {
+    throw new Error('invalid id or index');
+  }
+
+  return (id << 14) | index;
+}
+
+function is_immediate(op) {
+  switch(op) {
+    case 'i8':
+    case 'i16':
+    case 'i32':
+    case 'i64': return true;
+    default:    return false;
+  }
+}
+
+function calculate_special(inst, dest_to_source) {
+	if(inst.name === 'mov' && inst.operands[0] === 'r64' && inst.operands[1] === 'i32') {
+		// 0
+		return encode_special(0, dest_to_source.get(`${inst.name}:r32:i32`))
+	}
+	
+	if(['rcl', 'rcr', 'rol', 'ror', 'sal', 'sar', 'shl', 'shr'].includes(inst.name) && inst.operands[1] !== '1') {
+		// 1
+		return encode_special(1, dest_to_source.get(`${inst.name}:${inst.operands[0]}:1`));
+	}
+	
+	if(inst.name === 'imul' && inst.operands.length === 3 && is_immediate(inst.operands[2])) {
+		// 2
+		const key = `${inst.name}:${inst.operands[0]}:${inst.operands[1]}:i8`;
+
+		if(dest_to_source.has(key) && inst.operands[2] !== 'i8') {
+			return encode_special(2, dest_to_source.get(key));
+		}
+	}
+
+	return 65535; // u16 max - no special index
+}
+
 function main() {
 	// handle inputs
 	if(process.argv.length != 3) {
@@ -163,18 +204,27 @@ function main() {
 	  return 0;
 	});
 
+	// instruction lookup
+	let dest_to_source = new Map();
+
+	instructions.forEach((inst, i) => {
+		dest_to_source.set(`${inst.name}:${inst.operands.join(":")}`, i);
+	});
+
+	// generate the table
 	instructions.forEach(inst => {
+		let special_index = calculate_special(inst, dest_to_source);
 		let row = [];
 
-		row.push(`"${inst.name}"`);			                                        // name
-		row.push(`ENCN_${inst.enc}`);    	                                      // encoding
-		row.push(`${get_base_prefix()}${get_instruction_prefix(inst.prefix)}`);	// prefix
-		//row.push(`0x${inst.opcode.padStart(6, '0')}`);                          // opcode
-		row.push(`0x${inst.opcode}`);                          // opcode
-		row.push(`${get_base_prefix()}${get_instruction_flags(inst)}`);	        // flags
+		row.push(`"${inst.name}"`);			                                          // name
+		row.push(`ENCN_${inst.enc}`);    	                                        // encoding
+		row.push(`${get_base_prefix()}${get_instruction_prefix(inst.prefix)}`);	  // prefix
+		row.push(`0x${inst.opcode}`);                                             // opcode
+		row.push(`${get_base_prefix()}${get_instruction_flags(inst)}`);	          // flags
+		row.push(`${get_base_prefix()}${special_index.toString(constant_base)}`); // special index
 
 		// operands
-		inst.operands.forEach(op => {
+		inst.operands.map(op => op === '1' ? 'i8' : op).forEach(op => {
 			row.push(`OPN_${op.toUpperCase()}`);	
 		});
 

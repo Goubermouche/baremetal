@@ -424,9 +424,6 @@ namespace baremetal {
 		OPN_M256,
 		OPN_DX,
 		OPN_REL8,
-		OPN_M16_16,
-		OPN_M16_32,
-		OPN_M16_64,
 		OPN_I64,
 		OPN_MOFF8,
 		OPN_MOFF32,
@@ -440,7 +437,6 @@ namespace baremetal {
 		OPN_DS,
 		OPN_CS,
 		OPN_CL,
-		OPN_1,
 		OPN_ECX,
 		OPN_RCX,
 
@@ -478,16 +474,29 @@ namespace baremetal {
 			return static_cast<rmn>((flags & 0b00011110) >> 1);
 		}
 
+		constexpr auto get_special_kind() const -> u8 {
+			return special_index >> 14;
+		}
+		constexpr auto get_special_index() const -> u16 {
+			return special_index & 0b0011111111111111;
+		};
+
+		constexpr auto has_special_index() const -> bool {
+			return special_index != utility::limits<u16>::max();
+		}
+
 		const char* name;
 		encn encoding;
 		u8 prefix;
 		u32 opcode;
 		u8 flags;
+		u16 special_index;
+		u8 operand_count;
 		opn operands[4];
 	};
 
 	// new tooling
-	static constexpr auto inst(const char* name, encn encoding, u8 prefix, u32 opcode, u8 flags, opn op1 = OPN_NONE, opn op2 = OPN_NONE, opn op3 = OPN_NONE, opn op4 = OPN_NONE) -> ins {
+	static constexpr auto inst(const char* name, encn encoding, u8 prefix, u32 opcode, u8 flags, u16 special_index, opn op1 = OPN_NONE, opn op2 = OPN_NONE, opn op3 = OPN_NONE, opn op4 = OPN_NONE) -> ins {
 		ins result; 
 
 		result.name = name;
@@ -495,10 +504,20 @@ namespace baremetal {
 		result.prefix = prefix;
 		result.opcode = opcode;
 		result.flags = flags;
+		result.special_index = special_index;
 		result.operands[0] = op1;
 		result.operands[1] = op2;
 		result.operands[2] = op3;
 		result.operands[3] = op4;
+		result.operand_count = 0;
+
+		for(u8 i = 0; i < 4; ++i) {
+			if(result.operands[i] == OPN_NONE) {
+				break;
+			}
+
+			result.operand_count++;
+		}
 
 		return result;
 	}
@@ -712,6 +731,66 @@ inline auto is_operand_mem(opn op) -> bool {
 			case OPN_REL32: return true;
 			default: return false;
 		}
+	}
+
+	inline auto get_operand_bit_width(opn op) -> u16 {
+		switch(op) {
+			case OPN_MEM:
+			case OPN_NONE:        return 0;
+			case OPN_MOFF8:
+			case OPN_M8:
+			case OPN_REL8:
+			case OPN_R8:
+			case OPN_AL:
+			case OPN_CL: 
+			case OPN_I8:          return 8;
+			case OPN_MOFF16:
+			case OPN_REL16:
+			case OPN_M16:
+			case OPN_R16:
+			case OPN_SREG:
+			case OPN_GS:
+			case OPN_ES:
+			case OPN_FS:
+			case OPN_SS:
+			case OPN_DS:
+			case OPN_CS:
+			case OPN_AX:
+			case OPN_DX:
+			case OPN_I16:         return 16;
+			case OPN_MOFF32:
+			case OPN_M32:
+			case OPN_REL32:
+			case OPN_R32:
+			case OPN_EAX:
+			case OPN_ECX:
+			case OPN_I32:         return 32;
+			case OPN_MOFF64:
+			case OPN_M64:
+			case OPN_R64:
+			case OPN_CREG:
+			case OPN_DREG:
+			case OPN_MM:
+			case OPN_BND:
+			case OPN_RCX:
+			case OPN_RAX:
+			case OPN_MIB:
+			case OPN_I64:         return 64;
+			case OPN_M128:
+			case OPN_XMM:
+			case OPN_XMM_K:
+			case OPN_XMM_KZ:      return 128;
+			case OPN_M256:
+			case OPN_YMM_K:         
+			case OPN_YMM_KZ:         
+			case OPN_YMM:         return 256;
+			case OPN_ZMM_K:
+			case OPN_ZMM_KZ:
+			case OPN_M512:
+			case OPN_ZMM:       return 512;
+		}
+
+		return 0; // unreachable
 	}
 
 #undef INST_0

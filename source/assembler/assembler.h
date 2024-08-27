@@ -24,7 +24,7 @@ namespace baremetal {
 		auto parse_mask_reg(opn_data& operand) -> bool;
 		auto find_instruction_by_name(const char* name) -> u32;
 
-		void emit_instruction(u32 index, const operand& op1, const operand& op2, const operand& op3, const operand& op4);
+		void emit_instruction(u32 index, const opn_data* operands);
 
 		// opcode
 		void emit_instruction_opcode(const instruction* inst, const operand* operands);
@@ -44,7 +44,7 @@ namespace baremetal {
 		void emit_data_operand(u64 data, u16 bit_width);
 
 		static auto find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8>;
-		static auto find_instruction_info(u32 index, const operand* operands) -> const instruction*;
+		static auto find_instruction_info(u32 index, const opn_data* operands) -> const ins*;
 
 		static auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
 		static auto has_sib_byte(const operand* operands) -> bool;
@@ -111,6 +111,6 @@ namespace baremetal {
 
 	auto sign_extend(u64 x, u8 x_bits) -> u64;
 
-	auto is_operand_of_same_kind(operand_type a, operand_type b) -> bool;
+	auto is_operand_of_same_kind(opn a, opn b) -> bool;
 } // namespace baremetal
 

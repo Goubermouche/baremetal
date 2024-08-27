@@ -304,7 +304,7 @@ function main() {
 	gp_inst = [];
 	
 	instructions.forEach(inst => {
-		if(inst.category.includes('GP') && !inst.extension.includes('X86')) {
+		if(inst.category.includes('GP') && !inst.extension.includes('X86') && inst.enc.enc === 'NORMAL') {
 			gp_inst.push(inst);
 		}
 	});
