@@ -370,10 +370,13 @@ namespace baremetal {
 #pragma pack(pop)
 
 	enum encn : u8 {
-		ENCN_NORMAL,
-		ENCN_MR,
+		// finished	
 		ENCN_M,
+		ENCN_MR,
 		ENCN_RM,
+		ENCN_NORMAL,
+
+		// unfinished
 		ENCN_RVM,
 		ENCN_RMV,
 		ENCN_VM,

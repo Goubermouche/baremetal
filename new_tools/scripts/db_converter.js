@@ -26,7 +26,7 @@ function generate_combinations(arr) {
     }
 
     const [first, ...rest] = elements;
-    const parts = first.includes('/') ? first.split('/') : [first];
+    const parts = first.split(/\/|\|/);
 
     parts.forEach(part => {
       combine(prefix.concat(part), rest);
@@ -37,6 +37,7 @@ function generate_combinations(arr) {
   combine([], arr);
   return result;
 }
+
 
 function replace_all(input, rules) {
 	for(let rule of rules) {
@@ -302,8 +303,9 @@ function main() {
 	gp_inst = [];
 	
 	instructions.forEach(inst => {
-		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR', 'M'].includes(inst.enc.enc) && inst.name === 'xor') {
-		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['M'].includes(inst.enc.enc) && inst.name === 'xor') {
+		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR', 'M', 'NORMAL'].includes(inst.enc.enc) && inst.name === 'xor') {
+		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['NORMAL'].includes(inst.enc.enc) && inst.name === 'xor') {
+		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM'].includes(inst.enc.enc)) {
 			gp_inst.push(inst);
 		}
 	});

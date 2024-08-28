@@ -1066,12 +1066,17 @@ namespace baremetal {
 		u8 rx = m_regs[0];
 
 		if(inst->is_rm()) {
-			rx = inst->get_rm() - 2;
+			rx = inst->get_rm() - 2; // - 2 is a fixup we need for our encoding, this can be improved but isn't vital rn
 		}
 
-		if(is_operand_mem(operands[0].type)) {
+		// memory operands
+		for(u8 i = 0; i < inst->operand_count; ++i) {
+			if(!is_operand_mem(operands[i].type)) {
+				continue;
+			}
+
 			const bool has_sib = has_sib_byte(operands);
-			const auto memory = operands[0].memory;
+			const auto memory = operands[i].memory;
 		
 			ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
@@ -1092,32 +1097,12 @@ namespace baremetal {
 				// 32 bit displacement
 				m_bytes.push_back(indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index));
 			}
-		}
-		else if(is_operand_mem(operands[1].type)) {
-			const bool has_sib = has_sib_byte(operands);
-			const auto memory = operands[1].memory;
-		
-			ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
-			if(memory.has_base == false) {
-				m_bytes.push_back(indirect(rx, 0b100));
-			}
-			else if(memory.base.type == REG_RIP) {
-				m_bytes.push_back(indirect(rx, 0b101));
-			}
-			else if(memory.displacement.value == 0) {
-				m_bytes.push_back(indirect(rx, has_sib ? 0b100 : memory.base.index));
-			}
-			else if(memory.displacement.min_bits <= 8) {
-				// 8 bit displacement
-				m_bytes.push_back(indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index));
-			}
-			else {
-				// 32 bit displacement
-				m_bytes.push_back(indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index));
-			}
+			return; // nothing else to do
 		}
-		else if(inst->is_r()) {
+
+		// forced mod/rm
+		if(inst->is_r()) {
 			m_bytes.push_back(direct(m_regs[0], m_regs[1]));
 		}
 		else if(inst->is_rm()) {
@@ -1427,7 +1412,6 @@ namespace baremetal {
 		u8 rx = 0;
 		u8 base = 0;
 		u8 index = 0;
-		u16 index_byte = 0;
 
 		// figure out the index bit first
 		if(inst->has_mem_operand()) {
@@ -1807,18 +1791,25 @@ namespace baremetal {
 			}
 		}
 
-		if(m_reg_count == 1) {
+		if(m_reg_count == 0) { /*nothing to do*/ }
+		else if(m_reg_count == 1) {
 			switch(inst->encoding) {
-				case ENCN_RM: m_regs[0] = temp[0]; break;
-				case ENCN_MR: m_regs[0] = temp[0]; break; 
-				case ENCN_M:  m_regs[0] = temp[0]; break; 
+				case ENCN_NORMAL: m_regs[0] = temp[0]; break;
+				case ENCN_RM:     m_regs[0] = temp[0]; break;
+				case ENCN_MR:     m_regs[0] = temp[0]; break; 
+				case ENCN_M:      m_regs[0] = temp[0]; break;
+				default: ASSERT(false, "unknown encoding for 1 reg\n");
 			}
 		}
 		else if(m_reg_count == 2) {
 			switch(inst->encoding) {
 				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1];  break;
 				case ENCN_MR: m_regs[0] = temp[1]; m_regs[1] = temp[0];  break;
+				default: ASSERT(false, "unknown encoding for 2 regs\n");
 			}
+		}
+		else {
+			ASSERT(false, "unknown reg count {}\n", m_reg_count);
 		}
 	}
 

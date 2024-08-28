@@ -39,9 +39,11 @@ function main() {
 	})
 
 	// cleanup
-	utility.delete_file(temp_path);
-  utility.delete_file(bin_path);
-  utility.delete_file(asm_path);
+	try {
+		utility.delete_file(temp_path);
+  	utility.delete_file(bin_path);
+  	utility.delete_file(asm_path);
+	} catch(err) {}
 
 	// post results
 	parentPort.postMessage({ id: 'result', data: { results: results, errors: errors } });
