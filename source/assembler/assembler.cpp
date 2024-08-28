@@ -1066,7 +1066,7 @@ namespace baremetal {
 		u8 rx = m_regs[0];
 
 		if(inst->is_rm()) {
-			rx = inst->get_rm();
+			rx = inst->get_rm() - 2;
 		}
 
 		if(is_operand_mem(operands[0].type)) {
@@ -1439,7 +1439,10 @@ namespace baremetal {
 		}
 		
 		if(m_reg_count == 1) {
-			rx = m_regs[0];
+			switch(inst->encoding) {
+				case ENCN_M: base = m_regs[0]; break;
+				default: rx = m_regs[0]; break;
+			}
 		}
 		else if(m_reg_count == 2) {
 			rx = m_regs[0];
@@ -1808,6 +1811,7 @@ namespace baremetal {
 			switch(inst->encoding) {
 				case ENCN_RM: m_regs[0] = temp[0]; break;
 				case ENCN_MR: m_regs[0] = temp[0]; break; 
+				case ENCN_M:  m_regs[0] = temp[0]; break; 
 			}
 		}
 		else if(m_reg_count == 2) {

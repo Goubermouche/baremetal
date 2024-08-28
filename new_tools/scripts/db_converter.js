@@ -302,7 +302,8 @@ function main() {
 	gp_inst = [];
 	
 	instructions.forEach(inst => {
-		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR'].includes(inst.enc.enc) && inst.name === 'xor') {
+		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR', 'M'].includes(inst.enc.enc) && inst.name === 'xor') {
+		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['M'].includes(inst.enc.enc) && inst.name === 'xor') {
 			gp_inst.push(inst);
 		}
 	});
