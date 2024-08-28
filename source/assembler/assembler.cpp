@@ -1109,7 +1109,6 @@ namespace baremetal {
 			m_bytes.push_back(direct(rx, m_regs[0]));
 		}
 
-
 	//	if(inst->has_variant()) {
 	//		rx = inst->get_variant();
 	//	}
@@ -1429,6 +1428,16 @@ namespace baremetal {
 			}
 		}
 		else if(m_reg_count == 2) {
+			// mem, x, x
+			if(is_operand_mem(operands[0].type) && operands[0].memory.has_base == false && operand_count == 3) {
+				rx = m_regs[1];
+			}
+			else {
+				rx = m_regs[0];
+				base = m_regs[1];
+			}
+		}
+		else if(m_reg_count == 3) {
 			rx = m_regs[0];
 			base = m_regs[1];
 		}
@@ -1803,9 +1812,26 @@ namespace baremetal {
 		}
 		else if(m_reg_count == 2) {
 			switch(inst->encoding) {
-				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1];  break;
-				case ENCN_MR: m_regs[0] = temp[1]; m_regs[1] = temp[0];  break;
+				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
+				case ENCN_MR: {
+					if(operands[2].type == OPN_CL) {
+						m_regs[0] = temp[0];
+						m_regs[1] = temp[0];
+					}
+					else {
+						m_regs[0] = temp[1]; m_regs[1] = temp[0];
+					}
+
+					break;
+				}
 				default: ASSERT(false, "unknown encoding for 2 regs\n");
+			}
+		}
+		else if(m_reg_count == 3) {
+			switch(inst->encoding) {
+				case ENCN_RM: m_regs[0] = temp[2]; m_regs[1] = temp[1];  break;
+				case ENCN_MR: m_regs[0] = temp[1]; m_regs[1] = temp[0]; m_regs[2] = m_regs[2]; break;
+				default: ASSERT(false, "unknown encoding for 3 regs\n");
 			}
 		}
 		else {
