@@ -24,37 +24,38 @@ namespace baremetal {
 		auto parse_mask_reg(opn_data& operand) -> bool;
 		auto find_instruction_by_name(const char* name) -> u32;
 
+		// instructions
 		void emit_instruction(u32 index, const opn_data* operands);
 
-		// opcode
-		void emit_instruction_opcode(const instruction* inst, const operand* operands);
-		void emit_instruction_mod_rm(const instruction* inst, const operand* operands);
-		void emit_instruction_prefix(const instruction* inst);
-		void emit_instruction_sib(const operand* operands);
+		void emit_instruction_prefix(const ins* inst);
+		void emit_instruction_opcode(const ins* inst, const opn_data* operands);
+		void emit_instruction_mod_rm(const ins* inst, const opn_data* operands);
+		void emit_instruction_sib(const opn_data* operands);
+		void emit_operands(const ins* inst, const opn_data* operands);
 
 		// opcode prefixes
-		void emit_opcode_prefix_rex(const instruction* inst, const operand* operands);
+		void emit_opcode_prefix_rex(const ins* inst, const opn_data* operands);
 		void emit_opcode_prefix_vex(const instruction* inst, const operand* operands);
 		void emit_opcode_prefix_evex(const instruction* inst, const operand* operands);
 
 		void emit_opcode_prefix_rex_mem(const mem& memory);
 
 		// operands
-		void emit_operands(const instruction* inst, const operand* operands);
 		void emit_data_operand(u64 data, u16 bit_width);
 
-		static auto find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8>;
-		static auto find_instruction_info(u32 index, const opn_data* operands) -> const ins*;
+		auto find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8>;
+		auto find_instruction_info(u32 index, const opn_data* operands) -> const ins*;
 
-		static auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
-		static auto has_sib_byte(const operand* operands) -> bool;
+		auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
+		auto has_sib_byte(const opn_data* operands) -> bool;
 
-		static auto get_instruction_rex(const instruction* inst, const operand* operands) -> u8;
-		static auto get_instruction_rex_rex(const instruction* inst, const operand* operands) -> u8;
-		static auto get_instruction_rex_vex(const instruction* inst, const operand* operands) -> u8;
-		static auto get_instruction_rex_evex(const instruction* inst, const operand* operands) -> u8;
+		auto get_instruction_rex(const ins* inst, const opn_data* operands) -> u8;
 
-		static auto get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8;
+		auto get_instruction_rex_rex(const ins* inst, const opn_data* operands) -> u8;
+		auto get_instruction_rex_vex(const instruction* inst, const operand* operands) -> u8;
+		auto get_instruction_rex_evex(const instruction* inst, const operand* operands) -> u8;
+
+		auto get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8;
 
 		enum mod_mode : u8 {
 			INDIRECT        = 0b00,
@@ -89,13 +90,16 @@ namespace baremetal {
 		static auto indirect_disp_8(u8 rx, u8 base) -> u8;
 		static auto indirect_disp_32(u8 rx, u8 base) -> u8;
 
-		void instruction_begin();
+		void instruction_begin(const ins* inst, const opn_data* operands);
 		auto get_current_inst_size() const -> u8;
 	private:
 		// parsing
 		lexer m_lex;
 		utility::dynamic_string m_assembly;
 		u64 m_asm_i;
+
+		u8 m_reg_count;
+		u8 m_regs[4]; // relevant registers
 
 		utility::dynamic_array<u8> m_bytes;
 		u64 m_current_inst_begin;

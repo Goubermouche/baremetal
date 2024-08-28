@@ -458,10 +458,55 @@ namespace baremetal {
 		RMN_4,
 		RMN_5,
 		RMN_6,
-		RMN_7opn_data,
+		RMN_7,
 	};
 
-	struct ins {
+	inline auto is_operand_mem(opn op) -> bool {
+		switch(op) {
+			case OPN_MEM:
+			case OPN_M8:
+			case OPN_M16:
+			case OPN_M32:
+			case OPN_M64:
+			case OPN_M128:
+			case OPN_M256:
+			case OPN_M512:  return true;
+			default: return false;
+		}
+	}
+
+	struct ins { 
+		constexpr auto is_rex() const -> bool {
+			switch(encoding) { 
+				case ENCN_NORMAL:
+				case ENCN_MR:
+				case ENCN_M:
+				case ENCN_RM:
+				case ENCN_RVM:
+				case ENCN_RMV:
+				case ENCN_VM:
+				case ENCN_MVR:
+				case ENCN_R: return true;
+				default: return false;
+			}
+		}
+		constexpr auto is_vex() const -> bool {
+			switch(encoding) {
+				case ENCN_VEX:
+				case ENCN_VEX_RVM:
+				case ENCN_VEX_RMV:
+				case ENCN_VEX_MVR:
+				case ENCN_VEX_VM:
+				case ENCN_VEX_RM: return true;
+				default: return false;
+			}
+		}
+		constexpr auto is_evex() const -> bool {
+			switch(encoding) {
+				default: return false;
+			}
+		}
+
 		constexpr auto is_rexw() const -> bool {
 			return flags & 0b00000001;
 		}
@@ -469,9 +514,14 @@ namespace baremetal {
 		constexpr auto is_ri() const -> bool {
 			return flags & 0b01100000;
 		}
-		
-		constexpr auto get_rm() const -> rmn {
-			return static_cast<rmn>((flags & 0b00011110) >> 1);
+		constexpr auto is_r() const -> bool {
+			return flags & 0b00000010;
+		}
+		constexpr auto is_rm() const -> bool {
+			return flags & 0b00011100;
+		}
+		constexpr auto get_rm() const -> u8 {
+			return (flags & 0b00011100) >> 1;
 		}
 
 		constexpr auto get_special_kind() const -> u8 {
@@ -480,9 +530,25 @@ namespace baremetal {
 		constexpr auto get_special_index() const -> u16 {
 			return special_index & 0b0011111111111111;
 		};
-
 		constexpr auto has_special_index() const -> bool {
 			return special_index != utility::limits<u16>::max();
+		}
+		auto get_mem_operand() const -> u8 {
+			if(is_operand_mem(operands[0])) { return 0; }
+			if(is_operand_mem(operands[1])) { return 1; }
+			if(is_operand_mem(operands[2])) { return 2; }
+			if(is_operand_mem(operands[3])) { return 3; }
+
+			return 0;
+		}
+
+		auto has_mem_operand() const -> bool {
+			if(is_operand_mem(operands[0])) { return true; }
+			if(is_operand_mem(operands[1])) { return true; }
+			if(is_operand_mem(operands[2])) { return true; }
+			if(is_operand_mem(operands[3])) { return true; }
+
+			return false;
 		}
 
 		const char* name;
@@ -690,20 +756,6 @@ inline auto is_operand_zmm(opn op) -> bool {
 	return op == OPN_ZMM || op == OPN_ZMM_K || op == OPN_ZMM_KZ;
 }
 
-inline auto is_operand_mem(opn op) -> bool {
-		switch(op) {
-			case OPN_MEM:
-			case OPN_M8:
-			case OPN_M16:
-			case OPN_M32:
-			case OPN_M64:
-			case OPN_M128:
-			case OPN_M256:
-			case OPN_M512:  return true;
-			default: return false;
-		}
-	}
-
 	inline auto is_operand_moff(opn op) -> bool {
 		switch(op) {
 			case OPN_MOFF8:
@@ -731,6 +783,46 @@ inline auto is_operand_mem(opn op) -> bool {
 			case OPN_REL32: return true;
 			default: return false;
 		}
+	}
+
+	inline auto is_operand_reg(opn op) -> bool {
+		switch(op) {
+			case OPN_R8:
+			case OPN_R16:
+			case OPN_R32:
+			case OPN_R64:
+			case OPN_XMM:
+			case OPN_XMM_KZ:
+			case OPN_XMM_K:
+			case OPN_YMM:
+			case OPN_YMM_K:
+			case OPN_YMM_KZ:
+			case OPN_ZMM:
+			case OPN_ZMM_K:
+			case OPN_ZMM_KZ:
+			case OPN_MM:
+			case OPN_SREG:
+			case OPN_DREG:
+			case OPN_CREG:
+			case OPN_AL:
+			case OPN_AX:
+			case OPN_EAX:
+			case OPN_RAX:
+			case OPN_CL:
+			case OPN_DX:
+			case OPN_ECX:
+			case OPN_RCX:
+			case OPN_BND: return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_extended_reg(const opn_data& op) -> bool {
+		if(is_operand_reg(op.type)) {
+			return op.r >= 8;
+		}
+
+		return false;
 	}
 
 	inline auto get_operand_bit_width(opn op) -> u16 {

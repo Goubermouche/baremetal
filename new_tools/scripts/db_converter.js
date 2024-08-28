@@ -26,7 +26,7 @@ function generate_combinations(arr) {
     }
 
     const [first, ...rest] = elements;
-    const parts = first.split(/\/|\|/);
+    const parts = first.includes('/') ? first.split('/') : [first];
 
     parts.forEach(part => {
       combine(prefix.concat(part), rest);
@@ -277,25 +277,23 @@ function main() {
 		}
 
 		group.data.forEach(inst => {
-			const combinations = generate_combinations(extract_inst_operands(inst.inst));
-	
-			let variant = {
-				name: combinations[0][0],
-				operands: [],
-				enc: extract_encoding(inst.op),
-				extension: [],
-				category: group.category
-			};
+			const operands = extract_inst_operands(inst.inst);
+			const combinations = generate_combinations(operands);
 	
 			combinations.forEach(comb => {
-				variant.extension = [];
-	
+				let variant = {
+					name: comb[0],
+					operands: comb.slice(1),
+					enc: extract_encoding(inst.op),
+					extension: [],
+					category: group.category
+				};
+
 				if(group.ext) { variant.extension.push(group.ext); }
 				if(inst.ext) { variant.extension.push(inst.ext); }
 				if(group.arch) { variant.extension.push(group.arch); }
 				if(inst.arch) { variant.extension.push(inst.arch); }
 	
-				variant.operands = comb.slice(1);
 				instructions.push(variant);
 			});
 		});
@@ -304,7 +302,7 @@ function main() {
 	gp_inst = [];
 	
 	instructions.forEach(inst => {
-		if(inst.category.includes('GP') && !inst.extension.includes('X86') && inst.enc.enc === 'NORMAL') {
+		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR'].includes(inst.enc.enc) && inst.name === 'xor') {
 			gp_inst.push(inst);
 		}
 	});

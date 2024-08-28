@@ -551,10 +551,10 @@
       {"inst": "[lock|xacqrel] xor x:~r16/m16, ~r16"                        , "op": "MR: 66 31 /r"                   , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"},
       {"inst": "[lock|xacqrel] xor X:~r32/m32, ~r32"                        , "op": "MR: 31 /r"                      , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"},
       {"inst": "[lock|xacqrel] xor X:~r64/m64, ~r64"                        , "op": "MR: REX.W 31 /r"                , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"},
-      {"inst": "xor x:~r8, ~r8/m8"                                          , "op": "RM: 32 /r"                      , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"},
-      {"inst": "xor x:~r16, ~r16/m16"                                       , "op": "RM: 66 33 /r"                   , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"},
-      {"inst": "xor X:~r32, ~r32/m32"                                       , "op": "RM: 33 /r"                      , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"},
-      {"inst": "xor X:~r64, ~r64/m64"                                       , "op": "RM: REX.W 33 /r"                , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"}
+      {"inst": "xor x:~r8, ~m8"                                          , "op": "RM: 32 /r"                      , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"},
+      {"inst": "xor x:~r16, ~m16"                                       , "op": "RM: 66 33 /r"                   , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"},
+      {"inst": "xor X:~r32, ~m32"                                       , "op": "RM: 33 /r"                      , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"},
+      {"inst": "xor X:~r64, ~m64"                                       , "op": "RM: REX.W 33 /r"                , "io": "OF=0 SF=W ZF=W AF=U PF=W CF=0"}
     ]},
 
     {"category": "GP GP_IN_OUT", "volatile": true, "data": [
