@@ -381,9 +381,9 @@ namespace baremetal {
 		ENCN_VEX_VM,
 		ENCN_VEX_RM,
 		ENCN_VEX_RVM,
+		ENCN_VEX_RMV,
 
 		// unfinished
-		ENCN_VEX_RMV,
 		ENCN_VEX_MVR,
 		ENCN_XOP_VM,
 		ENCN_XOP,
