@@ -370,13 +370,13 @@ namespace baremetal {
 #pragma pack(pop)
 
 	enum encn : u8 {
-		// finished	
 		ENCN_R,
 		ENCN_M,
 		ENCN_MR,
 		ENCN_RM,
 		ENCN_NORMAL,
 
+		// VEX
 		ENCN_VEX,
 		ENCN_VEX_VM,
 		ENCN_VEX_RM,
@@ -384,7 +384,7 @@ namespace baremetal {
 		ENCN_VEX_RMV,
 		ENCN_VEX_MVR,
 
-		// unfinished
+		// XOP
 		ENCN_XOP_VM,
 		ENCN_XOP,
 	};
@@ -496,14 +496,23 @@ namespace baremetal {
 				default: return false;
 			}
 		}
-		constexpr auto is_vex() const -> bool {
+		constexpr auto is_vex_xop() const -> bool {
 			switch(encoding) {
+				case ENCN_XOP:
+				case ENCN_XOP_VM:
 				case ENCN_VEX:
 				case ENCN_VEX_RVM:
 				case ENCN_VEX_RMV:
 				case ENCN_VEX_MVR:
 				case ENCN_VEX_VM:
 				case ENCN_VEX_RM: return true;
+				default: return false;
+			}
+		}
+		constexpr auto is_xop() const -> bool {
+			switch(encoding) {
+				case ENCN_XOP:
+				case ENCN_XOP_VM: return true;
 				default: return false;
 			}
 		}

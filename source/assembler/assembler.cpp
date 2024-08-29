@@ -417,29 +417,29 @@ namespace baremetal {
 	}
 
 	auto assembler::find_rex_pair(const instruction* inst, const operand* operands) -> std::pair<u8, u8> {
-		if(inst->is_vex() || inst->is_evex()) {
-			std::pair<u8, u8> result = { 0, 0 };
+	// 	if(inst->is_vex_xop() || inst->is_evex()) {
+	// 		std::pair<u8, u8> result = { 0, 0 };
 
-			switch(inst->get_encoding_prefix()) {
-				case ENC_EVEX_RVM:
-				case ENC_VEX_RVM: {
-					result.first = operands[0].r;
-					result.second = operands[2].r;
-					break;
-				}
-				case ENC_VEX_VM:
-				case ENC_VEX_RM:
-				case ENC_VEX_RMI:
-				case ENC_VEX_RMV: {
-					result.first = operands[0].r;
-					result.second = operands[1].r;
-					break;
-				}
-				default: ASSERT(false, "unhandled rex case 0");
-			}
+	// 		switch(inst->get_encoding_prefix()) {
+	// 			case ENC_EVEX_RVM:
+	// 			case ENC_VEX_RVM: {
+	// 				result.first = operands[0].r;
+	// 				result.second = operands[2].r;
+	// 				break;
+	// 			}
+	// 			case ENC_VEX_VM:
+	// 			case ENC_VEX_RM:
+	// 			case ENC_VEX_RMI:
+	// 			case ENC_VEX_RMV: {
+	// 				result.first = operands[0].r;
+	// 				result.second = operands[1].r;
+	// 				break;
+	// 			}
+	// 			default: ASSERT(false, "unhandled rex case 0");
+	// 		}
 
-			return result;
-		}
+	// 		return result;
+	// 	}
 
 		if(inst->get_reg_operand_count() == 0) {
 			return { 0, 0 };
@@ -629,7 +629,11 @@ namespace baremetal {
 	}
 
 	void assembler::emit_opcode_prefix_vex(const ins* inst, const opn_data* operands) {
-		m_bytes.push_back(0xc4); // three byte prefix
+		if(inst->is_xop()) {
+			m_bytes.push_back(0x8f);
+		} else {
+			m_bytes.push_back(0xc4);
+		}
 
 		// second byte
 		// ~R          [X_______]
@@ -655,11 +659,20 @@ namespace baremetal {
 		// map_select
 		u8 map_select = 0;
 
-		switch((inst->opcode & 0xffff00)) {
-			case 0x000f00: map_select = 0b01; break; 
-			case 0x0f3800: map_select = 0b10; break;
-			case 0x0f3a00: map_select = 0b11; break;
-			default: ASSERT(false, "unknown leading opcode");
+		if(inst->is_xop()) {
+			switch(inst->encoding) {
+				case ENCN_XOP:    map_select = 0b01001; break;
+				case ENCN_XOP_VM: map_select = 0b01010; break;
+				default: ASSERT(false, "unknown xop encoding");
+			}
+		}
+		else {
+			switch((inst->opcode & 0xffff00)) {
+				case 0x000f00: map_select = 0b01; break; 
+				case 0x0f3800: map_select = 0b10; break;
+				case 0x0f3a00: map_select = 0b11; break;
+				default: ASSERT(false, "unknown leading opcode");
+			}
 		}
 
 		second |= map_select;
@@ -680,24 +693,19 @@ namespace baremetal {
 		// vvvv - negation of one of our v operand
 		u8 vvvv = 0;
 
-		// if(inst->has_vex_vvvv()) {
 			switch(inst->encoding) {
+				// VEX
 				case ENCN_VEX: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
 				case ENCN_VEX_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
 				case ENCN_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 				case ENCN_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
 				case ENCN_VEX_MVR: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
 				case ENCN_VEX_RM: vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
-				// case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
-				// case ENC_VEX_RMI: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
-				// case ENC_VEX_VM:  vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
-				// case ENC_VEX_RM:  vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
+				// XOP
+				case ENCN_XOP: vvvv = 0b1111 << 3; break;
+				case ENCN_XOP_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
 				default: ASSERT(false, "unhandled vex prefix");
 			}
-		// }
-		// else {
-		// 	vvvv = 0b01111000;
-		// }
 
 		third |= vvvv;
 
@@ -901,7 +909,7 @@ namespace baremetal {
 	}
 
 	void assembler::emit_instruction_prefix(const ins* inst) {
-		if(inst->is_vex() || inst->is_evex()) {
+		if(inst->is_vex_xop() || inst->is_evex()) {
 			return;
 		}
 
@@ -959,7 +967,7 @@ namespace baremetal {
 		if(inst->is_rex()) {
 			emit_opcode_prefix_rex(inst, operands);
 		}
-		else if(inst->is_vex()) {
+		else if(inst->is_vex_xop()) {
 			opcode_limit = 3;
 		// 	if(inst_uses_extended_vex(inst, operands)) {
 		// 		// when handling stuff like ymm16 we have to switch to evex
@@ -1609,7 +1617,27 @@ namespace baremetal {
 				}
 				break;
 			}
+			case ENCN_XOP: {
+				if(m_regs[0] > 7) {
+					base = m_regs[0];
+				} 
+				else {
+					rx = m_regs[0];
+				}
 
+				break;
+			}
+			case ENCN_XOP_VM: {
+				switch(index_byte) {
+					case 0b00000000:
+					case 0b00000100: rx = registers[0]; base = registers[1]; break;
+					case 0b00001000: rx = registers[1]; base = registers[1]; break;
+					case 0b00001100: rx = 0;            base = registers[1]; break;
+					default: ASSERT(false, "unhandled rex case xop");
+				}
+
+				break;
+			}
 			default: ASSERT(false, "unhandled rex case 6");
 		}
 
@@ -1753,7 +1781,7 @@ namespace baremetal {
 			return get_instruction_rex_rex(inst, operands);
 		}
 
-		if(inst->is_vex()) {
+		if(inst->is_vex_xop()) {
 			// if(inst_uses_extended_vex(inst, operands)) {
 			// 	// when handling stuff like ymm16 we have to switch to evex
 			// 	return get_instruction_rex_evex(inst, operands);
@@ -1871,6 +1899,8 @@ namespace baremetal {
 				case ENCN_MR:     
 				case ENCN_M:     
 				case ENCN_VEX_VM:     
+				case ENCN_XOP:     
+				case ENCN_XOP_VM:     
 				case ENCN_VEX_RM:     
 				case ENCN_R:      m_regs[0] = temp[0]; break;
 				default: ASSERT(false, "unknown encoding for 1 reg\n");
@@ -1892,6 +1922,7 @@ namespace baremetal {
 
 					break;
 				}
+				case ENCN_XOP_VM: m_regs[0] = temp[1]; m_regs[1] = temp[0]; break;
 				case ENCN_VEX_VM: m_regs[0] = temp[1]; m_regs[1] = temp[0]; break;
 				case ENCN_VEX:  
 				case ENCN_VEX_RM:  
