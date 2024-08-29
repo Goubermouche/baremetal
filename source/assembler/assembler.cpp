@@ -1433,7 +1433,8 @@ namespace baremetal {
 		if(m_reg_count == 1) {
 			switch(inst->encoding) {
 				case ENCN_NORMAL: 
-				case ENCN_M: base = m_regs[0]; break;
+				case ENCN_M:
+				case ENCN_R: base = m_regs[0]; break;
 				default: rx = m_regs[0]; break;
 			}
 		}
@@ -1819,10 +1820,11 @@ namespace baremetal {
 		if(m_reg_count == 0) { /*nothing to do*/ }
 		else if(m_reg_count == 1) {
 			switch(inst->encoding) {
-				case ENCN_NORMAL: m_regs[0] = temp[0]; break;
-				case ENCN_RM:     m_regs[0] = temp[0]; break;
-				case ENCN_MR:     m_regs[0] = temp[0]; break; 
-				case ENCN_M:      m_regs[0] = temp[0]; break;
+				case ENCN_NORMAL:
+				case ENCN_RM:    
+				case ENCN_MR:     
+				case ENCN_M:     
+				case ENCN_R:      m_regs[0] = temp[0]; break;
 				default: ASSERT(false, "unknown encoding for 1 reg\n");
 			}
 		}

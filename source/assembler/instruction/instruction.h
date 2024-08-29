@@ -371,6 +371,7 @@ namespace baremetal {
 
 	enum encn : u8 {
 		// finished	
+		ENCN_R,
 		ENCN_M,
 		ENCN_MR,
 		ENCN_RM,
@@ -381,7 +382,6 @@ namespace baremetal {
 		ENCN_RMV,
 		ENCN_VM,
 		ENCN_MVR,
-		ENCN_R,
 		ENCN_VEX_RVM,
 		ENCN_VEX_RMV,
 		ENCN_XOP_VM,
