@@ -684,6 +684,7 @@ namespace baremetal {
 			switch(inst->encoding) {
 				case ENCN_VEX: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
 				case ENCN_VEX_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
+				case ENCN_VEX_RM: vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
 				// case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 				// case ENC_VEX_RMI: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
 				// case ENC_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
@@ -707,11 +708,11 @@ namespace baremetal {
 		if(inst->prefix & OPERAND_SIZE_OVERRIDE) {
 			third |= 0b01;
 		}
-		else if(inst->prefix & REP) {
-			third |= 0b10;
-		}
 		else if(inst->prefix & REPNE) {
 			third |= 0b11;
+		}
+		else if(inst->prefix & REP) {
+			third |= 0b10;
 		}
 	
 		m_bytes.push_back(third);
@@ -1480,7 +1481,6 @@ namespace baremetal {
 		u8 rx = 0;
 		u8 base = 0;
 		u8 index = 0;
-		u16 index_byte = 0;	
 
 		// figure out the index bit first
 		if(inst->has_mem_operand()) {
@@ -1491,9 +1491,13 @@ namespace baremetal {
 			}
 		}
 
-		if(m_reg_count == 2) {
+		if(m_reg_count == 1) {
+			rx = m_regs[0];
+		}
+		else if(m_reg_count == 2) {
 			switch(inst->encoding) {
 				case ENCN_VEX_VM: base = m_regs[0]; break;
+				case ENCN_VEX_RM: rx = m_regs[0]; base = m_regs[1]; break;
 				default: rx = m_regs[0]; break;
 			}
 		}
@@ -1776,6 +1780,7 @@ namespace baremetal {
 				case ENCN_MR:     
 				case ENCN_M:     
 				case ENCN_VEX_VM:     
+				case ENCN_VEX_RM:     
 				case ENCN_R:      m_regs[0] = temp[0]; break;
 				default: ASSERT(false, "unknown encoding for 1 reg\n");
 			}
@@ -1804,6 +1809,11 @@ namespace baremetal {
 				case ENCN_VEX_VM: {
 					m_regs[0] = temp[1];
 					m_regs[1] = temp[0];
+					break;
+				}
+				case ENCN_VEX_RM: {
+					m_regs[0] = temp[0];
+					m_regs[1] = temp[1];
 					break;
 				}
 				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
