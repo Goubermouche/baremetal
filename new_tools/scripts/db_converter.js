@@ -303,8 +303,8 @@ function main() {
 	gp_inst = [];
 	
 	instructions.forEach(inst => {
-		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR', 'M', 'NORMAL', 'R', 'VEX', 'VEX_VM'].includes(inst.enc.enc) && inst.name === 'xor') {
-		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['VEX_RM'].includes(inst.enc.enc)) {
+		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR', 'M', 'NORMAL', 'R', 'VEX', 'VEX_VM', 'VEX_RM'].includes(inst.enc.enc) && inst.name === 'xor') {
+		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['VEX_RVM'].includes(inst.enc.enc)) {
 			gp_inst.push(inst);
 		}
 	});

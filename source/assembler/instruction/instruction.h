@@ -380,12 +380,12 @@ namespace baremetal {
 		ENCN_VEX,
 		ENCN_VEX_VM,
 		ENCN_VEX_RM,
+		ENCN_VEX_RVM,
 
 		// unfinished
-		ENCN_VEX_RVM,
 		ENCN_VEX_RMV,
-		ENCN_XOP_VM,
 		ENCN_VEX_MVR,
+		ENCN_XOP_VM,
 		ENCN_XOP,
 	};
 

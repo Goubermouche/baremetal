@@ -684,6 +684,7 @@ namespace baremetal {
 			switch(inst->encoding) {
 				case ENCN_VEX: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
 				case ENCN_VEX_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
+				case ENCN_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 				case ENCN_VEX_RM: vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
 				// case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 				// case ENC_VEX_RMI: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
@@ -705,16 +706,16 @@ namespace baremetal {
 		third |= l;
 
 		// pp - implied mandatory prefix
-		if(inst->prefix & OPERAND_SIZE_OVERRIDE) {
+		if(inst->prefix == OPERAND_SIZE_OVERRIDE) {
 			third |= 0b01;
 		}
-		else if(inst->prefix & REPNE) {
-			third |= 0b11;
-		}
-		else if(inst->prefix & REP) {
+		else if(inst->prefix == REP) {
 			third |= 0b10;
 		}
-	
+		else if(inst->prefix == REPNE) {
+			third |= 0b11;
+		}
+
 		m_bytes.push_back(third);
 	}
 
@@ -979,18 +980,8 @@ namespace baremetal {
 		u64 opcode = inst->opcode;
 
 		if(inst->is_ri()) {
-			// utility::console::print("ri not implemented\n");
-			// auto [rx, destination] = find_rex_pair(inst, operands);
-
-			// // extract the 3 least significant reg bits 
-			// if(inst->get_direction()) {
 			opcode += m_regs[0] & 0b00000111;
-			// }
-			// else {
-			// 	opcode += rx & 0b00000111;
-			// }
 		}
-
 
 		// append opcode bytes
 		for(u8 i = 4; i-- > opcode_limit;) {
@@ -1079,6 +1070,12 @@ namespace baremetal {
 
 	void assembler::emit_instruction_mod_rm(const ins* inst, const opn_data* operands) {
 		u8 rx = m_regs[0];
+		u8 destination = m_regs[1];
+
+		switch(inst->encoding) {
+			case ENCN_VEX_RVM: destination = m_regs[2]; break;
+			default: break;
+		}
 
 		if(inst->operand_count == 1) {
 			rx = 0;
@@ -1126,7 +1123,7 @@ namespace baremetal {
 				m_bytes.push_back(direct(0, m_regs[0]));
 			}
 			else {
-				m_bytes.push_back(direct(m_regs[0], m_regs[1]));
+				m_bytes.push_back(direct(m_regs[0], destination));
 			}
 		}
 		else if(inst->is_rm()) {
@@ -1368,6 +1365,19 @@ namespace baremetal {
 			return op.memory.base.index;
 		}
 
+		return 0;
+	}
+
+
+	auto extract_operand_reg_beg(const opn_data& op) -> u8 {
+		if(is_operand_reg(op.type)) {
+			return op.r;
+		}
+
+		if(is_operand_mem(op.type) && op.memory.has_base) {
+			return op.memory.base.index;
+		}
+
 		return utility::limits<u8>::max();
 	}
 
@@ -1481,6 +1491,7 @@ namespace baremetal {
 		u8 rx = 0;
 		u8 base = 0;
 		u8 index = 0;
+		u8 index_byte = 0;
 
 		// figure out the index bit first
 		if(inst->has_mem_operand()) {
@@ -1491,36 +1502,77 @@ namespace baremetal {
 			}
 		}
 
-		if(m_reg_count == 1) {
-			rx = m_regs[0];
-		}
-		else if(m_reg_count == 2) {
-			switch(inst->encoding) {
-				case ENCN_VEX_VM: base = m_regs[0]; break;
-				case ENCN_VEX_RM: rx = m_regs[0]; base = m_regs[1]; break;
-				default: rx = m_regs[0]; break;
-			}
-		}
-		else if(m_reg_count == 3) {
-			rx = m_regs[0];
-			base = m_regs[1];
-		}
-
 		const u8 registers[4] = {
-			// extract_operand_reg(operands[0]),
-			// extract_operand_reg(operands[1]),
-			// extract_operand_reg(operands[2]),
-			// extract_operand_reg(operands[3]),
+			extract_operand_reg(operands[0]),
+			extract_operand_reg(operands[1]),
+			extract_operand_reg(operands[2]),
+			extract_operand_reg(operands[3]),
 		};
 
 		// op[0] is extended? [____X___]
 		// op[1] is extended? [_____X__]
 		// op[2] is extended? [______X_]
 		// op[3] is extended? [_______X]
-		// index_byte |= (registers[0] >= 8) << 3;
-		// index_byte |= (registers[1] >= 8) << 2;
-		// index_byte |= (registers[2] >= 8) << 1;
-		// index_byte |= (registers[3] >= 8) << 0;
+		index_byte |= (registers[0] >= 8) << 3;
+		index_byte |= (registers[1] >= 8) << 2;
+		index_byte |= (registers[2] >= 8) << 1;
+		index_byte |= (registers[3] >= 8) << 0;
+
+		switch(inst->encoding) {
+			case ENCN_VEX_RVM: {
+				switch(index_byte) {
+					case 0b1110: 
+					case 0b1000:
+					case 0b0000: rx = registers[0]; base = registers[1]; break;
+					case 0b1100:
+					case 0b0010: rx = registers[1]; base = registers[2]; break;
+					case 0b1010:
+					case 0b0110: rx = registers[0]; base = registers[2]; break;
+					case 0b0100: rx = registers[2]; base = registers[0]; break;
+					default: ASSERT(false, "unhandled rex case 1");
+				}
+
+				break;
+			}
+			case ENCN_VEX_RMV: {
+				switch(index_byte) {
+					case 0b00001000:
+					case 0b00001010:
+					case 0b00001100:
+					case 0b00001110:
+					case 0b00000000:
+					case 0b00000010: rx = registers[0]; base = registers[1]; break;
+					case 0b00000110: rx = registers[0]; base = registers[2]; break;
+					case 0b00000100: rx = registers[2]; base = registers[1]; break;
+					default: ASSERT(false, "unhandled rex case 2");
+				}
+
+				break;
+			}
+			case ENCN_VEX_VM: {
+				switch(index_byte) {
+					case 0b00000000:
+					case 0b00000100: rx = registers[0]; base = registers[1]; break;
+					case 0b00001000: rx = registers[1]; base = registers[1]; break;
+					case 0b00001100: rx = 0;            base = registers[1]; break;
+					default: ASSERT(false, "unhandled rex case 3");
+				}
+
+				break;
+			}
+			case ENCN_VEX_RM: {
+				switch(index_byte) {
+					case 0b00001000:
+					case 0b00001100:
+					case 0b00000100: rx = registers[0]; base = registers[1]; break;
+					case 0b00000000: rx = registers[1]; base = registers[0]; break;
+					default: ASSERT(false, "unhandled rex case 4");
+				}
+
+				break;
+			}
+			default: ASSERT(false, "unhandled rex case 5");
+		}
 
 		return rex(is_rexw, rx, base, index);
 	}
@@ -1765,7 +1817,7 @@ namespace baremetal {
 		u8 temp[4] = { 0 };
 
 		for(u8 i = 0; i < 4; ++i) {
-			u8 r = extract_operand_reg(operands[i]);
+			u8 r = extract_operand_reg_beg(operands[i]);
 
 			if(r != utility::limits<u8>::max()) {
 				temp[m_reg_count++] = r;
@@ -1801,21 +1853,10 @@ namespace baremetal {
 
 					break;
 				}
-				case ENCN_VEX: {
-					m_regs[0] = temp[0];
-					m_regs[1] = temp[1];
-					break;
-				}
-				case ENCN_VEX_VM: {
-					m_regs[0] = temp[1];
-					m_regs[1] = temp[0];
-					break;
-				}
-				case ENCN_VEX_RM: {
-					m_regs[0] = temp[0];
-					m_regs[1] = temp[1];
-					break;
-				}
+				case ENCN_VEX:  
+				case ENCN_VEX_VM: 
+				case ENCN_VEX_RM:  
+				case ENCN_VEX_RVM: 
 				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
 				case ENCN_MR: {
 					if(inst->operands[2] == OPN_CL) {
@@ -1834,8 +1875,9 @@ namespace baremetal {
 		else if(m_reg_count == 3) {
 			switch(inst->encoding) {
 				case ENCN_RM: m_regs[0] = temp[2]; m_regs[1] = temp[1];  break;
-				case ENCN_MR: m_regs[0] = temp[1]; m_regs[1] = temp[0]; m_regs[2] = m_regs[2]; break;
-				case ENCN_VEX: m_regs[0] = temp[1]; m_regs[1] = temp[0]; m_regs[2] = m_regs[2]; break;
+				case ENCN_MR: m_regs[0] = temp[1]; m_regs[1] = temp[0]; m_regs[2] = temp[2]; break;
+				case ENCN_VEX: 
+				case ENCN_VEX_RVM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				default: ASSERT(false, "unknown encoding for 3 regs\n");
 			}
 		}
