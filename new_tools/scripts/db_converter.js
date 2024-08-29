@@ -307,7 +307,7 @@ function main() {
 		if(
 			inst.category.includes('GP') && 
 			!inst.extension.includes('X86') && 
-			['VEX', 'VEX_VM', 'VEX_RM', 'VEX_RVM', 'VEX_RMV'].includes(inst.enc.enc)
+			['VEX', 'VEX_VM', 'VEX_RM', 'VEX_RVM', 'VEX_RMV', 'VEX_MVR'].includes(inst.enc.enc)
 		) {
 			gp_inst.push(inst);
 		}

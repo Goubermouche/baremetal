@@ -686,6 +686,7 @@ namespace baremetal {
 				case ENCN_VEX_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
 				case ENCN_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 				case ENCN_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
+				case ENCN_VEX_MVR: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
 				case ENCN_VEX_RM: vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
 				// case ENC_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 				// case ENC_VEX_RMI: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
@@ -1074,6 +1075,18 @@ namespace baremetal {
 
 		switch(inst->encoding) {
 			case ENCN_VEX_RVM: destination = m_regs[2]; break;
+			case ENCN_VEX_MVR: {
+				if(m_reg_count == 3) {
+					rx = m_regs[1]; 
+					destination = m_regs[2]; 
+				}
+				else if(m_reg_count == 2) {
+					rx = m_regs[0]; 
+					destination = m_regs[1];
+				}
+
+				break;
+			}
 			case ENCN_VEX_VM: destination = m_regs[1]; break;
 			default: break;
 		}
@@ -1124,7 +1137,7 @@ namespace baremetal {
 				m_bytes.push_back(direct(0, m_regs[0]));
 			}
 			else {
-				m_bytes.push_back(direct(m_regs[0], destination));
+				m_bytes.push_back(direct(rx, destination));
 			}
 		}
 		else if(inst->is_rm()) {
@@ -1572,6 +1585,20 @@ namespace baremetal {
 
 				break;
 			}
+			case ENCN_VEX_MVR: {
+				switch(index_byte) {
+					case 0b1110: rx = registers[0]; base = registers[1]; break; 
+					case 0b1000: rx = registers[1]; base = registers[0]; break;
+					case 0b0000: rx = registers[0]; base = registers[1]; break;
+					case 0b1100: rx = registers[1]; base = registers[0]; break;
+					case 0b0010: rx = registers[0]; base = registers[1]; break;
+					case 0b1010: rx = registers[1]; base = registers[2]; break;
+					case 0b0110: rx = registers[1]; base = 0; break;
+					case 0b0100: rx = registers[1]; base = 0; break;
+					default: ASSERT(false, "unhandled rex case 5");
+				}
+				break;
+			}
 			case ENCN_VEX: {
 				if(m_reg_count == 2) {
 					rx = m_regs[0];
@@ -1583,7 +1610,7 @@ namespace baremetal {
 				break;
 			}
 
-			default: ASSERT(false, "unhandled rex case 5");
+			default: ASSERT(false, "unhandled rex case 6");
 		}
 
 		return rex(is_rexw, rx, base, index);
@@ -1870,6 +1897,7 @@ namespace baremetal {
 				case ENCN_VEX_RM:  
 				case ENCN_VEX_RVM: 
 				case ENCN_VEX_RMV: 
+				case ENCN_VEX_MVR: 
 				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
 				case ENCN_MR: {
 					if(inst->operands[2] == OPN_CL) {
@@ -1892,6 +1920,7 @@ namespace baremetal {
 				case ENCN_VEX: m_regs[0] = temp[1]; m_regs[1] = temp[0]; m_regs[2] = temp[2]; break; 
 				case ENCN_VEX_RVM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				case ENCN_VEX_RMV: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
+				case ENCN_VEX_MVR: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				default: ASSERT(false, "unknown encoding for 3 regs\n");
 			}
 		}
