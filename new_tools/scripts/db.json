@@ -1,5 +1,15 @@
 [
-	{ "name": "cmpzxadd", "operands": ["m32", "r32", "r32"], "enc": "VEX", "opcode": "0F38E4", "prefix": ["66"], "rexw": false, "rm": "r", "ri": "", "size": 128 },
-	{ "name": "cmpzxadd", "operands": ["m64", "r64", "r64"], "enc": "VEX", "opcode": "0F38E4", "prefix": ["66"], "rexw": true , "rm": "r", "ri": "", "size": 128 }
+	{ "name": "blsi"  , "operands": ["r32", "r32"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": false, "rm": "3", "ri": "", "size": 64 },
+	{ "name": "blsi"  , "operands": ["r32", "m32"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": false, "rm": "3", "ri": "", "size": 64 },
+	{ "name": "blsi"  , "operands": ["r64", "r64"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": true , "rm": "3", "ri": "", "size": 64 },
+	{ "name": "blsi"  , "operands": ["r64", "m64"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": true , "rm": "3", "ri": "", "size": 64 },
+	{ "name": "blsmsk", "operands": ["r32", "r32"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": false, "rm": "2", "ri": "", "size": 64 },
+	{ "name": "blsmsk", "operands": ["r32", "m32"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": false, "rm": "2", "ri": "", "size": 64 },
+	{ "name": "blsmsk", "operands": ["r64", "r64"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": true , "rm": "2", "ri": "", "size": 64 },
+	{ "name": "blsmsk", "operands": ["r64", "m64"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": true , "rm": "2", "ri": "", "size": 64 },
+	{ "name": "blsr"  , "operands": ["r32", "r32"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": false, "rm": "1", "ri": "", "size": 64 },
+	{ "name": "blsr"  , "operands": ["r32", "m32"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": false, "rm": "1", "ri": "", "size": 64 },
+	{ "name": "blsr"  , "operands": ["r64", "r64"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": true , "rm": "1", "ri": "", "size": 64 },
+	{ "name": "blsr"  , "operands": ["r64", "m64"], "enc": "VEX_VM", "opcode": "0F38F3", "prefix": [], "rexw": true , "rm": "1", "ri": "", "size": 64 }
 ]
 
