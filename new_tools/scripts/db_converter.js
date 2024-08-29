@@ -306,7 +306,7 @@ function main() {
 		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR', 'M', 'NORMAL'].includes(inst.enc.enc) && inst.name === 'xor') {
 		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR'].includes(inst.enc.enc)) {
 		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR'].includes(inst.enc.enc) && inst.name == 'shrd') {
-		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['MR', 'RM'].includes(inst.enc.enc)) {
+		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR', 'M', 'NORMAL'].includes(inst.enc.enc) && inst.name) {
 			gp_inst.push(inst);
 		}
 	});

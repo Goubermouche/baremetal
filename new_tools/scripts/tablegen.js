@@ -102,7 +102,7 @@ function get_instruction_flags(inst) {
 	}
 
 	switch(inst.rm) {
-		case '':  break;
+		//                 _____XXXX_
 		case 'r': flags |= 0b00000010; break;
 		case '0': flags |= 0b00000100; break;
 		case '1': flags |= 0b00000110; break;
@@ -112,6 +112,7 @@ function get_instruction_flags(inst) {
 		case '5': flags |= 0b00001110; break;
 		case '6': flags |= 0b00010000; break;
 		case '7': flags |= 0b00010010; break;
+		case '':  break;
 		default: console.error(`unknown instruction rm '${inst.rm}'`);
 	}
 
@@ -224,7 +225,7 @@ function main() {
 		row.push(`${get_base_prefix()}${special_index.toString(constant_base)}`); // special index
 
 		// operands
-		inst.operands.map(op => op === '1' ? 'i8' : op).forEach(op => {
+		inst.operands.map(op => op === '1' ? 'hidden' : op).forEach(op => {
 			row.push(`OPN_${op.toUpperCase()}`);	
 		});
 

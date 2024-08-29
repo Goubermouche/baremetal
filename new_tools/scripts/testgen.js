@@ -178,6 +178,10 @@ function main() {
 
 	// generate our tests
 	instructions.forEach(inst => {
+		if(inst.operands.includes('hidden')) {
+			return;
+		}
+
 		let operand_combinations = generate_combinations(inst.operands);
 
 		operand_combinations.forEach(combination => {
@@ -187,7 +191,7 @@ function main() {
 
 	// calculate the worker count
 	const worker_path = path.join(__dirname, 'testgen_worker.js');
-	const worker_count = Math.max(Math.min(Math.floor(tests.length / 1000), os.cpus().length - 1), 1);
+	const worker_count = Math.max(Math.min(Math.floor(tests.length / 100), os.cpus().length - 1), 1);
 	const chunk_size = Math.ceil(tests.length / worker_count);
 
 	let assembled_tests = [];

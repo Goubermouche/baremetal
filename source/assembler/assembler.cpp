@@ -970,7 +970,7 @@ namespace baremetal {
 
 			// // extract the 3 least significant reg bits 
 			// if(inst->get_direction()) {
-			// 	opcode += destination & 0b00000111;
+			opcode += m_regs[0] & 0b00000111;
 			// }
 			// else {
 			// 	opcode += rx & 0b00000111;
@@ -1065,6 +1065,10 @@ namespace baremetal {
 	void assembler::emit_instruction_mod_rm(const ins* inst, const opn_data* operands) {
 		u8 rx = m_regs[0];
 
+		if(inst->operand_count == 1) {
+			rx = 0;
+		}
+
 		if(inst->is_rm()) {
 			rx = inst->get_rm() - 2; // - 2 is a fixup we need for our encoding, this can be improved but isn't vital rn
 		}
@@ -1094,7 +1098,7 @@ namespace baremetal {
 				m_bytes.push_back(indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index));
 			}
 			else {
-				// 32 bit displacement
+				// 32 bit displacemen
 				m_bytes.push_back(indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index));
 			}
 
@@ -1103,7 +1107,12 @@ namespace baremetal {
 
 		// forced mod/rm
 		if(inst->is_r()) {
-			m_bytes.push_back(direct(m_regs[0], m_regs[1]));
+			if(inst->operand_count == 1 ) {
+				m_bytes.push_back(direct(0, m_regs[0]));
+			}
+			else {
+				m_bytes.push_back(direct(m_regs[0], m_regs[1]));
+			}
 		}
 		else if(inst->is_rm()) {
 			m_bytes.push_back(direct(rx, m_regs[0]));
@@ -1423,6 +1432,7 @@ namespace baremetal {
 		
 		if(m_reg_count == 1) {
 			switch(inst->encoding) {
+				case ENCN_NORMAL: 
 				case ENCN_M: base = m_regs[0]; break;
 				default: rx = m_regs[0]; break;
 			}
@@ -1431,6 +1441,12 @@ namespace baremetal {
 			// mem, x, x
 			if(is_operand_mem(operands[0].type) && operands[0].memory.has_base == false && operand_count == 3) {
 				rx = m_regs[1];
+			}
+			else if(inst->operands[1] == OPN_CL) {
+				base = m_regs[0];
+			}
+			else if(inst->is_ri() && m_regs[0] > 7) {
+				base = m_regs[0];
 			}
 			else {
 				rx = m_regs[0];
@@ -1812,9 +1828,23 @@ namespace baremetal {
 		}
 		else if(m_reg_count == 2) {
 			switch(inst->encoding) {
+				case ENCN_NORMAL: {
+					if(is_operand_rax(inst->operands[0])) {
+						m_regs[0] = temp[1];
+					}
+					else if(is_operand_rax(inst->operands[1])) {
+						m_regs[0] = temp[0];
+					}
+					else {
+						m_regs[0] = temp[0]; 
+						m_regs[1] = temp[1];
+					}
+
+					break;
+				} 
 				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
 				case ENCN_MR: {
-					if(operands[2].type == OPN_CL) {
+					if(inst->operands[2] == OPN_CL) {
 						m_regs[0] = temp[0];
 						m_regs[1] = temp[0];
 					}
@@ -1881,3 +1911,4 @@ namespace baremetal {
 		}
 	}
 } // namespace baremetal
+

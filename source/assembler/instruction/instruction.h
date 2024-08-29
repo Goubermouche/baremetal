@@ -408,6 +408,7 @@ namespace baremetal {
 		OPN_CREG,
 		OPN_BND,
 
+		OPN_HIDDEN,
 		OPN_I8,
 		OPN_M32,
 		OPN_M64,
@@ -464,6 +465,15 @@ namespace baremetal {
 		RMN_7,
 	};
 
+	inline auto is_operand_rax(opn op) -> bool {
+		switch(op) {
+			case OPN_RAX:
+			case OPN_EAX:
+			case OPN_AX: return true;
+			default: return false;
+		}
+	}
+
 	inline auto is_operand_mem(opn op) -> bool {
 		switch(op) {
 			case OPN_MEM:
@@ -518,13 +528,19 @@ namespace baremetal {
 			return flags & 0b01100000;
 		}
 		constexpr auto is_r() const -> bool {
-			return flags & 0b00000010;
+			return (flags & (0b00000010)) == (flags & (0b00011110)) && ((flags & 0b00000010) != 0);
 		}
 		constexpr auto is_rm() const -> bool {
-			return flags & 0b00011100;
+			u8 rm = flags & 0b00011110;
+
+			if(rm == 0b00000010) {
+				return false;
+			}
+
+			return rm;
 		}
 		constexpr auto get_rm() const -> u8 {
-			return (flags & 0b00011100) >> 1;
+			return (flags & 0b00011110) >> 1;
 		}
 
 		constexpr auto get_special_kind() const -> u8 {
@@ -883,6 +899,7 @@ inline auto is_operand_zmm(opn op) -> bool {
 			case OPN_ZMM_KZ:
 			case OPN_M512:
 			case OPN_ZMM:       return 512;
+			case OPN_HIDDEN:    return 0;
 		}
 
 		return 0; // unreachable
