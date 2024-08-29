@@ -1,5 +1,5 @@
 [
-	{ "name": "rdpid"   , "operands": ["r64"], "enc": "R", "opcode": "0FC7", "prefix": ["F3"], "rexw": false, "rm": "7", "ri": "" },
-	{ "name": "senduipi", "operands": ["r64"], "enc": "R", "opcode": "0FC7", "prefix": ["F3"], "rexw": false, "rm": "6", "ri": "" }
+	{ "name": "cmpzxadd", "operands": ["m32", "r32", "r32"], "enc": "VEX", "opcode": "0F38E4", "prefix": ["66"], "rexw": false, "rm": "r", "ri": "", "size": 128 },
+	{ "name": "cmpzxadd", "operands": ["m64", "r64", "r64"], "enc": "VEX", "opcode": "0F38E4", "prefix": ["66"], "rexw": true , "rm": "r", "ri": "", "size": 128 }
 ]
 

@@ -287,7 +287,7 @@ function main() {
 					operands: comb.slice(1),
 					enc: extract_encoding(inst.op),
 					extension: [],
-					category: group.category
+					category: group.category.split(' ')
 				};
 
 				if(group.ext) { variant.extension.push(group.ext); }
@@ -303,10 +303,8 @@ function main() {
 	gp_inst = [];
 	
 	instructions.forEach(inst => {
-		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR', 'M', 'NORMAL'].includes(inst.enc.enc) && inst.name === 'xor') {
-		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR'].includes(inst.enc.enc)) {
-		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR'].includes(inst.enc.enc) && inst.name == 'shrd') {
-		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['R'].includes(inst.enc.enc)) {
+		// if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['RM', 'MR', 'M', 'NORMAL', 'R'].includes(inst.enc.enc) && inst.name === 'xor') {
+		if(inst.category.includes('GP') && !inst.extension.includes('X86') && ['VEX'].includes(inst.enc.enc)) {
 			gp_inst.push(inst);
 		}
 	});
@@ -324,6 +322,7 @@ function main() {
 		row.push(`"rexw": ${inst.enc.rexw}`);
 		row.push(`"rm": "${inst.enc.rm === undefined ? "" : inst.enc.rm}"`);
 		row.push(`"ri": "${inst.enc.opcode_extend === undefined ? "" : inst.enc.opcode_extend}"`);
+		row.push(`"size": ${inst.enc.size === undefined ? "64" : inst.enc.size}`);
 		
 		rows.push(row);
 	});

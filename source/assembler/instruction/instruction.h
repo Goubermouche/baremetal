@@ -375,17 +375,13 @@ namespace baremetal {
 		ENCN_M,
 		ENCN_MR,
 		ENCN_RM,
+		ENCN_VEX,
 		ENCN_NORMAL,
 
 		// unfinished
-		ENCN_RVM,
-		ENCN_RMV,
-		ENCN_VM,
-		ENCN_MVR,
 		ENCN_VEX_RVM,
 		ENCN_VEX_RMV,
 		ENCN_XOP_VM,
-		ENCN_VEX,
 		ENCN_VEX_MVR,
 		ENCN_VEX_VM,
 		ENCN_VEX_RM,
@@ -495,10 +491,6 @@ namespace baremetal {
 				case ENCN_MR:
 				case ENCN_M:
 				case ENCN_RM:
-				case ENCN_RVM:
-				case ENCN_RMV:
-				case ENCN_VM:
-				case ENCN_MVR:
 				case ENCN_R: return true;
 				default: return false;
 			}
@@ -577,11 +569,12 @@ namespace baremetal {
 		u8 flags;
 		u16 special_index;
 		u8 operand_count;
+		inst_size op_size;
 		opn operands[4];
 	};
 
 	// new tooling
-	static constexpr auto inst(const char* name, encn encoding, u8 prefix, u32 opcode, u8 flags, u16 special_index, opn op1 = OPN_NONE, opn op2 = OPN_NONE, opn op3 = OPN_NONE, opn op4 = OPN_NONE) -> ins {
+	static constexpr auto inst(const char* name, encn encoding, u8 prefix, u32 opcode, u8 flags, u16 special_index, inst_size op_size, opn op1 = OPN_NONE, opn op2 = OPN_NONE, opn op3 = OPN_NONE, opn op4 = OPN_NONE) -> ins {
 		ins result; 
 
 		result.name = name;
@@ -595,6 +588,7 @@ namespace baremetal {
 		result.operands[2] = op3;
 		result.operands[3] = op4;
 		result.operand_count = 0;
+		result.op_size = op_size;
 
 		for(u8 i = 0; i < 4; ++i) {
 			if(result.operands[i] == OPN_NONE) {

@@ -223,6 +223,7 @@ function main() {
 		row.push(`0x${inst.opcode}`);                                             // opcode
 		row.push(`${get_base_prefix()}${get_instruction_flags(inst)}`);	          // flags
 		row.push(`${get_base_prefix()}${special_index.toString(constant_base)}`); // special index
+		row.push(`OPS_${inst.size}`); // instruction size
 
 		// operands
 		inst.operands.map(op => op === '1' ? 'hidden' : op).forEach(op => {
