@@ -693,19 +693,19 @@ namespace baremetal {
 		// vvvv - negation of one of our v operand
 		u8 vvvv = 0;
 
-			switch(inst->encoding) {
-				// VEX
-				case ENCN_VEX: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
-				case ENCN_VEX_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
-				case ENCN_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
-				case ENCN_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
-				case ENCN_VEX_MVR: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
-				case ENCN_VEX_RM: vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
-				// XOP
-				case ENCN_XOP: vvvv = 0b1111 << 3; break;
-				case ENCN_XOP_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
-				default: ASSERT(false, "unhandled vex prefix");
-			}
+		switch(inst->encoding) {
+			// VEX
+			case ENCN_VEX: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
+			case ENCN_VEX_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
+			case ENCN_VEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
+			case ENCN_VEX_RMV: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
+			case ENCN_VEX_MVR: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
+			case ENCN_VEX_RM: vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
+			// XOP
+			case ENCN_XOP: vvvv = 0b1111 << 3; break;
+			case ENCN_XOP_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
+			default: ASSERT(false, "unhandled vex prefix");
+		}
 
 		third |= vvvv;
 

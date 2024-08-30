@@ -301,23 +301,59 @@ function main() {
 	})
 
 	gp_inst = [];
+
+	const supported_categories = [
+		'GP', 'GP_IN_OUT', 'GP_EXT'
+	];
 	
+	const supported_extensions = [
+		'RM',
+		'MR', 
+		'M', 
+		'NORMAL',
+		'R',
+		'VEX', 
+		'VEX_VM',
+		'VEX_RM',
+		'VEX_RVM',
+		'VEX_RMV',
+		'VEX_MVR',
+		'XOP',
+		'XOP_VM'
+	];
+
+	// missing categories: 
+	// - CRYPTO_HASH
+	// - VIRTUALIZATION
+	// - FPU
+	// - SSE
+	// - STATE
+	// - SCALAR
+	// - SIMD
+	// - AVX
+	// - AVX512
+	// - MASK
+	// - AMX
+
 	instructions.forEach(inst => {
-		
-		// if(
-		// 	inst.category.includes('GP') &&
-		// 	!inst.extension.includes('X86') &&
-		// 	['RM', 'MR', 'M', 'NORMAL', 'R', 'VEX', 'VEX_VM', 'VEX_RM', 'VEX_RVM', 'VEX_RMV', 'VEX_MVR'].includes(inst.enc.enc)
-		// ) {
+		// test all categories
 		if(
-			inst.category.includes('GP') && 
-			!inst.extension.includes('X86') && 
-			['XOP', 'XOP_VM'].includes(inst.enc.enc)
+			inst.category.some(r => supported_categories.includes(r)) && 
+			!inst.extension.includes('X86')
+		) {
+			gp_inst.push(inst);
+		}
+
+		// test specific categories
+		if(
+			inst.category.includes('GP_EXT') &&
+			!inst.extension.includes('X86') &&
+			supported_extensions.includes(inst.enc.enc)
 		) {
 			gp_inst.push(inst);
 		}
 	});
-	
+
 	let rows = [];
 	
 	gp_inst.forEach(inst => {
