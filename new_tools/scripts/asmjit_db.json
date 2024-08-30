@@ -2158,8 +2158,8 @@
       {"inst": "vaesdeclast W:xmm, xmm, xmm/m128"                           , "op": "RVM: VEX.128.66.0F38.WIG DF /r"},
       {"inst": "vaesenc W:xmm, xmm, xmm/m128"                               , "op": "RVM: VEX.128.66.0F38.WIG DC /r"},
       {"inst": "vaesenclast W:xmm, xmm, xmm/m128"                           , "op": "RVM: VEX.128.66.0F38.WIG DD /r"},
-      {"inst": "vaesimc W:xmm, xmm/m128"                                    , "op": "RVM: VEX.128.66.0F38.WIG DB /r"},
-      {"inst": "vaeskeygenassist W:xmm, xmm/m128, ib/ub"                    , "op": "RVM: VEX.128.66.0F3A.WIG DF /r ib"}
+      {"inst": "vaesimc W:xmm, xmm/m128"                                    , "op": "RVMN: VEX.128.66.0F38.WIG DB /r"},
+      {"inst": "vaeskeygenassist W:xmm, xmm/m128, ib/ub"                    , "op": "RVMN: VEX.128.66.0F3A.WIG DF /r ib"}
     ]},
 
     {"category": "AVX SIMD CRYPTO_HASH", "ext": "VAES", "data": [

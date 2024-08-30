@@ -91,7 +91,7 @@ function generate_combinations(operands) {
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
       '[rax + rsi * 1  + 0x0]', '[rax + rsi + 0xFFFF]', '[r15 + rsi + 0xFFFF]', '[rax + r15 + 0xFFFF]',
-      '[rax + rsi * 2 + 0xFFFF2', '[rax + rsi * 4 + 0xFFFF4]', '[rax + rsi * 8 + 0xFFFF8]', '[rsp + rax * 8 + 0xFFFF8]', '[r15 + rax * 8 + 0xFFFF8]', '[rsp + r15 * 8 + 0xFFFF8]', '[r14 + r15 * 8 + 0xFFFF8]'
+      '[rax + rsi * 2 + 0xFFFF2]', '[rax + rsi * 4 + 0xFFFF4]', '[rax + rsi * 8 + 0xFFFF8]', '[rsp + rax * 8 + 0xFFFF8]', '[r15 + rax * 8 + 0xFFFF8]', '[rsp + r15 * 8 + 0xFFFF8]', '[r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m512', [
       '[0x0]', '[0xFF]', '[0xFFFF]',

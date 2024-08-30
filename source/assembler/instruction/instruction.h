@@ -381,8 +381,12 @@ namespace baremetal {
 		ENCN_VEX_VM,
 		ENCN_VEX_RM,
 		ENCN_VEX_RVM,
+		ENCN_VEX_RVMN,
 		ENCN_VEX_RMV,
 		ENCN_VEX_MVR,
+
+		// EVEX
+		ENCN_EVEX_RVM_FVM,
 
 		// XOP
 		ENCN_XOP_VM,
@@ -502,6 +506,7 @@ namespace baremetal {
 				case ENCN_XOP_VM:
 				case ENCN_VEX:
 				case ENCN_VEX_RVM:
+				case ENCN_VEX_RVMN:
 				case ENCN_VEX_RMV:
 				case ENCN_VEX_MVR:
 				case ENCN_VEX_VM:
@@ -518,6 +523,7 @@ namespace baremetal {
 		}
 		constexpr auto is_evex() const -> bool {
 			switch(encoding) {
+				case ENCN_EVEX_RVM_FVM: return true;
 				default: return false;
 			}
 		}

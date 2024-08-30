@@ -323,7 +323,7 @@ function main() {
 	];
 
 	// missing categories: 
-	// - CRYPTO_HASH
+	// - 
 	// - VIRTUALIZATION
 	// - FPU
 	// - SSE
@@ -337,18 +337,18 @@ function main() {
 
 	instructions.forEach(inst => {
 		// test all categories
-		if(
-			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
-		) {
-			gp_inst.push(inst);
-		}
+		// if(
+		// 	inst.category.some(r => supported_categories.includes(r)) && 
+		// 	!inst.extension.includes('X86')
+		// ) {
+		// 	gp_inst.push(inst);
+		// }
 
 		// test specific categories
 		if(
-			inst.category.includes('GP_EXT') &&
-			!inst.extension.includes('X86') &&
-			supported_extensions.includes(inst.enc.enc)
+			inst.category.includes('CRYPTO_HASH') &&
+			!inst.extension.includes('X86') && 
+			['VEX_RVM', 'VEX_RVMN'].includes(inst.enc.enc)
 		) {
 			gp_inst.push(inst);
 		}
