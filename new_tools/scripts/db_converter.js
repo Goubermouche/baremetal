@@ -303,7 +303,7 @@ function main() {
 	gp_inst = [];
 
 	const supported_categories = [
-		'GP', 'GP_IN_OUT', 'GP_EXT'
+		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH'
 	];
 	
 	const supported_extensions = [
@@ -319,11 +319,12 @@ function main() {
 		'VEX_RMV',
 		'VEX_MVR',
 		'XOP',
-		'XOP_VM'
+		'XOP_VM',
+		'EVEX_RVM',
+		'VEX_RVMN'
 	];
 
 	// missing categories: 
-	// - 
 	// - VIRTUALIZATION
 	// - FPU
 	// - SSE
@@ -337,20 +338,20 @@ function main() {
 
 	instructions.forEach(inst => {
 		// test all categories
-		// if(
-		// 	inst.category.some(r => supported_categories.includes(r)) && 
-		// 	!inst.extension.includes('X86')
-		// ) {
-		// 	gp_inst.push(inst);
-		// }
-
-		// test specific categories
 		if(
-			inst.category.includes('CRYPTO_HASH') &&
-			!inst.extension.includes('X86')  
+			inst.category.some(r => supported_categories.includes(r)) && 
+			!inst.extension.includes('X86')
 		) {
 			gp_inst.push(inst);
 		}
+
+		// test specific categories
+		// if(
+		// 	inst.category.includes('CRYPTO_HASH') &&
+		// 	!inst.extension.includes('X86')  
+		// ) {
+		// 	gp_inst.push(inst);
+		// }
 	});
 
 	let rows = [];
