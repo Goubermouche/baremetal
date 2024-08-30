@@ -706,7 +706,6 @@ namespace baremetal {
 			case ENCN_XOP_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
 			// EVEX
 			case ENCN_EVEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
-			case ENCN_EVEX_RVM_FVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 			// no vvvv
 			case ENCN_VEX_RVMN: vvvv = 0b1111 << 3; break;
 			default: ASSERT(false, "unhandled vex prefix");
@@ -820,7 +819,6 @@ namespace baremetal {
 			case ENCN_VEX_RM: vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
 			// EVEX
 			case ENCN_EVEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
-			case ENCN_EVEX_RVM_FVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 			// XOP
 			case ENCN_XOP: vvvv = 0b1111 << 3; break;
 			case ENCN_XOP_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
@@ -856,7 +854,6 @@ namespace baremetal {
 		// if(inst->has_vex_vvvv()) {
 			switch(inst->encoding) {
 				case ENCN_VEX_RVM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
-				case ENCN_EVEX_RVM_FVM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
 				case ENCN_EVEX_RVM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
 				default: ASSERT(false, "unhandled evex prefix");
 			}
@@ -1093,7 +1090,6 @@ namespace baremetal {
 
 		switch(inst->encoding) {
 			case ENCN_VEX_RVM: destination = m_regs[2]; break;
-			case ENCN_EVEX_RVM_FVM: destination = m_regs[2]; break;
 			case ENCN_EVEX_RVM: destination = m_regs[2]; break;
 			case ENCN_VEX_MVR: {
 				if(m_reg_count == 3) {
@@ -1460,8 +1456,7 @@ namespace baremetal {
 
 				break;
 			}
-			case ENCN_EVEX_RVM:
-			case ENCN_EVEX_RVM_FVM: {
+			case ENCN_EVEX_RVM: {
 				switch(index_byte) {
 					case 0b00000000: break;
 					case 0b00001000: base = registers[2]; break;
@@ -1551,7 +1546,6 @@ namespace baremetal {
 				break;
 			}
 			case ENCN_EVEX_RVM:
-			case ENCN_EVEX_RVM_FVM:
 			case ENCN_VEX_RVM: {
 				switch(index_byte) {
 					case 0b1110: 
@@ -1803,7 +1797,6 @@ namespace baremetal {
 				case ENCN_VEX_RVM: 
 				case ENCN_VEX_RVMN: 
 				case ENCN_VEX_RMV: 
-				case ENCN_EVEX_RVM_FVM: 
 				case ENCN_EVEX_RVM: 
 				case ENCN_VEX_MVR: 
 				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
@@ -1830,7 +1823,6 @@ namespace baremetal {
 				case ENCN_VEX_RMV: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				case ENCN_VEX_MVR: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				case ENCN_EVEX_RVM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
-				case ENCN_EVEX_RVM_FVM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				default: ASSERT(false, "unknown encoding for 3 regs\n");
 			}
 		}

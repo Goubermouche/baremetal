@@ -3703,17 +3703,17 @@
     ]},
 
     {"category": "AVX512 SIMD CRYPTO_HASH", "ext": "AVX512_F VAES", "data": [
-      {"inst": "vaesdec W:xmm, xmm, xmm/m128"                               , "op": "RVM-FVM: EVEX.128.66.0F38.WIG DE /r"     , "vl": 1},
-      {"inst": "vaesdec W:ymm, ymm, ymm/m256"                               , "op": "RVM-FVM: EVEX.256.66.0F38.WIG DE /r"     , "vl": 1},
+      {"inst": "vaesdec W:xmm, xmm, xmm/m128"                               , "op": "RVM: VEX.128.66.0F38.WIG DE /r"     , "vl": 1},
+      {"inst": "vaesdec W:ymm, ymm, ymm/m256"                               , "op": "RVM: VEX.256.66.0F38.WIG DE /r"     , "vl": 1},
       {"inst": "vaesdec W:zmm, zmm, zmm/m512"                               , "op": "RVM: EVEX.512.66.0F38.WIG DE /r"     , "vl": 0},
-      {"inst": "vaesdeclast W:xmm, xmm, xmm/m128"                           , "op": "RVM-FVM: EVEX.128.66.0F38.WIG DF /r"     , "vl": 1},
-      {"inst": "vaesdeclast W:ymm, ymm, ymm/m256"                           , "op": "RVM-FVM: EVEX.256.66.0F38.WIG DF /r"     , "vl": 1},
+      {"inst": "vaesdeclast W:xmm, xmm, xmm/m128"                           , "op": "RVM: VEX.128.66.0F38.WIG DF /r"     , "vl": 1},
+      {"inst": "vaesdeclast W:ymm, ymm, ymm/m256"                           , "op": "RVM: VEX.256.66.0F38.WIG DF /r"     , "vl": 1},
       {"inst": "vaesdeclast W:zmm, zmm, zmm/m512"                           , "op": "RVM: EVEX.512.66.0F38.WIG DF /r"     , "vl": 0},
-      {"inst": "vaesenc W:xmm, xmm, xmm/m128"                               , "op": "RVM-FVM: EVEX.128.66.0F38.WIG DC /r"     , "vl": 1},
-      {"inst": "vaesenc W:ymm, ymm, ymm/m256"                               , "op": "RVM-FVM: EVEX.256.66.0F38.WIG DC /r"     , "vl": 1},
+      {"inst": "vaesenc W:xmm, xmm, xmm/m128"                               , "op": "RVM: VEX.128.66.0F38.WIG DC /r"     , "vl": 1},
+      {"inst": "vaesenc W:ymm, ymm, ymm/m256"                               , "op": "RVM: VEX.256.66.0F38.WIG DC /r"     , "vl": 1},
       {"inst": "vaesenc W:zmm, zmm, zmm/m512"                               , "op": "RVM: EVEX.512.66.0F38.WIG DC /r"     , "vl": 0},
-      {"inst": "vaesenclast W:xmm, xmm, xmm/m128"                           , "op": "RVM-FVM: EVEX.128.66.0F38.WIG DD /r"     , "vl": 1},
-      {"inst": "vaesenclast W:ymm, ymm, ymm/m256"                           , "op": "RVM-FVM: EVEX.256.66.0F38.WIG DD /r"     , "vl": 1},
+      {"inst": "vaesenclast W:xmm, xmm, xmm/m128"                           , "op": "RVM: VEX.128.66.0F38.WIG DD /r"     , "vl": 1},
+      {"inst": "vaesenclast W:ymm, ymm, ymm/m256"                           , "op": "RVM: VEX.256.66.0F38.WIG DD /r"     , "vl": 1},
       {"inst": "vaesenclast W:zmm, zmm, zmm/m512"                           , "op": "RVM: EVEX.512.66.0F38.WIG DD /r"     , "vl": 0}
     ]},
 

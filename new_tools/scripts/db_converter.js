@@ -347,8 +347,7 @@ function main() {
 		// test specific categories
 		if(
 			inst.category.includes('CRYPTO_HASH') &&
-			!inst.extension.includes('X86') && 
-			['EVEX_RVM_FVM', 'EVEX_RVM'].includes(inst.enc.enc)
+			!inst.extension.includes('X86')  
 		) {
 			gp_inst.push(inst);
 		}

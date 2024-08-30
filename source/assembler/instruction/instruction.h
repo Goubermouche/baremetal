@@ -386,7 +386,6 @@ namespace baremetal {
 		ENCN_VEX_MVR,
 
 		// EVEX
-		ENCN_EVEX_RVM_FVM,
 		ENCN_EVEX_RVM,
 
 		// XOP
@@ -510,9 +509,7 @@ namespace baremetal {
 				case ENCN_VEX_RVMN:
 				case ENCN_VEX_RMV:
 				case ENCN_VEX_MVR:
-				case ENCN_VEX_VM:
-				case ENCN_EVEX_RVM_FVM:
-				case ENCN_VEX_RM: return true;
+				case ENCN_VEX_VM: return true;
 				default: return false;
 			}
 		}

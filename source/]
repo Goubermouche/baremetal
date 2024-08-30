@@ -1828,7 +1828,6 @@ namespace baremetal {
 				case ENCN_VEX_RVM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				case ENCN_VEX_RMV: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				case ENCN_VEX_MVR: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
-				case ENCN_EVEX_RVM_FVM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				default: ASSERT(false, "unknown encoding for 3 regs\n");
 			}
 		}
