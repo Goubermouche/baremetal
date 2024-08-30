@@ -348,7 +348,7 @@ function main() {
 		if(
 			inst.category.includes('CRYPTO_HASH') &&
 			!inst.extension.includes('X86') && 
-			['VEX_RVM', 'VEX_RVMN'].includes(inst.enc.enc)
+			['EVEX_RVM_FVM', 'EVEX_RVM'].includes(inst.enc.enc)
 		) {
 			gp_inst.push(inst);
 		}

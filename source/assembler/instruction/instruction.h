@@ -387,6 +387,7 @@ namespace baremetal {
 
 		// EVEX
 		ENCN_EVEX_RVM_FVM,
+		ENCN_EVEX_RVM,
 
 		// XOP
 		ENCN_XOP_VM,
@@ -510,6 +511,7 @@ namespace baremetal {
 				case ENCN_VEX_RMV:
 				case ENCN_VEX_MVR:
 				case ENCN_VEX_VM:
+				case ENCN_EVEX_RVM_FVM:
 				case ENCN_VEX_RM: return true;
 				default: return false;
 			}
@@ -523,7 +525,7 @@ namespace baremetal {
 		}
 		constexpr auto is_evex() const -> bool {
 			switch(encoding) {
-				case ENCN_EVEX_RVM_FVM: return true;
+				case ENCN_EVEX_RVM: return true;
 				default: return false;
 			}
 		}
@@ -785,6 +787,10 @@ inline auto is_operand_zmm(opn op) -> bool {
 	return op == OPN_ZMM || op == OPN_ZMM_K || op == OPN_ZMM_KZ;
 }
 
+inline auto is_operand_large_reg(opn op) -> bool {
+	return is_operand_xmm(op) || is_operand_ymm(op) || is_operand_zmm(op);
+}
+ 
 	inline auto is_operand_moff(opn op) -> bool {
 		switch(op) {
 			case OPN_MOFF8:
