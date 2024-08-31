@@ -8,11 +8,9 @@
 #include "assembler/parser.h"
 #include "parser.h"
 #include "utility/containers/dynamic_string.h"
-#include "utility/containers/map.h"
 #include "utility/system/console.h"
 #include "utility/types.h"
 
-#include <new>
 #include <utility/algorithms/sort.h>
 #include <utility/assert.h>
 
@@ -970,14 +968,15 @@ namespace baremetal {
 
 	void assembler::emit_instruction_opcode(const ins* inst, const opn_data* operands) {
 		// VEX instructions have the leading opcode encoded in themselves, so we have to skip it here
-		u8 opcode_limit = 1;
+		u8 opcode_end = 1;
+		u8 opcode_begin = 4;
 
 		// prefix
 		if(inst->is_rex()) {
 			emit_opcode_prefix_rex(inst, operands);
 		}
 		else if(inst->is_vex_xop()) {
-			opcode_limit = 3;
+			opcode_end = 3;
 			if(inst_uses_extended_vex(inst, operands)) {
 				// when handling stuff like ymm16 we have to switch to evex
 				emit_opcode_prefix_evex(inst, operands);
@@ -987,23 +986,32 @@ namespace baremetal {
 			}
 		}
 		else if(inst->is_evex()) {
-			opcode_limit = 3;
+			opcode_end = 3;
 			emit_opcode_prefix_evex(inst, operands);
 		}
 		else {
 			ASSERT(false, "invalid/unknown opcode prefix\n");
 		}
 
+		if(inst->encoding == ENCN_NORMALD) {
+			opcode_end = 2;
+		}
+
 		// opcode
 		u64 opcode = inst->opcode;
 
 		if(inst->is_ri()) {
-			opcode += m_regs[0] & 0b00000111;
+			if(inst->operands[0] == OPN_ST0) {
+				opcode += m_regs[1] & 0b00000111;
+			}
+			else {
+				opcode += m_regs[0] & 0b00000111;
+			}
 		}
 
 		// append opcode bytes
-		for(u8 i = 4; i-- > opcode_limit;) {
-			const u8 byte = (opcode >> (i * 8)) & 0xFF;
+		for(; opcode_begin-- > opcode_end;) {
+			const u8 byte = (opcode >> (opcode_begin * 8)) & 0xFF;
 
 			if(byte != 0) {
 				m_bytes.push_back(byte);
@@ -1195,6 +1203,11 @@ namespace baremetal {
 
 		instruction_begin(inst, operands); // mark the instruction start (used for rip-relative addressing)
 
+		if(inst->encoding == ENCN_NORMALD) {
+			// instruction composed of two instructions, emit the first one here
+			m_bytes.push_back((inst->opcode & 0x0000FF00) >> 8);
+		}
+
 		// emit instruction parts
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, operands);
@@ -1363,6 +1376,7 @@ namespace baremetal {
 		if(m_reg_count == 1) {
 			switch(inst->encoding) {
 				case ENCN_NORMAL: 
+				case ENCN_NORMALD:  
 				case ENCN_M:
 				case ENCN_R: base = m_regs[0]; break;
 				default: rx = m_regs[0]; break;
@@ -1778,7 +1792,8 @@ namespace baremetal {
 		}
 		else if(m_reg_count == 2) {
 			switch(inst->encoding) {
-				case ENCN_NORMAL: {
+				case ENCN_NORMAL:
+				case ENCN_NORMALD: {
 					if(is_operand_rax(inst->operands[0])) {
 						m_regs[0] = temp[1];
 					}

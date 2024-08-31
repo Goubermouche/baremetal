@@ -375,6 +375,7 @@ namespace baremetal {
 		ENCN_MR,
 		ENCN_RM,
 		ENCN_NORMAL,
+		ENCN_NORMALD, // normal encoding, but interpret the first opcode byte as a separate instruction
 
 		// VEX
 		ENCN_VEX,
@@ -497,6 +498,7 @@ namespace baremetal {
 		constexpr auto is_rex() const -> bool {
 			switch(encoding) { 
 				case ENCN_NORMAL:
+				case ENCN_NORMALD:
 				case ENCN_MR:
 				case ENCN_M:
 				case ENCN_RM:
