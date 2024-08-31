@@ -54,7 +54,7 @@ function extract_inst_operands(inst) {
 		'x:', 'r:', 'w:', 'R:', 'X:', 'W:', '~', '[127:16]', '[31:0]', '[15:0]', ',',
 		'[127:64]', '[127:32]', '[63:0]', '[7:0]', '[ilock|xacqrel]', '[bnd|repIgnore]', '[18:0]', '[3:0]', '[1:0]',
 		'[ilock|xacquire]', '[lock|xacqrel]', '[rep|repne]', '[lock]', '[bnd]', '[xrelease]',
-		'[rep]'
+		'[rep]', '{er}', '{sae}'
 	].map(r => escape_exp(r));
 
 	const replacements = [
@@ -336,29 +336,37 @@ function main() {
 	];
 
 	// missing categories: 
-	// - SCALAR
+	// - 
 	// - SIMD
 	// - AVX
 	// - AVX512
 	// - MASK
 	// - AMX
+	
+	// VEX_MR
+	// VEX_MVR
+	// EVEX_RVM
+	// EVEX_RM
+	// EVEX_MR
+	// EVEX_MVR
 
 	instructions.forEach(inst => {
 		// test all categories
-		if(
-			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
-		) {
-			gp_inst.push(inst);
-		}
-
-		// test specific categories
 		// if(
-		// 	inst.category.includes('STATE') &&
-		// 	!inst.extension.includes('X86')  
+		// 	inst.category.some(r => supported_categories.includes(r)) && 
+		// 	!inst.extension.includes('X86')
 		// ) {
 		// 	gp_inst.push(inst);
 		// }
+
+		// test specific categories
+		if(
+			inst.category.includes('SCALAR') &&
+			!inst.extension.includes('X86') && 
+			inst.enc.enc == 'VEX_MR'
+		) {
+			gp_inst.push(inst);
+		}
 	});
 
 	let rows = [];

@@ -383,6 +383,7 @@ namespace baremetal {
 		ENCN_VEX,
 		ENCN_VEX_VM,
 		ENCN_VEX_RM,
+		ENCN_VEX_MR,
 		ENCN_VEX_RVM,
 		ENCN_VEX_RMV,
 		ENCN_VEX_MVR,
@@ -390,6 +391,9 @@ namespace baremetal {
 
 		// EVEX
 		ENCN_EVEX_RVM,
+		ENCN_EVEX_MVR,
+		ENCN_EVEX_RM,
+		ENCN_EVEX_MR,
 
 		// XOP
 		ENCN_XOP_VM,
@@ -413,6 +417,7 @@ namespace baremetal {
 		OPN_ST,
 		OPN_BND,
 
+		OPN_K_K,
 		OPN_ST0,
 		OPN_HIDDEN,
 		OPN_I8,
@@ -514,6 +519,7 @@ namespace baremetal {
 				case ENCN_XOP:
 				case ENCN_XOP_VM:
 				case ENCN_VEX:
+				case ENCN_VEX_MR:
 				case ENCN_VEX_RM:
 				case ENCN_VEX_RVM:
 				case ENCN_VEX_RVMN:
@@ -912,6 +918,7 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_RCX:
 			case OPN_RAX:
 			case OPN_MIB:
+			case OPN_K_K:
 			case OPN_I64:         return 64;
 			case OPN_ST:
 			case OPN_ST0:

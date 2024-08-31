@@ -1,0 +1,800 @@
+vcvtusi2sh xmm0, xmm0, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, rcx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, rdx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, rbx /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, r15 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm0, xmm15, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm1, xmm15, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm2, xmm15, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
+vcvtusi2sh xmm15, xmm15, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp14.asm:2: error: invalid combination of opcode and operands
