@@ -1,0 +1,168 @@
+vmclear qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmclear qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrld qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmptrst qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: mismatch in operand sizes
+vmxon qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes
+vmxon qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: mismatch in operand sizes

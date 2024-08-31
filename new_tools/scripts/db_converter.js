@@ -302,6 +302,7 @@ function main() {
 
 	gp_inst = [];
 
+	// VIRTUALIZATION
 	const supported_categories = [
 		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH'
 	];
@@ -325,7 +326,7 @@ function main() {
 	];
 
 	// missing categories: 
-	// - VIRTUALIZATION
+	// - 
 	// - FPU
 	// - SSE
 	// - STATE
@@ -338,20 +339,20 @@ function main() {
 
 	instructions.forEach(inst => {
 		// test all categories
+	// 	if(
+	// 		inst.category.some(r => supported_categories.includes(r)) && 
+	// 		!inst.extension.includes('X86')
+	// 	) {
+	// 		gp_inst.push(inst);
+	// 	}
+
+		// test specific categories
 		if(
-			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
+			inst.category.includes('VIRTUALIZATION') &&
+			!inst.extension.includes('X86')  
 		) {
 			gp_inst.push(inst);
 		}
-
-		// test specific categories
-		// if(
-		// 	inst.category.includes('CRYPTO_HASH') &&
-		// 	!inst.extension.includes('X86')  
-		// ) {
-		// 	gp_inst.push(inst);
-		// }
 	});
 
 	let rows = [];
