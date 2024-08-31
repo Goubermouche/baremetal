@@ -52,7 +52,7 @@ function replace_all(input, rules) {
 function extract_inst_operands(inst) {
 	const rm = [
 		'x:', 'r:', 'w:', 'R:', 'X:', 'W:', '~', '[127:16]', '[31:0]', '[15:0]', ',',
-		'[127:64]', '[127:32]', '[63:0]', '[7:0]', '[ilock|xacqrel]', '[bnd|repIgnore]',
+		'[127:64]', '[127:32]', '[63:0]', '[7:0]', '[ilock|xacqrel]', '[bnd|repIgnore]', '[18:0]', '[3:0]', '[1:0]',
 		'[ilock|xacquire]', '[lock|xacqrel]', '[rep|repne]', '[lock]', '[bnd]', '[xrelease]',
 		'[rep]'
 	].map(r => escape_exp(r));
@@ -70,6 +70,8 @@ function extract_inst_operands(inst) {
     { s: 'uw', r: 'i16' },
     { s: 'ud', r: 'i32' },
     { s: 'uq', r: 'i64' },
+    { s: 'mm', r: 'mmx' },
+    { s: 'mm/m64', r: 'mmx/m64' },
     { s: 'st(0)', r: 'st0' },
     { s: 'st(i)', r: 'st' },
 	];
@@ -312,7 +314,7 @@ function main() {
 
 	// VIRTUALIZATION
 	const supported_categories = [
-		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION'
+		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE'
 	];
 	
 	const supported_extensions = [
@@ -334,7 +336,6 @@ function main() {
 	];
 
 	// missing categories: 
-	// - SSE
 	// - STATE
 	// - SCALAR
 	// - SIMD
@@ -345,20 +346,20 @@ function main() {
 
 	instructions.forEach(inst => {
 		// test all categories
+	if(
+		inst.category.some(r => supported_categories.includes(r)) && 
+		!inst.extension.includes('X86')
+	) {
+		gp_inst.push(inst);
+	}
+
+		// test specific categories
 	// 	if(
-	// 		inst.category.some(r => supported_categories.includes(r)) && 
-	// 		!inst.extension.includes('X86')
+	// 		inst.category.includes('SSE') &&
+	// 		!inst.extension.includes('X86')  
 	// 	) {
 	// 		gp_inst.push(inst);
 	// 	}
-
-		// test specific categories
-		if(
-			inst.category.includes('FPU') &&
-			!inst.extension.includes('X86')  
-		) {
-			gp_inst.push(inst);
-		}
 	});
 
 	let rows = [];

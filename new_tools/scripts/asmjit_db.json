@@ -1447,7 +1447,7 @@
 
     {"category": "SSE SCALAR", "ext": "SSE2", "data": [
       {"inst": "addsd x:xmm[63:0], xmm[63:0]/m64"                           , "op": "RM: F2 0F 58 /r"},
-      {"inst": "cmpsd x:xmm[63:0], xmm[63:0]/m64, ib/ub"                    , "op": "RM: F2 0F C2 /r ib"},
+      {"inst": "cmpsd x:xmm[63:0], xmm[63:0]/mem, ib/ub"                    , "op": "RM: F2 0F C2 /r ib"},
       {"inst": "comisd R:xmm[63:0], xmm[63:0]/m64"                          , "op": "RM: 66 0F 2F /r", "io": "OF=0 SF=0 ZF=W AF=0 PF=W CF=W"},
       {"inst": "cvtsd2si W:r32, xmm[63:0]/m64"                              , "op": "RM: F2 0F 2D /r"},
       {"inst": "cvtsd2si W:r64, xmm[63:0]/m64"                              , "op": "RM: REX.W F2 0F 2D /r"},
@@ -1505,8 +1505,8 @@
       {"inst": "movmskpd W:r32[1:0], xmm"                                   , "op": "RM: 66 0F 50 /r"},
       {"inst": "movntdq W:m128, xmm"                                        , "op": "MR: 66 0F E7 /r"},
       {"inst": "movntpd W:m128, xmm"                                        , "op": "MR: 66 0F 2B /r"},
-      {"inst": "movq W:r64/m64, xmm[63:0]"                                  , "op": "MR: REX.W 66 0F 7E /r"},
-      {"inst": "movq W:xmm[63:0], r64[63:0]/m64"                            , "op": "RM: REX.W 66 0F 6E /r"},
+      {"inst": "movq W:r64, xmm[63:0]"                                  , "op": "MR: REX.W 66 0F 7E /r"},
+      {"inst": "movq W:xmm[63:0], r64[63:0]"                            , "op": "RM: REX.W 66 0F 6E /r"},
       {"inst": "movq W:xmm[63:0], xmm[63:0]/m64"                            , "op": "RM: F3 0F 7E /r"},
       {"inst": "movq W:xmm[63:0]/m64, xmm[63:0]"                            , "op": "MR: 66 0F D6 /r"},
       {"inst": "movq2dq W:xmm[63:0], mm"                                    , "op": "RM: F3 0F D6 /r"},
@@ -1547,7 +1547,7 @@
       {"inst": "pmulhuw X:~xmm, ~xmm/m128"                                  , "op": "RM: 66 0F E4 /r"},
       {"inst": "pmulhw X:~xmm, ~xmm/m128"                                   , "op": "RM: 66 0F E5 /r"},
       {"inst": "pmullw X:~xmm, ~xmm/m128"                                   , "op": "RM: 66 0F D5 /r"},
-      {"inst": "pmuludq X:~mm, ~mm/m64"                                     , "op": "RM: 0F F4 /r"},
+      {"inst": "pmuludq X:~mm, ~mm"                                     , "op": "RM: 0F F4 /r"},
       {"inst": "pmuludq X:~xmm, ~xmm/m128"                                  , "op": "RM: 66 0F F4 /r"},
       {"inst": "por X:~xmm, ~xmm/m128"                                      , "op": "RM: 66 0F EB /r"},
       {"inst": "psadbw X:~xmm, ~xmm/m128"                                   , "op": "RM: 66 0F F6 /r"},
@@ -1574,7 +1574,7 @@
       {"inst": "psrlw X:xmm, xmm/m128"                                      , "op": "RM: 66 0F D1 /r"},
       {"inst": "psubb X:xmm, xmm/m128"                                      , "op": "RM: 66 0F F8 /r"},
       {"inst": "psubd X:xmm, xmm/m128"                                      , "op": "RM: 66 0F FA /r"},
-      {"inst": "psubq X:mm, mm/m64"                                         , "op": "RM: 0F FB /r"},
+      {"inst": "psubq X:mm, mm"                                         , "op": "RM: 0F FB /r"},
       {"inst": "psubq X:xmm, xmm/m128"                                      , "op": "RM: 66 0F FB /r"},
       {"inst": "psubsb X:xmm, xmm/m128"                                     , "op": "RM: 66 0F E8 /r"},
       {"inst": "psubsw X:xmm, xmm/m128"                                     , "op": "RM: 66 0F E9 /r"},
@@ -1710,8 +1710,8 @@
     ]},
 
     {"category": "SSE SCALAR", "ext": "SSE4A", "data": [
-      {"inst": "movntsd W:m64, xmm[63:0]"                                   , "op": "RM: F2 0F 2B /r"},
-      {"inst": "movntss W:m32, xmm[31:0]"                                   , "op": "RM: F3 0F 2B /r"}
+      {"inst": "movntsd W:m64, xmm[63:0]"                                   , "op": "RMR: F2 0F 2B /r"},
+      {"inst": "movntss W:m32, xmm[31:0]"                                   , "op": "RMR: F3 0F 2B /r"}
     ]},
 
     {"category": "SSE SIMD", "ext": "SSE4A", "data": [

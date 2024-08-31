@@ -1,0 +1,1008 @@
+cmpsd xmm0, qword [0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rel $ + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 1  + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 1  + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 1  + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 1  + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 1  + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 1  + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 1  + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 1  + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 2 + 0xFFFF2], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 2 + 0xFFFF2], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 2 + 0xFFFF2], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 2 + 0xFFFF2], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 2 + 0xFFFF2], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 2 + 0xFFFF2], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 2 + 0xFFFF2], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 2 + 0xFFFF2], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 4 + 0xFFFF4], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 4 + 0xFFFF4], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 4 + 0xFFFF4], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 4 + 0xFFFF4], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 4 + 0xFFFF4], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 4 + 0xFFFF4], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 4 + 0xFFFF4], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 4 + 0xFFFF4], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rax + rsi * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r15 + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [rsp + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r14 + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r14 + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r14 + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r14 + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r14 + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r14 + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r14 + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm0, qword [r14 + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rel $ + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 1  + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 1  + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 1  + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 1  + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 1  + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 1  + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 1  + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 1  + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 2 + 0xFFFF2], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 2 + 0xFFFF2], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 2 + 0xFFFF2], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 2 + 0xFFFF2], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 2 + 0xFFFF2], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 2 + 0xFFFF2], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 2 + 0xFFFF2], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 2 + 0xFFFF2], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 4 + 0xFFFF4], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 4 + 0xFFFF4], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 4 + 0xFFFF4], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 4 + 0xFFFF4], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 4 + 0xFFFF4], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 4 + 0xFFFF4], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 4 + 0xFFFF4], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 4 + 0xFFFF4], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rax + rsi * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r15 + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [rsp + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r14 + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r14 + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r14 + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r14 + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r14 + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r14 + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r14 + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm1, qword [r14 + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rel $ + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 1  + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 1  + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 1  + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 1  + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 1  + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 1  + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 1  + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 1  + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 2 + 0xFFFF2], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 2 + 0xFFFF2], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 2 + 0xFFFF2], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 2 + 0xFFFF2], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 2 + 0xFFFF2], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 2 + 0xFFFF2], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 2 + 0xFFFF2], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 2 + 0xFFFF2], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 4 + 0xFFFF4], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 4 + 0xFFFF4], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 4 + 0xFFFF4], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 4 + 0xFFFF4], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 4 + 0xFFFF4], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 4 + 0xFFFF4], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 4 + 0xFFFF4], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 4 + 0xFFFF4], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rax + rsi * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r15 + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [rsp + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r14 + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r14 + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r14 + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r14 + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r14 + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r14 + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r14 + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm2, qword [r14 + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rel $ + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 1  + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 1  + 0x0], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 1  + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 1  + 0x0], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 1  + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 1  + 0x0], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 1  + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 1  + 0x0], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rsi + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rsi + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rsi + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rsi + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + r15 + 0xFFFF], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + r15 + 0xFFFF], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + r15 + 0xFFFF], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + r15 + 0xFFFF], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 2 + 0xFFFF2], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 2 + 0xFFFF2], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 2 + 0xFFFF2], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 2 + 0xFFFF2], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 2 + 0xFFFF2], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 2 + 0xFFFF2], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 2 + 0xFFFF2], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 2 + 0xFFFF2], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 4 + 0xFFFF4], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 4 + 0xFFFF4], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 4 + 0xFFFF4], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 4 + 0xFFFF4], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 4 + 0xFFFF4], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 4 + 0xFFFF4], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 4 + 0xFFFF4], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 4 + 0xFFFF4], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rax + rsi * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rax * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rax * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rax * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r15 + rax * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [rsp + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r14 + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r14 + r15 * 8 + 0xFFFF8], 0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r14 + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r14 + r15 * 8 + 0xFFFF8], 1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r14 + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r14 + r15 * 8 + 0xFFFF8], 127 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r14 + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+cmpsd xmm15, qword [r14 + r15 * 8 + 0xFFFF8], -128 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: invalid combination of opcode and operands
+pmuludq mm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+pmuludq mm7, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm0, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm1, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm2, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi * 1  + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [r15 + rsi + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + r15 + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi * 2 + 0xFFFF2] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi * 4 + 0xFFFF4] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rax + rsi * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rsp + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [r15 + rax * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [rsp + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes
+psubq mm7, qword [r14 + r15 * 8 + 0xFFFF8] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp6.asm:2: error: mismatch in operand sizes

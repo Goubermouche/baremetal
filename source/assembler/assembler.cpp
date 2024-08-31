@@ -993,6 +993,7 @@ namespace baremetal {
 			ASSERT(false, "invalid/unknown opcode prefix\n");
 		}
 
+		// skip the first byte, since we've already pushed it (double instruction)
 		if(inst->encoding == ENCN_NORMALD) {
 			opcode_end = 2;
 		}
@@ -1109,6 +1110,14 @@ namespace baremetal {
 				else if(m_reg_count == 2) {
 					rx = m_regs[0]; 
 					destination = m_regs[1];
+				}
+
+				break;
+			}
+			case ENCN_RMR:
+			case ENCN_RM: {
+				if(m_reg_count == 2 && is_operand_mem(inst->operands[0]) && operands[0].memory.has_base) {
+					rx = m_regs[1];
 				}
 
 				break;
@@ -1383,8 +1392,12 @@ namespace baremetal {
 			}
 		}
 		else if(m_reg_count == 2) {
+			if(inst->encoding == ENCN_RMR) {
+				rx = m_regs[1];
+				base = m_regs[0];
+			}
 			// mem, x, x
-			if(is_operand_mem(operands[0].type) && operands[0].memory.has_base == false && operand_count == 3) {
+			else if(is_operand_mem(operands[0].type) && operands[0].memory.has_base == false && operand_count == 3) {
 				rx = m_regs[1];
 			}
 			else if(inst->operands[1] == OPN_CL) {
@@ -1816,6 +1829,7 @@ namespace baremetal {
 				case ENCN_VEX_RMV: 
 				case ENCN_EVEX_RVM: 
 				case ENCN_VEX_MVR: 
+				case ENCN_RMR: 
 				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
 				case ENCN_MR: {
 					if(inst->operands[2] == OPN_CL) {
@@ -1833,6 +1847,7 @@ namespace baremetal {
 		}
 		else if(m_reg_count == 3) {
 			switch(inst->encoding) {
+				case ENCN_RMR: m_regs[0] = temp[2]; m_regs[1] = temp[1];  break;
 				case ENCN_RM: m_regs[0] = temp[2]; m_regs[1] = temp[1];  break;
 				case ENCN_MR: m_regs[0] = temp[1]; m_regs[1] = temp[0]; m_regs[2] = temp[2]; break;
 				case ENCN_VEX: m_regs[0] = temp[1]; m_regs[1] = temp[0]; m_regs[2] = temp[2]; break; 

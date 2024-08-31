@@ -374,8 +374,10 @@ namespace baremetal {
 		ENCN_M,
 		ENCN_MR,
 		ENCN_RM,
+		ENCN_RMR,
 		ENCN_NORMAL,
-		ENCN_NORMALD, // normal encoding, but interpret the first opcode byte as a separate instruction
+		ENCN_NORMALD, // NORMAL encoding, but interpret the first opcode byte as a separate instruction
+									// used by instructions which are formed using two other instructions (ie. fsave)
 
 		// VEX
 		ENCN_VEX,
@@ -401,7 +403,7 @@ namespace baremetal {
 		OPN_R16,
 		OPN_R32,
 		OPN_R64,
-		OPN_MM,
+		OPN_MMX,
 		OPN_XMM,
 		OPN_YMM,
 		OPN_ZMM,
@@ -502,6 +504,7 @@ namespace baremetal {
 				case ENCN_MR:
 				case ENCN_M:
 				case ENCN_RM:
+				case ENCN_RMR:
 				case ENCN_R: return true;
 				default: return false;
 			}
@@ -840,7 +843,7 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_ZMM:
 			case OPN_ZMM_K:
 			case OPN_ZMM_KZ:
-			case OPN_MM:
+			case OPN_MMX:
 			case OPN_SREG:
 			case OPN_DREG:
 			case OPN_CREG:
@@ -904,7 +907,7 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_R64:
 			case OPN_CREG:
 			case OPN_DREG:
-			case OPN_MM:
+			case OPN_MMX:
 			case OPN_BND:
 			case OPN_RCX:
 			case OPN_RAX:

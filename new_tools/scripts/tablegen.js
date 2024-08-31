@@ -47,6 +47,7 @@ function get_operand_order(value) {
 		'xmm',
 		'ymm',
 		'zmm',
+		'mmx',
 		'moff8', 'moff16', 'moff32', 'moff64',
 		'm8', 'm16', 'm32', 'm64', 'm80', 'm128', 'm256', 'm512',
 		'mem', 'rel8', 'rel16', 'rel32',

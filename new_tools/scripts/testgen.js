@@ -27,6 +27,7 @@ function generate_combinations(operands) {
     ['xmm', [ 'xmm0', 'xmm1', 'xmm2', 'xmm15' ]],
 		['ymm', [ 'ymm0', 'ymm1', 'ymm2', 'ymm15', 'ymm31']],
 		['zmm', [ 'zmm0', 'zmm1', 'zmm2', 'zmm15', 'zmm31']],
+		['mmx', [ 'mm0', 'mm1', 'mm2', 'mm7']],
 		['bnd', [ 'bnd0', 'bnd1', 'bnd2', 'bnd3']],
 		['sreg', [ 'cs', 'ds', 'es', 'ss', 'fs', 'gs' ]],
     ['dreg', [ 'dr0', 'dr1', 'dr2', 'dr3', 'dr7' ]],
