@@ -42,12 +42,13 @@ function get_operand_order(value) {
 		'eax','r32',
 		'rax', 'r64',
 		'bnd', 'creg', 'dreg',
+		'st', 'st0',
 		'es', 'cs', 'ss', 'ds', 'fs', 'gs', 'sreg', 
 		'xmm',
 		'ymm',
 		'zmm',
 		'moff8', 'moff16', 'moff32', 'moff64',
-		'm8', 'm16', 'm32', 'm64', 'm128', 'm256', 'm512',
+		'm8', 'm16', 'm32', 'm64', 'm80', 'm128', 'm256', 'm512',
 		'mem', 'rel8', 'rel16', 'rel32',
 		'm16_16', 'm16_32', 'm16_64'
 	];

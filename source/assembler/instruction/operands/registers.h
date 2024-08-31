@@ -17,6 +17,7 @@ namespace baremetal {
 		REG_SREG, // segment registers
 		REG_DREG, // debug registers
 		REG_CREG, // control registers
+		REG_ST,
 		REG_BND,
 		REG_RIP
 	};
@@ -73,6 +74,11 @@ namespace baremetal {
 		constexpr explicit bnd(u8 i) : reg(i, REG_BND) {}
 	};
 
+	struct st : reg {
+		constexpr st() = default;
+		constexpr explicit st(u8 i) : reg(i, REG_ST) {}
+	};
+
 	struct sreg : reg {
 		constexpr sreg() = default;
 		constexpr explicit sreg(u8 i) : reg(i, REG_SREG) {}
@@ -98,6 +104,13 @@ namespace baremetal {
     constexpr name() : creg(index) {}         \
   };                                          \
                                               \
+  static inline constexpr name name;
+
+#define REGISTER_CLASS_ST_DECL(name, index) \
+  struct name : st {                        \
+    constexpr name() : st(index) {}         \
+  };                                        \
+                                            \
   static inline constexpr name name;
 
 #define REGISTER_CLASS_DREG_DECL(name, index) \
@@ -195,6 +208,15 @@ namespace baremetal {
 	REGISTER_CLASS_CREG_DECL(cr4, 4);
 	REGISTER_CLASS_CREG_DECL(cr8, 8);
 	// cr5, cr6, cr7 are typically not implemented
+	
+	REGISTER_CLASS_ST_DECL(st0, 0);
+	REGISTER_CLASS_ST_DECL(st1, 1);
+	REGISTER_CLASS_ST_DECL(st2, 2);
+	REGISTER_CLASS_ST_DECL(st3, 3);
+	REGISTER_CLASS_ST_DECL(st4, 4);
+	REGISTER_CLASS_ST_DECL(st5, 5);
+	REGISTER_CLASS_ST_DECL(st6, 6);
+	REGISTER_CLASS_ST_DECL(st7, 7);
 
 	// debug registers
 	REGISTER_CLASS_DREG_DECL(dr0, 0);

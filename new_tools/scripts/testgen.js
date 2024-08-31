@@ -18,6 +18,8 @@ function generate_combinations(operands) {
 		['fs', [ 'fs' ]],
 		['gs', [ 'gs' ]],
 		['cs', [ 'cs' ]],
+		['st0', [ 'st0' ]],
+		['st', [ 'st0', 'st1', 'st7' ]],
 		['r8', [ 'cl', 'dl', 'bl' ]],
     ['r16', [ 'cx', 'dx', 'bx', 'r15w' ]],
     ['r32', [ 'ecx', 'edx', 'ebx', 'r15d' ]],
@@ -76,6 +78,14 @@ function generate_combinations(operands) {
       'qword [rax + 0x0]', 'qword [rax + 0xFFFF]', 'qword [r15 + 0xFFFF]',
       'qword [rax + rsi * 1  + 0x0]', 'qword [rax + rsi + 0xFFFF]', 'qword [r15 + rsi + 0xFFFF]', 'qword [rax + r15 + 0xFFFF]',
       'qword [rax + rsi * 2 + 0xFFFF2]', 'qword [rax + rsi * 4 + 0xFFFF4]', 'qword [rax + rsi * 8 + 0xFFFF8]', 'qword [rsp + rax * 8 + 0xFFFF8]', 'qword [r15 + rax * 8 + 0xFFFF8]', 'qword [rsp + r15 * 8 + 0xFFFF8]', 'qword [r14 + r15 * 8 + 0xFFFF8]'
+    ]],
+		['m80', [
+      'tword [0x0]', 'tword [0xFF]', 'tword [0xFFFF]',
+      'tword [rel $ + 0x0]', 'tword [rel $ + 0xFF]', 'tword [rel $ + 0xFFFF]',
+			'tword [rax]',
+      'tword [rax + 0x0]', 'tword [rax + 0xFFFF]', 'tword [r15 + 0xFFFF]',
+      'tword [rax + rsi * 1  + 0x0]', 'tword [rax + rsi + 0xFFFF]', 'tword [r15 + rsi + 0xFFFF]', 'tword [rax + r15 + 0xFFFF]',
+      'tword [rax + rsi * 2 + 0xFFFF2]', 'tword [rax + rsi * 4 + 0xFFFF4]', 'tword [rax + rsi * 8 + 0xFFFF8]', 'tword [rsp + rax * 8 + 0xFFFF8]', 'tword [r15 + rax * 8 + 0xFFFF8]', 'tword [rsp + r15 * 8 + 0xFFFF8]', 'tword [r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m128', [
       '[0x0]', '[0xFF]', '[0xFFFF]',

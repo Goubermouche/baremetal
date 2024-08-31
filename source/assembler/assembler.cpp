@@ -31,6 +31,7 @@ namespace baremetal {
 			case OPN_DX:          return b.type == OPN_R16 && b.r == dx.index;
 			case OPN_ECX:         return b.type == OPN_R32 && b.r == ecx.index;
 			case OPN_RCX:         return b.type == OPN_R64 && b.r == rcx.index;
+			case OPN_ST0:         return b.type == OPN_ST && b.r == st0.index;
 			case OPN_MEM:         return b.type == OPN_M128;
 			default: return a == b.type;
 		}
@@ -281,7 +282,7 @@ namespace baremetal {
 		while(m_lex.get_next_token() != KW_EOF) {
 			switch (m_lex.current) {
 				// registers
-				case KW_CR0 ... KW_R15B: { 
+				case KW_CR0 ... KW_R15B: {
 					operands[operand_i] = opn_data(keyword_to_register(m_lex.current));
 					
 					while(parse_mask_reg(operands[operand_i])) {}
@@ -330,7 +331,7 @@ namespace baremetal {
 					break;
 				}
 				// memory operands
-				case KW_BYTE ... KW_QWORD: {
+				case KW_BYTE ... KW_TWORD: {
 					keyword_type mem_type = m_lex.current;
 
 					m_lex.get_next_token();
@@ -343,6 +344,7 @@ namespace baremetal {
 						case KW_WORD: memory = mem16(); break;
 						case KW_DWORD: memory = mem32(); break;
 						case KW_QWORD: memory = mem64(); break;
+						case KW_TWORD: memory = mem80(); break;
 						default: ASSERT(false, "unreachable\n");
 					}
 

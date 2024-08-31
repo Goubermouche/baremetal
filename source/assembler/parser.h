@@ -28,6 +28,14 @@ namespace baremetal {
 		KW_DS,
 		KW_FS,
 		KW_GS,
+		KW_ST0,
+		KW_ST1,
+		KW_ST2,
+		KW_ST3,
+		KW_ST4,
+		KW_ST5,
+		KW_ST6,
+		KW_ST7,
 		KW_BND0,
 		KW_BND1,
 		KW_BND2,
@@ -194,6 +202,7 @@ namespace baremetal {
 		KW_WORD,
 		KW_DWORD,
 		KW_QWORD,
+		KW_TWORD,
 
 		// special characters
 		KW_EOF,

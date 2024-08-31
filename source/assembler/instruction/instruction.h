@@ -407,8 +407,10 @@ namespace baremetal {
 		OPN_SREG,
 		OPN_DREG,
 		OPN_CREG,
+		OPN_ST,
 		OPN_BND,
 
+		OPN_ST0,
 		OPN_HIDDEN,
 		OPN_I8,
 		OPN_M32,
@@ -427,6 +429,7 @@ namespace baremetal {
 		OPN_REL16,
 		OPN_M128,
 		OPN_M256,
+		OPN_M80,
 		OPN_DX,
 		OPN_REL8,
 		OPN_I64,
@@ -482,6 +485,7 @@ namespace baremetal {
 			case OPN_M16:
 			case OPN_M32:
 			case OPN_M64:
+			case OPN_M80:
 			case OPN_M128:
 			case OPN_M256:
 			case OPN_M512:  return true;
@@ -643,6 +647,7 @@ namespace baremetal {
 		constexpr opn_data(moff m) : type(OPN_MOFF64), memory_offset(m) {}
 		constexpr opn_data(mem256 m) : type(OPN_M256), memory(m) {}
 		constexpr opn_data(mem128 m) : type(OPN_M128), memory(m) {}
+		constexpr opn_data(mem80 m) : type(OPN_M80), memory(m) {}
 		constexpr opn_data(mem64 m) : type(OPN_M64), memory(m) {}
 		constexpr opn_data(mem32 m) : type(OPN_M32), memory(m) {}
 		constexpr opn_data(mem16 m) : type(OPN_M16), memory(m) {}
@@ -845,6 +850,8 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_DX:
 			case OPN_ECX:
 			case OPN_RCX:
+			case OPN_ST0:
+			case OPN_ST:
 			case OPN_BND: return true;
 			default: return false;
 		}
@@ -901,6 +908,9 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_RAX:
 			case OPN_MIB:
 			case OPN_I64:         return 64;
+			case OPN_ST:
+			case OPN_ST0:
+			case OPN_M80:         return 80;
 			case OPN_M128:
 			case OPN_XMM:
 			case OPN_XMM_K:

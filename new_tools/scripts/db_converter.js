@@ -70,11 +70,19 @@ function extract_inst_operands(inst) {
     { s: 'uw', r: 'i16' },
     { s: 'ud', r: 'i32' },
     { s: 'uq', r: 'i64' },
+    { s: 'st(0)', r: 'st0' },
+    { s: 'st(i)', r: 'st' },
 	];
 
 	const masks = ['{kz}', '{k}'];
 
-	let parts = inst.split(/[\s,]+/).map(p => remove_str(p, rm)).filter(p => p !== '').map(p => replace_all(p, replacements)).filter(p => !(/^<.*>$/.test(p))).filter(p => !(/^[^\(]+\([^\)]+\)$/.test(p)));
+	let parts = inst.split(/[\s,]+/)
+		.map(p => remove_str(p, rm))
+		.filter(p => p !== '')
+		.map(p => replace_all(p, replacements))
+		.filter(p => !(/^<.*>$/.test(p)))
+		.filter(p => p.includes("st") || !(/^[^\(]+\([^\)]+\)$/.test(p)))
+
 	let result = [];
 
 	for(let i = 0; i < parts.length; ++i) {
@@ -304,7 +312,7 @@ function main() {
 
 	// VIRTUALIZATION
 	const supported_categories = [
-		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH'
+		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION'
 	];
 	
 	const supported_extensions = [
@@ -326,8 +334,6 @@ function main() {
 	];
 
 	// missing categories: 
-	// - 
-	// - FPU
 	// - SSE
 	// - STATE
 	// - SCALAR
@@ -348,7 +354,7 @@ function main() {
 
 		// test specific categories
 		if(
-			inst.category.includes('VIRTUALIZATION') &&
+			inst.category.includes('FPU') &&
 			!inst.extension.includes('X86')  
 		) {
 			gp_inst.push(inst);

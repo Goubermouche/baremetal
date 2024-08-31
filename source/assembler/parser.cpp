@@ -134,6 +134,15 @@ parse_number:
 			case KW_BND2: return (bnd(2));
 			case KW_BND3: return (bnd(3));
 
+			case KW_ST0: return (st(0));
+			case KW_ST1: return (st(1));
+			case KW_ST2: return (st(2));
+			case KW_ST3: return (st(3));
+			case KW_ST4: return (st(4));
+			case KW_ST5: return (st(5));
+			case KW_ST6: return (st(6));
+			case KW_ST7: return (st(7));
+
 			case KW_MM0: return mmx(0);
 			case KW_MM1: return mmx(1);
 			case KW_MM2: return mmx(2);
@@ -329,6 +338,14 @@ parse_number:
 			{ "ds",    KW_DS,    },
 			{ "fs",    KW_FS,    },
 			{ "gs",    KW_GS,    },
+			{ "st0",   KW_ST0,   },
+			{ "st1",   KW_ST1,   },
+			{ "st2",   KW_ST2,   },
+			{ "st3",   KW_ST3,   },
+			{ "st4",   KW_ST4,   },
+			{ "st5",   KW_ST5,   },
+			{ "st6",   KW_ST6,   },
+			{ "st7",   KW_ST7,   },
 			{ "bnd0",  KW_BND0,  },
 			{ "bnd1",  KW_BND1,  },
 			{ "bnd2",  KW_BND2,  },
@@ -495,6 +512,7 @@ parse_number:
 			{ "word" , KW_WORD  },
 			{ "dword", KW_DWORD },
 			{ "qword", KW_QWORD },
+			{ "tword", KW_TWORD },
 			{ "QWORD", KW_QWORD },
 
 			// keywords
