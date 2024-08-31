@@ -38,6 +38,9 @@ namespace baremetal {
 		void emit_opcode_prefix_vex(const ins* inst, const opn_data* operands);
 		void emit_opcode_prefix_evex(const ins* inst, const opn_data* operands);
 
+		void emit_opcode_prefix_vex_three(const ins* inst, const opn_data* operands);
+		void emit_opcode_prefix_vex_two(const ins* inst, const opn_data* operands);
+
 		void emit_opcode_prefix_rex_mem(const mem& memory);
 
 		// operands
@@ -50,6 +53,7 @@ namespace baremetal {
 		auto has_sib_byte(const opn_data* operands) -> bool;
 
 		auto get_instruction_rex(const ins* inst, const opn_data* operands) -> u8;
+		auto get_instruction_vvvv(const ins* inst, const opn_data* operands) -> u8;
 
 		auto get_instruction_rex_rex(const ins* inst, const opn_data* operands) -> u8;
 		auto get_instruction_rex_vex(const ins* inst, const opn_data* operands) -> u8;

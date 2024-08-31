@@ -336,7 +336,6 @@ function main() {
 	];
 
 	// missing categories: 
-	// - STATE
 	// - SCALAR
 	// - SIMD
 	// - AVX
@@ -346,20 +345,20 @@ function main() {
 
 	instructions.forEach(inst => {
 		// test all categories
-	if(
-		inst.category.some(r => supported_categories.includes(r)) && 
-		!inst.extension.includes('X86')
-	) {
-		gp_inst.push(inst);
-	}
+		// if(
+		// 	inst.category.some(r => supported_categories.includes(r)) && 
+		// 	!inst.extension.includes('X86')
+		// ) {
+		// 	gp_inst.push(inst);
+		// }
 
 		// test specific categories
-	// 	if(
-	// 		inst.category.includes('SSE') &&
-	// 		!inst.extension.includes('X86')  
-	// 	) {
-	// 		gp_inst.push(inst);
-	// 	}
+		if(
+			inst.category.includes('STATE') &&
+			!inst.extension.includes('X86')  
+		) {
+			gp_inst.push(inst);
+		}
 	});
 
 	let rows = [];
