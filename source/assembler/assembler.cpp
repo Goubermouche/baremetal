@@ -692,9 +692,9 @@ namespace baremetal {
 			case ENCN_VEX_RVM:  return static_cast<u8>((~operands[1].r & 0b00001111)); break;
 			case ENCN_VEX_RMV:  return static_cast<u8>((~operands[2].r & 0b00001111)); break;
 			case ENCN_VEX_MVR:  return static_cast<u8>((~operands[2].r & 0b00001111)); break;
-			case ENCN_VEX_RM:   return 0b1111 << 3; break; // no 'V' part, just return a negated zero
+			case ENCN_VEX_RM:   return 0b1111; break; // no 'V' part, just return a negated zero
 			// XOP
-			case ENCN_XOP:      return 0b1111 << 3; break;
+			case ENCN_XOP:      return 0b1111; break;
 			case ENCN_XOP_VM:   return static_cast<u8>((~operands[0].r & 0b00001111)); break;
 			// EVEX
 			case ENCN_EVEX_RVM: return static_cast<u8>((~operands[1].r & 0b00001111)); break;
