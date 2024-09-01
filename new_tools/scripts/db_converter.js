@@ -319,7 +319,7 @@ function main() {
 
 	// VIRTUALIZATION
 	const supported_categories = [
-		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE'
+		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR'
 	];
 	
 	const supported_extensions = [
@@ -338,38 +338,34 @@ function main() {
 		'XOP_VM',
 		'EVEX_RVM',
 		'VEX_RVMN',
-		'EVEX_RM'
+		'EVEX_RM',
+		'EVEX_MR'
 	];
 
 	// missing categories: 
-	// - 
 	// - SIMD
 	// - AVX
 	// - AVX512
 	// - MASK
 	// - AMX
 	
-	// 
-	// EVEX_MR
-	// EVEX_MVR
-
 	instructions.forEach(inst => {
 		// test all categories
-		// if(
-		// 	inst.category.some(r => supported_categories.includes(r)) && 
-		// 	!inst.extension.includes('X86')
-		// ) {
-		// 	gp_inst.push(inst);
-		// }
-
-		// test specific categories
 		if(
-			inst.category.includes('SCALAR') &&
-			!inst.extension.includes('X86') && 
-			inst.enc.enc == 'EVEX_RM'
+			inst.category.some(r => supported_categories.includes(r)) && 
+			!inst.extension.includes('X86')
 		) {
 			gp_inst.push(inst);
 		}
+
+		// test specific categories
+		// if(
+		// 	inst.category.includes('SCALAR') &&
+		// 	!inst.extension.includes('X86') && 
+		// 	inst.enc.enc == 'EVEX_MVR'
+		// ) {
+		// 	gp_inst.push(inst);
+		// }
 	});
 
 	let rows = [];

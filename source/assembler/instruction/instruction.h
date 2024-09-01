@@ -540,6 +540,8 @@ namespace baremetal {
 		constexpr auto is_evex() const -> bool {
 			switch(encoding) {
 				case ENCN_EVEX_RVM:
+				case ENCN_EVEX_MVR:
+				case ENCN_EVEX_MR:
 				case ENCN_EVEX_RM: return true;
 				default: return false;
 			}
