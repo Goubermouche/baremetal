@@ -104,6 +104,7 @@ namespace baremetal {
 					if(is_operand_xmm(op.type)) { op.type = OPN_XMM_K; }
 					else if(is_operand_ymm(op.type)) { op.type = OPN_YMM_K; }
 					else if(is_operand_zmm(op.type)) { op.type = OPN_ZMM_K; }
+					else if(op.type == OPN_K) { op.type = OPN_K_K; }
 
 					break;
 				}
@@ -750,7 +751,7 @@ namespace baremetal {
 				case 0x000f00: map_select = 0b01; break; 
 				case 0x0f3800: map_select = 0b10; break;
 				case 0x0f3a00: map_select = 0b11; break;
-				default: ASSERT(false, "unknown leading opcode");
+				default: ASSERT(false, "unknown leading opcode 2 {}\n", m_assembly);
 			}
 		}
 
@@ -790,8 +791,8 @@ namespace baremetal {
 		m_bytes.push_back(third);
 	}
 
-	auto get_masked_operand(const instruction* inst, const operand* operands) -> masked_reg {
-		for(u8 i = 0; i < inst->get_operand_count(); ++i) {
+	auto get_masked_operand(const ins* inst, const opn_data* operands) -> masked_reg {
+		for(u8 i = 0; i < inst->operand_count; ++i) {
 			if(is_operand_masked(operands[i].type)) {
 				return operands[i].mr;
 			}
@@ -800,8 +801,8 @@ namespace baremetal {
 		return {};
 	}
 
-	auto has_masked_operand(const instruction* inst, const operand* operands) -> bool {
-		for(u8 i = 0; i < inst->get_operand_count(); ++i) {
+	auto has_masked_operand(const ins* inst, const opn_data* operands) -> bool {
+		for(u8 i = 0; i < inst->operand_count; ++i) {
 			if(is_operand_masked(operands[i].type)) {
 				return true;
 			}
@@ -818,8 +819,8 @@ namespace baremetal {
 		// ~X         [_X______]
 		// ~B         [__X_____]
 		// ~R'        [___X____]
-		//            [____00__]
-		// map select [______XX]
+		//            [____0___]
+		// map select [_____XXX] - NOTE: older EVEX versions only contain a two bit map select
 		u8 second = 0;
 		const u8 rex = get_instruction_rex(inst, operands);
 		
@@ -843,11 +844,20 @@ namespace baremetal {
 		// map_select
 		u8 map_select = 0;
 
-		switch((inst->opcode & 0xffff00)) {
-			case 0x000f00: map_select = 0b01; break; 
-			case 0x0f3800: map_select = 0b10; break;
-			case 0x0f3a00: map_select = 0b11; break;
-			default: ASSERT(false, "unknown leading opcode");
+		if(inst->is_map6()) {
+			map_select = 0b110; 
+		}
+		else if(inst->is_map5()) {
+			map_select = 0b101; 
+		}
+		else {
+			switch((inst->opcode & 0xffff00)) {
+				case 0x000000: map_select = 0b000; break; 
+				case 0x000f00: map_select = 0b001; break; 
+				case 0x0f3800: map_select = 0b010; break;
+				case 0x0f3a00: map_select = 0b011; break;
+				default: ASSERT(false, "unknown leading opcode 1 {}", inst->opcode & 0xffff00);
+			}
 		}
 
 		second |= map_select;
@@ -877,6 +887,16 @@ namespace baremetal {
 			case ENCN_VEX_RM: vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
 			// EVEX
 			case ENCN_EVEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
+			case ENCN_EVEX_RM: {
+				if(m_reg_count == 3 || (is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false)) {
+					vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
+				}
+				else {
+					vvvv = 0b1111 << 3;
+				}
+
+				break;
+			} 
 			// XOP
 			case ENCN_XOP: vvvv = 0b1111 << 3; break;
 			case ENCN_XOP_VM: vvvv = static_cast<u8>((~operands[0].r & 0b00001111) << 3); break;
@@ -886,14 +906,28 @@ namespace baremetal {
 		third |= vvvv;
 		third |= 0b1 << 2;
 
-		// operand size and operand prefixes
-		if(inst->prefix & OPERAND_SIZE_OVERRIDE) {
-			third |= 0b00000001;
+		if(inst->prefix == PREFIX_NONE) {
+			third |= 0b00;
+		}
+		else if(inst->prefix == OPERAND_SIZE_OVERRIDE) {
+			// if(inst->operands[0] != OPN_K_K && (inst->opcode & 0xffff00) == 0x0f3a00) {
+			// 	third |= 0b11;
+			// }
+			// else {
+				third |= 0b01;
+		 //	}
+		}
+		else if(inst->prefix == REP) {
+			third |= 0b10;
+		}
+		else if(inst->prefix == REPNE) {
+			third |= 0b11;
 		}
 		else {
-			ASSERT(false, "unexpected prefix\n");
-		} 
-
+			ASSERT(false, "unexpected prefix {}\n", inst->prefix);
+		}
+		// inst->opcode & 0xffff00
+		
 		m_bytes.push_back(third);
 
 		// fourth
@@ -913,34 +947,38 @@ namespace baremetal {
 			switch(inst->encoding) {
 				case ENCN_VEX_RVM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
 				case ENCN_EVEX_RVM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
+				case ENCN_EVEX_RM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
 				default: ASSERT(false, "unhandled evex prefix");
 			}
 		// }
 
 		fourth |= !v << 3;
 
-		// if(has_masked_operand(inst, operands)) {
-		// 	masked_reg r = get_masked_operand(inst, operands);
+		if(has_masked_operand(inst, operands)) {
+			masked_reg r = get_masked_operand(inst, operands);
 
-		// 	// merge or zero
-		// 	fourth |= (r.z & 0b00000001) << 7;
+			// merge or zero
+			fourth |= (r.z & 0b00000001) << 7;
 
-		// 	// operand mask register
-		// 	fourth |= r.k;
+			// operand mask register
+			fourth |= r.k;
 
-		// 	// operand size and type
-		// 	if(inst->get_ops() == OPS_256) {
-		// 		fourth |= 0b00100000;
-		// 	}
-		// 	else if(inst->get_ops() == OPS_512) {
-		// 		fourth |= 0b01000000;
-		// 	}
-		// }
-		// else {
+			// operand size and type
+			if(inst->op_size == OPS_256) {
+				fourth |= 0b00100000;
+			}
+			else if(inst->op_size == OPS_512) {
+				fourth |= 0b01000000;
+			}
+		}
+		else {
 			// operand size and type
 			u8 ll = 0;
 
-			if(inst->op_size == OPS_128) {
+			if(inst->op_size == OPS_64) {
+				ll = 0b00000000;
+			}
+			else if(inst->op_size == OPS_128) {
 				ll = 0b00000010;
 			}
 			else if(inst->op_size == OPS_256) {
@@ -950,11 +988,11 @@ namespace baremetal {
 				ll = 0b00000010;
 			}
 			else {
-				ASSERT(false, "unepxected operand size\n");
+				ASSERT(false, "unepxected operand size {}\n", (u8)inst->op_size);
 			}
 
 			fourth |= ll << 5;
-		// }
+		}
 
 		m_bytes.push_back(fourth);
 	}
@@ -1161,6 +1199,7 @@ namespace baremetal {
 			case ENCN_VEX_MR: rx = m_regs[m_reg_count - 1]; break;
 			case ENCN_VEX_RVM: destination = m_regs[2]; break;
 			case ENCN_EVEX_RVM: destination = m_regs[2]; break;
+			case ENCN_EVEX_RM: destination = m_regs[m_reg_count - 1]; break;
 			case ENCN_VEX_MVR: {
 				if(m_reg_count == 3) {
 					rx = m_regs[1]; 
@@ -1578,6 +1617,61 @@ namespace baremetal {
 
 				break;
 			}
+			case ENCN_EVEX_RM: {
+				switch(index_byte) {
+					case 0b00000000: break;
+					case 0b00001000: base = registers[2]; break;
+					case 0b00100000: {
+						if(m_reg_count == 3 || is_operand_mem(inst->operands[2])) {
+							base = registers[2];
+						}
+						else {
+							base = registers[1];
+						}
+
+						break;
+					} 
+					case 0b00101000: rx = registers[0]; base = registers[2]; break;   
+					case 0b10000000: rx = registers[0]; break; 
+					case 0b10001000: rx = registers[0]; base = registers[2]; break; 
+					case 0b10100000: {
+						if(m_reg_count == 3 || is_operand_mem(inst->operands[2])) {
+							rx = registers[0]; 
+							base = registers[2];
+						}
+						else {
+							rx = registers[0]; 
+							base = registers[1];
+						}
+
+						break;
+					} 
+					case 0b10101000: rx = registers[0]; base = registers[1]; break;
+					case 0b00001100: rx = registers[0]; base = registers[2]; index = registers[2]; break;    
+					case 0b00101100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
+					case 0b00110000: break;  
+					case 0b00111000: rx = registers[0]; base = registers[2]; break;  
+					case 0b00111100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
+					case 0b10001100: rx = registers[0]; base = registers[2]; index = registers[2]; break; 
+					case 0b10101100: rx = registers[0]; base = registers[2]; index = registers[1]; break;   
+					case 0b10110000: rx = registers[0]; base = registers[2]; break;  
+					case 0b10111000: rx = registers[0]; base = registers[2]; break;  
+					case 0b10111100: rx = registers[0]; base = registers[2]; index = registers[1]; break; 
+					case 0b11000000: rx = registers[0]; break;  
+					case 0b11001000: rx = registers[0]; base = registers[2]; break;  
+					case 0b11001100: rx = registers[0]; base = registers[2]; index = registers[2]; break; 
+					case 0b11100000: rx = registers[1]; break;  
+					case 0b11101000: rx = registers[0]; base = registers[1]; break;  
+					case 0b11101100: rx = registers[0]; base = registers[1]; index = registers[2]; break;
+					case 0b11110000: rx = registers[1]; break; 
+					case 0b11111000: rx = registers[0]; base = registers[1]; break;  
+					case 0b11111100: rx = registers[0]; base = registers[1]; index = registers[2]; break; 				
+					default: ASSERT(false, "unknown index byte {}\n", index_byte);
+				}
+
+				break;
+			}
+
 			default: ASSERT(false, "unhandled rex case 6");
 		}
 
@@ -1917,6 +2011,7 @@ namespace baremetal {
 				case ENCN_VEX_MVR: 
 				case ENCN_VEX_MR: 
 				case ENCN_RMR: 
+				case ENCN_EVEX_RM: 
 				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
 				case ENCN_MR: {
 					if(inst->operands[2] == OPN_CL) {
@@ -1942,6 +2037,7 @@ namespace baremetal {
 				case ENCN_VEX_RMV: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				case ENCN_VEX_MVR: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				case ENCN_EVEX_RVM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
+				case ENCN_EVEX_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				default: ASSERT(false, "unknown encoding for 3 regs\n");
 			}
 		}

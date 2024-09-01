@@ -122,6 +122,14 @@ parse_number:
 			case KW_DR6: return dreg(6);
 			case KW_DR7: return dreg(7);
 
+			case KW_K1: return kreg(1);
+			case KW_K2: return kreg(2);
+			case KW_K3: return kreg(3);
+			case KW_K4: return kreg(4);
+			case KW_K5: return kreg(5);
+			case KW_K6: return kreg(6);
+			case KW_K7: return kreg(7);
+
 			case KW_ES: return sreg(0);
 			case KW_CS: return sreg(1);
 			case KW_SS: return sreg(2);
@@ -332,6 +340,13 @@ parse_number:
 			{ "dr5",   KW_DR5,   },
 			{ "dr6",   KW_DR6,   },
 			{ "dr7",   KW_DR7,   },
+			{ "k1",    KW_K1,    },
+			{ "k2",    KW_K2,    },
+			{ "k3",    KW_K3,    },
+			{ "k4",    KW_K4,    },
+			{ "k5",    KW_K5,    },
+			{ "k6",    KW_K6,    },
+			{ "k7",    KW_K7,    },
 			{ "es",    KW_ES,    },
 			{ "cs",    KW_CS,    },
 			{ "ss",    KW_SS,    },

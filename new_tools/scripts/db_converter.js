@@ -118,6 +118,7 @@ function extract_encoding(enc) {
 		opcode: [],
 		prefix: [],
 		rexw: false,
+		map: undefined,
 		enc: undefined, // encoding id
 		rm: undefined, // /r or /1 /2 /3 ...
 		opcode_extend: undefined, // opcode + i or r
@@ -205,8 +206,12 @@ function extract_encoding(enc) {
 				else if(p === 'NP') {}					
 				else if(p === 'LIG') {}					
 				else if(p === 'WIG') {}
-				else if(p === 'MAP5') {}
-				else if(p === 'MAP6') {}
+				else if(p === 'MAP5') {
+					result.map = '5';
+				}
+				else if(p === 'MAP6') {
+					result.map = '6';
+				}
 				else if(['0F38', '0F', '0F3A'].some(i => i == p)) {
 					result.opcode.push(p);
 				}
@@ -332,7 +337,8 @@ function main() {
 		'XOP',
 		'XOP_VM',
 		'EVEX_RVM',
-		'VEX_RVMN'
+		'VEX_RVMN',
+		'EVEX_RM'
 	];
 
 	// missing categories: 
@@ -343,10 +349,7 @@ function main() {
 	// - MASK
 	// - AMX
 	
-	// VEX_MR
-	// VEX_MVR
-	// EVEX_RVM
-	// EVEX_RM
+	// 
 	// EVEX_MR
 	// EVEX_MVR
 
@@ -363,7 +366,7 @@ function main() {
 		if(
 			inst.category.includes('SCALAR') &&
 			!inst.extension.includes('X86') && 
-			inst.enc.enc == 'VEX_MR'
+			inst.enc.enc == 'EVEX_RM'
 		) {
 			gp_inst.push(inst);
 		}
@@ -383,6 +386,7 @@ function main() {
 		row.push(`"rm": "${inst.enc.rm === undefined ? "" : inst.enc.rm}"`);
 		row.push(`"ri": "${inst.enc.opcode_extend === undefined ? "" : inst.enc.opcode_extend}"`);
 		row.push(`"size": ${inst.enc.size === undefined ? "64" : inst.enc.size}`);
+		row.push(`"map": "${inst.enc.map === undefined ? '' : inst.enc.map}"`);
 		
 		rows.push(row);
 	});

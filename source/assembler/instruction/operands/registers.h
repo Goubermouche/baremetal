@@ -18,6 +18,7 @@ namespace baremetal {
 		REG_DREG, // debug registers
 		REG_CREG, // control registers
 		REG_ST,
+		REG_K,
 		REG_BND,
 		REG_RIP
 	};
@@ -94,6 +95,11 @@ namespace baremetal {
 		constexpr explicit creg(u8 i) : reg(i, REG_CREG) {}
 	};
 
+	struct kreg : reg {
+		constexpr kreg() = default;
+		constexpr explicit kreg(u8 i) : reg(i, REG_K) {}
+	};
+
 	struct reg_void : reg {
 		constexpr reg_void() = default;
 		constexpr explicit reg_void(u8 i, reg_type ty) : reg(i, ty) {}
@@ -162,6 +168,13 @@ namespace baremetal {
                                              \
   static inline constexpr name name;
 
+#define REGISTER_CLASS_K_DECL(name, index) \
+  struct name : kreg {                     \
+    constexpr name() : kreg(index) {}      \
+  };                                       \
+                                           \
+  static inline constexpr name name;
+
 #define REGISTER_CLASS_64_DECL(name, index) \
   struct name : reg64 {                     \
     constexpr name() : reg64(index) {}      \
@@ -228,6 +241,15 @@ namespace baremetal {
 	REGISTER_CLASS_DREG_DECL(dr6, 6);
 	REGISTER_CLASS_DREG_DECL(dr7, 7);
 	// dr8 to dr15 are typically not implemented
+
+
+	REGISTER_CLASS_K_DECL(k1, 1);
+	REGISTER_CLASS_K_DECL(k2, 2);
+	REGISTER_CLASS_K_DECL(k3, 3);
+	REGISTER_CLASS_K_DECL(k4, 4);
+	REGISTER_CLASS_K_DECL(k5, 5);
+	REGISTER_CLASS_K_DECL(k6, 6);
+	REGISTER_CLASS_K_DECL(k7, 7);
 
 	// segment registers
 	REGISTER_CLASS_SREG_DECL(es, 0);

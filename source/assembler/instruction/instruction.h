@@ -415,6 +415,7 @@ namespace baremetal {
 		OPN_DREG,
 		OPN_CREG,
 		OPN_ST,
+		OPN_K,
 		OPN_BND,
 
 		OPN_K_K,
@@ -538,7 +539,8 @@ namespace baremetal {
 		}
 		constexpr auto is_evex() const -> bool {
 			switch(encoding) {
-				case ENCN_EVEX_RVM: return true;
+				case ENCN_EVEX_RVM:
+				case ENCN_EVEX_RM: return true;
 				default: return false;
 			}
 		}
@@ -546,9 +548,14 @@ namespace baremetal {
 		constexpr auto is_rexw() const -> bool {
 			return flags & 0b00000001;
 		}
-
+		constexpr auto is_map5() const -> bool {
+			return (flags & 0b11000000) == 0b10000000;
+		}
+		constexpr auto is_map6() const -> bool {
+			return (flags & 0b11000000) == 0b01000000;
+		}
 		constexpr auto is_ri() const -> bool {
-			return flags & 0b01100000;
+			return flags & 0b00100000;
 		}
 		constexpr auto is_r() const -> bool {
 			return (flags & (0b00000010)) == (flags & (0b00011110)) && ((flags & 0b00000010) != 0);
@@ -863,6 +870,8 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_RCX:
 			case OPN_ST0:
 			case OPN_ST:
+			case OPN_K:
+			case OPN_K_K:
 			case OPN_BND: return true;
 			default: return false;
 		}
@@ -919,6 +928,7 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_RAX:
 			case OPN_MIB:
 			case OPN_K_K:
+			case OPN_K:
 			case OPN_I64:         return 64;
 			case OPN_ST:
 			case OPN_ST0:
@@ -939,6 +949,19 @@ inline auto is_operand_large_reg(opn op) -> bool {
 		}
 
 		return 0; // unreachable
+	}
+
+	inline auto is_operand_masked(opn op) -> bool {
+		switch(op) {
+			case OPN_K_K:
+			case OPN_ZMM_K:
+			case OPN_ZMM_KZ:
+			case OPN_YMM_K:
+			case OPN_YMM_KZ:
+			case OPN_XMM_K:
+			case OPN_XMM_KZ: return true;
+			default: return false;
+		}
 	}
 
 #undef INST_0

@@ -124,9 +124,16 @@ function get_instruction_flags(inst) {
 
 	switch(inst.ri) {
 		case '': break;
+		case 'i':
 		case 'r': flags |= 0b00100000; break;
-		case 'i': flags |= 0b01000000; break;
 		default: console.error(`unknown instruction ri '${inst.ri}'`);
+	}
+
+	switch(inst.map) {
+		case '': break;
+		case '5': flags |= 0b10000000; break;
+		case '6': flags |= 0b01000000; break;
+		default: console.error(`unknown instruction map '${inst.ri}'`);
 	}
 
 	return flags.toString(constant_base);
