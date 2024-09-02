@@ -74,6 +74,8 @@ function extract_inst_operands(inst) {
     { s: 'mm/m64', r: 'mmx/m64' },
     { s: 'st(0)', r: 'st0' },
     { s: 'st(i)', r: 'st' },
+    { s: 'vm64y', r: 'm64' },
+    { s: 'vm64x', r: 'm64' },
 	];
 
 	const masks = ['{kz}', '{k}'];
@@ -118,6 +120,7 @@ function extract_encoding(enc) {
 		opcode: [],
 		prefix: [],
 		rexw: false,
+		l: undefined,
 		map: undefined,
 		enc: undefined, // encoding id
 		rm: undefined, // /r or /1 /2 /3 ...
@@ -181,8 +184,12 @@ function extract_encoding(enc) {
 				else if(p === 'WIG') {}
 				else if(p === 'LIG') {}				
 				else if(p === 'LZ') {}
-				else if(p === 'L0') {}
-				else if(p === 'L1') {}
+				else if(p === 'L0') {
+					result.l = '0';
+				}
+				else if(p === 'L1') {
+					result.l = '1';
+				}
 				else if(p === 'NP') {}
 				else {
 					console.log(p);
@@ -319,7 +326,7 @@ function main() {
 
 	// VIRTUALIZATION
 	const supported_categories = [
-		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR'
+		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR', 'MASK'
 	];
 	
 	const supported_extensions = [
@@ -346,7 +353,6 @@ function main() {
 	// - SIMD
 	// - AVX
 	// - AVX512
-	// - MASK
 	// - AMX
 	
 	instructions.forEach(inst => {
@@ -360,9 +366,8 @@ function main() {
 
 		// test specific categories
 		// if(
-		// 	inst.category.includes('SCALAR') &&
-		// 	!inst.extension.includes('X86') && 
-		// 	inst.enc.enc == 'EVEX_MVR'
+		// 	inst.category.includes('MASK') &&
+		// 	!inst.extension.includes('X86') 
 		// ) {
 		// 	gp_inst.push(inst);
 		// }
@@ -383,6 +388,7 @@ function main() {
 		row.push(`"ri": "${inst.enc.opcode_extend === undefined ? "" : inst.enc.opcode_extend}"`);
 		row.push(`"size": ${inst.enc.size === undefined ? "64" : inst.enc.size}`);
 		row.push(`"map": "${inst.enc.map === undefined ? '' : inst.enc.map}"`);
+		row.push(`"l": "${inst.enc.l ===  undefined ? '' : inst.enc.l}"`);
 		
 		rows.push(row);
 	});

@@ -550,6 +550,14 @@ namespace baremetal {
 		constexpr auto is_rexw() const -> bool {
 			return flags & 0b00000001;
 		}
+		constexpr auto is_l0() const -> bool {
+			ASSERT(is_vex_xop(), "invalid - expected a xop or vex instruction\n");
+			return (flags & 0b11000000) == 0b10000000;
+		}
+		constexpr auto is_l1() const -> bool {
+			ASSERT(is_vex_xop(), "invalid - expected a xop or vex instruction\n");
+			return (flags & 0b11000000) == 0b01000000;
+		}
 		constexpr auto is_map5() const -> bool {
 			return (flags & 0b11000000) == 0b10000000;
 		}

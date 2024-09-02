@@ -649,6 +649,19 @@ namespace baremetal {
 		}
 	}
 
+	auto assembler::get_instruction_l(const ins* inst) -> bool {
+		if(inst->is_l1()) {
+			return true;
+		}
+
+		if(inst->is_l0()) {
+			return false;
+		}
+
+		// vector length (0 = 128b, 1 = 256b)
+		return inst->op_size == OPS_256;
+	}
+
 	void assembler::emit_opcode_prefix_vex_two(const ins* inst, const opn_data* operands) {
 		// two byte vex prefix
 		m_bytes.push_back(0xc5);
@@ -665,11 +678,7 @@ namespace baremetal {
 		second |= !r << 7;
 
 		second |= get_instruction_vvvv(inst, operands) << 3;
-
-		// L vector length (0 = 128b, 1 = 256b)
-		bool vector_len = inst->op_size == OPS_256;
-		const u8 l = (0b000000001 & vector_len) << 2;
-		second |= l;
+		second |= get_instruction_l(inst) << 2;
 
 		// pp - implied mandatory prefix
 		if(inst->prefix == OPERAND_SIZE_OVERRIDE) {
@@ -772,10 +781,8 @@ namespace baremetal {
 
 		third |= get_instruction_vvvv(inst, operands) << 3;
 
-		// L vector length (0 = 128b, 1 = 256b)
-		bool vector_len = inst->op_size == OPS_256;
-		const u8 l = (0b000000001 & vector_len) << 2;
-		third |= l;
+		// L
+		third |= get_instruction_l(inst) << 2;
 
 		// pp - implied mandatory prefix
 		if(inst->prefix == OPERAND_SIZE_OVERRIDE) {

@@ -54,6 +54,7 @@ namespace baremetal {
 
 		auto get_instruction_rex(const ins* inst, const opn_data* operands) -> u8;
 		auto get_instruction_vvvv(const ins* inst, const opn_data* operands) -> u8;
+		auto get_instruction_l(const ins* inst) -> bool;
 
 		auto get_instruction_rex_rex(const ins* inst, const opn_data* operands) -> u8;
 		auto get_instruction_rex_vex(const ins* inst, const opn_data* operands) -> u8;

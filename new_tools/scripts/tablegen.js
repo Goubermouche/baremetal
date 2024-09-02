@@ -48,7 +48,7 @@ function get_operand_order(value) {
 		'ymm', 'ymm_kz',
 		'zmm', 'zmm_kz',
 		'mmx',
-		'k_k',
+		'k', 'k_k',
 		'moff8', 'moff16', 'moff32', 'moff64',
 		'm8', 'm16', 'm32', 'm64', 'm80', 'm128', 'm256', 'm512',
 		'mem', 'rel8', 'rel16', 'rel32',
@@ -129,11 +129,21 @@ function get_instruction_flags(inst) {
 		default: console.error(`unknown instruction ri '${inst.ri}'`);
 	}
 
-	switch(inst.map) {
-		case '': break;
-		case '5': flags |= 0b10000000; break;
-		case '6': flags |= 0b01000000; break;
-		default: console.error(`unknown instruction map '${inst.ri}'`);
+	if(inst.l != '') {
+		// MAP is only available on EVEX instructions while L1 / L0 is only available on VEX/XOP instructions
+		switch(inst.l) {
+			case '1': flags |= 0b01000000; break;
+			case '0': flags |= 0b10000000; break;
+			default: console.error(`unknown instruction l '${inst.ri}'`);
+		}
+	}
+	else {
+		switch(inst.map) {
+			case '': break;
+			case '5': flags |= 0b10000000; break;
+			case '6': flags |= 0b01000000; break;
+			default: console.error(`unknown instruction map '${inst.ri}'`);
+		}
 	}
 
 	return flags.toString(constant_base);
