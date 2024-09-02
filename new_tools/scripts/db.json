@@ -2561,6 +2561,18 @@
 	{ "name": "vfcmulcsh"       , "operands": ["xmm_kz", "xmm", "xmm"]      , "enc": "EVEX_RVM", "opcode": "D7"    , "prefix": ["F2"]      , "rexw": false, "rm": "r", "ri": "" , "size": 64 , "map": "6", "l": ""  },
 	{ "name": "vfcmulcsh"       , "operands": ["xmm_kz", "xmm", "m32"]      , "enc": "EVEX_RVM", "opcode": "D7"    , "prefix": ["F2"]      , "rexw": false, "rm": "r", "ri": "" , "size": 64 , "map": "6", "l": ""  },
 	{ "name": "vfmaddcsh"       , "operands": ["xmm_kz", "xmm", "xmm"]      , "enc": "EVEX_RVM", "opcode": "57"    , "prefix": ["F3"]      , "rexw": false, "rm": "r", "ri": "" , "size": 64 , "map": "6", "l": ""  },
-	{ "name": "vfmaddcsh"       , "operands": ["xmm_kz", "xmm", "m32"]      , "enc": "EVEX_RVM", "opcode": "57"    , "prefix": ["F3"]      , "rexw": false, "rm": "r", "ri": "" , "size": 64 , "map": "6", "l": ""  }
+	{ "name": "vfmaddcsh"       , "operands": ["xmm_kz", "xmm", "m32"]      , "enc": "EVEX_RVM", "opcode": "57"    , "prefix": ["F3"]      , "rexw": false, "rm": "r", "ri": "" , "size": 64 , "map": "6", "l": ""  },
+	{ "name": "ldtilecfg"       , "operands": ["m512"]                      , "enc": "VEX"     , "opcode": "0F3849", "prefix": []          , "rexw": false, "rm": "0", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "sttilecfg"       , "operands": ["m512"]                      , "enc": "VEX"     , "opcode": "0F3849", "prefix": ["66"]      , "rexw": false, "rm": "0", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tileloadd"       , "operands": ["tmm", "tmem"]               , "enc": "VEX_RM"  , "opcode": "0F384B", "prefix": ["F2"]      , "rexw": false, "rm": "r", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tileloaddt1"     , "operands": ["tmm", "tmem"]               , "enc": "VEX_RM"  , "opcode": "0F384B", "prefix": ["66"]      , "rexw": false, "rm": "r", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tilerelease"     , "operands": []                            , "enc": "VEX"     , "opcode": "0F3849", "prefix": []          , "rexw": false, "rm": "0", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tilestored"      , "operands": ["tmem", "tmm"]               , "enc": "VEX_MR"  , "opcode": "0F384B", "prefix": ["F3"]      , "rexw": false, "rm": "r", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tilezero"        , "operands": ["tmm"]                       , "enc": "VEX_R"   , "opcode": "0F3849", "prefix": ["F2"]      , "rexw": false, "rm": "r", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tdpbf16ps"       , "operands": ["tmm", "tmm", "tmm"]         , "enc": "VEX_RMV" , "opcode": "0F385C", "prefix": ["F3"]      , "rexw": false, "rm": "r", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tdpbssd"         , "operands": ["tmm", "tmm", "tmm"]         , "enc": "VEX_RMV" , "opcode": "0F385E", "prefix": ["F2"]      , "rexw": false, "rm": "r", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tdpbsud"         , "operands": ["tmm", "tmm", "tmm"]         , "enc": "VEX_RMV" , "opcode": "0F385E", "prefix": ["F3"]      , "rexw": false, "rm": "r", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tdpbusd"         , "operands": ["tmm", "tmm", "tmm"]         , "enc": "VEX_RMV" , "opcode": "0F385E", "prefix": ["66"]      , "rexw": false, "rm": "r", "ri": "" , "size": 128, "map": "" , "l": ""  },
+	{ "name": "tdpbuud"         , "operands": ["tmm", "tmm", "tmm"]         , "enc": "VEX_RMV" , "opcode": "0F385E", "prefix": []          , "rexw": false, "rm": "r", "ri": "" , "size": 128, "map": "" , "l": ""  }
 ]
 

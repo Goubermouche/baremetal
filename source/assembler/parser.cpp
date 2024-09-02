@@ -151,6 +151,15 @@ parse_number:
 			case KW_ST6: return (st(6));
 			case KW_ST7: return (st(7));
 
+			case KW_TMM0: return (tmm(0));
+			case KW_TMM1: return (tmm(1));
+			case KW_TMM2: return (tmm(2));
+			case KW_TMM3: return (tmm(3));
+			case KW_TMM4: return (tmm(4));
+			case KW_TMM5: return (tmm(5));
+			case KW_TMM6: return (tmm(6));
+			case KW_TMM7: return (tmm(7));
+
 			case KW_MM0: return mmx(0);
 			case KW_MM1: return mmx(1);
 			case KW_MM2: return mmx(2);
@@ -365,6 +374,14 @@ parse_number:
 			{ "bnd1",  KW_BND1,  },
 			{ "bnd2",  KW_BND2,  },
 			{ "bnd3",  KW_BND3,  },
+			{ "tmm0",  KW_TMM0,  },
+			{ "tmm1",  KW_TMM1,  },
+			{ "tmm2",  KW_TMM2,  },
+			{ "tmm3",  KW_TMM3,  },
+			{ "tmm4",  KW_TMM4,  },
+			{ "tmm5",  KW_TMM5,  },
+			{ "tmm6",  KW_TMM6,  },
+			{ "tmm7",  KW_TMM7,  },
 			{ "mm0",   KW_MM0,   },
 			{ "mm1",   KW_MM1,   },
 			{ "mm2",   KW_MM2,   },

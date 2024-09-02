@@ -381,6 +381,7 @@ namespace baremetal {
 
 		// VEX
 		ENCN_VEX,
+		ENCN_VEX_R,
 		ENCN_VEX_VM,
 		ENCN_VEX_RM,
 		ENCN_VEX_MR,
@@ -416,8 +417,10 @@ namespace baremetal {
 		OPN_CREG,
 		OPN_ST,
 		OPN_K,
+		OPN_TMM,
 		OPN_BND,
 
+		OPN_TMEM,
 		OPN_K_K,
 		OPN_ST0,
 		OPN_HIDDEN,
@@ -490,6 +493,7 @@ namespace baremetal {
 	inline auto is_operand_mem(opn op) -> bool {
 		switch(op) {
 			case OPN_MEM:
+			case OPN_TMEM:
 			case OPN_M8:
 			case OPN_M16:
 			case OPN_M32:
@@ -520,6 +524,7 @@ namespace baremetal {
 				case ENCN_XOP:
 				case ENCN_XOP_VM:
 				case ENCN_VEX:
+				case ENCN_VEX_R:
 				case ENCN_VEX_MR:
 				case ENCN_VEX_RM:
 				case ENCN_VEX_RVM:
@@ -882,6 +887,7 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_ST:
 			case OPN_K:
 			case OPN_K_K:
+			case OPN_TMM:
 			case OPN_BND: return true;
 			default: return false;
 		}
@@ -955,6 +961,8 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_ZMM_KZ:
 			case OPN_M512:
 			case OPN_ZMM:       return 512;
+			case OPN_TMEM:      
+			case OPN_TMM:       return 1024;
 			case OPN_HIDDEN:    return 0;
 		}
 

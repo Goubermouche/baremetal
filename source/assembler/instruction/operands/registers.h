@@ -19,6 +19,7 @@ namespace baremetal {
 		REG_CREG, // control registers
 		REG_ST,
 		REG_K,
+		REG_MM,
 		REG_BND,
 		REG_RIP
 	};
@@ -68,6 +69,11 @@ namespace baremetal {
 	struct mmx : reg {
 		constexpr mmx() = default;
 		constexpr explicit mmx(u8 i) : reg(i, REG_MMX) {}
+	};
+
+	struct tmm : reg {
+		constexpr tmm() = default;
+		constexpr explicit tmm(u8 i) : reg(i, REG_MM) {}
 	};
 
 	struct bnd : reg {
@@ -143,6 +149,13 @@ namespace baremetal {
 #define REGISTER_CLASS_XMM_DECL(name, index) \
   struct name : xmm {                        \
     constexpr name() : xmm(index) {}         \
+  };                                         \
+                                             \
+  static inline constexpr name name;
+
+#define REGISTER_CLASS_TMM_DECL(name, index) \
+  struct name : tmm {                        \
+    constexpr name() : tmm(index) {}         \
   };                                         \
                                              \
   static inline constexpr name name;
@@ -274,6 +287,15 @@ namespace baremetal {
 	REGISTER_CLASS_MMX_DECL(mm5, 5);
 	REGISTER_CLASS_MMX_DECL(mm6, 6);
 	REGISTER_CLASS_MMX_DECL(mm7, 7);
+
+	REGISTER_CLASS_TMM_DECL(tmm0, 0);
+	REGISTER_CLASS_TMM_DECL(tmm1, 1);
+	REGISTER_CLASS_TMM_DECL(tmm2, 2);
+	REGISTER_CLASS_TMM_DECL(tmm3, 3);
+	REGISTER_CLASS_TMM_DECL(tmm4, 4);
+	REGISTER_CLASS_TMM_DECL(tmm5, 5);
+	REGISTER_CLASS_TMM_DECL(tmm6, 6);
+	REGISTER_CLASS_TMM_DECL(tmm7, 7);
 
 	// zmm registers
 	REGISTER_CLASS_ZMM_DECL(zmm0, 0);

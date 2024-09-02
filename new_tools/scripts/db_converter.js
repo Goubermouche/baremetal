@@ -326,7 +326,7 @@ function main() {
 
 	// VIRTUALIZATION
 	const supported_categories = [
-		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR', 'MASK'
+		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR', 'MASK', 'AMX'
 	];
 	
 	const supported_extensions = [
@@ -336,6 +336,7 @@ function main() {
 		'NORMAL',
 		'R',
 		'VEX', 
+		'VEX_R', 
 		'VEX_VM',
 		'VEX_RM',
 		'VEX_RVM',
@@ -353,7 +354,6 @@ function main() {
 	// - SIMD
 	// - AVX
 	// - AVX512
-	// - AMX
 	
 	instructions.forEach(inst => {
 		// test all categories
@@ -366,7 +366,7 @@ function main() {
 
 		// test specific categories
 		// if(
-		// 	inst.category.includes('MASK') &&
+		// 	inst.category.includes('AMX') &&
 		// 	!inst.extension.includes('X86') 
 		// ) {
 		// 	gp_inst.push(inst);

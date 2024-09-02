@@ -1,0 +1,456 @@
+tileloadd tmm0, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm0, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm0, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm0, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm0, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm0, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm1, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm1, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm1, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm1, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm1, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm1, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm2, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm2, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm2, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm2, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm2, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm2, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp0.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm7, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm7, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm7, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm7, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm7, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloadd tmm7, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm0, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm0, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm0, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm0, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm0, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm0, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm1, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm1, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm1, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm1, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm1, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm1, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm2, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm2, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm2, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm2, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm2, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm2, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm7, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm7, [rel $ + 0x0] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm7, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm7, [rel $ + 0xFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm7, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tileloaddt1 tmm7, [rel $ + 0xFFFF] /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp1.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0x0], tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0x0], tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0x0], tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0x0], tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0x0], tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0x0], tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0x0], tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0x0], tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFF], tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFF], tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFF], tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFF], tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFF], tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFF], tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFF], tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFF], tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFFFF], tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFFFF], tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFFFF], tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFFFF], tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFFFF], tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFFFF], tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFFFF], tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tilestored [rel $ + 0xFFFF], tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp2.asm:2: error: instruction requires SIB encoding, cannot be RIP-relative
+tcmmimfp16ps tmm0, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm0, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm1, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp3.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm2, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmimfp16ps tmm7, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm0, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm1, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm2, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tcmmrlfp16ps tmm7, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm0, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp4.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm1, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm2, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm0, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm0, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm0, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm0, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm1, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm1, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm1, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm1, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm2, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm2, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm2, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm2, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm7, tmm0 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm7, tmm1 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm7, tmm2 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected
+tdpfp16ps tmm7, tmm7, tmm7 /home/goubermouche/dev/projects/assembler/new_tools/scripts/temp5.asm:2: error: parser: instruction expected

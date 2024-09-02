@@ -46,7 +46,8 @@ namespace baremetal {
 				!(is_operand_moff(inst.operands[i]) && is_operand_moff(operands[i].type)) &&
 				!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
 				!(inst.operands[i] == OPN_M256 && operands[i].type == OPN_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
-				!(inst.operands[i] == OPN_M512 && operands[i].type == OPN_M128) // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
+				!(inst.operands[i] == OPN_M512 && operands[i].type == OPN_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
+				!(inst.operands[i] == OPN_TMEM && operands[i].type == OPN_M128) // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
 			) {
 				return false;
 			}
@@ -704,6 +705,7 @@ namespace baremetal {
 			case ENCN_VEX_MVR:  return static_cast<u8>((~operands[2].r & 0b00001111)); break;
 			case ENCN_VEX_RM:   return 0b1111; break; // no 'V' part, just return a negated zero
 			case ENCN_VEX_MR:   return 0b1111; break; // no 'V' part, just return a negated zero
+			case ENCN_VEX_R:   return 0b1111; break; // no 'V' part, just return a negated zero
 			// XOP
 			case ENCN_XOP:      return 0b1111; break;
 			case ENCN_XOP_VM:   return static_cast<u8>((~operands[0].r & 0b00001111)); break;
@@ -1207,6 +1209,7 @@ namespace baremetal {
 		u8 destination = m_regs[1];
 
 		switch(inst->encoding) {
+			case ENCN_VEX_R: destination = m_regs[0]; break;
 			case ENCN_VEX_MR: rx = m_regs[m_reg_count - 1]; break;
 			case ENCN_VEX_RVM: destination = m_regs[2]; break;
 			case ENCN_EVEX_RVM: destination = m_regs[2]; break;
@@ -1278,7 +1281,10 @@ namespace baremetal {
 
 		// forced mod/rm
 		if(inst->is_r()) {
-			if(inst->operand_count == 1 ) {
+			if(inst->encoding == ENCN_VEX_R) {
+				m_bytes.push_back(direct(m_regs[0], 0));
+			}
+			else if(inst->operand_count == 1) {
 				m_bytes.push_back(direct(0, m_regs[0]));
 			}
 			else {
@@ -1291,26 +1297,26 @@ namespace baremetal {
 	}
 
 	void assembler::emit_instruction_sib(const opn_data* operands) {
-		mem memory;
+		opn_data operand;
 
-		if(is_operand_mem(operands[0].type)) {
-			memory = operands[0].memory;
+		for(u8 i = 0; i < 3; ++i) {
+			if(is_operand_mem(operands[i].type)) {
+				operand = operands[i];
+				break;
+			}
 		}
-		else if(is_operand_mem(operands[1].type)) {
-			memory = operands[1].memory;
+
+		if(operand.type == OPN_NONE) {
+			return;
 		}
-		else if(is_operand_mem(operands[2].type)) {
-			memory = operands[2].memory;
-		}
-		else {
-			return; // no sib byte
-		}
+
+		const mem memory = operand.memory;
 
 		const u8 scale = memory.has_base  ? memory.s       : 0b000;
 		const u8 index = memory.has_index ? memory.index.index : 0b100;
 		const u8 base  = memory.has_base ? memory.base.index   : 0b101;
 
-		if(memory.has_index || is_stack_pointer(reg(memory.base)) || memory.has_base == false) {
+		if(memory.has_index || is_stack_pointer(reg(memory.base)) || memory.has_base == false || operand.type == OPN_TMEM) {
 			m_bytes.push_back(sib(scale, index, base));
 		}
 	}
@@ -1338,21 +1344,25 @@ namespace baremetal {
 	}
 
 	auto assembler::has_sib_byte(const opn_data* operands) -> bool {
-		mem memory;
+		opn_data operand;
 
-		if(is_operand_mem(operands[0].type)) {
-			memory = operands[0].memory;
+		for(u8 i = 0; i < 3; ++i) {
+			if(is_operand_mem(operands[i].type)) {
+				operand = operands[i];
+				break;
+			}
 		}
-		else if(is_operand_mem(operands[1].type)) {
-			memory = operands[1].memory;
-		}
-		else if(is_operand_mem(operands[2].type)) {
-			memory = operands[2].memory;
-		}
-		else {
+
+		if(operand.type == OPN_NONE) {
 			return false;
 		}
 
+		if(operand.type == OPN_TMEM) {
+			return true;
+		}
+
+		mem memory = operand.memory;
+	
 		if(memory.has_index) {
 			return true;
 		}

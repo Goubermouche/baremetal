@@ -4531,12 +4531,10 @@
     ]},
 
     {"category": "AMX", "ext": "AMX_COMPLEX", "arch": "X64", "data": [
-      {"inst": "tcmmimfp16ps X:tmm, tmm, tmm"                               , "op": "RMV: VEX.128.66.0F38.W0 6C /r"},
-      {"inst": "tcmmrlfp16ps X:tmm, tmm, tmm"                               , "op": "RMV: VEX.128.NP.0F38.W0 6C /r"}
     ]},
 
     {"category": "AMX", "ext": "AMX_FP16", "arch": "X64", "data": [
-      {"inst": "tdpfp16ps X:tmm, tmm, tmm"                                  , "op": "RMV: VEX.128.F2.0F38.W0 5C /r"}
+      
     ]},
 
     {"category": "AMX", "ext": "AMX_INT8", "arch": "X64", "data": [

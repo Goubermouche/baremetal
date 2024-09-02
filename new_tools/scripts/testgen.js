@@ -28,6 +28,7 @@ function generate_combinations(operands) {
 		['ymm', [ 'ymm0', 'ymm1', 'ymm2', 'ymm15', 'ymm31']],
 		['zmm', [ 'zmm0', 'zmm1', 'zmm2', 'zmm15', 'zmm31']],
 		['mmx', [ 'mm0', 'mm1', 'mm2', 'mm7']],
+		['tmm', [ 'tmm0', 'tmm1', 'tmm2', 'tmm7']],
 		['bnd', [ 'bnd0', 'bnd1', 'bnd2', 'bnd3']],
 		['sreg', [ 'cs', 'ds', 'es', 'ss', 'fs', 'gs' ]],
     ['dreg', [ 'dr0', 'dr1', 'dr2', 'dr3', 'dr7' ]],
@@ -109,6 +110,15 @@ function generate_combinations(operands) {
 		['m512', [
       '[0x0]', '[0xFF]', '[0xFFFF]',
       '[rel $ + 0x0]', '[rel $ + 0xFF]', '[rel $ + 0xFFFF]',
+			'[rax]',
+      '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
+      '[rax + rsi * 1  + 0x0]', '[rax + rsi + 0xFFFF]', '[r15 + rsi + 0xFFFF]', '[rax + r15 + 0xFFFF]',
+      '[rax + rsi * 2 + 0xFFFF2]', '[rax + rsi * 4 + 0xFFFF4]', '[rax + rsi * 8 + 0xFFFF8]', '[rsp + rax * 8 + 0xFFFF8]', '[r15 + rax * 8 + 0xFFFF8]', '[rsp + r15 * 8 + 0xFFFF8]', '[r14 + r15 * 8 + 0xFFFF8]'
+    ]],
+		// NOTE: cannot be rip relative
+		// TODO: verify
+		['tmem', [
+      '[0x0]', '[0xFF]', '[0xFFFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
       '[rax + rsi * 1  + 0x0]', '[rax + rsi + 0xFFFF]', '[r15 + rsi + 0xFFFF]', '[rax + r15 + 0xFFFF]',
