@@ -248,6 +248,7 @@ function main() {
 	}
 	
 	let instructions;
+	let tests_set = new Set();
 	let tests = [];
 	
 	try {
@@ -267,16 +268,19 @@ function main() {
 		let operand_combinations = generate_combinations(inst);
 
 		operand_combinations.forEach(combination => {
-			tests.push(`${inst.name} ${combination.join(', ')}`);
+			tests_set.add(`${inst.name} ${combination.join(', ')}`);
 		});
 	});
+
+	tests_set.forEach(test => {
+		tests.push(test);
+	})
 
 	// calculate the worker count
 	const worker_path = path.join(__dirname, 'testgen_worker.js');
 	const worker_count = Math.max(Math.min(Math.floor(tests.length / 100), os.cpus().length - 1), 1);
 	const chunk_size = Math.ceil(tests.length / worker_count);
 
-	let assembled_tests = [];
 	let finished_count = 0; // count of finished tests so that we can print the total %
 
 	// initialize our workers

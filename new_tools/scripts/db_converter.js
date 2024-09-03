@@ -363,7 +363,7 @@ function main() {
 		// 	!inst.extension.includes('X86')
 		// ) {
 		// 	if(inst.category.includes('AVX512')) {
-		// 		if(inst.enc.enc == 'EVEX_RVM') {
+		// 		if(['EVEX_RM', 'EVEX_RVM'].includes(inst.enc.enc)) {
 		// 			gp_inst.push(inst);
 		// 		}
 		// 	}
@@ -377,7 +377,7 @@ function main() {
 			inst.category.includes('AVX512') &&
 			!inst.extension.includes('X86') 
 		) {
-			if(inst.enc.enc == 'EVEX_RM') {
+			if(inst.enc.enc == 'EVEX_MR') {
 				gp_inst.push(inst);
 			}
 		}
