@@ -4,7 +4,7 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 
-function generate_combinations(operands) {
+function generate_combinations(inst) {
 	const operand_map = new Map([
 		['dx', [ 'dx' ]],
 		['eax', [ 'eax' ]],
@@ -38,6 +38,7 @@ function generate_combinations(operands) {
 		['zmm_kz', [ 'zmm1{k1}{z}', 'zmm2{k2}{z}', 'zmm15{k7}{z}']],
 		['k_k', [ 'k1 {k1}', 'k2 {k7}', 'k7 {k7}', 'k7 {k4}' ]],
 		['k', [ 'k1', 'k2', 'k7']],
+		['k+1', [ 'k1', 'k2', 'k7']],
     ['1', [ '1' ]],
     ['i8', [ '0', '1', '127', '-128' ]],
     ['i16', [ '0', '1', '32767', '-32768', '127', '-128' ]],
@@ -133,18 +134,45 @@ function generate_combinations(operands) {
 		['moff64', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
 	]);
 
+	const broadcast_map = new Map([
+		['b16:128', [ '[rax]{1to8}' ]],
+		['b16:256', [ '[rax]{1to16}' ]],
+		['b16:512', [ '[rax]{1to32}' ]],
+		['b32:128', [ '[rax]{1to4}' ]],
+		['b32:256', [ '[rax]{1to8}' ]],
+		['b32:512', [ '[rax]{1to16}' ]],
+		['b64:128', [ '[rax]{1to2}' ]],
+		['b64:256', [ '[rax]{1to4}' ]],
+		['b64:512', [ '[rax]{1to8}' ]],
+	]);
+
 	function generate(operands, index) {
 		if(index === operands.length) {
 			return [[]];
 		}
 
 		const current = operands[index];
+		let current_array = [];
 
 		if(!operand_map.has(current)) {
-			console.error(`unknown operand '${current}'`);
+			if(current.includes('b')) {
+				const key = `${current}:${inst.size}`;
+
+				if(!broadcast_map.has(key)) {
+					console.error(`unknown b operand '${key}'`);
+				}
+				else {
+					current_array = broadcast_map.get(key);
+				}
+			}
+			else {
+				console.error(`unknown operand '${current}'`);
+			}
+		}
+		else {
+			current_array = operand_map.get(current);
 		}
 
-		const current_array = operand_map.get(current) || [];
 		const remaining = generate(operands, index + 1);
 		const combinations = [];
 
@@ -157,7 +185,7 @@ function generate_combinations(operands) {
 		return combinations;
 	}
 
-	return generate(operands, 0);
+	return generate(inst.operands, 0);
 }
 
 function format_time(ms) {
@@ -205,7 +233,7 @@ function main() {
 			return;
 		}
 
-		let operand_combinations = generate_combinations(inst.operands);
+		let operand_combinations = generate_combinations(inst);
 
 		operand_combinations.forEach(combination => {
 			tests.push(`${inst.name} ${combination.join(', ')}`);

@@ -1,7 +1,9 @@
 #pragma once
 #include <utility/assert.h>
 
+#include "assembler/instruction/operands/memory.h"
 #include "assembler/instruction/operands/operands.h"
+#include "assembler/instruction/operands/registers.h"
 
 namespace baremetal {
 	enum extension : u8 {
@@ -395,6 +397,7 @@ namespace baremetal {
 		ENCN_EVEX_MVR,
 		ENCN_EVEX_RM,
 		ENCN_EVEX_MR,
+		ENCN_EVEX_VM,
 
 		// XOP
 		ENCN_XOP_VM,
@@ -402,7 +405,7 @@ namespace baremetal {
 	};
 
 	enum opn : u8 {
-		OPN_NONE,
+		OPN_NONE = 0,
 
 		OPN_R8,
 		OPN_R16,
@@ -411,7 +414,7 @@ namespace baremetal {
 		OPN_MMX,
 		OPN_XMM,
 		OPN_YMM,
-		OPN_ZMM,
+		OPN_ZMM = REG_ZMM,
 		OPN_SREG,
 		OPN_DREG,
 		OPN_CREG,
@@ -460,6 +463,10 @@ namespace baremetal {
 		OPN_ECX,
 		OPN_RCX,
 
+		OPN_B16,
+		OPN_B32,
+		OPN_B64,
+
 		OPN_XMM_K, // masked XMM reg xmm{k}
 		OPN_XMM_KZ, // masked XMM reg xmm{k}{z}
 		OPN_YMM_K, // masked YMM reg xmm{k}
@@ -490,6 +497,14 @@ namespace baremetal {
 		}
 	}
 
+inline auto is_operand_broadcast(opn op) -> bool {
+	switch(op) {
+		case OPN_B16:
+		case OPN_B32:
+		case OPN_B64: return true;
+		default: return false;
+	}
+}
 	inline auto is_operand_mem(opn op) -> bool {
 		switch(op) {
 			case OPN_MEM:
@@ -547,6 +562,7 @@ namespace baremetal {
 				case ENCN_EVEX_RVM:
 				case ENCN_EVEX_MVR:
 				case ENCN_EVEX_MR:
+				case ENCN_EVEX_VM:
 				case ENCN_EVEX_RM: return true;
 				default: return false;
 			}
@@ -615,6 +631,23 @@ namespace baremetal {
 			return false;
 		}
 
+		auto get_broadcast_operand() const -> u8 {
+			if(is_operand_broadcast(operands[0])) { return 0; }
+			if(is_operand_broadcast(operands[1])) { return 1; }
+			if(is_operand_broadcast(operands[2])) { return 2; }
+			if(is_operand_broadcast(operands[3])) { return 3; }
+
+			return 0;
+		}
+
+		auto has_broadcast_operand() const -> bool {
+			if(is_operand_broadcast(operands[0])) { return true; }
+			if(is_operand_broadcast(operands[1])) { return true; }
+			if(is_operand_broadcast(operands[2])) { return true; }
+			if(is_operand_broadcast(operands[3])) { return true; }
+
+			return false;
+		}
 		const char* name;
 		encn encoding;
 		u8 prefix;
@@ -657,6 +690,11 @@ namespace baremetal {
 	static constexpr ins inst_db[] = {
 		#include "assembler/instruction/databases/database.inc"
 	};
+
+	struct broadcast {
+		mem m;
+		u8 n;
+	};
 	
 	struct opn_data {
 		constexpr opn_data() : type(OPN_NONE), r(0) {}
@@ -685,8 +723,8 @@ namespace baremetal {
 		constexpr opn_data(mem32 m) : type(OPN_M32), memory(m) {}
 		constexpr opn_data(mem16 m) : type(OPN_M16), memory(m) {}
 		constexpr opn_data(mem8 m) : type(OPN_M8), memory(m) {}
-
 		constexpr opn_data(rel r) : type(OPN_REL32), relocation(r) {}
+		constexpr opn_data(broadcast b, opn op) : type(op), b(b) {}
 
 		opn type;
 
@@ -695,6 +733,7 @@ namespace baremetal {
 			rel relocation;
 			imm immediate;
 			mem memory;
+			broadcast b;
 			u8 r; // register
 			masked_reg mr; // masked register
 		};
@@ -904,6 +943,7 @@ inline auto is_operand_large_reg(opn op) -> bool {
 	inline auto get_operand_bit_width(opn op) -> u16 {
 		switch(op) {
 			case OPN_MEM:
+			case OPN_HIDDEN:
 			case OPN_NONE:        return 0;
 			case OPN_MOFF8:
 			case OPN_M8:
@@ -924,6 +964,7 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_DS:
 			case OPN_CS:
 			case OPN_AX:
+			case OPN_B16:
 			case OPN_DX:
 			case OPN_I16:         return 16;
 			case OPN_MOFF32:
@@ -932,6 +973,7 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_R32:
 			case OPN_EAX:
 			case OPN_ECX:
+			case OPN_B32:
 			case OPN_I32:         return 32;
 			case OPN_MOFF64:
 			case OPN_M64:
@@ -945,6 +987,7 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_MIB:
 			case OPN_K_K:
 			case OPN_K:
+			case OPN_B64:
 			case OPN_I64:         return 64;
 			case OPN_ST:
 			case OPN_ST0:
@@ -963,9 +1006,9 @@ inline auto is_operand_large_reg(opn op) -> bool {
 			case OPN_ZMM:       return 512;
 			case OPN_TMEM:      
 			case OPN_TMM:       return 1024;
-			case OPN_HIDDEN:    return 0;
 		}
 
+		ASSERT(false, "unreachable\n");
 		return 0; // unreachable
 	}
 

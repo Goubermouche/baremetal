@@ -26,7 +26,7 @@ namespace baremetal {
 		while(utility::is_space(m_current_char)) { get_next_char(); }
 
 		// numbers
-		if(utility::is_digit(m_current_char)) {
+		if(utility::is_digit(m_current_char) && force_keyword == false) {
 			i32 base = 10;
 
 			if(m_current_char == '0') {
@@ -70,13 +70,14 @@ parse_number:
 		}
 
 		// keyword or identifier
-		if(utility::is_alpha(m_current_char)) {
+		if(utility::is_alpha(m_current_char) || (force_keyword && utility::is_digit(m_current_char))) {
 			while(utility::is_alphanum(m_current_char)) {
 				current_string += m_current_char;
 				get_next_char();
 			}
 
 			const auto kw = get_keyword_type(current_string);
+			force_keyword = false;
 		
 			if(kw != KW_NONE) {
 				return current = kw;
@@ -546,6 +547,12 @@ parse_number:
 			{ "qword", KW_QWORD },
 			{ "tword", KW_TWORD },
 			{ "QWORD", KW_QWORD },
+
+			{ "1to2",  KW_1TO2  },
+			{ "1to4",  KW_1TO4  },
+			{ "1to8",  KW_1TO8  },
+			{ "1to16", KW_1TO16 },
+			{ "1to32", KW_1TO32 },
 
 			// keywords
 			{ "rel"  , KW_REL   },

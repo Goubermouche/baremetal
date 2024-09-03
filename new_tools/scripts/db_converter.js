@@ -357,20 +357,24 @@ function main() {
 	
 	instructions.forEach(inst => {
 		// test all categories
-		if(
-			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
-		) {
-			gp_inst.push(inst);
-		}
-
-		// test specific categories
 		// if(
-		// 	inst.category.includes('AMX') &&
-		// 	!inst.extension.includes('X86') 
+		// 	inst.category.some(r => supported_categories.includes(r)) && 
+		// 	!inst.extension.includes('X86')
 		// ) {
 		// 	gp_inst.push(inst);
 		// }
+
+		// test specific categories
+		if(
+			inst.category.includes('AVX512') &&
+			!inst.extension.includes('X86') 
+		) {
+
+			if(inst.operands.some(op => op.includes('b'))) {
+				gp_inst.push(inst);
+			}
+
+		}
 	});
 
 	let rows = [];

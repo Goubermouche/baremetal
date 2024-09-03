@@ -232,6 +232,12 @@ namespace baremetal {
 		KW_NEWLINE,
 		KW_DOLLARSIGN,
 
+		KW_1TO2,
+		KW_1TO4,
+		KW_1TO8,
+		KW_1TO16,
+		KW_1TO32,
+
 		KW_IDENTIFIER,
 		KW_NUMBER,
 
@@ -252,6 +258,7 @@ namespace baremetal {
 			keyword_type current;
 			imm current_immediate;
 			utility::dynamic_string current_string;
+			bool force_keyword = false;
 	};
 
 	auto keyword_to_register(keyword_type kw) -> reg;
