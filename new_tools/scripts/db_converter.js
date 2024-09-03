@@ -329,7 +329,7 @@ function main() {
 		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR', 'MASK', 'AMX'
 	];
 	
-	const supported_extensions = [
+	const supported_encodings = [
 		'RM',
 		'MR', 
 		'M', 
@@ -347,7 +347,8 @@ function main() {
 		'EVEX_RVM',
 		'VEX_RVMN',
 		'EVEX_RM',
-		'EVEX_MR'
+		'EVEX_MR',
+		'EVEX_VM',
 	];
 
 	// missing categories: 
@@ -369,11 +370,9 @@ function main() {
 			inst.category.includes('AVX512') &&
 			!inst.extension.includes('X86') 
 		) {
-
-			if(inst.operands.some(op => op.includes('b'))) {
+			if(inst.enc.enc == 'EVEX_RVM') {
 				gp_inst.push(inst);
 			}
-
 		}
 	});
 
