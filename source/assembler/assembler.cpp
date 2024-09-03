@@ -945,7 +945,21 @@ namespace baremetal {
 				break;
 			}
 			case ENCN_EVEX_MVR: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
-			case ENCN_EVEX_VM: vvvv = static_cast<u8>((~m_regs[m_reg_count - 1] & 0b00001111) << 3); break;
+			case ENCN_EVEX_VM: {
+				if(is_operand_mem(inst->operands[0])) {
+					vvvv = 0;
+				}
+				else if(is_operand_mem(inst->operands[1])) {
+					vvvv =static_cast<u8>((~m_regs[0] & 0b00001111) << 3);
+				}
+				else if(inst->operand_count == 3) {
+					vvvv = static_cast<u8>((~m_regs[0] & 0b00001111) << 3);
+				}
+				else {
+					vvvv = static_cast<u8>((~m_regs[m_reg_count - 1] & 0b00001111) << 3);
+				}
+				break;
+			}
 			case ENCN_EVEX_MR: vvvv = 0b1111 << 3; break;
 			case ENCN_EVEX_RM: {
 				if(m_reg_count == 3 || (is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false)) {
@@ -1031,7 +1045,9 @@ namespace baremetal {
 				break;
 			} 
 			case ENCN_EVEX_MVR: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
-			case ENCN_EVEX_VM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
+			case ENCN_EVEX_VM:{
+				v = static_cast<bool>((operands[0].r & 0b00010000)); break;
+			} 
 			default: ASSERT(false, "unhandled evex prefix");
 		}
 
@@ -1387,7 +1403,12 @@ namespace baremetal {
 			}
 		}
 		else if(inst->is_rm()) {
-			m_bytes.push_back(direct(rx, m_regs[0]));
+			if(inst->encoding == ENCN_EVEX_VM) {
+				m_bytes.push_back(direct(rx, m_regs[1]));
+			}
+			else {
+				m_bytes.push_back(direct(rx, m_regs[0]));
+			}
 		}
 	}
 
@@ -1928,29 +1949,29 @@ namespace baremetal {
 				switch(index_byte) {
 					case 0b00000000: break;
 					case 0b00001000: base = registers[2]; break;
-					case 0b00100000: rx = registers[1]; break;
+					case 0b00100000: base = registers[1]; break;
 					case 0b00101000: rx = registers[0]; base = registers[2]; break;   
 					case 0b10000000: break; 
 					case 0b10001000: rx = registers[0]; base = registers[2]; break; 
-					case 0b10100000: rx = registers[0]; base = registers[1]; break; 
+					case 0b10100000:  base = registers[1]; break; 
 					case 0b10101000: rx = registers[0]; base = registers[1]; break;
 					case 0b00001100: rx = registers[0]; base = registers[2]; index = registers[2]; break;    
 					case 0b00101100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
-					case 0b00110000: break;  
+					case 0b00110000: base = registers[1]; index = 8; break; 
 					case 0b00111000: rx = registers[0]; base = registers[2]; break;  
 					case 0b00111100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
 					case 0b10001100: rx = registers[0]; base = registers[2]; index = registers[2]; break; 
 					case 0b10101100: rx = registers[0]; base = registers[2]; index = registers[1]; break;   
-					case 0b10110000: rx = registers[0]; base = registers[2]; break;  
+					case 0b10110000: base = registers[1]; index = 8; break;  
 					case 0b10111000: rx = registers[0]; base = registers[2]; break;  
 					case 0b10111100: rx = registers[0]; base = registers[2]; index = registers[1]; break; 
-					case 0b11000000: rx = registers[0]; break;  
+					case 0b11000000:  break;  
 					case 0b11001000: rx = registers[0]; base = registers[2]; break;  
 					case 0b11001100: rx = registers[0]; base = registers[2]; index = registers[2]; break; 
-					case 0b11100000: rx = registers[1]; break;  
+					case 0b11100000: base = registers[1]; break;  
 					case 0b11101000: rx = registers[0]; base = registers[1]; break;  
 					case 0b11101100: rx = registers[0]; base = registers[1]; index = registers[2]; break;
-					case 0b11110000: rx = registers[1]; break; 
+					case 0b11110000: base = registers[0]; index = 8; break; 
 					case 0b11111000: rx = registers[0]; base = registers[1]; break;  
 					case 0b11111100: rx = registers[0]; base = registers[1]; index = registers[2]; break; 				
 					default: ASSERT(false, "unknown index byte {}\n", index_byte);
@@ -2300,6 +2321,7 @@ namespace baremetal {
 				case ENCN_RMR: 
 				case ENCN_EVEX_RM: 
 				case ENCN_EVEX_MR: 
+				case ENCN_EVEX_VM: 
 				case ENCN_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
 				case ENCN_MR: {
 					if(inst->operands[2] == OPN_CL) {

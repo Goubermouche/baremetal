@@ -377,7 +377,7 @@ function main() {
 			inst.category.includes('AVX512') &&
 			!inst.extension.includes('X86') 
 		) {
-			if(inst.enc.enc == 'EVEX_MR') {
+			if(inst.enc.enc == 'EVEX_VM') {
 				gp_inst.push(inst);
 			}
 		}
