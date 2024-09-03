@@ -326,7 +326,8 @@ function main() {
 
 	// VIRTUALIZATION
 	const supported_categories = [
-		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR', 'MASK', 'AMX'
+		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR', 'MASK', 'AMX',
+		'AVX512'
 	];
 	
 	const supported_encodings = [
@@ -354,26 +355,29 @@ function main() {
 	// missing categories: 
 	// - SIMD
 	// - AVX
-	// - AVX512
 	
 	instructions.forEach(inst => {
 		// test all categories
-		// if(
-		// 	inst.category.some(r => supported_categories.includes(r)) && 
-		// 	!inst.extension.includes('X86')
-		// ) {
-		// 	gp_inst.push(inst);
-		// }
-
-		// test specific categories
 		if(
-			inst.category.includes('AVX512') &&
-			!inst.extension.includes('X86') 
+			inst.category.some(r => supported_categories.includes(r)) && 
+			!inst.extension.includes('X86')
 		) {
-			if(inst.enc.enc == 'EVEX_RVM') {
+			if(inst.category.includes('AVX512')) {
+				if(inst.enc.enc == 'EVEX_RVM') {
+					gp_inst.push(inst);
+				}
+			}
+			else {
 				gp_inst.push(inst);
 			}
 		}
+
+		// test specific categories
+		// if(
+		// 	inst.category.includes('AVX512') &&
+		// 	!inst.extension.includes('X86') 
+		// ) {
+		// 			}
 	});
 
 	let rows = [];

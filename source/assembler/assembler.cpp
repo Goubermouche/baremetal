@@ -11,6 +11,7 @@
 #include "utility/system/console.h"
 #include "utility/types.h"
 
+#include <strings.h>
 #include <utility/algorithms/sort.h>
 #include <utility/assert.h>
 
@@ -933,7 +934,16 @@ namespace baremetal {
 			case ENCN_VEX_MVR: vvvv = static_cast<u8>((~operands[2].r & 0b00001111) << 3); break;
 			case ENCN_VEX_RM: vvvv = 0b1111 << 3; break; // no 'V' part, just return a negated zero
 			// EVEX
-			case ENCN_EVEX_RVM: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
+			case ENCN_EVEX_RVM: {
+				if(inst->operand_count == 2) {
+					vvvv = 0b1111 << 3; 
+				}
+				else {
+					vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3);
+				}
+
+				break;
+			}
 			case ENCN_EVEX_MVR: vvvv = static_cast<u8>((~operands[1].r & 0b00001111) << 3); break;
 			case ENCN_EVEX_VM: vvvv = static_cast<u8>((~m_regs[m_reg_count - 1] & 0b00001111) << 3); break;
 			case ENCN_EVEX_MR: vvvv = 0b1111 << 3; break;
@@ -995,7 +1005,17 @@ namespace baremetal {
 
 		switch(inst->encoding) {
 			case ENCN_VEX_RVM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
-			case ENCN_EVEX_RVM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
+			case ENCN_EVEX_RVM: {
+				if(inst->operand_count == 2) {
+					v = false; 
+				}
+				else {
+					v = static_cast<bool>((operands[1].r & 0b00010000));
+				}
+
+				break;
+
+			}
 			case ENCN_EVEX_RM: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
 			case ENCN_EVEX_MR: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
 			case ENCN_EVEX_MVR: v = static_cast<bool>((operands[1].r & 0b00010000)); break;
@@ -1255,7 +1275,15 @@ namespace baremetal {
 			case ENCN_VEX_R: destination = m_regs[0]; break;
 			case ENCN_VEX_MR: rx = m_regs[m_reg_count - 1]; break;
 			case ENCN_VEX_RVM: destination = m_regs[2]; break;
-			case ENCN_EVEX_RVM: destination = m_regs[2]; break;
+			case ENCN_EVEX_RVM: {
+				if(inst->operand_count == 2) {
+					destination = m_regs[1];
+				}
+				else {
+					destination = m_regs[2];
+				}
+				break;
+			}
 			case ENCN_EVEX_RM: {
 				if(m_reg_count == 1) {
 					destination = 0;
@@ -1666,20 +1694,55 @@ namespace baremetal {
 				switch(index_byte) {
 					case 0b00000000: break;
 					case 0b00001000: base = registers[2]; break;
-					case 0b00100000: break;
+					case 0b00100000: {
+
+						if(is_operand_mem(inst->operands[1]) || inst->operand_count == 2) {
+							base = registers[1];
+						}
+
+						break;
+					}
 					case 0b00101000: rx = registers[0]; base = registers[2]; break;   
 					case 0b10000000: rx = registers[0]; break; 
 					case 0b10001000: rx = registers[0]; base = registers[2]; break; 
-					case 0b10100000: rx = registers[0]; break; 
+					case 0b10100000: {
+						rx = registers[0];
+
+						if(inst->operand_count == 2) {
+							base = registers[1];
+						}
+
+						break; 
+					}
 					case 0b10101000: rx = registers[0]; base = registers[1]; break;
 					case 0b00001100: rx = registers[0]; base = registers[2]; index = registers[2]; break;    
 					case 0b00101100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
-					case 0b00110000: break;  
+					case 0b00110000: {
+						if(inst->operand_count == 2) {
+							rx = registers[0]; 
+							base = registers[1];
+							index = 8;
+						}
+
+						break;  
+					}
 					case 0b00111000: rx = registers[0]; base = registers[2]; break;  
 					case 0b00111100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
 					case 0b10001100: rx = registers[0]; base = registers[2]; index = registers[2]; break; 
 					case 0b10101100: rx = registers[0]; base = registers[2]; index = registers[1]; break;   
-					case 0b10110000: rx = registers[0]; base = registers[2]; break;  
+					case 0b10110000: {
+						if(inst->operand_count == 2) {
+							rx = registers[0];
+							base = registers[1];
+							index = 8;
+						}
+						else {
+							rx = registers[0]; 
+							base = registers[2]; 
+						}
+
+						break;  
+					}
 					case 0b10111000: rx = registers[0]; base = registers[2]; break;  
 					case 0b10111100: rx = registers[0]; base = registers[2]; index = registers[1]; break; 
 					case 0b11000000: rx = registers[0]; break;  
