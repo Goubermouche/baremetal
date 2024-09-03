@@ -358,26 +358,29 @@ function main() {
 	
 	instructions.forEach(inst => {
 		// test all categories
+		// if(
+		// 	inst.category.some(r => supported_categories.includes(r)) && 
+		// 	!inst.extension.includes('X86')
+		// ) {
+		// 	if(inst.category.includes('AVX512')) {
+		// 		if(inst.enc.enc == 'EVEX_RVM') {
+		// 			gp_inst.push(inst);
+		// 		}
+		// 	}
+		// 	else {
+		// 		gp_inst.push(inst);
+		// 	}
+		// }
+
+		// test specific categories
 		if(
-			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
+			inst.category.includes('AVX512') &&
+			!inst.extension.includes('X86') 
 		) {
-			if(inst.category.includes('AVX512')) {
-				if(inst.enc.enc == 'EVEX_RVM') {
-					gp_inst.push(inst);
-				}
-			}
-			else {
+			if(inst.enc.enc == 'EVEX_RM') {
 				gp_inst.push(inst);
 			}
 		}
-
-		// test specific categories
-		// if(
-		// 	inst.category.includes('AVX512') &&
-		// 	!inst.extension.includes('X86') 
-		// ) {
-		// 			}
 	});
 
 	let rows = [];

@@ -33,6 +33,9 @@ function generate_combinations(inst) {
 		['sreg', [ 'cs', 'ds', 'es', 'ss', 'fs', 'gs' ]],
     ['dreg', [ 'dr0', 'dr1', 'dr2', 'dr3', 'dr7' ]],
     ['creg', [ 'cr0', 'cr1', 'cr2', 'cr3', 'cr8' ]],
+		['xmm_k', [ 'xmm1{k1}', 'xmm2{k2}', 'xmm15{k7}']],
+		['ymm_k', [ 'ymm1{k1}', 'ymm2{k2}', 'ymm15{k7}']],
+		['zmm_k', [ 'zmm1{k1}', 'zmm2{k2}', 'zmm15{k7}']],
 		['xmm_kz', [ 'xmm1{k1}{z}', 'xmm2{k2}{z}', 'xmm15{k7}{z}']],
 		['ymm_kz', [ 'ymm1{k1}{z}', 'ymm2{k2}{z}', 'ymm15{k7}{z}']],
 		['zmm_kz', [ 'zmm1{k1}{z}', 'zmm2{k2}{z}', 'zmm15{k7}{z}']],
@@ -124,6 +127,34 @@ function generate_combinations(inst) {
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
       '[rax + rsi * 1  + 0x0]', '[rax + rsi + 0xFFFF]', '[r15 + rsi + 0xFFFF]', '[rax + r15 + 0xFFFF]',
       '[rax + rsi * 2 + 0xFFFF2]', '[rax + rsi * 4 + 0xFFFF4]', '[rax + rsi * 8 + 0xFFFF8]', '[rsp + rax * 8 + 0xFFFF8]', '[r15 + rax * 8 + 0xFFFF8]', '[rsp + r15 * 8 + 0xFFFF8]', '[r14 + r15 * 8 + 0xFFFF8]'
+    ]],
+		['vm32x', [
+      '[0x0]', '[0xFF]', '[0xFFFF]',
+			'[rax]',
+      '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
+      '[rax + xmm0 * 1  + 0x0]', '[rax + xmm0 + 0xFFFF]', '[r15 + xmm15 + 0xFFFF]', '[rax + xmm31 + 0xFFFF]',
+      '[rax + xmm0 * 2 + 0xFFFF2]', '[rax + xmm1 * 4 + 0xFFFF4]', '[rax + xmm15 * 8 + 0xFFFF8]', '[rsp + xmm31 * 8 + 0xFFFF8]', '[r15 + xmm18 * 8 + 0xFFFF8]', '[rsp + xmm12 * 8 + 0xFFFF8]', '[r14 + xmm5 * 8 + 0xFFFF8]'
+    ]],
+		['vm32y', [
+      '[0x0]', '[0xFF]', '[0xFFFF]',
+			'[rax]',
+      '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
+      '[rax + ymm0 * 1  + 0x0]', '[rax + ymm0 + 0xFFFF]', '[r15 + ymm15 + 0xFFFF]', '[rax + ymm31 + 0xFFFF]',
+      '[rax + ymm0 * 2 + 0xFFFF2]', '[rax + ymm1 * 4 + 0xFFFF4]', '[rax + ymm15 * 8 + 0xFFFF8]', '[rsp + ymm31 * 8 + 0xFFFF8]', '[r15 + ymm18 * 8 + 0xFFFF8]', '[rsp + ymm12 * 8 + 0xFFFF8]', '[r14 + ymm5 * 8 + 0xFFFF8]'
+    ]],
+		['vm32z', [
+      '[0x0]', '[0xFF]', '[0xFFFF]',
+			'[rax]',
+      '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
+      '[rax + zmm0 * 1  + 0x0]', '[rax + zmm0 + 0xFFFF]', '[r15 + zmm15 + 0xFFFF]', '[rax + zmm31 + 0xFFFF]',
+      '[rax + zmm0 * 2 + 0xFFFF2]', '[rax + zmm1 * 4 + 0xFFFF4]', '[rax + zmm15 * 8 + 0xFFFF8]', '[rsp + zmm31 * 8 + 0xFFFF8]', '[r15 + zmm18 * 8 + 0xFFFF8]', '[rsp + zmm12 * 8 + 0xFFFF8]', '[r14 + zmm5 * 8 + 0xFFFF8]'
+    ]],
+		['vm64z', [
+      '[0x0]', '[0xFF]', '[0xFFFF]',
+			'[rax]',
+      '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
+      '[rax + zmm0 * 1  + 0x0]', '[rax + zmm0 + 0xFFFF]', '[r15 + zmm15 + 0xFFFF]', '[rax + zmm31 + 0xFFFF]',
+      '[rax + zmm0 * 2 + 0xFFFF2]', '[rax + zmm1 * 4 + 0xFFFF4]', '[rax + zmm15 * 8 + 0xFFFF8]', '[rsp + zmm31 * 8 + 0xFFFF8]', '[r15 + zmm18 * 8 + 0xFFFF8]', '[rsp + zmm12 * 8 + 0xFFFF8]', '[r14 + zmm5 * 8 + 0xFFFF8]'
     ]],
 		['rel8', [ '0', '1', '-128', '127' ]],
 		['rel16', [ '0', '1', '-128', '127' ]],
