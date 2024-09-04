@@ -343,13 +343,14 @@ function main() {
 		'VEX_RVM',
 		'VEX_RMV',
 		'VEX_MVR',
+		'VEX_RVMN',
 		'XOP',
 		'XOP_VM',
 		'EVEX_RVM',
-		'VEX_RVMN',
 		'EVEX_RM',
 		'EVEX_MR',
 		'EVEX_VM',
+		'EVEX_M', // technically not implemented
 	];
 
 	// missing categories: 
@@ -358,29 +359,20 @@ function main() {
 	
 	instructions.forEach(inst => {
 		// test all categories
-		// if(
-		// 	inst.category.some(r => supported_categories.includes(r)) && 
-		// 	!inst.extension.includes('X86')
-		// ) {
-		// 	if(inst.category.includes('AVX512')) {
-		// 		if(['EVEX_RM', 'EVEX_RVM'].includes(inst.enc.enc)) {
-		// 			gp_inst.push(inst);
-		// 		}
-		// 	}
-		// 	else {
-		// 		gp_inst.push(inst);
-		// 	}
-		// }
+		if(
+			inst.category.some(r => supported_categories.includes(r)) && 
+			!inst.extension.includes('X86')
+		) {
+			gp_inst.push(inst);
+		}
 
 		// test specific categories
-		if(
-			inst.category.includes('AVX512') &&
-			!inst.extension.includes('X86') 
-		) {
-			if(inst.enc.enc == 'EVEX_VM') {
-				gp_inst.push(inst);
-			}
-		}
+		// if(
+		// 	inst.category.includes('AVX512') &&
+		// 	!inst.extension.includes('X86') 
+		// ) {
+		// 	gp_inst.push(inst);
+		// }
 	});
 
 	let rows = [];
