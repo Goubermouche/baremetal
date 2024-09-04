@@ -129,6 +129,7 @@ function get_instruction_flags(inst) {
 		case '5': flags |= 0b00001110; break;
 		case '6': flags |= 0b00010000; break;
 		case '7': flags |= 0b00010010; break;
+		case 'is4': flags |= 0b00010100; break;
 		case '':  break;
 		default: console.error(`unknown instruction rm '${inst.rm}'`);
 	}

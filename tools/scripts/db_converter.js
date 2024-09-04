@@ -359,20 +359,20 @@ function main() {
 	
 	instructions.forEach(inst => {
 		// test all categories
-		if(
-			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
-		) {
-			gp_inst.push(inst);
-		}
-
-		// test specific categories
 		// if(
-		// 	inst.category.includes('AVX512') &&
-		// 	!inst.extension.includes('X86') 
+		// 	inst.category.some(r => supported_categories.includes(r)) && 
+		// 	!inst.extension.includes('X86')
 		// ) {
 		// 	gp_inst.push(inst);
 		// }
+
+		// test specific categories
+		if(
+			inst.category.includes('SIMD') && inst.category.every(cat => !supported_categories.includes(cat)) && 
+			!inst.extension.includes('X86') && inst.enc.rm == 'is4' 
+		) {
+			gp_inst.push(inst);
+		}
 	});
 
 	let rows = [];

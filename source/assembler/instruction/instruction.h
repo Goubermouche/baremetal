@@ -391,6 +391,7 @@ namespace baremetal {
 		ENCN_VEX_RMV,
 		ENCN_VEX_MVR,
 		ENCN_VEX_RVMN, // RVM: VEX, with vvvv set to 1111 (no vvvv)
+		ENCN_VEX_RVMS,
 
 		// EVEX
 		ENCN_EVEX_RVM,
@@ -544,6 +545,7 @@ inline auto is_operand_broadcast(opn op) -> bool {
 				case ENCN_VEX_RM:
 				case ENCN_VEX_RVM:
 				case ENCN_VEX_RVMN:
+				case ENCN_VEX_RVMS:
 				case ENCN_VEX_RMV:
 				case ENCN_VEX_MVR:
 				case ENCN_VEX_VM: return true;
@@ -599,6 +601,9 @@ inline auto is_operand_broadcast(opn op) -> bool {
 			}
 
 			return rm;
+		}
+		constexpr auto is_is4() const -> bool {
+			return (flags & 0b00011110) == 0b00010100;
 		}
 		constexpr auto get_rm() const -> u8 {
 			return (flags & 0b00011110) >> 1;

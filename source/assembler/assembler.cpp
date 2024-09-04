@@ -741,6 +741,7 @@ namespace baremetal {
 			case ENCN_VEX_VM:   return static_cast<u8>((~operands[0].r & 0b00001111)); break;
 			case ENCN_VEX_RVM:  return static_cast<u8>((~operands[1].r & 0b00001111)); break;
 			case ENCN_VEX_RMV:  return static_cast<u8>((~operands[2].r & 0b00001111)); break;
+			case ENCN_VEX_RVMS:  return static_cast<u8>((~operands[1].r & 0b00001111)); break;
 			case ENCN_VEX_MVR:  return static_cast<u8>((~operands[2].r & 0b00001111)); break;
 			case ENCN_VEX_RM:   return 0b1111; break; // no 'V' part, just return a negated zero
 			case ENCN_VEX_MR:   return 0b1111; break; // no 'V' part, just return a negated zero
@@ -1280,6 +1281,10 @@ namespace baremetal {
 							}
 						}
 
+						if(inst->is_is4()) {
+							new_displacement--; // account for the trailing byte introduced by /is4
+						}
+
 						displacement = imm(new_displacement);
 						ty = OP_I32;
 					}
@@ -1290,6 +1295,15 @@ namespace baremetal {
 
 				emit_data_operand(displacement.value, get_operand_bit_width(ty));
 			}
+		}
+
+		if(inst->is_is4()) {
+			// trailing register encoded as an immediate
+			u8 value = 0;
+
+			value |= operands[3].r << 4;
+
+			m_bytes.push_back(value);
 		}
 	}
 
@@ -1349,7 +1363,7 @@ namespace baremetal {
 			rx = 0;
 		}
 
-		if(inst->is_rm()) {
+		if(inst->is_rm() && !inst->is_is4()) {
 			rx = inst->get_rm() - 2; // - 2 is a fixup we need for our encoding, this can be improved but isn't vital rn
 		}
 
@@ -1406,6 +1420,9 @@ namespace baremetal {
 			if(inst->encoding == ENCN_EVEX_VM) {
 				m_bytes.push_back(direct(rx, m_regs[1]));
 			}
+			else if(inst->encoding == ENCN_VEX_RVMS) {
+				m_bytes.push_back(direct(rx, m_regs[2]));
+			}
 			else {
 				m_bytes.push_back(direct(rx, m_regs[0]));
 			}
@@ -1428,9 +1445,9 @@ namespace baremetal {
 
 		const mem memory = operand.memory;
 
-		const u8 scale = memory.has_base  ? memory.s       : 0b000;
+		const u8 scale = memory.has_base  ? memory.s           : 0b000;
 		const u8 index = memory.has_index ? memory.index.index : 0b100;
-		const u8 base  = memory.has_base ? memory.base.index   : 0b101;
+		const u8 base  = memory.has_base  ? memory.base.index  : 0b101;
 
 		if(memory.has_index || is_stack_pointer(reg(memory.base)) || memory.has_base == false || operand.type == OPN_TMEM) {
 			m_bytes.push_back(sib(scale, index, base));
@@ -2158,6 +2175,29 @@ namespace baremetal {
 
 					break;
 				}
+				case ENCN_VEX_RVMS: {
+					switch(index_byte) {
+						case 0b0000: break;
+    				case 0b0001: break;
+    				case 0b0010: base = registers[2]; break;
+    				case 0b0011: base = registers[2]; break;
+    				case 0b0100: break;
+    				case 0b0101: break;
+    				case 0b0110: base = registers[1]; break;
+    				case 0b0111: base = registers[1]; break;
+    				case 0b1000: rx = registers[0]; break;
+    				case 0b1001: rx = registers[0]; break;
+    				case 0b1010: rx = registers[0]; base = registers[2]; break;
+    				case 0b1011: rx = registers[0]; base = registers[2]; break;
+    				case 0b1100: rx = registers[0]; break;
+    				case 0b1101: rx = registers[0]; break;
+    				case 0b1110: rx = registers[0]; base = registers[1]; break;
+    				case 0b1111: rx = registers[0]; base = registers[1]; break;
+    				default: ASSERT(false, "unhandled index vex rvms: {}\n", index_byte);
+					}
+
+					break;
+				}
 				default: ASSERT(false, "unhandled rex case 6");
 			}
 		}
@@ -2349,7 +2389,14 @@ namespace baremetal {
 				case ENCN_EVEX_RVM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				case ENCN_EVEX_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				case ENCN_EVEX_MVR: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
+				case ENCN_VEX_RVMS: m_regs[0] = temp[0]; m_regs[1] = temp[1]; m_regs[2] = temp[2]; break;
 				default: ASSERT(false, "unknown encoding for 3 regs\n");
+			}
+		}
+		else if(m_reg_count == 4) {
+			switch(inst->encoding) {
+				case ENCN_VEX_RVMS: m_regs[0] = temp[0];m_regs[1] = temp[1]; m_regs[2] = temp[2]; m_regs[3] = temp[3]; break; 
+				default: ASSERT(false, "unknown encoding for 4 regs\n");
 			}
 		}
 		else {
