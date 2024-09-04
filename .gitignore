@@ -412,3 +412,6 @@ source/tests/*
 !source/tests/utilities.h
 
 compile_commands.json
+
+temp*
+log*
