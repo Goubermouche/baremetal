@@ -327,7 +327,7 @@ function main() {
 	// VIRTUALIZATION
 	const supported_categories = [
 		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR', 'MASK', 'AMX',
-		'AVX512', 'SIMD'
+		'AVX512', 'SIMD', 'AVX'
 	];
 	
 	const supported_encodings = [
@@ -354,25 +354,22 @@ function main() {
 		'EVEX_M', // technically not implemented
 	];
 
-	// missing categories: 
-	// - AVX
-	
 	instructions.forEach(inst => {
 		// test all categories
-		if(
-			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
-		) {
-			gp_inst.push(inst);
-		}
-
-		// test specific categories
 		// if(
-		// 	inst.category.includes('SIMD') && inst.category.every(cat => !supported_categories.includes(cat)) && 
+		// 	inst.category.some(r => supported_categories.includes(r)) && 
 		// 	!inst.extension.includes('X86')
 		// ) {
 		// 	gp_inst.push(inst);
 		// }
+
+		// test specific categories
+		if(
+			inst.category.includes('AVX') && 
+			!inst.extension.includes('X86')
+		) {
+			gp_inst.push(inst);
+		}
 	});
 
 	let rows = [];
