@@ -327,7 +327,7 @@ function main() {
 	// VIRTUALIZATION
 	const supported_categories = [
 		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR', 'MASK', 'AMX',
-		'AVX512'
+		'AVX512', 'SIMD'
 	];
 	
 	const supported_encodings = [
@@ -344,6 +344,7 @@ function main() {
 		'VEX_RMV',
 		'VEX_MVR',
 		'VEX_RVMN',
+		'VEX_RVMS',
 		'XOP',
 		'XOP_VM',
 		'EVEX_RVM',
@@ -354,25 +355,24 @@ function main() {
 	];
 
 	// missing categories: 
-	// - SIMD
 	// - AVX
 	
 	instructions.forEach(inst => {
 		// test all categories
+		if(
+			inst.category.some(r => supported_categories.includes(r)) && 
+			!inst.extension.includes('X86')
+		) {
+			gp_inst.push(inst);
+		}
+
+		// test specific categories
 		// if(
-		// 	inst.category.some(r => supported_categories.includes(r)) && 
+		// 	inst.category.includes('SIMD') && inst.category.every(cat => !supported_categories.includes(cat)) && 
 		// 	!inst.extension.includes('X86')
 		// ) {
 		// 	gp_inst.push(inst);
 		// }
-
-		// test specific categories
-		if(
-			inst.category.includes('SIMD') && inst.category.every(cat => !supported_categories.includes(cat)) && 
-			!inst.extension.includes('X86') && inst.enc.rm == 'is4' 
-		) {
-			gp_inst.push(inst);
-		}
 	});
 
 	let rows = [];
