@@ -414,3 +414,8 @@ compile_commands.json
 
 temp*
 log*
+
+perf.data
+perf.data.old
+
+test.perf

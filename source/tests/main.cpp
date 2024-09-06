@@ -7,6 +7,9 @@
 using namespace baremetal::tests;
 
 auto main() -> i32 {
+	utility::timer timer;
+	timer.start();
+
 	// load up our tests
 	const utility::filepath test_path = "source/tests/tests.txt"; 
 	const utility::dynamic_string test_file = utility::file::read(test_path);
@@ -14,6 +17,7 @@ auto main() -> i32 {
 	utility::dynamic_string instruction;
 	utility::dynamic_string result;
 	utility::dynamic_string expected;
+
 	baremetal::assembler assembler;
 	u64 i = 0;	
 	u64 sucess_count = 0;
@@ -39,7 +43,6 @@ auto main() -> i32 {
 		i++;
 		
 		// semicolon located - print it
-
 		while(test_file[i] != '\n') {
 			expected += test_file[i];
 			i++;
@@ -58,8 +61,15 @@ auto main() -> i32 {
 			sucess_count++;
 		}
 	}
+	
+	timer.stop();
 
-	utility::console::print("tests finished ({} / {} tests passed)\n", sucess_count, sucess_count + fail_count);
+	utility::console::print(
+		"tests finished ({} / {} tests passed in {}s)\n", 
+		sucess_count,
+		sucess_count + fail_count, 
+		timer.get_elapsed_sec()
+	);
 
 	return 0;
 }
