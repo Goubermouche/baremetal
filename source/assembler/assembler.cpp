@@ -439,19 +439,34 @@ namespace baremetal {
 	}
 
 	auto assembler::find_instruction_by_name(const char* name) -> u32 {
-		// look for the first instruction with that name, just a dumb linear search for the sake of simplicity
-		// TODO: update this to a more performant search	
-		// TODO: this can be in the instruction.h file
-		constexpr u32 db_size = sizeof(inst_db) / sizeof(ins);
+    constexpr u32 db_size = sizeof(inst_db) / sizeof(inst_db[0]);
 
-		for(u32 i = 0; i < db_size; ++i) {
-			if(utility::compare_strings(name, inst_db[i].name) == 0) {
-				return i;
-			}
-		}
+    u32 left = 0;
+    u32 right = db_size - 1;
 
-		return utility::limits<u32>::max();
-	}
+		// binary search
+    while (left <= right) {
+      u32 mid = left + (right - left) / 2;
+      i32 cmp = utility::compare_strings(name, inst_db[mid].name);
+
+      if(cmp == 0) {
+				// found an element with the specified name, loccate the first one
+        while (mid > 0 && utility::compare_strings(name, inst_db[mid - 1].name) == 0) {
+          --mid;
+        }
+
+        return mid;
+      }
+      else if (cmp < 0) {
+        right = mid - 1;
+      }
+      else {
+				left = mid + 1;
+      }
+    }
+
+    return utility::limits<u32>::max();
+}
 
 	auto assembler::get_bytes() const -> const utility::dynamic_array<u8>& {
 		return m_bytes;
