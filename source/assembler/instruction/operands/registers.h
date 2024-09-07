@@ -4,25 +4,32 @@
 namespace baremetal {
 	using namespace utility::types;
 
-	enum reg_type : u8 {
-		REG_NONE = 0,
-		REG_GP_8 = 1,
-		REG_GP_16,
-		REG_GP_32,
-		REG_GP_64,
-		REG_MMX,
-		REG_XMM,
-		REG_YMM,
-		REG_ZMM,
-		REG_SREG, // segment registers
-		REG_DREG, // debug registers
-		REG_CREG, // control registers
-		REG_ST,
-		REG_K,
-		REG_MM,
-		REG_BND,
-		REG_RIP
-	};
+enum reg_type : u8 {
+    REG_NONE = 0,
+    
+    // general purpose registers
+    REG_R8,
+    REG_R16,
+    REG_R32,
+    REG_R64,
+    
+    // instruction pointer
+    REG_RIP,
+
+    // vector registers
+    REG_XMM,  // 128-bit
+    REG_YMM,  // 256-bit
+    REG_ZMM,  // 512-bit
+    REG_TMM,  // tensor (varies by ISA)
+
+    REG_MMX,  // mmx registers
+    REG_K,    // mask registers:w
+    REG_ST,   // floating point registers
+    REG_SREG, // segment registers
+    REG_DREG, // debug registers
+    REG_CREG, // control registers
+    REG_BND   // bound registers
+};
 
 	struct reg {
 		constexpr reg() : index(0), type() {}
@@ -43,7 +50,7 @@ namespace baremetal {
 #define REGISTER_GP_DECL(bits)                                         \
   struct reg ## bits : reg {                                           \
     constexpr reg ## bits () = default;                                \
-    constexpr explicit reg ## bits (u8 i) : reg(i, REG_GP_ ## bits) {} \
+    constexpr explicit reg ## bits (u8 i) : reg(i, REG_R ## bits) {} \
   };
 
 	REGISTER_GP_DECL(8);
@@ -73,7 +80,7 @@ namespace baremetal {
 
 	struct tmm : reg {
 		constexpr tmm() = default;
-		constexpr explicit tmm(u8 i) : reg(i, REG_MM) {}
+		constexpr explicit tmm(u8 i) : reg(i, REG_TMM) {}
 	};
 
 	struct bnd : reg {
@@ -465,10 +472,10 @@ namespace baremetal {
 
 	inline auto is_gp_reg(reg r) {
 		switch(r.type) {
-			case REG_GP_8:
-			case REG_GP_16:
-			case REG_GP_32:
-			case REG_GP_64: return true;
+			case REG_R8:
+			case REG_R16:
+			case REG_R32:
+			case REG_R64: return true;
 			default: return false;
 		}
 	}

@@ -23,49 +23,9 @@ namespace baremetal {
 		imm displacement;
 	};
 
-#define MEM_DECL(bit_width)                                                                                      \
-  struct mem ## bit_width : mem {                                                                                \
-    static auto absolute(i32 address) -> mem ## bit_width {                                                      \
-      mem ## bit_width memory = {};                                                                              \
-      memory.displacement = address;                                                                             \
-      return memory;                                                                                             \
-    }                                                                                                            \
-                                                                                                                 \
-  static auto ptr(struct rip base_reg, i32 offset) -> mem ## bit_width {                                         \
-    mem ## bit_width memory = {};                                                                                \
-    memory.base = base_reg;                                                                                      \
-    memory.has_base = true;                                                                                      \
-    memory.displacement = offset;                                                                                \
-    return memory;                                                                                               \
-  }                                                                                                              \
-                                                                                                                 \
-  static auto ptr(reg64 base_reg, i32 offset = 0) -> mem ## bit_width {                                          \
-    mem ## bit_width memory = {};                                                                                \
-    memory.base = base_reg;                                                                                      \
-    memory.has_base = true;                                                                                      \
-    memory.displacement = offset;                                                                                \
-    return memory;                                                                                               \
-  }                                                                                                              \
-                                                                                                                 \
-  static auto ptr(reg64 base_reg, reg64 index_reg, enum scale s = SCALE_1, i32 offset = 0) -> mem ## bit_width { \
-    mem ## bit_width memory = {};                                                                                \
-    memory.base = base_reg;                                                                                      \
-    memory.has_base = true;                                                                                      \
-    memory.index = index_reg;                                                                                    \
-    memory.has_index = true;                                                                                     \
-    memory.displacement = offset;                                                                                \
-    memory.s = s;                                                                                                \
-    return memory;                                                                                               \
-  }                                                                                                              \
-};
-
-	MEM_DECL(8)
-	MEM_DECL(16)
-	MEM_DECL(32)
-	MEM_DECL(64)
-	MEM_DECL(80)
-	MEM_DECL(128)
-	MEM_DECL(256)
-	MEM_DECL(512)
-	MEM_DECL(_address)
+	struct broadcast {
+		mem m; // referenced memory
+		u8 n; 
+	};
 } // namespace baremetal
+

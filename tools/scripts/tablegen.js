@@ -120,15 +120,15 @@ function get_instruction_flags(inst) {
 
 	switch(inst.rm) {
 		//                 _____XXXX_
-		case 'r': flags |= 0b00000010; break;
-		case '0': flags |= 0b00000100; break;
-		case '1': flags |= 0b00000110; break;
-		case '2': flags |= 0b00001000; break;
-		case '3': flags |= 0b00001010; break;
-		case '4': flags |= 0b00001100; break;
-		case '5': flags |= 0b00001110; break;
-		case '6': flags |= 0b00010000; break;
-		case '7': flags |= 0b00010010; break;
+		case 'r':   flags |= 0b00000010; break;
+		case '0':   flags |= 0b00000100; break;
+		case '1':   flags |= 0b00000110; break;
+		case '2':   flags |= 0b00001000; break;
+		case '3':   flags |= 0b00001010; break;
+		case '4':   flags |= 0b00001100; break;
+		case '5':   flags |= 0b00001110; break;
+		case '6':   flags |= 0b00010000; break;
+		case '7':   flags |= 0b00010010; break;
 		case 'is4': flags |= 0b00010100; break;
 		case '':  break;
 		default: console.error(`unknown instruction rm '${inst.rm}'`);
@@ -253,7 +253,7 @@ function main() {
 		let row = [];
 
 		row.push(`"${inst.name}"`);			                                          // name
-		row.push(`ENCN_${inst.enc}`);    	                                        // encoding
+		row.push(`ENC_${inst.enc}`);    	                                        // encoding
 		row.push(`${get_base_prefix()}${get_instruction_prefix(inst.prefix)}`);	  // prefix
 		row.push(`0x${inst.opcode}`);                                             // opcode
 		row.push(`${get_base_prefix()}${get_instruction_flags(inst)}`);	          // flags
@@ -262,7 +262,7 @@ function main() {
 
 		// operands
 		inst.operands.map(op => op === '1' ? 'hidden' : op).forEach(op => {
-			row.push(`OPN_${op.toUpperCase()}`);	
+			row.push(`OP_${op.toUpperCase()}`);	
 		});
 
 		instruction_table.push(row);

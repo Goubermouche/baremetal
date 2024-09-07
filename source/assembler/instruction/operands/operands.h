@@ -3,95 +3,101 @@
 
 namespace baremetal {
 	enum operand_type : u8 {
-		OP_NONE,
+		OP_NONE = 0,
 
-		// registers
-		OP_REG8,
-		OP_REG16,
-		OP_REG32,
-		OP_REG64,
-		OP_MMX,
-		OP_XMM,
-		OP_YMM,
-		OP_ZMM,
-		OP_SREG,  // segment registers
-		OP_DREG,  // debug registers
-		OP_CREG,  // control registers
-		OP_BND,   // bound registers
+		// register operands
+		OP_R8   = REG_R8,
+		OP_R16  = REG_R16,
+		OP_R32  = REG_R32,
+		OP_R64  = REG_R64,
+		OP_XMM  = REG_XMM,
+		OP_YMM  = REG_YMM,
+		OP_ZMM  = REG_ZMM,
+		OP_TMM  = REG_TMM,
+		OP_MMX  = REG_MMX,
+		OP_K    = REG_K,
+		OP_ST   = REG_ST,
+		OP_SREG = REG_SREG,
+		OP_DREG = REG_DREG,
+		OP_CREG = REG_CREG,
+		OP_BND  = REG_BND,
 
-		// memory
-		OP_MEM_ADDRESS, // untyped memory address
-		OP_MEM8,
-		OP_MEM16,
-		OP_MEM32,
-		OP_MEM64,
-		OP_MEM128,
-		OP_MEM256,
-		OP_MEM512,
+		OP_AL,
+		OP_CL,
+		OP_AX,
+		OP_DX,
+		OP_EAX,
+		OP_ECX,
+		OP_RAX,
+		OP_RCX,
+		OP_ST0,
+		OP_ES,
+		OP_CS,
+		OP_SS,
+		OP_DS,
+		OP_FS,
+		OP_GS,
 
-		// immediates
+		// masked register operands
+		OP_K_K,    // k{k}
+		OP_XMM_K,  // xmm{k}
+		OP_XMM_KZ, // xmm{k}{z}
+		OP_YMM_K,  // xmm{k}
+		OP_YMM_KZ, // xmm{k}{z}
+		OP_ZMM_K,  // xmm{k}
+		OP_ZMM_KZ, // xmm{k}{z},
+
+		// memory operands
+		OP_M8,
+		OP_M16,
+		OP_M32,
+		OP_M64,
+		OP_M80,
+		OP_M128,
+		OP_M256,
+		OP_M512,
+		OP_MEM,
+		OP_TMEM,
+		OP_MOFF8,
+		OP_MOFF32,
+		OP_MOFF16,
+		OP_MOFF64,
+		OP_MIB,
+
+		// immediate operands
 		OP_I8,
 		OP_I16,
 		OP_I32,
 		OP_I64,
 
-		// moff
-		OP_MOFF8,
-		OP_MOFF16,
-		OP_MOFF32,
-		OP_MOFF64,
-
-		// specific registers
-		OP_AL,
-		OP_AX,
-		OP_EAX,
-		OP_RAX,
-		OP_CL,
-		OP_DX,
-		OP_ECX,
-		OP_RCX,
+		// broadcasts
+		OP_B16,
+		OP_B32,
+		OP_B64,
 
 		// relocations
 		OP_REL8,
 		OP_REL16,
 		OP_REL32,
 
-		OP_XMM_K, // masked XMM reg xmm{k}
-		OP_XMM_KZ, // masked XMM reg xmm{k}{z}
-		OP_YMM_K, // masked YMM reg xmm{k}
-		OP_YMM_KZ, // masked YMM reg xmm{k}{z}
-		OP_ZMM_K, // masked ZMM reg xmm{k}
-		OP_ZMM_KZ, // masked ZMM reg xmm{k}{z}
+		OP_HIDDEN, // usually an operand which refers to an implicit value, ie a '1'
 	};
 
 	struct operand {
 		constexpr operand() : type(OP_NONE), r(0) {}
-
-		// immediates
 		constexpr operand(imm i) : type(OP_I64), immediate(i) {}
-
-		// registers
-		static_assert(static_cast<u8>(REG_GP_8) == static_cast<u8>(OP_REG8));
-		static_assert(static_cast<u8>(REG_GP_16) == static_cast<u8>(OP_REG16));
-		static_assert(static_cast<u8>(REG_GP_32) == static_cast<u8>(OP_REG32));
-		static_assert(static_cast<u8>(REG_GP_64) == static_cast<u8>(OP_REG64));
-		static_assert(static_cast<u8>(REG_XMM) == static_cast<u8>(OP_XMM));
-		static_assert(static_cast<u8>(REG_YMM) == static_cast<u8>(OP_YMM));
-		static_assert(static_cast<u8>(REG_MMX) == static_cast<u8>(OP_MMX));
-
 		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
-
-		// memory
-		constexpr operand(mem_address m) : type(OP_MEM_ADDRESS), memory(m) {}
+		// constexpr operand(mem_address m) : type(OP_MEM), memory(m) {}
 		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
-		constexpr operand(mem256 m) : type(OP_MEM256), memory(m) {}
-		constexpr operand(mem128 m) : type(OP_MEM128), memory(m) {}
-		constexpr operand(mem64 m) : type(OP_MEM64), memory(m) {}
-		constexpr operand(mem32 m) : type(OP_MEM32), memory(m) {}
-		constexpr operand(mem16 m) : type(OP_MEM16), memory(m) {}
-		constexpr operand(mem8 m) : type(OP_MEM8), memory(m) {}
-
+		// constexpr operand(mem256 m) : type(OP_M256), memory(m) {}
+		// constexpr operand(mem128 m) : type(OP_M128), memory(m) {}
+		// constexpr operand(mem80 m) : type(OP_M80), memory(m) {}
+		// constexpr operand(mem64 m) : type(OP_M64), memory(m) {}
+		// constexpr operand(mem32 m) : type(OP_M32), memory(m) {}
+		// constexpr operand(mem16 m) : type(OP_M16), memory(m) {}
+		// constexpr operand(mem8 m) : type(OP_M8), memory(m) {}
 		constexpr operand(rel r) : type(OP_REL32), relocation(r) {}
+		constexpr operand(broadcast b, operand_type op) : type(op), b(b) {}
 
 		operand_type type;
 
@@ -100,103 +106,28 @@ namespace baremetal {
 			rel relocation;
 			imm immediate;
 			mem memory;
+			broadcast b;
 			u8 r; // register
-			masked_reg mr;
+			masked_reg mr; // masked register
 		};
 	};
-
-	inline auto is_operand_creg(operand_type op) -> bool {
-		return op == OP_CREG;
-	}
-
-	inline auto is_operand_mmx(operand_type op) -> bool {
-		return op == OP_MMX;
-	}
-
-	inline auto is_operand_bnd(operand_type op) -> bool {
-		return op == OP_BND;
-	}
 
 	inline auto is_operand_xmm(operand_type op) -> bool {
 		return op == OP_XMM || op == OP_XMM_K || op == OP_XMM_KZ;
 	}
-
+	
 	inline auto is_operand_ymm(operand_type op) -> bool {
 		return op == OP_YMM || op == OP_YMM_KZ || op == OP_YMM_K;
 	}
-
+	
 	inline auto is_operand_zmm(operand_type op) -> bool {
 		return op == OP_ZMM || op == OP_ZMM_K || op == OP_ZMM_KZ;
 	}
-
-	inline auto is_operand_reg(operand_type op) -> bool {
-		switch(op) {
-			case OP_REG8:
-			case OP_REG16:
-			case OP_REG32:
-			case OP_REG64:
-			case OP_XMM:
-			case OP_XMM_KZ:
-			case OP_XMM_K:
-			case OP_YMM:
-			case OP_YMM_K:
-			case OP_YMM_KZ:
-			case OP_ZMM:
-			case OP_ZMM_K:
-			case OP_ZMM_KZ:
-			case OP_MMX:
-			case OP_SREG:
-			case OP_DREG:
-			case OP_CREG:
-			case OP_AL:
-			case OP_AX:
-			case OP_EAX:
-			case OP_RAX:
-			case OP_CL:
-			case OP_DX:
-			case OP_ECX:
-			case OP_RCX:
-			case OP_BND: return true;
-			default: return false;
-		}
+	
+	inline auto is_operand_large_reg(operand_type op) -> bool {
+		return is_operand_xmm(op) || is_operand_ymm(op) || is_operand_zmm(op);
 	}
-
-	inline auto is_operand_masked(operand_type op) -> bool {
-		switch(op) {
-			case OP_ZMM_K:
-			case OP_ZMM_KZ:
-			case OP_YMM_K:
-			case OP_YMM_KZ:
-			case OP_XMM_K:
-			case OP_XMM_KZ: return true;
-			default: return false;
-		}
-	}
-
-	inline auto is_operand_gp_reg(operand_type op) -> bool {
-		switch(op) {
-			case OP_REG8:
-			case OP_REG16:
-			case OP_REG32:
-			case OP_REG64: return true;
-			default: return false;
-		}
-	}
-
-	inline auto is_operand_mem(operand_type op) -> bool {
-		switch(op) {
-			case OP_MEM_ADDRESS:
-			case OP_MEM8:
-			case OP_MEM16:
-			case OP_MEM32:
-			case OP_MEM64:
-			case OP_MEM128:
-			case OP_MEM256:
-			case OP_MEM512:  return true;
-			default: return false;
-		}
-	}
-
+ 
 	inline auto is_operand_moff(operand_type op) -> bool {
 		switch(op) {
 			case OP_MOFF8:
@@ -226,6 +157,77 @@ namespace baremetal {
 		}
 	}
 
+	inline auto is_operand_rax(operand_type op) -> bool {
+		switch(op) {
+			case OP_RAX:
+			case OP_EAX:
+			case OP_AX: return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_broadcast(operand_type op) -> bool {
+		switch(op) {
+			case OP_B16:
+			case OP_B32:
+			case OP_B64: return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_mem(operand_type op) -> bool {
+		switch(op) {
+			case OP_MEM:
+			case OP_TMEM:
+			case OP_M8:
+			case OP_M16:
+			case OP_M32:
+			case OP_M64:
+			case OP_M80:
+			case OP_M128:
+			case OP_M256:
+			case OP_M512:  return true;
+			default: return false;
+		}
+	}
+
+	inline auto is_operand_reg(operand_type op) -> bool {
+    switch(op) {
+      case OP_AL:
+      case OP_CL:
+      case OP_AX:
+      case OP_DX:
+      case OP_EAX:
+      case OP_ECX:
+      case OP_RAX:
+      case OP_RCX:
+      case OP_R8:
+      case OP_R16:
+      case OP_R32:
+      case OP_R64:
+      case OP_XMM:
+      case OP_XMM_K:
+      case OP_XMM_KZ:
+      case OP_YMM:
+      case OP_YMM_K:
+      case OP_YMM_KZ:
+      case OP_ZMM:
+      case OP_ZMM_K:
+      case OP_ZMM_KZ:
+      case OP_TMM:
+      case OP_MMX:
+      case OP_K:
+      case OP_K_K:
+      case OP_ST0:
+      case OP_ST:
+      case OP_SREG:
+      case OP_DREG:
+      case OP_CREG:
+      case OP_BND: return true;
+      default: return false;
+    }
+	}
+
 	inline auto is_extended_reg(const operand& op) -> bool {
 		if(is_operand_reg(op.type)) {
 			return op.r >= 8;
@@ -234,125 +236,88 @@ namespace baremetal {
 		return false;
 	}
 
-	inline auto is_extended_xmm_reg(const operand& op) -> bool {
-		if(is_operand_xmm(op.type)) {
-			return op.r >= 8;
-		}
-
-		return false;
-	}
-
-	inline auto is_extended_gp_reg(const operand& op) -> bool {
-		if(is_operand_gp_reg(op.type)) {
-			return op.r >= 8;
-		}
-
-		return false;
-	}
-
 	inline auto get_operand_bit_width(operand_type op) -> u16 {
+    switch(op) {
+      case OP_NONE:
+      case OP_MEM:
+      case OP_HIDDEN: return 0;
+      case OP_I8:
+      case OP_R8:
+      case OP_AL:
+      case OP_CL:
+      case OP_MOFF8:
+      case OP_M8:
+      case OP_REL8: return 8;
+      case OP_I16:
+      case OP_R16:
+      case OP_SREG:
+      case OP_GS:
+      case OP_ES:
+      case OP_FS:
+      case OP_SS:
+      case OP_DS:
+      case OP_CS:
+      case OP_AX:
+      case OP_B16:
+      case OP_DX:
+      case OP_MOFF16:
+      case OP_REL16:
+      case OP_M16: return 16;
+      case OP_I32:
+      case OP_R32:
+      case OP_EAX:
+      case OP_ECX:
+      case OP_B32:
+      case OP_MOFF32:
+      case OP_M32:
+      case OP_REL32: return 32;
+      case OP_I64:
+      case OP_R64:
+      case OP_MOFF64:
+      case OP_M64:
+      case OP_CREG:
+      case OP_DREG:
+      case OP_MMX:
+      case OP_BND:
+      case OP_RCX:
+      case OP_RAX:
+      case OP_MIB:
+      case OP_K_K:
+      case OP_K:
+      case OP_B64: return 64;
+      case OP_M80:
+      case OP_ST:
+      case OP_ST0: return 80;
+      case OP_XMM:
+      case OP_XMM_K:
+      case OP_XMM_KZ:
+      case OP_M128: return 128;
+      case OP_YMM:
+      case OP_YMM_K:
+      case OP_YMM_KZ:
+      case OP_M256: return 256;
+      case OP_ZMM:
+      case OP_ZMM_K:
+      case OP_ZMM_KZ:
+      case OP_M512: return 512;
+      case OP_TMEM:
+      case OP_TMM: return 1024;
+    }
+
+    return 0; // unreachable
+	}
+
+	inline auto is_operand_masked(operand_type op) -> bool {
 		switch(op) {
-			case OP_MEM_ADDRESS:
-			case OP_NONE:        return 0;
-			case OP_MOFF8:
-			case OP_MEM8:
-			case OP_REL8:
-			case OP_REG8:
-			case OP_AL:
-			case OP_CL: 
-			case OP_I8:          return 8;
-			case OP_MOFF16:
-			case OP_REL16:
-			case OP_MEM16:
-			case OP_REG16:
-			case OP_SREG:
-			case OP_AX:
-			case OP_DX:
-			case OP_I16:         return 16;
-			case OP_MOFF32:
-			case OP_MEM32:
-			case OP_REL32:
-			case OP_REG32:
-			case OP_EAX:
-			case OP_ECX:
-			case OP_I32:         return 32;
-			case OP_MOFF64:
-			case OP_MEM64:
-			case OP_REG64:
-			case OP_CREG:
-			case OP_DREG:
-			case OP_MMX:
-			case OP_BND:
-			case OP_RCX:
-			case OP_RAX:
-			case OP_I64:         return 64;
-			case OP_MEM128:
-			case OP_XMM:
-			case OP_XMM_K:
-			case OP_XMM_KZ:      return 128;
-			case OP_MEM256:
-			case OP_YMM_K:         
-			case OP_YMM_KZ:         
-			case OP_YMM:         return 256;
+			case OP_K_K:
 			case OP_ZMM_K:
 			case OP_ZMM_KZ:
-			case OP_MEM512:
-			case OP_ZMM:       return 512;
+			case OP_YMM_K:
+			case OP_YMM_KZ:
+			case OP_XMM_K:
+			case OP_XMM_KZ: return true;
+			default: return false;
 		}
-
-		return 0; // unreachable
-	}
-
-	inline auto operand_type_to_string(operand_type op) -> const char* {
-		switch(op) {
-			case OP_NONE:        return "none";
-			case OP_REG8:        return "r8";
-			case OP_REG16:       return "r16";
-			case OP_REG32:       return "r32";
-			case OP_REG64:       return "r64";
-			case OP_XMM:         return "xmm";
-			case OP_XMM_KZ:      return "xmm{k}{z}";
-			case OP_XMM_K:      return "xmm{k}";
-			case OP_MMX:         return "mmx";
-			case OP_BND:         return "bnd";
-			case OP_SREG:        return "sreg";
-			case OP_DREG:        return "dreg";
-			case OP_CREG:        return "creg";
-			case OP_MEM_ADDRESS: return "mem_address";
-			case OP_MEM8:        return "m8";
-			case OP_MEM16:       return "m16";
-			case OP_MEM32:       return "m32";
-			case OP_MEM64:       return "m64";
-			case OP_MEM128:      return "m128";
-			case OP_MEM256:      return "m256";
-			case OP_MEM512:      return "m512";
-			case OP_I8:          return "i8";
-			case OP_I16:         return "i16";
-			case OP_I32:         return "i32";
-			case OP_I64:         return "i64";
-			case OP_MOFF8:       return "moff8";
-			case OP_MOFF16:      return "moff16";
-			case OP_MOFF32:      return "moff32";
-			case OP_MOFF64:      return "moff64";
-			case OP_AL:          return "al";
-			case OP_AX:          return "ax";
-			case OP_EAX:         return "eax";
-			case OP_RAX:         return "rax";
-			case OP_CL:          return "cl";
-			case OP_DX:          return "dx";
-			case OP_ECX:         return "ecx";
-			case OP_RCX:         return "rcx";
-			case OP_REL8:        return "rel8";
-			case OP_REL16:       return "rel16";
-			case OP_REL32:       return "rel32";
-			case OP_YMM:         return "ymm";
-			case OP_YMM_K:       return "ymm{k}";
-			case OP_YMM_KZ:      return "ymm{k}{z}";
-			case OP_ZMM:         return "zmm";
-			case OP_ZMM_K:       return "zmm{k}";
-			case OP_ZMM_KZ:      return "zmm{k}{z}";
-		}
-
-		return "unknown";
 	}
 } // namespace baremetal
+

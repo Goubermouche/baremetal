@@ -263,5 +263,4 @@ namespace baremetal {
 
 	auto keyword_to_register(keyword_type kw) -> reg;
 	auto get_keyword_type(const utility::dynamic_string& str) -> keyword_type;
-	auto parse_operand(const utility::dynamic_string& str) -> operand;
 } // namespace baremetal

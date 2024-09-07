@@ -566,14 +566,5 @@ parse_number:
 
 		return (keyword_type)it->second;
 	}
-
-	auto parse_operand(const utility::dynamic_string& str) -> operand {
-		operand result;
-
-		auto op = get_keyword_type(str);
-
-		utility::console::print("parsing op '{}' : '{}'\n", str, (int)op);
-		return result;
-	}
 } // namespace baremetal
 
