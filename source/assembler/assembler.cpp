@@ -1,26 +1,25 @@
 #include "assembler.h"
 
 #include "assembler/parser.h"
+#include "utility/result.h"
 
-#define PARSER_VERIFY(expected)																				  		 \
-  if(m_lexer.current != expected) {                                 				 \
-    utility::console::print("unexpected token: {}\n", (i32)m_lexer.current); \
-    return false;                                                            \
-  }
-
-#define PARSER_EXIT()                            \
-  utility::console::print("unexpected token\n"); \
-  return false;
+#define EXPECT_TOKEN(expected)                            \
+  do {                                                    \
+    if(m_lexer.current != expected) {                     \
+      return utility::error("unexpected token received"); \
+		}                                                     \
+  }                                                       \
+  while(false)
 
 namespace baremetal {
 	namespace detail {
-		auto imm_to_scale(const imm& i) -> scale {
+		auto imm_to_scale(const imm& i) -> utility::result<scale> {
 			switch(i.value) {
 				case 1: return SCALE_1;
 				case 2: return SCALE_2;
 				case 4: return SCALE_4;
 				case 8: return SCALE_8;
-				default: utility::console::print_err("invalid memory scale specified\n"); return SCALE_NONE;
+				default: return utility::error("invalid memory scale");
 			}
 		}
 	
@@ -66,17 +65,15 @@ namespace baremetal {
 
 	assembler::assembler() {}
 
-	auto assembler::assemble(const utility::dynamic_string& assembly) -> bool {
+	auto assembler::assemble(const utility::dynamic_string& assembly) -> utility::result<void> {
 		m_lexer.set_text(assembly);
 		m_lexer.get_next_token();
 
-		while(m_lexer.current != KW_EOF) {
-			if(parse_instruction() == false) {
-				return false;
-			}
+		while(m_lexer.current != TOK_EOF) {
+			TRY(parse_instruction());
 		}
 
-		return true;
+		return SUCCESS;
 	}
 
 	auto assembler::get_bytes() const -> const utility::dynamic_array<u8>& {
@@ -88,19 +85,18 @@ namespace baremetal {
 		m_module.clear();
 	}
 
-	auto assembler::parse_instruction() -> bool {
+	auto assembler::parse_instruction() -> utility::result<void> {
 		// instruction mnemonic
 		utility::dynamic_string instruction_identifier;
 
-		PARSER_VERIFY(KW_IDENTIFIER);
+		// PARSER_VERIFY(KW_IDENTIFIER);
 		instruction_identifier = utility::dynamic_string(m_lexer.current_string);
 
 		const u32 first = find_instruction_by_name(instruction_identifier.get_data());
 
 		if(first == utility::limits<u32>::max()) {
 			// instruction doesn't exist
-			utility::console::print("unknown instruction '{}', stopping\n", instruction_identifier);
-			return false;
+			return utility::error("unknown instruction specified");
 		}
 
 		// ensure our destination is clean
@@ -108,18 +104,18 @@ namespace baremetal {
 		operand_i = 0;
 
 		// operands
-		while(m_lexer.get_next_token() != KW_EOF) {
+		while(m_lexer.get_next_token() != TOK_EOF) {
 			switch (m_lexer.current) {
-				case KW_MINUS:             parse_number_negative(); break;
-				case KW_CR0 ... KW_R15B:   parse_register(); break;
-				case KW_LBRACKET:          parse_bracket(); break; 
-				case KW_NUMBER:            parse_number(); break;	
-				case KW_BYTE ... KW_TWORD: parse_memory(); break;
-				default: PARSER_EXIT();
+				case TOK_MINUS:             TRY(parse_number_negative()); break;
+				case TOK_CR0 ... TOK_R15B:   TRY(parse_register()); break;
+				case TOK_LBRACKET:          TRY(parse_bracket()); break; 
+				case TOK_BYTE ... TOK_TWORD: TRY(parse_memory()); break;
+				case TOK_NUMBER:            parse_number(); break;	
+				default: return utility::error("unexpected token received as instruction operand");
 			};
 
 			// operands are separated by commas
-			if(m_lexer.current != KW_COMMA) {
+			if(m_lexer.current != TOK_COMMA) {
 				break;
 			}
 		}
@@ -140,31 +136,30 @@ namespace baremetal {
 				}
 
 				m_module.emit_instruction(instruction_i, operands);
-				return true;
+				return SUCCESS;
 			}
 
 			instruction_i++;
 		}
 
 		// invalid instruction and operand combination
-		utility::console::print("no instruction variant with the specified operands was found\n");
-		utility::console::print("operands are:\n{} ", instruction_identifier);
-
-		for(u8 i = 0; i < operand_i; ++i) {
-			utility::console::print("{} ", (i32)operands[i].type);
-		}
-		
-		utility::console::print("\n");
-		return false;
+		return utility::error("invalid operand combination for the specified instruction");
 	}
 
-	void assembler::parse_register() {		
-		operands[operand_i] = operand(keyword_to_register(m_lexer.current));
+	auto assembler::parse_register() -> utility::result<void> {		
+		operands[operand_i] = operand(token_to_register(m_lexer.current));
 
 		// parse mask operands (ie. "{k1} {z0}")
-		while(parse_mask_register(operands[operand_i])) {}
+		while(true) {
+			TRY(bool result, parse_mask_register(operands[operand_i]));
+
+			if(result == false) {
+				break;
+			}
+		}
 
 		operand_i++;
+		return SUCCESS;
 	}
 
 	void assembler::parse_number() {
@@ -172,48 +167,51 @@ namespace baremetal {
 		m_lexer.get_next_token();
 	}
 
-	void assembler::parse_number_negative() {
+	auto assembler::parse_number_negative() -> utility::result<void> {
 		m_lexer.get_next_token();
-		// PARSER_VERIFY(KW_NUMBER);
+		EXPECT_TOKEN(TOK_NUMBER);
 
 		operands[operand_i++] = operand(imm(-static_cast<i64>(m_lexer.current_immediate.value)));
 		m_lexer.get_next_token();
+
+		return SUCCESS;
 	}
 
-	void assembler::parse_memory() {
-		keyword_type mem_type = m_lexer.current;
+	auto assembler::parse_memory() -> utility::result<void> {
+		token_type mem_type = m_lexer.current;
 		operand op;
 
 		m_lexer.get_next_token();
-		// PARSER_VERIFY(KW_LBRACKET);
+		EXPECT_TOKEN(TOK_LBRACKET);
 
 		switch(mem_type) {
-			case KW_BYTE: op.type = OP_M8; break;
-			case KW_WORD: op.type = OP_M16; break;
-			case KW_DWORD: op.type = OP_M32; break;
-			case KW_QWORD: op.type = OP_M64; break;
-			case KW_TWORD: op.type = OP_M80; break;
+			case TOK_BYTE:  op.type = OP_M8;  break;
+			case TOK_WORD:  op.type = OP_M16; break;
+			case TOK_DWORD: op.type = OP_M32; break;
+			case TOK_QWORD: op.type = OP_M64; break;
+			case TOK_TWORD: op.type = OP_M80; break;
 			default: ASSERT(false, "unreachable\n");
 		}
 
 		m_lexer.get_next_token();
-		parse_memory(op.memory);
+		TRY(parse_memory(op.memory));
 		
-		// PARSER_VERIFY(KW_RBRACKET);
+		EXPECT_TOKEN(TOK_RBRACKET);
 		m_lexer.get_next_token();
 
 		operands[operand_i++] = op;
+		return SUCCESS;
 	}
 
-	void assembler::parse_bracket() {
+	auto assembler::parse_bracket() -> utility::result<void> {
 		switch(m_lexer.get_next_token()) {
-			case KW_BYTE ... KW_QWORD: {
+			case TOK_BYTE ... TOK_QWORD: {
 				m_lexer.get_next_token();
-				// PARSER_VERIFY(KW_NUMBER);
+				EXPECT_TOKEN(TOK_NUMBER);
 
 				operands[operand_i++] = operand(moff(m_lexer.current_immediate.value));
 				m_lexer.get_next_token();
-				// PARSER_VERIFY(KW_RBRACKET);
+				EXPECT_TOKEN(TOK_RBRACKET);
 				m_lexer.get_next_token();
 				break;
 			}
@@ -223,26 +221,25 @@ namespace baremetal {
 
 				memory.type = OP_M128;
 
-				parse_memory(memory.memory);
-				// PARSER_VERIFY(KW_RBRACKET);
+				TRY(parse_memory(memory.memory));
+				EXPECT_TOKEN(TOK_RBRACKET);
 
-				if(m_lexer.get_next_token() == KW_LBRACE) {
+				if(m_lexer.get_next_token() == TOK_LBRACE) {
 					// broadcast
 					u8 n = 0;
 					m_lexer.force_keyword = true;
 
 					switch(m_lexer.get_next_token()) {
-						case KW_1TO2: n = 2; break;
-						case KW_1TO4: n = 4; break;
-						case KW_1TO8: n = 8; break;
-						case KW_1TO16: n = 16; break;
-						case KW_1TO32: n = 32; break;
-						default: utility::console::print_err("invalid broadcast\n"); return;
-						// default: PARSER_EXIT();
+						case TOK_1TO2: n = 2; break;
+						case TOK_1TO4: n = 4; break;
+						case TOK_1TO8: n = 8; break;
+						case TOK_1TO16: n = 16; break;
+						case TOK_1TO32: n = 32; break;
+						default: return utility::error("invalid broadcast specified");
 					}
 
 					m_lexer.get_next_token();
-					// PARSER_VERIFY(KW_RBRACE);
+					EXPECT_TOKEN(TOK_RBRACE);
 					m_lexer.get_next_token();
 
 					broadcast b;
@@ -257,7 +254,7 @@ namespace baremetal {
 						case 16: ty = OP_B16; break;
 						case 32: ty = OP_B32; break;
 						case 64: ty = OP_B64; break;
-						default: utility::console::print_err("invalid broadcast\n"); return;
+						default: return utility::error("invalid broadcast width specified");
 					}
 
 					operands[operand_i++] = operand(b, ty);  
@@ -269,22 +266,29 @@ namespace baremetal {
 				break;
 			}
 		}
+
+		return SUCCESS;
 	}
 
-	auto assembler::parse_mask_register(operand& op) -> bool {
-		if(m_lexer.get_next_token() == KW_LBRACE) {
+	auto assembler::parse_mask_register(operand& op) -> utility::result<bool> {
+		if(m_lexer.get_next_token() == TOK_LBRACE) {
 			m_lexer.get_next_token();
 			
 			char c = m_lexer.current_string[0];
 
 			switch(c) {
 				case 'k': {
-					ASSERT(m_lexer.current_string.get_size() == 2, "invalid mask register specified\n");
+					if(m_lexer.current_string.get_size() != 2) {
+						return utility::error("invalid mask register specified");
+					}
+
 					char* end;
 					op.mr.z = false;
 					op.mr.k = static_cast<u8>(strtoul(m_lexer.current_string.get_data() + 1, &end, 10));
 
-					ASSERT(op.mr.k < 8, "invalid mask register specified\n");
+					if(op.mr.k >= 8) {
+						utility::error("invalid mask register specified");
+					}
 
 					if(is_operand_xmm(op.type)) { op.type = OP_XMM_K; }
 					else if(is_operand_ymm(op.type)) { op.type = OP_YMM_K; }
@@ -294,7 +298,10 @@ namespace baremetal {
 					break;
 				}
 				case 'z': {
-					ASSERT(m_lexer.current_string.get_size() == 1, "invalid mask register specified\n");
+					if(m_lexer.current_string.get_size() != 2) {
+						utility::error("invalid mask register specified");
+					}
+
 					op.mr.z = true; // TODO: technically not needed, as we can interpret it from the type
 
 					if(is_operand_xmm(op.type)) { op.type = OP_XMM_KZ; }
@@ -304,11 +311,11 @@ namespace baremetal {
 					break;
 				}
 
-				default: utility::console::print_err("unknown mask register specified\n"); return false;
+				return utility::error("unknown mask register specified");
 			}
 
 			m_lexer.get_next_token();
-			PARSER_VERIFY(KW_RBRACE);
+			EXPECT_TOKEN(TOK_RBRACE);
 
 			return true;
 		}
@@ -316,7 +323,7 @@ namespace baremetal {
 		return false;
 	}
 
-	auto assembler::parse_memory(mem& memory) -> bool {
+	auto assembler::parse_memory(mem& memory) -> utility::result<void> {
 		reg current_reg = reg::create_invalid();
 		imm current_imm;
 
@@ -329,41 +336,36 @@ namespace baremetal {
 		while(true) {
 			switch(m_lexer.current) {
 				// register
-				case KW_CR0 ... KW_R15B: {
+				case TOK_CR0 ... TOK_R15B: {
 					if(scale_mode && imm_set) {
 						// scale * reg
-						memory.index = keyword_to_register(m_lexer.current);
+						memory.index = token_to_register(m_lexer.current);
 						memory.has_index = true;
 
-						const auto scale = detail::imm_to_scale(current_imm);
-
-						if(scale == SCALE_NONE) {
-							return false; 
-						}
-
+						TRY(const auto scale, detail::imm_to_scale(current_imm));
 						memory.s = scale;
 
 						scale_mode = false;
 						imm_set = false;
 					}
 					else {
-						current_reg = keyword_to_register(m_lexer.current);
+						current_reg = token_to_register(m_lexer.current);
 					}
 
 					break;
 				}
-				case KW_REL: {
+				case TOK_REL: {
 					// rel $
 					m_lexer.get_next_token();
-					PARSER_VERIFY(KW_DOLLARSIGN);
+					EXPECT_TOKEN(TOK_DOLLARSIGN);
 					current_reg = rip;
 					break;
 				}
-				case KW_ASTERISK: {
+				case TOK_ASTERISK: {
 					scale_mode = true;
 					break;
 				}
-				case KW_PLUS: {
+				case TOK_PLUS: {
 					if(current_reg.is_valid()) {
 						if(memory.has_base) {
 							// index * 1
@@ -387,22 +389,17 @@ namespace baremetal {
 
 					break;
 				}
-				case KW_MINUS: {
+				case TOK_MINUS: {
 					ASSERT(false, "not implemented\n");
 					break;
 				}
-				case KW_NUMBER: {
+				case TOK_NUMBER: {
 					if(scale_mode && current_reg.is_valid()) {
 						// reg * scale
 						memory.index = current_reg;
 						memory.has_index = true;
 
-						const auto scale = detail::imm_to_scale(m_lexer.current_immediate);
-
-						if(scale == SCALE_NONE) {
-							return false; 
-						}
-
+						TRY(const auto scale, detail::imm_to_scale(m_lexer.current_immediate));
 						memory.s = scale;
 
 						scale_mode = false;
@@ -415,7 +412,7 @@ namespace baremetal {
 
 					break;
 				}
-				case KW_RBRACKET: {
+				case TOK_RBRACKET: {
 					if(current_reg.is_valid()) {
 						if(memory.has_base) {
 							// index * 1
@@ -434,11 +431,10 @@ namespace baremetal {
 						memory.displacement = current_imm;
 					}
 
-					return true;
+					return SUCCESS;
 				}
 				default: {
-					utility::console::print_err("unexpected token received ('{}')\n", (i32)m_lexer.current);
-					return false;
+					return utility::error("unexpected token received in memory operand");
 				}
 			}
 

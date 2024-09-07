@@ -2,26 +2,29 @@
 #include "assembler/module.h"
 #include "assembler/parser.h"
 
+#include <utility/result.h>
+
 namespace baremetal {
 	struct assembler {
 		assembler();
 		
-		auto assemble(const utility::dynamic_string& assembly) -> bool; 
+		auto assemble(const utility::dynamic_string& assembly) -> utility::result<void>; 
 
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<u8>&;
 		void clear();
 	private:
-		auto parse_instruction() -> bool;
+		auto parse_instruction() -> utility::result<void>;
 
 		// operands
-		void parse_number_negative();
-		void parse_register();
-		void parse_bracket();
-		void parse_number();
-		void parse_memory();
+		auto parse_number_negative() -> utility::result<void>;
+		auto parse_register() -> utility::result<void>;
+		auto parse_bracket() -> utility::result<void>;
+		auto parse_memory() -> utility::result<void>;
 		
-		auto parse_mask_register(operand& op) -> bool;
-		auto parse_memory(mem& memory) -> bool;
+		void parse_number();
+
+		auto parse_mask_register(operand& op) -> utility::result<bool>;
+		auto parse_memory(mem& memory) -> utility::result<void>;
 	private:
 		module m_module;
 		lexer m_lexer;
