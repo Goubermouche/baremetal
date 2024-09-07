@@ -87,15 +87,7 @@ namespace baremetal {
 		constexpr operand() : type(OP_NONE), r(0) {}
 		constexpr operand(imm i) : type(OP_I64), immediate(i) {}
 		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
-		// constexpr operand(mem_address m) : type(OP_MEM), memory(m) {}
 		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
-		// constexpr operand(mem256 m) : type(OP_M256), memory(m) {}
-		// constexpr operand(mem128 m) : type(OP_M128), memory(m) {}
-		// constexpr operand(mem80 m) : type(OP_M80), memory(m) {}
-		// constexpr operand(mem64 m) : type(OP_M64), memory(m) {}
-		// constexpr operand(mem32 m) : type(OP_M32), memory(m) {}
-		// constexpr operand(mem16 m) : type(OP_M16), memory(m) {}
-		// constexpr operand(mem8 m) : type(OP_M8), memory(m) {}
 		constexpr operand(rel r) : type(OP_REL32), relocation(r) {}
 		constexpr operand(broadcast b, operand_type op) : type(op), b(b) {}
 

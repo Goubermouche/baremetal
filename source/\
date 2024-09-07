@@ -89,7 +89,6 @@ namespace baremetal {
 	}
 
 	auto assembler::parse_instruction() -> bool {
-		// instruction mnemonic
 		utility::dynamic_string instruction_identifier;
 
 		PARSER_VERIFY(KW_IDENTIFIER);
@@ -98,36 +97,139 @@ namespace baremetal {
 		const u32 first = find_instruction_by_name(instruction_identifier.get_data());
 
 		if(first == utility::limits<u32>::max()) {
-			// instruction doesn't exist
 			utility::console::print("unknown instruction '{}', stopping\n", instruction_identifier);
 			return false;
 		}
 
-		// ensure our destination is clean
-		utility::memset(operands, 0, sizeof(operand) * 4);
-		operand_i = 0;
+		operand operands[4] = {{}};
+		u8 operand_i = 0;
 
 		// operands
 		while(m_lexer.get_next_token() != KW_EOF) {
 			switch (m_lexer.current) {
-				case KW_MINUS:             parse_number_negative(); break;
-				case KW_CR0 ... KW_R15B:   parse_register(); break;
-				case KW_LBRACKET:          parse_bracket(); break; 
-				case KW_NUMBER:            parse_number(); break;	
-				case KW_BYTE ... KW_TWORD: parse_memory(); break;
+				case KW_CR0 ... KW_R15B: {
+					operands[operand_i] = operand(keyword_to_register(m_lexer.current));
+					while(parse_mask_register(&operands[operand_i])) {}
+					operand_i++;
+					break;
+				}
+				case KW_NUMBER: {
+					operands[operand_i++] = parse_number();	break;
+				}
+				case KW_MINUS: {
+					m_lexer.get_next_token();
+					PARSER_VERIFY(KW_NUMBER);
+
+					operands[operand_i++] = operand(imm(-static_cast<i64>(m_lexer.current_immediate.value)));
+					m_lexer.get_next_token();
+					break;
+				}
+				case KW_LBRACKET: {
+					switch(m_lexer.get_next_token()) {
+						case KW_BYTE ... KW_QWORD: {
+							m_lexer.get_next_token();
+							PARSER_VERIFY(KW_NUMBER);
+
+							operands[operand_i++] = operand(moff(m_lexer.current_immediate.value));
+							m_lexer.get_next_token();
+							PARSER_VERIFY(KW_RBRACKET);
+							m_lexer.get_next_token();
+							break;
+						}
+						default: {
+							// large mem operand or broadcast
+							operand memory;
+
+							memory.type = OP_M128;
+
+							parse_memory(memory.memory);
+							PARSER_VERIFY(KW_RBRACKET);
+
+							if(m_lexer.get_next_token() == KW_LBRACE) {
+								// broadcast
+								u8 n = 0;
+								m_lexer.force_keyword = true;
+
+								switch(m_lexer.get_next_token()) {
+									case KW_1TO2: n = 2; break;
+									case KW_1TO4: n = 4; break;
+									case KW_1TO8: n = 8; break;
+									case KW_1TO16: n = 16; break;
+									case KW_1TO32: n = 32; break;
+									default: PARSER_EXIT();
+								}
+
+								m_lexer.get_next_token();
+								PARSER_VERIFY(KW_RBRACE);
+								m_lexer.get_next_token();
+
+								broadcast b;
+								b.m = memory.memory;
+								b.n = n;
+
+								u16 op_before_width = get_operand_bit_width(operands[operand_i - 1].type);
+								u16 b_width = op_before_width / n;
+								operand_type ty;
+
+								switch(b_width) {
+									case 16: ty = OP_B16; break;
+									case 32: ty = OP_B32; break;
+									case 64: ty = OP_B64; break;
+									default: utility::console::print_err("unexpected b: {} (before: {}, n: {}, ty: {})\n", b_width, op_before_width, n, (i32)operands[operand_i - 1].type); return false;
+								}
+
+								operands[operand_i++] = operand(b, ty);  
+							}
+							else {
+								operands[operand_i++] = memory;
+							}
+
+							break;
+						}
+					}
+
+					break;
+				}
+				// memory operands
+				case KW_BYTE ... KW_TWORD: {
+					keyword_type mem_type = m_lexer.current;
+
+					m_lexer.get_next_token();
+					PARSER_VERIFY(KW_LBRACKET);
+
+					operand memory;
+
+					switch(mem_type) {
+						case KW_BYTE: memory.type = OP_M8; break;
+						case KW_WORD: memory.type = OP_M16; break;
+						case KW_DWORD: memory.type = OP_M32; break;
+						case KW_QWORD: memory.type = OP_M64; break;
+						case KW_TWORD: memory.type = OP_M80; break;
+						default: ASSERT(false, "unreachable\n");
+					}
+
+					m_lexer.get_next_token();
+					parse_memory(memory.memory);
+
+					PARSER_VERIFY(KW_RBRACKET);
+
+					operands[operand_i++] = memory;
+
+					m_lexer.get_next_token();
+					break;
+				}
 				default: PARSER_EXIT();
 			};
 
-			// operands are separated by commas
 			if(m_lexer.current != KW_COMMA) {
 				break;
 			}
 		}
 
-		// locate the specific variant (dumb linear search in our specific group)
 		u32 instruction_i = first;
 		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
 
+		// locate the specific variant (dumb linear search)
 		while(instruction_i < db_size && utility::compare_strings(instruction_db[instruction_i].name, instruction_db[first].name) == 0) {
 			if(detail::is_operand_match(instruction_i, operands)) {
 				for(u8 j = 0; j < operand_i; ++j) {
@@ -146,7 +248,6 @@ namespace baremetal {
 			instruction_i++;
 		}
 
-		// invalid instruction and operand combination
 		utility::console::print("no instruction variant with the specified operands was found\n");
 		utility::console::print("operands are:\n{} ", instruction_identifier);
 
@@ -158,120 +259,24 @@ namespace baremetal {
 		return false;
 	}
 
-	void assembler::parse_register() {		
-		operands[operand_i] = operand(keyword_to_register(m_lexer.current));
+	auto assembler::parse_register() -> operand {		
+		operand op = operand(keyword_to_register(m_lexer.current));
 
 		// parse mask operands (ie. "{k1} {z0}")
-		while(parse_mask_register(operands[operand_i])) {}
+		while(parse_mask_register(op)) {}
 
-		operand_i++;
+		auto copy = op;
+
+		return copy;
 	}
 
-	void assembler::parse_number() {
-		operands[operand_i++] = operand(m_lexer.current_immediate); 
+	auto assembler::parse_number() -> operand {
+		auto op = operand(m_lexer.current_immediate); 
 		m_lexer.get_next_token();
+		return op;
 	}
 
-	void assembler::parse_number_negative() {
-		m_lexer.get_next_token();
-		// PARSER_VERIFY(KW_NUMBER);
-
-		operands[operand_i++] = operand(imm(-static_cast<i64>(m_lexer.current_immediate.value)));
-		m_lexer.get_next_token();
-	}
-
-	void assembler::parse_memory() {
-		keyword_type mem_type = m_lexer.current;
-		operand op;
-
-		m_lexer.get_next_token();
-		// PARSER_VERIFY(KW_LBRACKET);
-
-		switch(mem_type) {
-			case KW_BYTE: op.type = OP_M8; break;
-			case KW_WORD: op.type = OP_M16; break;
-			case KW_DWORD: op.type = OP_M32; break;
-			case KW_QWORD: op.type = OP_M64; break;
-			case KW_TWORD: op.type = OP_M80; break;
-			default: ASSERT(false, "unreachable\n");
-		}
-
-		m_lexer.get_next_token();
-		parse_memory(op.memory);
-		
-		// PARSER_VERIFY(KW_RBRACKET);
-		m_lexer.get_next_token();
-
-		operands[operand_i++] = op;
-	}
-
-	void assembler::parse_bracket() {
-		switch(m_lexer.get_next_token()) {
-			case KW_BYTE ... KW_QWORD: {
-				m_lexer.get_next_token();
-				// PARSER_VERIFY(KW_NUMBER);
-
-				operands[operand_i++] = operand(moff(m_lexer.current_immediate.value));
-				m_lexer.get_next_token();
-				// PARSER_VERIFY(KW_RBRACKET);
-				m_lexer.get_next_token();
-				break;
-			}
-			default: {
-				// large mem operand or broadcast
-				operand memory;
-
-				memory.type = OP_M128;
-
-				parse_memory(memory.memory);
-				// PARSER_VERIFY(KW_RBRACKET);
-
-				if(m_lexer.get_next_token() == KW_LBRACE) {
-					// broadcast
-					u8 n = 0;
-					m_lexer.force_keyword = true;
-
-					switch(m_lexer.get_next_token()) {
-						case KW_1TO2: n = 2; break;
-						case KW_1TO4: n = 4; break;
-						case KW_1TO8: n = 8; break;
-						case KW_1TO16: n = 16; break;
-						case KW_1TO32: n = 32; break;
-						default: utility::console::print_err("invalid broadcast\n"); return;
-						// default: PARSER_EXIT();
-					}
-
-					m_lexer.get_next_token();
-					// PARSER_VERIFY(KW_RBRACE);
-					m_lexer.get_next_token();
-
-					broadcast b;
-					b.m = memory.memory;
-					b.n = n;
-
-					u16 op_before_width = get_operand_bit_width(operands[operand_i - 1].type);
-					u16 b_width = op_before_width / n;
-					operand_type ty;
-
-					switch(b_width) {
-						case 16: ty = OP_B16; break;
-						case 32: ty = OP_B32; break;
-						case 64: ty = OP_B64; break;
-						default: utility::console::print_err("invalid broadcast\n"); return;
-					}
-
-					operands[operand_i++] = operand(b, ty);  
-				}
-				else {
-					operands[operand_i++] = memory;
-				}
-
-				break;
-			}
-		}
-	}
-
-	auto assembler::parse_mask_register(operand& op) -> bool {
+	auto assembler::parse_mask_register(operand* op) -> bool {
 		if(m_lexer.get_next_token() == KW_LBRACE) {
 			m_lexer.get_next_token();
 			
@@ -281,9 +286,7 @@ namespace baremetal {
 				case 'k': {
 					ASSERT(m_lexer.current_string.get_size() == 2, "invalid mask register specified\n");
 					char* end;
-					op.mr.z = false;
-					op.mr.k = static_cast<u8>(strtoul(m_lexer.current_string.get_data() + 1, &end, 10));
-
+					op.mr.k  = static_cast<u8>(strtoul(m_lexer.current_string.get_data() + 1, &end, 10));
 					ASSERT(op.mr.k < 8, "invalid mask register specified\n");
 
 					if(is_operand_xmm(op.type)) { op.type = OP_XMM_K; }
@@ -295,7 +298,7 @@ namespace baremetal {
 				}
 				case 'z': {
 					ASSERT(m_lexer.current_string.get_size() == 1, "invalid mask register specified\n");
-					op.mr.z = true; // TODO: technically not needed, as we can interpret it from the type
+					op.mr.z = true;
 
 					if(is_operand_xmm(op.type)) { op.type = OP_XMM_KZ; }
 					else if(is_operand_ymm(op.type)) { op.type = OP_YMM_KZ; }

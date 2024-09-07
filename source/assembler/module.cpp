@@ -534,7 +534,9 @@ void module::emit_opcode_prefix_vex_two(const instruction* inst, const operand* 
 			masked_reg r = get_masked_operand(inst, operands);
 
 			// merge or zero
-			fourth |= (r.z & 0b00000001) << 7;
+			if(r.z) {
+				fourth |= (r.z & 0b00000001) << 7;
+			}
 
 			// operand mask register
 			fourth |= r.k;
