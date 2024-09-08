@@ -770,8 +770,7 @@ namespace baremetal {
 		}
 
 		if(inst->is_rm() && !inst->is_is4()) {
-			// - 2 is a fixup we need for our encoding, this can be improved but isn't vital rn
-			rx = inst->get_rm() - 2;
+			rx = inst->get_rm();
 		}
 
 		// memory operands
@@ -956,8 +955,7 @@ namespace baremetal {
 		}
 
 		if(inst->is_rm()) {
-			 // - 2 is a fixup we need for our encoding, this can be improved but isn't vital rn
-			rx = inst->get_rm() - 2;
+			rx = inst->get_rm();
 		}
 
 		// memory operands

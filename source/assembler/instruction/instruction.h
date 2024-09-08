@@ -169,13 +169,13 @@ namespace baremetal {
 		}
 
 		constexpr auto is_r() const -> bool {
-			return (flags & (0b00000010)) == (flags & (0b00011110)) && ((flags & 0b00000010) != 0);
+			return (flags & 0b00011110) == 0b00010100;
 		}
 
 		constexpr auto is_rm() const -> bool {
 			u8 rm = flags & 0b00011110;
 
-			if(rm == 0b00000010) {
+			if(rm == 0b00010100) {
 				return false;
 			}
 
@@ -183,11 +183,11 @@ namespace baremetal {
 		}
 
 		constexpr auto is_is4() const -> bool {
-			return (flags & 0b00011110) == 0b00010100;
+			return (flags & 0b00011110) == 0b00010010;
 		}
 
 		constexpr auto get_rm() const -> u8 {
-			return (flags & 0b00011110) >> 1;
+			return ((flags & 0b00011110) >> 1) - 1;
 		}
 
 		constexpr auto get_special_kind() const -> u8 {

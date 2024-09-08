@@ -120,17 +120,17 @@ function get_instruction_flags(inst) {
 
 	switch(inst.rm) {
 		//                 _____XXXX_
-		case 'r':   flags |= 0b00000010; break;
-		case '0':   flags |= 0b00000100; break;
-		case '1':   flags |= 0b00000110; break;
-		case '2':   flags |= 0b00001000; break;
-		case '3':   flags |= 0b00001010; break;
-		case '4':   flags |= 0b00001100; break;
-		case '5':   flags |= 0b00001110; break;
-		case '6':   flags |= 0b00010000; break;
-		case '7':   flags |= 0b00010010; break;
-		case 'is4': flags |= 0b00010100; break;
-		case '':  break;
+		case '0':   flags |= 0b00000010; break;
+		case '1':   flags |= 0b00000100; break;
+		case '2':   flags |= 0b00000110; break;
+		case '3':   flags |= 0b00001000; break;
+		case '4':   flags |= 0b00001010; break;
+		case '5':   flags |= 0b00001100; break;
+		case '6':   flags |= 0b00001110; break;
+		case '7':   flags |= 0b00010000; break;
+		case 'is4': flags |= 0b00010010; break;
+		case 'r':   flags |= 0b00010100; break;
+		case '':                         break;
 		default: console.error(`unknown instruction rm '${inst.rm}'`);
 	}
 
