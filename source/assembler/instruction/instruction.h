@@ -1,8 +1,8 @@
 #pragma once
-#include <utility/assert.h>
-
 #include "assembler/instruction/operands/operands.h"
 #include "assembler/instruction/operands/registers.h"
+
+#include <utility/assert.h>
 
 namespace baremetal {
 	enum extension : u8 {

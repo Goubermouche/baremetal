@@ -75,8 +75,6 @@ function get_operand_order(value) {
 	return index === -1 ? operand_order.length : index;
 }
 
-// TODO: to compress our encoding we should use hex instead of bin forms
-
 function get_instruction_prefix(prefix_arr) {
 	// converts the prefix hexcodes into a bitboard as defined in instruction.h
 	let prefix = 0;
@@ -179,7 +177,7 @@ function is_immediate(op) {
   }
 }
 
-function calculate_special(inst, dest_to_source) {
+function calculate_magic(inst, dest_to_source, lookup) {
 	if(inst.name === 'mov' && inst.operands[0] === 'r64' && inst.operands[1] === 'i32') {
 		// 0
 		return encode_special(0, dest_to_source.get(`${inst.name}:r32:i32`))
@@ -196,6 +194,16 @@ function calculate_special(inst, dest_to_source) {
 
 		if(dest_to_source.has(key) && inst.operands[2] !== 'i8') {
 			return encode_special(2, dest_to_source.get(key));
+		}
+	}
+
+	if(inst.enc.includes('VEX') && !inst.enc.includes('EVEX')) {
+		// 3
+		const enc = inst.enc.replace('VEX', 'EVEX');
+		const key = `${inst.name}:${enc}:${inst.operands.join(':')}`;
+
+		if(lookup.has(key)) {
+			console.error('match');
 		}
 	}
 
@@ -222,34 +230,43 @@ function main() {
 	
 	// sort instructions
 	instructions.sort((a, b) => {
-	  if(a.name < b.name) return -1;
-	  if(a.name > b.name) return 1;
-	
-	  const order_a = get_operand_order(a.operands[0]);
-	  const order_b = get_operand_order(b.operands[0]);
-	  
-	  if(order_a < order_b) return -1;
-	  if(order_a > order_b) return 1;
-	  
-	  const order_c = get_operand_order(a.operands[1]);
-	  const order_d = get_operand_order(b.operands[1]);
-	  
-	  if(order_c < order_d) return -1;
-	  if(order_c > order_d) return 1;
-	  
-	  return 0;
+		const a_is_evex=a.enc.includes('EVEX');
+  	const b_is_evex=b.enc.includes('EVEX');
+
+  	if(a.name<b.name) { return -1; }
+  	if(a.name>b.name) { return 1; }
+
+  	if(a_is_evex===b_is_evex) {
+  	  const order_a_1=get_operand_order(a.operands[0]);
+  	  const order_b_1=get_operand_order(b.operands[0]);
+
+  	  if(order_a_1<order_b_1) { return -1; }
+  	  if(order_a_1>order_b_1) { return 1; }
+
+  	  const order_a_2=get_operand_order(a.operands[1]);
+  	  const order_b_2=get_operand_order(b.operands[1]);
+
+  	  if(order_a_2<order_b_2) { return -1; }
+  	  if(order_a_2>order_b_2) { return 1; }
+
+  	  return 0;
+  	}
+
+  	return a_is_evex ? 1 : -1;
 	});
 
 	// instruction lookup
 	let dest_to_source = new Map();
+	let lookup = new Map();
 
 	instructions.forEach((inst, i) => {
 		dest_to_source.set(`${inst.name}:${inst.operands.join(":")}`, i);
+		lookup.set(`${inst.name}:${inst.encoding}:${inst.operands.join(":")}`, i);
 	});
 
 	// generate the table
 	instructions.forEach(inst => {
-		let special_index = calculate_special(inst, dest_to_source);
+		let special_index = calculate_magic(inst, dest_to_source, lookup);
 		let row = [];
 
 		row.push(`"${inst.name}"`);			                                          // name

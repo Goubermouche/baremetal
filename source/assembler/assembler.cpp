@@ -1632,7 +1632,6 @@ namespace baremetal {
 		}
 		
 		ASSERT(false, "invalid/unknown opcode prefix\n");
-	
 		return 0;
 	}
 
