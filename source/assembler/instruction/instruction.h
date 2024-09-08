@@ -296,12 +296,12 @@ namespace baremetal {
 	inline auto find_instruction_by_name(const char* name) -> u32 {
 		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction_db[0]);
 
-    u32 left = 0;
-    u32 right = db_size - 1;
+    i32 left = 0;
+    i32 right = db_size - 1;
 
 		// since our instructions are sorted alphabetically, we can just do a quick binary search
     while(left <= right) {
-      u32 mid = left + (right - left) / 2;
+      u32 mid = (static_cast<u32>(left) + static_cast<u32>(right)) >> 1;
       i32 cmp = utility::compare_strings(name, instruction_db[mid].name);
 
       if(cmp == 0) {
@@ -313,10 +313,10 @@ namespace baremetal {
         return mid;
       }
       else if(cmp < 0) {
-        right = mid - 1;
+        right = static_cast<i32>(mid) - 1;
       }
       else {
-				left = mid + 1;
+				left = static_cast<i32>(mid) + 1;
       }
     }
 

@@ -18,7 +18,7 @@ auto main() -> i32 {
 	utility::dynamic_string hex_result;
 	utility::dynamic_string expected;
 
-	baremetal::assembler assembler;
+	baremetal::assembler_parser assembler;
 	u64 i = 0;	
 	u64 sucess_count = 0;
 	u64 fail_count = 0;
@@ -31,7 +31,7 @@ auto main() -> i32 {
 		assembler.clear();
 
 		// locate the expected encoding part
-		while(test_file[i] != '\n') {
+		while(i + 1 < test_file.get_size() && test_file[i] != '\n') {
 			if(test_file[i] == ';') {
 				break;
 			}
@@ -43,14 +43,19 @@ auto main() -> i32 {
 		i++;
 		
 		// semicolon located - print it
-		while(test_file[i] != '\n') {
+		while(i + 1 < test_file.get_size() && test_file[i] != '\n') {
 			expected += test_file[i];
 			i++;
 		}
 
 		i++;
 
-		if(const auto result = assembler.assemble(instruction); result.has_error()) {
+		// empty instructions mean we've reached the end of our test file
+		if(instruction.get_size() == 0) {
+			break;
+		}
+
+		if(const auto result = assembler.parse(instruction); result.has_error()) {
 			utility::console::print_err("error: '{}'\n", result.get_error());
 		}
 
@@ -71,7 +76,7 @@ auto main() -> i32 {
 		"tests finished ({} / {} tests passed in {}s)\n", 
 		sucess_count,
 		sucess_count + fail_count, 
-		timer.get_elapsed_sec()
+		static_cast<u32>(timer.get_elapsed_sec())
 	);
 
 	return 0;

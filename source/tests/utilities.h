@@ -1,7 +1,7 @@
 #pragma once
 #include <utility/containers/dynamic_string.h>
 #include <utility/system/console.h>
-#include <assembler.h>
+#include <assembler_parser.h>
 
 using namespace utility::types;
 
