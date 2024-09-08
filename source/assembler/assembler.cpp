@@ -477,8 +477,11 @@ namespace baremetal {
 			masked_reg r = inst->get_masked_operand(operands);
 
 			// merge or zero
-			if(r.z) {
-				fourth |= (r.z & 0b00000001) << 7;
+			switch (inst->operands[0]) {
+				case OP_XMM_KZ:	
+				case OP_YMM_KZ:	
+				case OP_ZMM_KZ: fourth |= 0b10000000; 
+				default: break;
 			}
 
 			// operand mask register

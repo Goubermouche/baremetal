@@ -283,7 +283,6 @@ namespace baremetal {
 					}
 
 					char* end;
-					op.mr.z = false;
 					op.mr.k = static_cast<u8>(strtoul(m_lexer.current_string.get_data() + 1, &end, 10));
 
 					if(op.mr.k >= 8) {
@@ -305,8 +304,6 @@ namespace baremetal {
 					if(m_lexer.current_string.get_size() != 2) {
 						utility::error("invalid mask register specified");
 					}
-
-					op.mr.z = true; // TODO: technically not needed, as we can interpret it from the type
 
 					// operand {kn} {z}
 					switch(op.type) {

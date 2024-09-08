@@ -44,7 +44,6 @@ enum reg_type : u8 {
 	struct masked_reg {
 		u8 index;
 		u8 k;
-		bool z;
 	};
 
 #define REGISTER_GP_DECL(bits)                                         \
