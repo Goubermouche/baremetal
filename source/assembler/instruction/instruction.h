@@ -2,6 +2,7 @@
 #include <utility/assert.h>
 
 #include "assembler/instruction/operands/operands.h"
+#include "assembler/instruction/operands/registers.h"
 
 namespace baremetal {
 	enum extension : u8 {
@@ -201,6 +202,16 @@ namespace baremetal {
 			return magic != utility::limits<u16>::max();
 		}
 
+		auto has_extended_vex(const operand* data) const -> bool {
+			for(u8 i = 0; i < operand_count; ++i) {
+				if(is_operand_large_reg(data[i].type) && data[i].r > 15) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
 		auto get_mem_operand() const -> u8 {
 			if(is_operand_mem(operands[0])) { return 0; }
 			if(is_operand_mem(operands[1])) { return 1; }
@@ -235,6 +246,24 @@ namespace baremetal {
 			if(is_operand_broadcast(operands[3])) { return true; }
 
 			return false;
+		}
+
+		auto has_masked_operand() const -> bool {
+			if(is_operand_masked(operands[0])) { return true; }
+			if(is_operand_masked(operands[1])) { return true; }
+			if(is_operand_masked(operands[2])) { return true; }
+			if(is_operand_masked(operands[3])) { return true; }
+
+			return false;
+		}
+
+		auto get_masked_operand(const operand* data) const -> masked_reg {
+			if(is_operand_masked(operands[0])) { return data[0].mr; }
+			if(is_operand_masked(operands[1])) { return data[1].mr; }
+			if(is_operand_masked(operands[2])) { return data[2].mr; }
+			if(is_operand_masked(operands[3])) { return data[3].mr; }
+
+			return masked_reg();
 		}
 
 		const char* name;         // instruction mnemonic

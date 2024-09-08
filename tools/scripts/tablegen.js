@@ -4,7 +4,7 @@
 const utility = require("./utility.js")
 const fs = require('fs');
 
-const constant_base = 2; // base for constants, such as flags, this can decrease the overall size of the generated file.
+const constant_base = 16; // base for constants, such as flags, this can decrease the overall size of the generated file.
 
 function get_base_prefix() {
 	switch(constant_base) {

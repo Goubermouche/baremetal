@@ -7,6 +7,7 @@
 namespace baremetal {
 	enum token_type : u8 {
 		TOK_NONE = 0,
+
 		// registers
 		TOK_CR0,
 		TOK_CR1,

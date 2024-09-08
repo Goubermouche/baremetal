@@ -5,6 +5,12 @@
 #include <utility/result.h>
 
 namespace baremetal {
+	namespace detail {
+		auto is_operand_match(u32 inst_i, operand* operands) -> bool;
+		auto imm_to_scale(const imm& i) -> utility::result<scale>;
+		auto inst_match(operand_type a, operand b) -> bool;
+	} // namespace detail
+
 	struct assembler_parser {
 		assembler_parser();
 		
