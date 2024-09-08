@@ -105,11 +105,11 @@ namespace baremetal {
 		// operands
 		while(m_lexer.get_next_token() != TOK_EOF) {
 			switch (m_lexer.current) {
-				case TOK_MINUS:             TRY(parse_number_negative()); break;
+				case TOK_MINUS:              TRY(parse_number_negative()); break;
 				case TOK_CR0 ... TOK_R15B:   TRY(parse_register()); break;
-				case TOK_LBRACKET:          TRY(parse_bracket()); break; 
+				case TOK_LBRACKET:           TRY(parse_bracket()); break; 
 				case TOK_BYTE ... TOK_TWORD: TRY(parse_memory()); break;
-				case TOK_NUMBER:            parse_number(); break;	
+				case TOK_NUMBER:             parse_number(); break;	
 				default: return utility::error("unexpected token received as instruction operand");
 			};
 
@@ -209,6 +209,7 @@ namespace baremetal {
 				EXPECT_TOKEN(TOK_NUMBER);
 
 				operands[operand_i++] = operand(moff(m_lexer.current_immediate.value));
+
 				m_lexer.get_next_token();
 				EXPECT_TOKEN(TOK_RBRACKET);
 				m_lexer.get_next_token();
@@ -289,10 +290,14 @@ namespace baremetal {
 						utility::error("invalid mask register specified");
 					}
 
-					if(is_operand_xmm(op.type)) { op.type = OP_XMM_K; }
-					else if(is_operand_ymm(op.type)) { op.type = OP_YMM_K; }
-					else if(is_operand_zmm(op.type)) { op.type = OP_ZMM_K; }
-					else if(op.type == OP_K) { op.type = OP_K_K; }
+					// operand {kn}
+					switch(op.type) {
+						case OP_XMM: op.type = OP_XMM_K; break;
+						case OP_YMM: op.type = OP_YMM_K; break;
+						case OP_ZMM: op.type = OP_ZMM_K; break;
+						case OP_K:   op.type = OP_K_K;   break;
+						default: return utility::error("invalid register for mask operation"); 
+					}
 
 					break;
 				}
@@ -303,9 +308,13 @@ namespace baremetal {
 
 					op.mr.z = true; // TODO: technically not needed, as we can interpret it from the type
 
-					if(is_operand_xmm(op.type)) { op.type = OP_XMM_KZ; }
-					else if(is_operand_ymm(op.type)) { op.type = OP_YMM_KZ; }
-					else if(is_operand_zmm(op.type)) { op.type = OP_ZMM_KZ; }
+					// operand {kn} {z}
+					switch(op.type) {
+						case OP_XMM_K: op.type = OP_XMM_KZ; break;
+						case OP_YMM_K: op.type = OP_YMM_KZ; break;
+						case OP_ZMM_K: op.type = OP_ZMM_KZ; break;
+						default: return utility::error("invalid register for mask operation"); 
+					}
 
 					break;
 				}
@@ -326,6 +335,7 @@ namespace baremetal {
 		reg current_reg = reg::create_invalid();
 		imm current_imm;
 
+		bool displacement_set = false;
 		bool scale_mode = false;
 		bool imm_set = false;
 
@@ -338,11 +348,14 @@ namespace baremetal {
 				case TOK_CR0 ... TOK_R15B: {
 					if(scale_mode && imm_set) {
 						// scale * reg
+						if(memory.has_index) {
+							return utility::error("memory index cannot be specified twice");
+						}
+
 						memory.index = token_to_register(m_lexer.current);
 						memory.has_index = true;
 
-						TRY(const auto scale, detail::imm_to_scale(current_imm));
-						memory.s = scale;
+						TRY(memory.s, detail::imm_to_scale(current_imm));
 
 						scale_mode = false;
 						imm_set = false;
@@ -353,8 +366,8 @@ namespace baremetal {
 
 					break;
 				}
+				// rel $
 				case TOK_REL: {
-					// rel $
 					m_lexer.get_next_token();
 					EXPECT_TOKEN(TOK_DOLLARSIGN);
 					current_reg = rip;
@@ -368,6 +381,10 @@ namespace baremetal {
 					if(current_reg.is_valid()) {
 						if(memory.has_base) {
 							// index * 1
+							if(memory.has_index) {
+								return utility::error("memory index cannot be specified twice");
+							}
+
 							memory.index = current_reg;
 							memory.has_index = true;
 							memory.s = SCALE_1;
@@ -382,7 +399,12 @@ namespace baremetal {
 					}
 					else if(imm_set) {
 						// displacement
+						if(displacement_set) {
+							return utility::error("memory displacement cannot be specified twice");
+						}
+
 						memory.displacement = current_imm;
+						displacement_set = true;
 						imm_set = false;
 					}
 
@@ -395,11 +417,14 @@ namespace baremetal {
 				case TOK_NUMBER: {
 					if(scale_mode && current_reg.is_valid()) {
 						// reg * scale
+						if(memory.has_index) {
+							return utility::error("memory index cannot be specified twice");
+						}
+
 						memory.index = current_reg;
 						memory.has_index = true;
 
-						TRY(const auto scale, detail::imm_to_scale(m_lexer.current_immediate));
-						memory.s = scale;
+						TRY(memory.s, detail::imm_to_scale(m_lexer.current_immediate));
 
 						scale_mode = false;
 						current_reg = reg::create_invalid();
@@ -415,6 +440,10 @@ namespace baremetal {
 					if(current_reg.is_valid()) {
 						if(memory.has_base) {
 							// index * 1
+							if(memory.has_index) {
+								return utility::error("memory index cannot be specified twice (implicit index)");
+							}
+
 							memory.index = current_reg;
 							memory.has_index = true;
 							memory.s = SCALE_1;
@@ -427,7 +456,12 @@ namespace baremetal {
 					}
 					else if(imm_set) {
 						// displacement
+						if(displacement_set) {
+							return utility::error("memory displacement cannot be specified twice");
+						}
+						
 						memory.displacement = current_imm;
+						displacement_set = true;
 					}
 
 					return SUCCESS;
