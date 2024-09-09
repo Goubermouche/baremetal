@@ -8,6 +8,7 @@ function generate_combinations(inst) {
 	const operand_map = new Map([
 		['dx', [ 'dx' ]],
 		['eax', [ 'eax' ]],
+		['ecx', [ 'ecx' ]],
 		['ax', [ 'ax' ]],
 		['al', [ 'al' ]],
 		['rax', [ 'rax' ]],

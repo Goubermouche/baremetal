@@ -15,21 +15,6 @@ function get_base_prefix() {
 }
 
 function get_operand_order(value) {
-	// const operand_order = [
-	// 	"1", "i8", "i16", "i32", "i64",
-	// 	"al", "cl", "reg8",
-	// 	"ax", "dx",  "cx","reg16",
-	// 	"eax", "ecx", "reg32", 
-	// 	"rax", "rcx", "reg64",
-	// 	"xmm", "xmm_kz", "mem128", 
-	// 	"ymm", "ymm_kz", "mem256",
-	// 	"zmm", "zmm_kz",
-	// 	"bnd", "mmx", "sreg", "dreg", "creg",
-	// 	"moff8", "moff16", "moff32", "moff64",
-	// 	"mem8", "mem16", "mem32", "mem64", "mem128",
-	// 	"mem_address", "rel8", "rel32"
-	// ];
-
 	// operand doesn't exist
 	if(value === undefined) {
 		return 0;
@@ -39,7 +24,7 @@ function get_operand_order(value) {
 		'1', 'i8', 'i16', 'i32', 'i64',
 		'al', 'cl', 'r8', 
 		'ax', 'dx', 'r16',
-		'eax','r32',
+		'eax', 'ecx','r32',
 		'rax', 'r64',
 		'bnd', 'creg', 'dreg',
 		'st', 'st0',
@@ -252,6 +237,11 @@ function main() {
   	  return 0;
   	}
 
+		// EVEX instructions should be placed as the last ones in their mnemonic group,
+		// since we want to skip EVEX variants of VEX instructions (for cases where the
+		// magic index gets involved). Additionally, EVEX instructions will probably 
+		// get used much less often, hence this works as an optimization, but this is 
+		// just a bonus.
   	return a_is_evex ? 1 : -1;
 	});
 

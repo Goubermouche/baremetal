@@ -365,7 +365,7 @@ function main() {
 
 		// test specific categories
 		// if(
-		// 	inst.category.includes('AVX') && 
+		// 	inst.category[0] === 'GP' && inst.category.length === 1 &&  
 		// 	!inst.extension.includes('X86')
 		// ) {
 		// 	gp_inst.push(inst);
