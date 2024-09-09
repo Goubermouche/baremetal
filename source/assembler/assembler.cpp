@@ -1,6 +1,7 @@
 #include "assembler.h"
 
 #include "assembler/instruction/instruction.h"
+#include "assembler/instruction/operands/operands.h"
 
 #include <utility/algorithms/sort.h>
 
@@ -1222,9 +1223,14 @@ namespace baremetal {
 					case 0b10101100: rx = registers[0]; base = registers[2]; index = registers[1]; break;   
 					case 0b10110000: {
 						if(m_reg_count == 2) {
-							rx = registers[0];
-							base = registers[1];
-							index = 8;
+							if(is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false) {
+								rx = 8;
+							}
+							else {
+								rx = registers[0];
+								base = registers[1];
+								index = 8;
+							}
 						}
 						else {
 							rx = registers[0]; 
@@ -1250,7 +1256,7 @@ namespace baremetal {
 					}
 					case 0b11101000: rx = registers[0]; base = registers[1]; break;  
 					case 0b11101100: rx = registers[0]; base = registers[1]; index = registers[2]; break;
-					case 0b11110000: rx = registers[1]; break; 
+					case 0b11110000: rx = 8; base = 8; index = 8; break; 
 					case 0b11111000: rx = registers[0]; base = registers[1]; break;  
 					case 0b11111100: rx = registers[0]; base = registers[1]; index = registers[2]; break; 				
 					default: ASSERT(false, "unknown index byte {}\n", index_byte);

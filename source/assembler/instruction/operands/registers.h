@@ -261,7 +261,6 @@ enum reg_type : u8 {
 	REGISTER_CLASS_DREG_DECL(dr7, 7);
 	// dr8 to dr15 are typically not implemented
 
-
 	REGISTER_CLASS_K_DECL(k1, 1);
 	REGISTER_CLASS_K_DECL(k2, 2);
 	REGISTER_CLASS_K_DECL(k3, 3);

@@ -254,6 +254,22 @@ parse_number:
 			case TOK_XMM13: return xmm(13);
 			case TOK_XMM14: return xmm(14);
 			case TOK_XMM15: return xmm(15);
+			case TOK_XMM16: return xmm(16);
+			case TOK_XMM17: return xmm(17);
+			case TOK_XMM18: return xmm(18);
+			case TOK_XMM19: return xmm(19);
+			case TOK_XMM20: return xmm(20);
+			case TOK_XMM21: return xmm(21);
+			case TOK_XMM22: return xmm(22);
+			case TOK_XMM23: return xmm(23);
+			case TOK_XMM24: return xmm(24);
+			case TOK_XMM25: return xmm(25);
+			case TOK_XMM26: return xmm(26);
+			case TOK_XMM27: return xmm(27);
+			case TOK_XMM28: return xmm(28);
+			case TOK_XMM29: return xmm(29);
+			case TOK_XMM30: return xmm(30);
+			case TOK_XMM31: return xmm(31);
 
 			case TOK_RAX: return reg64(0);
 			case TOK_RCX: return reg64(1);
@@ -473,6 +489,22 @@ parse_number:
 			{ "xmm13", TOK_XMM13, },
 			{ "xmm14", TOK_XMM14, },
 			{ "xmm15", TOK_XMM15, },
+			{ "xmm16", TOK_XMM16, },
+			{ "xmm17", TOK_XMM17, },
+			{ "xmm18", TOK_XMM18, },
+			{ "xmm19", TOK_XMM19, },
+			{ "xmm20", TOK_XMM20, },
+			{ "xmm21", TOK_XMM21, },
+			{ "xmm22", TOK_XMM22, },
+			{ "xmm23", TOK_XMM23, },
+			{ "xmm24", TOK_XMM24, },
+			{ "xmm25", TOK_XMM25, },
+			{ "xmm26", TOK_XMM26, },
+			{ "xmm27", TOK_XMM27, },
+			{ "xmm28", TOK_XMM28, },
+			{ "xmm29", TOK_XMM29, },
+			{ "xmm30", TOK_XMM30, },
+			{ "xmm31", TOK_XMM31, },
 			{ "rax",   TOK_RAX,   },
 			{ "rcx",   TOK_RCX,   },
 			{ "rdx",   TOK_RDX,   },
