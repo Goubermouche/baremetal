@@ -363,19 +363,19 @@ function main() {
 
 	instructions.forEach(inst => {
 		//  test all categories
-		 if(
-		 	inst.category.some(r => supported_categories.includes(r)) && 
-		 	!inst.extension.includes('X86')
-		 ) {
-		 	gp_inst.push(inst);
-		 }
-
-		// test specific categories
 		// if(
-		// 	!inst.extension.includes('X86') && inst.operands.some(op => op.includes('xmm'))
+		// 	inst.category.some(r => supported_categories.includes(r)) && 
+		// 	!inst.extension.includes('X86')
 		// ) {
 		// 	gp_inst.push(inst);
 		// }
+
+		// test specific categories
+		if(
+			!inst.extension.includes('X86') && inst.operands.some(op => ['rel8_rip', 'rel16_rip', 'rel16', 'rel8', 'rel32'].includes(op))
+		) {
+			gp_inst.push(inst);
+		}
 	});
 
 	let rows = [];

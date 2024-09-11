@@ -47,7 +47,9 @@ function get_operand_order(value) {
 		'm128_kz', 
 		'm256_kz',
 		'm512_kz',
-		'mem', 'rel8', 'rel16', 'rel32',
+		'mem',
+		'rel8', 'rel16', 'rel32',
+		'rel8_rip', 'rel16_rip', 'rel32_rip',
 		'm16_16', 'm16_32', 'm16_64'
 	];
 

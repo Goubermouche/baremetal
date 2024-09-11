@@ -1,7 +1,6 @@
 #include "assembler_parser.h"
 
 #include "assembler/instruction/operands/operands.h"
-#include "utility/result.h"
 
 #define EXPECT_TOKEN(expected)                            \
   do {                                                    \
@@ -110,6 +109,7 @@ namespace baremetal {
 		// operands
 		while(m_lexer.get_next_token() != TOK_EOF) {
 			switch (m_lexer.current) {
+				case TOK_DOLLARSIGN:         TRY(parse_rip_relative_rel()); break;
 				case TOK_MINUS:              TRY(parse_number_negative()); break;
 				case TOK_CR0 ... TOK_R15B:   TRY(parse_register()); break;
 				case TOK_LBRACKET:           TRY(parse_bracket()); break; 
@@ -169,6 +169,35 @@ namespace baremetal {
 	void assembler_parser::parse_number() {
 		operands[operand_i++] = operand(m_lexer.current_immediate); 
 		m_lexer.get_next_token();
+	}
+
+	auto assembler_parser::parse_rip_relative_rel() -> utility::result<void> {
+		if(m_lexer.get_next_token() != TOK_PLUS) {
+			return utility::error("unexpected token received in rip-relative address");
+		}
+
+		i8 sign = 1;
+
+		if(m_lexer.get_next_token() == TOK_MINUS) {
+			sign = -1;
+			m_lexer.get_next_token();
+		} 
+
+		EXPECT_TOKEN(TOK_NUMBER);
+
+		operand rip_rel = operand(imm(sign * static_cast<i64>(m_lexer.current_immediate.value))); 
+
+		switch(rip_rel.immediate.min_bits) {
+			case 8:  rip_rel.type = OP_REL8_RIP;  break;
+			case 16: rip_rel.type = OP_REL16_RIP; break;
+			case 32: rip_rel.type = OP_REL32_RIP; break;
+			default: return utility::error("invalid rip-relative address width");
+		}
+
+		operands[operand_i++] = rip_rel;
+		m_lexer.get_next_token();
+
+		return SUCCESS;
 	}
 
 	auto assembler_parser::parse_number_negative() -> utility::result<void> {

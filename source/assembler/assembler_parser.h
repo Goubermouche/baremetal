@@ -22,6 +22,7 @@ namespace baremetal {
 		auto parse_instruction() -> utility::result<void>;
 
 		// operands
+		auto parse_rip_relative_rel() -> utility::result<void>;
 		auto parse_number_negative() -> utility::result<void>;
 		auto parse_register() -> utility::result<void>;
 		auto parse_bracket() -> utility::result<void>;

@@ -80,6 +80,9 @@ namespace baremetal {
 		OP_REL8,
 		OP_REL16,
 		OP_REL32,
+		OP_REL8_RIP,  // rel8  + rip
+		OP_REL16_RIP, // rel16 + rip
+		OP_REL32_RIP, // rel16 + rip
 
 		OP_HIDDEN, // usually an operand which refers to an implicit value, ie a '1'
 	};
@@ -145,7 +148,10 @@ namespace baremetal {
 		switch(op) {
 			case OP_REL8:
 			case OP_REL16:
-			case OP_REL32: return true;
+			case OP_REL32: 
+			case OP_REL8_RIP:
+			case OP_REL16_RIP:
+			case OP_REL32_RIP: return true;
 			default: return false;
 		}
 	}
@@ -241,6 +247,7 @@ namespace baremetal {
       case OP_CL:
       case OP_MOFF8:
       case OP_M8:
+      case OP_REL8_RIP:
       case OP_REL8: return 8;
       case OP_I16:
       case OP_R16:
@@ -256,6 +263,7 @@ namespace baremetal {
       case OP_DX:
       case OP_MOFF16:
       case OP_REL16:
+      case OP_REL16_RIP:
       case OP_M16: return 16;
       case OP_I32:
       case OP_R32:
@@ -265,6 +273,7 @@ namespace baremetal {
       case OP_B32:
       case OP_MOFF32:
       case OP_M32:
+      case OP_REL32_RIP:
       case OP_REL32: return 32;
       case OP_I64:
       case OP_R64:

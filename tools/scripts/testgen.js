@@ -161,6 +161,8 @@ function generate_combinations(inst) {
 		['rel8', [ '0', '1', '-128', '127' ]],
 		['rel16', [ '0', '1', '-128', '127' ]],
 		['rel32', [ '0', '1', '-128', '127' ]],
+		['rel8_rip', [ '$+0', '$+1', '$+-128', '$+127' ]],
+		['rel16_rip', [ '$+0', '$+1', '$+-128', '$+127' ]],
 		['moff8', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
 		['moff16', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
 		['moff32', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
