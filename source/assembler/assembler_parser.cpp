@@ -176,22 +176,29 @@ namespace baremetal {
 			return utility::error("unexpected token received in rip-relative address");
 		}
 
-		i8 sign = 1;
+		operand rip_rel; 
 
 		if(m_lexer.get_next_token() == TOK_MINUS) {
-			sign = -1;
+			// negative relocations are always rel32 (without being rip-relative)
+			rip_rel.type = OP_REL32;
+
 			m_lexer.get_next_token();
+			EXPECT_TOKEN(TOK_NUMBER);
+
+			rip_rel.immediate = imm(-1 * static_cast<i64>(m_lexer.current_immediate.value));
 		} 
+		else {
+			EXPECT_TOKEN(TOK_NUMBER);
 
-		EXPECT_TOKEN(TOK_NUMBER);
+			// select the actual data type
+			switch(m_lexer.current_immediate.min_bits) {
+				case 8:  rip_rel.type = OP_REL8_RIP;  break;
+				case 16: rip_rel.type = OP_REL16_RIP; break;
+				case 32: rip_rel.type = OP_REL32_RIP; break;
+				default: return utility::error("invalid rip-relative address width");
+			}
 
-		operand rip_rel = operand(imm(sign * static_cast<i64>(m_lexer.current_immediate.value))); 
-
-		switch(rip_rel.immediate.min_bits) {
-			case 8:  rip_rel.type = OP_REL8_RIP;  break;
-			case 16: rip_rel.type = OP_REL16_RIP; break;
-			case 32: rip_rel.type = OP_REL32_RIP; break;
-			default: return utility::error("invalid rip-relative address width");
+			rip_rel.immediate = m_lexer.current_immediate;
 		}
 
 		operands[operand_i++] = rip_rel;
