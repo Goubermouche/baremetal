@@ -28,6 +28,7 @@ namespace baremetal {
 		OP_DX,
 		OP_EAX,
 		OP_ECX,
+		OP_EDX,
 		OP_RAX,
 		OP_RCX,
 		OP_ST0,
@@ -191,6 +192,7 @@ namespace baremetal {
       case OP_DX:
       case OP_EAX:
       case OP_ECX:
+      case OP_EDX:
       case OP_RAX:
       case OP_RCX:
       case OP_R8:
@@ -259,6 +261,7 @@ namespace baremetal {
       case OP_R32:
       case OP_EAX:
       case OP_ECX:
+      case OP_EDX:
       case OP_B32:
       case OP_MOFF32:
       case OP_M32:

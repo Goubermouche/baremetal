@@ -111,6 +111,13 @@ function extract_inst_operands(inst) {
 	return result;
 }
 
+function process_enc(input) {
+  const i = input.indexOf('-');
+  const result = i !== -1 ? input.slice(0, i) : input;
+  
+  return result.replace(/:\s*$/, '');
+}
+
 function extract_encoding(enc) {
 	let parts = enc.split(' ');
 	let met_opcode = false;
@@ -143,7 +150,7 @@ function extract_encoding(enc) {
 			result.rexw = true;
 		}
 		else if(part.endsWith(':')) {
-			result.enc = part.slice(0, -1).replace('-', '_');
+			result.enc = process_enc(part);
 		}
 		else if(part.startsWith('/')) {
 			result.rm = part.slice(1);
@@ -355,18 +362,17 @@ function main() {
 	];
 
 	instructions.forEach(inst => {
-		// test all categories
-		if(
-			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
-		) {
-			gp_inst.push(inst);
-		}
+		//  test all categories
+		 if(
+		 	inst.category.some(r => supported_categories.includes(r)) && 
+		 	!inst.extension.includes('X86')
+		 ) {
+		 	gp_inst.push(inst);
+		 }
 
 		// test specific categories
 		// if(
-		// 	inst.category[0] === 'GP' && inst.category.length === 1 &&  
-		// 	!inst.extension.includes('X86')
+		// 	!inst.extension.includes('X86') && inst.operands.some(op => op.includes('xmm'))
 		// ) {
 		// 	gp_inst.push(inst);
 		// }

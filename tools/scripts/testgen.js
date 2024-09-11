@@ -9,6 +9,7 @@ function generate_combinations(inst) {
 		['dx', [ 'dx' ]],
 		['eax', [ 'eax' ]],
 		['ecx', [ 'ecx' ]],
+		['edx', [ 'edx' ]],
 		['ax', [ 'ax' ]],
 		['al', [ 'al' ]],
 		['rax', [ 'rax' ]],
@@ -22,15 +23,15 @@ function generate_combinations(inst) {
 		['st0', [ 'st0' ]],
 		['st', [ 'st0', 'st1', 'st7' ]],
 		['r8', [ 'cl', 'dl', 'bl' ]],
-    ['r16', [ 'cx', 'dx', 'bx', 'r11w', 'r15w' ]],
-    ['r32', [ 'ecx', 'edx', 'ebx', 'r11d', 'r15d' ]],
-    ['r64', [ 'rcx', 'rdx', 'rbx', 'r11', 'r15' ]],
-    ['xmm', [ 'xmm0', 'xmm1', 'xmm2', 'xmm11', 'xmm15' ]],
-		['ymm', [ 'ymm0', 'ymm1', 'ymm2', 'ymm11', 'ymm15', 'ymm31']],
-		['zmm', [ 'zmm0', 'zmm1', 'zmm2', 'zmm11', 'zmm15', 'zmm31']],
-		['mmx', [ 'mm0', 'mm1', 'mm2', 'mm7']],
-		['tmm', [ 'tmm0', 'tmm1', 'tmm2', 'tmm7']],
-		['bnd', [ 'bnd0', 'bnd1', 'bnd2', 'bnd3']],
+    ['r16', [ 'cx', 'dx', 'bx', 'r15w' ]],
+    ['r32', [ 'ecx', 'ebx', 'r15d' ]],
+    ['r64', [ 'rcx', 'rbx', 'r15' ]],
+    ['xmm', [ 'xmm0', 'xmm1', 'xmm15' ]],
+		['ymm', [ 'ymm0', 'ymm1', 'ymm15' ]],
+		['zmm', [ 'zmm0', 'zmm1', 'zmm15', 'zmm31']],
+		['mmx', [ 'mm0', 'mm1', 'mm7']],
+		['tmm', [ 'tmm0', 'tmm1', 'tmm7']],
+		['bnd', [ 'bnd0', 'bnd1', 'bnd3']],
 		['sreg', [ 'cs', 'ds', 'es', 'ss', 'fs', 'gs' ]],
     ['dreg', [ 'dr0', 'dr1', 'dr2', 'dr3', 'dr7' ]],
     ['creg', [ 'cr0', 'cr1', 'cr2', 'cr3', 'cr8' ]],
@@ -49,7 +50,7 @@ function generate_combinations(inst) {
     ['i32', [ '0', '1', '10000000', '2147483647', '-2147483648', '32767', '-32768', '127', '-128']],
     ['i64', [ '0', '1', '29929292929292929', '9223372036854775807', '-9223372036854775808', '2147483647', '-2147483648', '32767', '-32768', '127', '-128']],
 		['mem', [
-      '[0x0]', '[0xFF]', '[0xFFFF]',
+      '[0x0]', '[0xFF]',
       '[rel $ + 0x0]', '[rel $ + 0xFF]', '[rel $ + 0xFFFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
@@ -57,7 +58,7 @@ function generate_combinations(inst) {
       '[rax + rsi * 2 + 0xFFFF2]', '[rax + rsi * 4 + 0xFFFF4]', '[rax + rsi * 8 + 0xFFFF8]', '[rsp + rax * 8 + 0xFFFF8]', '[r15 + rax * 8 + 0xFFFF8]', '[rsp + r15 * 8 + 0xFFFF8]', '[r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m8', [
-      'byte [0x0]', 'byte [0xFF]', 'byte [0xFFFF]',
+      'byte [0x0]', 'byte [0xFF]',
       'byte [rel $ + 0x0]', 'byte [rel $ + 0xFF]', 'byte [rel $ + 0xFFFF]',
 			'byte [rax]',
       'byte [rax + 0x0]', 'byte [rax + 0xFFFF]', 'byte [r15 + 0xFFFF]',
@@ -65,7 +66,7 @@ function generate_combinations(inst) {
       'byte [rax + rsi * 2 + 0xFFFF2]', 'byte [rax + rsi * 4 + 0xFFFF4]', 'byte [rax + rsi * 8 + 0xFFFF8]', 'byte [rsp + rax * 8 + 0xFFFF8]', 'byte [r15 + rax * 8 + 0xFFFF8]', 'byte [rsp + r15 * 8 + 0xFFFF8]', 'byte [r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m16', [
-      'word [0x0]', 'word [0xFF]', 'word [0xFFFF]',
+      'word [0x0]', 'word [0xFF]',
       'word [rel $ + 0x0]', 'word [rel $ + 0xFF]', 'word [rel $ + 0xFFFF]',
 			'word [rax]',
       'word [rax + 0x0]', 'word [rax + 0xFFFF]', 'word [r15 + 0xFFFF]',
@@ -73,7 +74,7 @@ function generate_combinations(inst) {
       'word [rax + rsi * 2 + 0xFFFF2]', 'word [rax + rsi * 4 + 0xFFFF4]', 'word [rax + rsi * 8 + 0xFFFF8]', 'word [rsp + rax * 8 + 0xFFFF8]', 'word [r15 + rax * 8 + 0xFFFF8]', 'word [rsp + r15 * 8 + 0xFFFF8]', 'word [r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m32', [
-      'dword [0x0]', 'dword [0xFF]', 'dword [0xFFFF]',
+      'dword [0x0]', 'dword [0xFF]',
       'dword [rel $ + 0x0]', 'dword [rel $ + 0xFF]', 'dword [rel $ + 0xFFFF]',
 			'dword [rax]',
       'dword [rax + 0x0]', 'dword [rax + 0xFFFF]', 'dword [r15 + 0xFFFF]',
@@ -81,7 +82,7 @@ function generate_combinations(inst) {
       'dword [rax + rsi * 2 + 0xFFFF2]', 'dword [rax + rsi * 4 + 0xFFFF4]', 'dword [rax + rsi * 8 + 0xFFFF8]', 'dword [rsp + rax * 8 + 0xFFFF8]', 'dword [r15 + rax * 8 + 0xFFFF8]', 'dword [rsp + r15 * 8 + 0xFFFF8]', 'dword [r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m64', [
-      'qword [0x0]', 'qword [0xFF]', 'qword [0xFFFF]',
+      'qword [0x0]', 'qword [0xFF]',
       'qword [rel $ + 0x0]', 'qword [rel $ + 0xFF]', 'qword [rel $ + 0xFFFF]',
 			'qword [rax]',
       'qword [rax + 0x0]', 'qword [rax + 0xFFFF]', 'qword [r15 + 0xFFFF]',
@@ -89,7 +90,7 @@ function generate_combinations(inst) {
       'qword [rax + rsi * 2 + 0xFFFF2]', 'qword [rax + rsi * 4 + 0xFFFF4]', 'qword [rax + rsi * 8 + 0xFFFF8]', 'qword [rsp + rax * 8 + 0xFFFF8]', 'qword [r15 + rax * 8 + 0xFFFF8]', 'qword [rsp + r15 * 8 + 0xFFFF8]', 'qword [r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m80', [
-      'tword [0x0]', 'tword [0xFF]', 'tword [0xFFFF]',
+      'tword [0x0]', 'tword [0xFF]',
       'tword [rel $ + 0x0]', 'tword [rel $ + 0xFF]', 'tword [rel $ + 0xFFFF]',
 			'tword [rax]',
       'tword [rax + 0x0]', 'tword [rax + 0xFFFF]', 'tword [r15 + 0xFFFF]',
@@ -97,7 +98,7 @@ function generate_combinations(inst) {
       'tword [rax + rsi * 2 + 0xFFFF2]', 'tword [rax + rsi * 4 + 0xFFFF4]', 'tword [rax + rsi * 8 + 0xFFFF8]', 'tword [rsp + rax * 8 + 0xFFFF8]', 'tword [r15 + rax * 8 + 0xFFFF8]', 'tword [rsp + r15 * 8 + 0xFFFF8]', 'tword [r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m128', [
-      '[0x0]', '[0xFF]', '[0xFFFF]',
+      '[0x0]', '[0xFF]',
       '[rel $ + 0x0]', '[rel $ + 0xFF]', '[rel $ + 0xFFFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
@@ -105,7 +106,7 @@ function generate_combinations(inst) {
       '[rax + rsi * 2 + 0xFFFF2]', '[rax + rsi * 4 + 0xFFFF4]', '[rax + rsi * 8 + 0xFFFF8]', '[rsp + rax * 8 + 0xFFFF8]', '[r15 + rax * 8 + 0xFFFF8]', '[rsp + r15 * 8 + 0xFFFF8]', '[r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m256', [
-      '[0x0]', '[0xFF]', '[0xFFFF]',
+      '[0x0]', '[0xFF]',
       '[rel $ + 0x0]', '[rel $ + 0xFF]', '[rel $ + 0xFFFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
@@ -113,7 +114,7 @@ function generate_combinations(inst) {
       '[rax + rsi * 2 + 0xFFFF2]', '[rax + rsi * 4 + 0xFFFF4]', '[rax + rsi * 8 + 0xFFFF8]', '[rsp + rax * 8 + 0xFFFF8]', '[r15 + rax * 8 + 0xFFFF8]', '[rsp + r15 * 8 + 0xFFFF8]', '[r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['m512', [
-      '[0x0]', '[0xFF]', '[0xFFFF]',
+      '[0x0]', '[0xFF]',
       '[rel $ + 0x0]', '[rel $ + 0xFF]', '[rel $ + 0xFFFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
@@ -123,35 +124,35 @@ function generate_combinations(inst) {
 		// NOTE: cannot be rip relative
 		// TODO: verify
 		['tmem', [
-      '[0x0]', '[0xFF]', '[0xFFFF]',
+      '[0x0]', '[0xFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
       '[rax + rsi * 1  + 0x0]', '[rax + rsi + 0xFFFF]', '[r15 + rsi + 0xFFFF]', '[rax + r15 + 0xFFFF]',
       '[rax + rsi * 2 + 0xFFFF2]', '[rax + rsi * 4 + 0xFFFF4]', '[rax + rsi * 8 + 0xFFFF8]', '[rsp + rax * 8 + 0xFFFF8]', '[r15 + rax * 8 + 0xFFFF8]', '[rsp + r15 * 8 + 0xFFFF8]', '[r14 + r15 * 8 + 0xFFFF8]'
     ]],
 		['vm32x', [
-      '[0x0]', '[0xFF]', '[0xFFFF]',
+      '[0x0]', '[0xFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
       '[rax + xmm0 * 1  + 0x0]', '[rax + xmm0 + 0xFFFF]', '[r15 + xmm15 + 0xFFFF]', '[rax + xmm31 + 0xFFFF]',
       '[rax + xmm0 * 2 + 0xFFFF2]', '[rax + xmm1 * 4 + 0xFFFF4]', '[rax + xmm15 * 8 + 0xFFFF8]', '[rsp + xmm31 * 8 + 0xFFFF8]', '[r15 + xmm18 * 8 + 0xFFFF8]', '[rsp + xmm12 * 8 + 0xFFFF8]', '[r14 + xmm5 * 8 + 0xFFFF8]'
     ]],
 		['vm32y', [
-      '[0x0]', '[0xFF]', '[0xFFFF]',
+      '[0x0]', '[0xFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
       '[rax + ymm0 * 1  + 0x0]', '[rax + ymm0 + 0xFFFF]', '[r15 + ymm15 + 0xFFFF]', '[rax + ymm31 + 0xFFFF]',
       '[rax + ymm0 * 2 + 0xFFFF2]', '[rax + ymm1 * 4 + 0xFFFF4]', '[rax + ymm15 * 8 + 0xFFFF8]', '[rsp + ymm31 * 8 + 0xFFFF8]', '[r15 + ymm18 * 8 + 0xFFFF8]', '[rsp + ymm12 * 8 + 0xFFFF8]', '[r14 + ymm5 * 8 + 0xFFFF8]'
     ]],
 		['vm32z', [
-      '[0x0]', '[0xFF]', '[0xFFFF]',
+      '[0x0]', '[0xFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
       '[rax + zmm0 * 1  + 0x0]', '[rax + zmm0 + 0xFFFF]', '[r15 + zmm15 + 0xFFFF]', '[rax + zmm31 + 0xFFFF]',
       '[rax + zmm0 * 2 + 0xFFFF2]', '[rax + zmm1 * 4 + 0xFFFF4]', '[rax + zmm15 * 8 + 0xFFFF8]', '[rsp + zmm31 * 8 + 0xFFFF8]', '[r15 + zmm18 * 8 + 0xFFFF8]', '[rsp + zmm12 * 8 + 0xFFFF8]', '[r14 + zmm5 * 8 + 0xFFFF8]'
     ]],
 		['vm64z', [
-      '[0x0]', '[0xFF]', '[0xFFFF]',
+      '[0x0]', '[0xFF]',
 			'[rax]',
       '[rax + 0x0]', '[rax + 0xFFFF]', '[r15 + 0xFFFF]',
       '[rax + zmm0 * 1  + 0x0]', '[rax + zmm0 + 0xFFFF]', '[r15 + zmm15 + 0xFFFF]', '[rax + zmm31 + 0xFFFF]',
@@ -203,7 +204,10 @@ function generate_combinations(inst) {
 		}
 		else {
 			if(current === 'xmm' && inst.enc.includes('EVEX')) {
-				current_array = ['xmm0', 'xmm1', 'xmm2', 'xmm11', 'xmm15', 'xmm31'];	
+				current_array = ['xmm0', 'xmm1', 'xmm15', 'xmm31'];	
+			}
+			else if(current === 'ymm' && inst.enc.includes('EVEX')) {
+				current_array = ['ymm0', 'ymm1', 'ymm15', 'ymm31'];	
 			}
 			else {
 				current_array = operand_map.get(current);

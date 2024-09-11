@@ -1,5 +1,6 @@
 #include "assembler_parser.h"
 
+#include "assembler/instruction/operands/operands.h"
 #include "utility/result.h"
 
 #define EXPECT_TOKEN(expected)                            \
@@ -54,6 +55,10 @@ namespace baremetal {
 					!(inst.operands[i] == OP_M512 && operands[i].type == OP_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
 					!(inst.operands[i] == OP_TMEM && operands[i].type == OP_M128) // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
 				) {
+					return false;
+				}
+
+				if(is_operand_reg(operands[i].type) && operands[i].r > 15 && !inst.is_evex()) {
 					return false;
 				}
 			}

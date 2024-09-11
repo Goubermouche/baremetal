@@ -318,7 +318,7 @@ namespace baremetal {
 				return static_cast<bool>((operands[1].r & 0b00010000));
 			}
 			case ENC_EVEX_MR: {
-				if(inst->operand_count == 2) {
+				if(inst->operand_count == 2 || (inst->operand_count == 3 && is_operand_imm(inst->operands[inst->operand_count - 1]))) {
 					return 0; 
 				}
 
@@ -337,6 +337,7 @@ namespace baremetal {
 			case ENC_XOP_VM:   return static_cast<u8>((~operands[0].r & 0b00001111));
 			case ENC_VEX_RVM:  
 			case ENC_VEX_RVMS: 
+			case ENC_VEX_MVRR: 
 			case ENC_EVEX_MVR: return static_cast<u8>((~operands[1].r & 0b00001111));
 			case ENC_VEX:      
 			case ENC_VEX_RMV:  
@@ -478,6 +479,7 @@ namespace baremetal {
 			masked_reg r = inst->get_masked_operand(operands);
 
 			// merge or zero
+			//
 			switch (inst->operands[0]) {
 				case OP_XMM_KZ:	
 				case OP_YMM_KZ:	
@@ -741,7 +743,24 @@ namespace baremetal {
 
 				break;
 			}
-			case ENC_EVEX_MR: rx = m_regs[m_reg_count - 1]; break;
+			case ENC_EVEX_MR: {
+				if(is_operand_mem(inst->operands[0])) {
+					rx = m_regs[m_reg_count - 1];
+				}
+				else if(inst->operand_count == 2 && inst->has_mem_operand()) {
+					
+				}
+				else {
+					destination = m_regs[0];
+					rx = m_regs[m_reg_count - 1];
+				}
+
+				break;
+			}
+			case ENC_VEX_MVRR: {
+				rx = operands[2].r;
+				break;
+			}
 			case ENC_VEX_MVR: {
 				if(m_reg_count == 3) {
 					rx = m_regs[1]; 
@@ -1268,9 +1287,27 @@ namespace baremetal {
 				switch(index_byte) {
 					case 0b00000000: break;
 					case 0b00001000: base = registers[2]; break;
-					case 0b00100000: rx = registers[1]; break;
+					case 0b00100000: {
+						if(is_operand_mem(inst->operands[1])) {
+							base = registers[1];
+						}
+						else {
+							rx = registers[1];
+						}
+
+						break;
+					} 
 					case 0b00101000: rx = registers[0]; base = registers[2]; break;   
-					case 0b10000000: base = registers[0]; break; 
+					case 0b10000000: {
+						if(inst->has_masked_operand()) {
+							rx = registers[0];
+						}
+						else {
+							base = registers[0]; 
+						}
+
+						break;
+					}
 					case 0b10001000: rx = registers[0]; base = registers[2]; break; 
 					case 0b10100000: rx = registers[0]; base = registers[1]; break; 
 					case 0b10101000: rx = registers[0]; base = registers[1]; break;
@@ -1536,6 +1573,20 @@ namespace baremetal {
 
 					break;
 				}
+				case ENC_VEX_MVRR: {
+					switch(index_byte) {
+						case 0b1110: rx = registers[0]; base = registers[1]; break; 
+						case 0b1000: rx = registers[1]; base = registers[0]; break;
+						case 0b0000: rx = registers[0]; break;
+						case 0b1100: base = registers[0]; break;
+						case 0b0010: rx = 8; base = 0; break;
+						case 0b1010: rx = 8; base = 8; break;
+						case 0b0110: rx = registers[1]; base = 0; break;
+						case 0b0100: break;
+						default: ASSERT(false, "unhandled rex case 5");
+					}
+					break;
+				}
 				case ENC_VEX_MVR: {
 					switch(index_byte) {
 						case 0b1110: rx = registers[0]; base = registers[1]; break; 
@@ -1761,6 +1812,7 @@ namespace baremetal {
 				case ENC_VEX_RMV: 
 				case ENC_EVEX_RVM: 
 				case ENC_VEX_MVR: 
+				case ENC_VEX_MVRR: 
 				case ENC_VEX_MR: 
 				case ENC_RMR: 
 				case ENC_EVEX_RM: 
@@ -1790,6 +1842,7 @@ namespace baremetal {
 				case ENC_VEX_RVM:
 				case ENC_VEX_RMV:
 				case ENC_VEX_MVR:
+				case ENC_VEX_MVRR:
 				case ENC_EVEX_RVM:
 				case ENC_EVEX_RM:
 				case ENC_EVEX_MVR:

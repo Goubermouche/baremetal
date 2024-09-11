@@ -76,6 +76,7 @@ namespace baremetal {
 		ENC_VEX_RVM,
 		ENC_VEX_RMV,
 		ENC_VEX_MVR,
+		ENC_VEX_MVRR,
 		ENC_VEX_RVMN, // RVM: VEX, with vvvv set to 1111 (no vvvv)
 		ENC_VEX_RVMS,
 
@@ -118,6 +119,7 @@ namespace baremetal {
 				case ENC_VEX_RVMS:
 				case ENC_VEX_RMV:
 				case ENC_VEX_MVR:
+				case ENC_VEX_MVRR:
 				case ENC_VEX_VM: return true;
 				default: return false;
 			}

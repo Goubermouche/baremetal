@@ -80,6 +80,22 @@ function execute(cmd) {
   return execSync(cmd, { encoding: 'utf8' });
 }
 
+async function write_file_async(filePath, data) {
+  return fs.promises.writeFile(filePath, data);
+}
+
+async function delete_file_async(filePath) {
+  return fs.promises.unlink(filePath);
+}
+
+async function read_file_async(filePath) {
+  return fs.promises.readFile(filePath, 'utf8');
+}
+
+async function read_file_hex_async(filePath) {
+  return fs.promises.readFile(filePath, 'hex');
+}
+
 module.exports = {
 	apply_layout,
 	calculate_layout,
@@ -90,5 +106,7 @@ module.exports = {
 	delete_file,
 	read_file,
 	read_file_hex,
-	execute
+	execute,
+	write_file_async,
+	delete_file_async,
 }
