@@ -3,6 +3,5 @@
 ## Planned
 - Labels, data segments, etc.
 - CI
-- More robust parsing
-- EVEX variations for some instructions using the magic bifield
-
+- Better broadcast support
+- Memory operands with special register bases/indices. 
