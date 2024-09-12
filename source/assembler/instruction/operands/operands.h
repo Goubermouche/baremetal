@@ -174,6 +174,15 @@ namespace baremetal {
 		}
 	}
 
+	inline auto broadcast_to_bits(operand_type op) -> u16 {
+		switch(op) {
+			case OP_B16: return 16;
+			case OP_B32: return 32;
+			case OP_B64: return 64;
+			default: return 0;
+		}
+	}
+
 	inline auto is_operand_mem(operand_type op) -> bool {
 		switch(op) {
 			case OP_MEM:

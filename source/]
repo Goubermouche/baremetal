@@ -302,7 +302,6 @@ namespace baremetal {
 			case ENC_VEX_RVM:   
 			case ENC_EVEX_MVR: return static_cast<bool>((operands[1].r & 0b00010000));
 			case ENC_VEX_RM:  
-			case ENC_EVEX_RMZ:
 			case ENC_VEX_MR:   return 0;
 			case ENC_EVEX_RVM: {
 				if(inst->operand_count == 2) {
@@ -335,7 +334,6 @@ namespace baremetal {
 			switch(inst->enc) {
 			// VEX
 			case ENC_VEX_VM:
-			case ENC_EVEX_RMZ:
 			case ENC_XOP_VM:   return static_cast<u8>((~operands[0].r & 0b00001111));
 			case ENC_VEX_RVM:  
 			case ENC_VEX_RVMS: 
@@ -350,6 +348,7 @@ namespace baremetal {
 			case ENC_VEX_RM:    
 			case ENC_EVEX_MR:  
 			case ENC_VEX_RVMN: return 0b1111; 
+			case ENC_EVEX_RMZ: return 0b0000; 
 			// EVEX
 			case ENC_EVEX_RVM: {
 				if(inst->operand_count == 2) {
@@ -735,7 +734,6 @@ namespace baremetal {
 				}
 				break;
 			}
-			case ENC_EVEX_RMZ: 
 			case ENC_EVEX_RM: {
 				if(m_reg_count == 1) {
 					destination = 0;
@@ -1195,7 +1193,6 @@ namespace baremetal {
 
 				break;
 			}
-			case ENC_EVEX_RMZ:
 			case ENC_EVEX_RM: {
 				switch(index_byte) {
 					case 0b00000000: break;
@@ -1822,7 +1819,6 @@ namespace baremetal {
 				case ENC_EVEX_RM: 
 				case ENC_EVEX_MR: 
 				case ENC_EVEX_VM: 
-				case ENC_EVEX_RMZ: 
 				case ENC_RM: m_regs[0] = temp[0]; m_regs[1] = temp[1]; break;
 				case ENC_MR: {
 					if(inst->operands[2] == OP_CL) {

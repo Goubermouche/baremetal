@@ -1,6 +1,8 @@
 #include "assembler_parser.h"
 
+#include "assembler/instruction/instruction.h"
 #include "assembler/instruction/operands/operands.h"
+#include "utility/types.h"
 
 #define EXPECT_TOKEN(expected)                            \
   do {                                                    \
@@ -64,6 +66,31 @@ namespace baremetal {
 	
 			return true;
 		}
+
+		auto is_operand_match_partial(u32 inst_i, operand* operands, u8 count) -> bool {
+			const instruction& inst = instruction_db[inst_i];
+	
+			for(u8 i = 0; i < count; ++i) {
+				// if the operands at a given index are both imm we ignore their difference
+				if(
+					!(inst_match(inst.operands[i], operands[i])) &&
+					!(is_operand_imm(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
+					!(is_operand_moff(inst.operands[i]) && is_operand_moff(operands[i].type)) &&
+					!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
+					!(inst.operands[i] == OP_M256 && operands[i].type == OP_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
+					!(inst.operands[i] == OP_M512 && operands[i].type == OP_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
+					!(inst.operands[i] == OP_TMEM && operands[i].type == OP_M128) // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
+				) {
+					return false;
+				}
+
+				if(is_operand_reg(operands[i].type) && operands[i].r > 15 && !inst.is_evex()) {
+					return false;
+				}
+			}
+	
+			return true;
+		}
 	} // namespace detail
 
 	assembler_parser::assembler_parser() {}
@@ -95,9 +122,9 @@ namespace baremetal {
 		// PARSER_VERIFY(KW_IDENTIFIER);
 		instruction_identifier = utility::dynamic_string(m_lexer.current_string);
 
-		const u32 first = find_instruction_by_name(instruction_identifier.get_data());
+		first_instruction = find_instruction_by_name(instruction_identifier.get_data());
 
-		if(first == utility::limits<u32>::max()) {
+		if(first_instruction == utility::limits<u32>::max()) {
 			// instruction doesn't exist
 			return utility::error("unknown instruction specified");
 		}
@@ -125,10 +152,10 @@ namespace baremetal {
 		}
 
 		// locate the specific variant (dumb linear search in our specific group)
-		u32 instruction_i = first;
+		u32 instruction_i = first_instruction;
 		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
 
-		while(instruction_i < db_size && utility::compare_strings(instruction_db[instruction_i].name, instruction_db[first].name) == 0) {
+		while(instruction_i < db_size && utility::compare_strings(instruction_db[instruction_i].name, instruction_db[first_instruction].name) == 0) {
 			if(detail::is_operand_match(instruction_i, operands)) {
 				for(u8 j = 0; j < operand_i; ++j) {
 					operands[j].type = instruction_db[instruction_i].operands[j]; // HACK: just modify all instructions to the actual type (relocations, mem256)
@@ -287,15 +314,30 @@ namespace baremetal {
 					b.m = memory.memory;
 					b.n = n;
 
-					u16 op_before_width = get_operand_bit_width(operands[operand_i - 1].type);
-					u16 b_width = op_before_width / n;
-					operand_type ty;
+					constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
+					u32 index = first_instruction;
+					operand_type ty = OP_NONE;
 
-					switch(b_width) {
-						case 16: ty = OP_B16; break;
-						case 32: ty = OP_B32; break;
-						case 64: ty = OP_B64; break;
-						default: return utility::error("invalid broadcast width specified");
+					// find the bn from the current instruction
+					while(index < db_size && utility::compare_strings(instruction_db[first_instruction].name, instruction_db[index].name) == 0) {
+						if(detail::is_operand_match_partial(index, operands, operand_i)) {
+							const instruction& current = instruction_db[index];
+
+							if(current.has_broadcast_operand()) {
+								ty = current.operands[current.get_broadcast_operand()];
+								break;
+							}
+						}
+
+						index++;
+					}
+
+					if(ty == OP_NONE) {
+						return utility::error("invalid broadcast operand");
+					}
+
+					if(broadcast_to_bits(ty) * n != inst_size_to_int(instruction_db[index].op_size)) {
+						return utility::error("mismatch in the number of broadcasting elements");
 					}
 
 					operands[operand_i++] = operand(b, ty);  

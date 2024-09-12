@@ -37,6 +37,7 @@ namespace baremetal {
 		lexer m_lexer;
 
 		utility::dynamic_string m_assembly;
+		u32 first_instruction;
 
 		operand operands[4];
 		u8 operand_i = 0;

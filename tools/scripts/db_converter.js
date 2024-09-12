@@ -242,7 +242,8 @@ function extract_encoding(enc) {
 					result.size = 512;
 				}
 				else {
-					console.log(p);
+					result.op_size = p;
+					// console.log(p);
 				}
 			}
 		}
@@ -365,14 +366,14 @@ function main() {
 		//  test all categories
 		if(
 			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
-		) {
+			!inst.extension.includes('X86') 
+		) { 
 			gp_inst.push(inst);
 		}
 
 		// test specific categories
 		// if(
-		// 	!inst.extension.includes('X86') && inst.operands.some(op => ['rel8_rip', 'rel16_rip', 'rel16', 'rel8', 'rel32'].includes(op))
+		// 	!inst.extension.includes('X86') && inst.operands.some(op => op.includes('b'))
 		// ) {
 		// 	gp_inst.push(inst);
 		// }
@@ -392,6 +393,7 @@ function main() {
 		row.push(`"rm": "${inst.enc.rm === undefined ? "" : inst.enc.rm}"`);
 		row.push(`"ri": "${inst.enc.opcode_extend === undefined ? "" : inst.enc.opcode_extend}"`);
 		row.push(`"size": ${inst.enc.size === undefined ? "64" : inst.enc.size}`);
+		row.push(`"op_size": ${inst.enc.op_size === undefined ? "64" : inst.enc.op_size}`);
 		row.push(`"map": "${inst.enc.map === undefined ? '' : inst.enc.map}"`);
 		row.push(`"l": "${inst.enc.l ===  undefined ? '' : inst.enc.l}"`);
 		

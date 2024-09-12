@@ -86,11 +86,25 @@ namespace baremetal {
 		ENC_EVEX_RM,
 		ENC_EVEX_MR,
 		ENC_EVEX_VM,
-
+		ENC_EVEX_RMZ,
 		// XOP
 		ENC_XOP_VM,
 		ENC_XOP,
 	};
+
+
+	inline auto inst_size_to_int(inst_size s) -> u16 {
+		switch(s) {
+			case OPS_32:  return 32;
+			case OPS_64:  return 64;
+			case OPS_128: return 128;
+			case OPS_256: return 256;
+			case OPS_512: return 512;
+			default: ASSERT(false, "unhandled size\n");
+		}
+
+		return 0; // unreachable
+	}
 
 	struct instruction { 
 		constexpr auto is_rex() const -> bool {
@@ -139,6 +153,7 @@ namespace baremetal {
 				case ENC_EVEX_MVR:
 				case ENC_EVEX_MR:
 				case ENC_EVEX_VM:
+				case ENC_EVEX_RMZ:
 				case ENC_EVEX_RM: return true;
 				default: return false;
 			}

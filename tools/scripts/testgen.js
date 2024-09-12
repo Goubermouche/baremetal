@@ -170,15 +170,15 @@ function generate_combinations(inst) {
 	]);
 
 	const broadcast_map = new Map([
-		['b16:128', [ '[rax]{1to8}' ]],
-		['b16:256', [ '[rax]{1to16}' ]],
-		['b16:512', [ '[rax]{1to32}' ]],
-		['b32:128', [ '[rax]{1to4}' ]],
-		['b32:256', [ '[rax]{1to8}' ]],
-		['b32:512', [ '[rax]{1to16}' ]],
-		['b64:128', [ '[rax]{1to2}' ]],
-		['b64:256', [ '[rax]{1to4}' ]],
-		['b64:512', [ '[rax]{1to8}' ]],
+		['128', [ '[rax]{1to8}' ]],
+		['256', [ '[rax]{1to16}' ]],
+		['512', [ '[rax]{1to32}' ]],
+		['128', [ '[rax]{1to4}' ]],
+		['256', [ '[rax]{1to8}' ]],
+		['512', [ '[rax]{1to16}' ]],
+		['128', [ '[rax]{1to2}' ]],
+		['256', [ '[rax]{1to4}' ]],
+		['512', [ '[rax]{1to8}' ]],
 	]);
 
 	function generate(operands, index) {
@@ -191,14 +191,8 @@ function generate_combinations(inst) {
 
 		if(!operand_map.has(current)) {
 			if(current.includes('b')) {
-				const key = `${current}:${inst.size}`;
-
-				if(!broadcast_map.has(key)) {
-					console.error(`unknown b operand '${key}'`);
-				}
-				else {
-					current_array = broadcast_map.get(key);
-				}
+				const new_op_size = Number(current.slice(1)); // Exclude first letter and convert to number
+				current_array = [`[rax]{1to${inst.size / new_op_size}}`]; // Replace inst.op_size with new_op_size
 			}
 			else {
 				console.error(`unknown operand '${current}'`);
