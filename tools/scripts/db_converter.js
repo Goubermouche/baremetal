@@ -423,7 +423,7 @@ function main() {
 		//  test all categories
 		if(
 			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86') && allowed.includes(inst.name) 
+			!inst.extension.includes('X86')
 		) { 
 			gp_inst.push(inst);
 		}
