@@ -1,5 +1,4 @@
 const utility = require("./utility.js")
-const fs = require('fs');
 
 function escape_exp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -294,7 +293,7 @@ function main() {
 	let db;
 	
 	try {
-	  const data = fs.readFileSync(process.argv[2], 'utf8');
+	  const data = utility.read_file(process.argv[2]);
 	  db = JSON.parse(data);
 	} catch (err) {
 	  console.error('error reading source database', err);

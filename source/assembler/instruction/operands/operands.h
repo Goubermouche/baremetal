@@ -93,7 +93,6 @@ namespace baremetal {
 		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
 		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
 		constexpr operand(rel r) : type(OP_REL32), relocation(r) {}
-		constexpr operand(broadcast b, operand_type op) : type(op), b(b) {}
 
 		operand_type type;
 
@@ -102,7 +101,6 @@ namespace baremetal {
 			rel relocation;
 			imm immediate;
 			mem memory;
-			broadcast b;
 			u8 r; // register
 			masked_reg mr; // masked register
 		};

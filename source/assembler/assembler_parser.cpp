@@ -310,10 +310,6 @@ namespace baremetal {
 					EXPECT_TOKEN(TOK_RBRACE);
 					m_lexer.get_next_token();
 
-					broadcast b;
-					b.m = memory.memory;
-					b.n = n;
-
 					constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
 					u32 index = first_instruction;
 					operand_type ty = OP_NONE;
@@ -340,7 +336,9 @@ namespace baremetal {
 						return utility::error("mismatch in the number of broadcasting elements");
 					}
 
-					operands[operand_i++] = operand(b, ty);  
+					operand op;
+					op.type = ty;
+					operands[operand_i++] = op;
 				}
 				else {
 					operands[operand_i++] = memory;

@@ -22,10 +22,5 @@ namespace baremetal {
 		scale s = SCALE_1;
 		imm displacement;
 	};
-
-	struct broadcast {
-		mem m; // referenced memory
-		u8 n; 
-	};
 } // namespace baremetal
 
