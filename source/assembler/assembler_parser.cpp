@@ -46,6 +46,14 @@ namespace baremetal {
 				case OP_VM64X_K: return b.type == OP_VM32X_K || a == b.type;
 				case OP_VM64Y_K: return b.type == OP_VM32Y_K || a == b.type;
 				case OP_VM64Z_K: return b.type == OP_VM32Z_K || a == b.type;
+				case OP_M16_K:
+				case OP_M32_K:
+				case OP_M64_K:
+				case OP_M128_K:
+				case OP_M256_K:
+				case OP_M512_K:   return b.type == OP_M128_K || a == b.type; // TODO: temp hack - we can't really parse 
+																																		 // masked memory operands which have a
+																																		 // specified size, hence we default to M128
 				default:         return a == b.type;
 			}
 		}
@@ -338,6 +346,12 @@ namespace baremetal {
 							case OP_VM32X: memory.type = OP_VM32X_K; break;
 							case OP_VM32Y: memory.type = OP_VM32Y_K; break;
 							case OP_VM32Z: memory.type = OP_VM32Z_K; break;
+							case OP_M16:   memory.type = OP_M16_K; break;
+							case OP_M32:   memory.type = OP_M32_K; break;
+							case OP_M64:   memory.type = OP_M64_K; break;
+							case OP_M128:  memory.type = OP_M128_K; break;
+							case OP_M256:  memory.type = OP_M256_K; break;
+							case OP_M512:  memory.type = OP_M512_K; break;
 							default: ASSERT(false, "unhandled memory for masked memory operand\n");
 						}
 

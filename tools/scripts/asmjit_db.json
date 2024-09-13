@@ -3221,7 +3221,7 @@
       {"inst": "vmovupd W:xmm {kz}, xmm/m128"                               , "op": "RM-FVM: EVEX.128.66.0F.W1 10 /r"         , "vl": 1},
       {"inst": "vmovupd W:xmm/m128 {kz}, xmm"                               , "op": "MR-FVM: EVEX.128.66.0F.W1 11 /r"         , "vl": 1},
       {"inst": "vmovupd W:ymm {kz}, ymm/m256"                               , "op": "RM-FVM: EVEX.256.66.0F.W1 11 /r"         , "vl": 1},
-      {"inst": "vmovupd W:ymm/m256 {kz}, ymm"                               , "op": "MR-FVM: EVEX.256.66.0F.W1 10 /r"         , "vl": 1},
+      {"inst": "vmovupd W:ymm/m256 {kz}, ymm"                               , "op": "MR-FVM: EVEX.256.66.0F.W1 11 /r"         , "vl": 1},
       {"inst": "vmovupd W:zmm {kz}, zmm/m512"                               , "op": "RM-FVM: EVEX.512.66.0F.W1 10 /r"         , "vl": 0},
       {"inst": "vmovupd W:zmm/m512 {kz}, zmm"                               , "op": "MR-FVM: EVEX.512.66.0F.W1 11 /r"         , "vl": 0},
       {"inst": "vmovups W:xmm {kz}, xmm/m128"                               , "op": "RM-FVM: EVEX.128.0F.W0 10 /r"            , "vl": 1},

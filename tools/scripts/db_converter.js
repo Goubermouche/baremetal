@@ -373,7 +373,7 @@ function main() {
 		//  test all categories
 		if(
 			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86') && inst.operands.some(op => op.includes('vm')) 
+			!inst.extension.includes('X86') && inst.operands.some(op => op.includes('vm') || ['m16_k', 'm32_k', 'm64_k', 'm128_k', 'm256_k', 'm512_k'].includes(op)) 
 		) { 
 			gp_inst.push(inst);
 		}

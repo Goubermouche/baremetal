@@ -72,6 +72,13 @@ namespace baremetal {
 		OP_VM64Y,
 		OP_VM64Z,
 
+		OP_M16_K,
+		OP_M32_K,
+		OP_M64_K,
+		OP_M128_K,
+		OP_M256_K,
+		OP_M512_K,
+
 		OP_VM32X_K,
 		OP_VM32Y_K,
 		OP_VM32Z_K,
@@ -202,7 +209,9 @@ namespace baremetal {
 			case OP_TMEM:
 			case OP_M8:
 			case OP_M16:
+			case OP_M16_K:
 			case OP_M32:
+			case OP_M32_K:
 			case OP_VM32X:
 			case OP_VM32Y:
 			case OP_VM32Z:
@@ -210,6 +219,7 @@ namespace baremetal {
 			case OP_VM32Y_K:
 			case OP_VM32Z_K:
 			case OP_M64:
+			case OP_M64_K:
 			case OP_VM64X:
 			case OP_VM64Y:
 			case OP_VM64Z:
@@ -218,8 +228,11 @@ namespace baremetal {
 			case OP_VM64Z_K:
 			case OP_M80:
 			case OP_M128:
+			case OP_M128_K:
 			case OP_M256:
-			case OP_M512:  return true;
+			case OP_M256_K:
+			case OP_M512:
+			case OP_M512_K:  return true;
 			default: return false;
 		}
 	}
@@ -298,7 +311,8 @@ namespace baremetal {
       case OP_MOFF16:
       case OP_REL16:
       case OP_REL16_RIP:
-      case OP_M16: return 16;
+      case OP_M16:
+      case OP_M16_K: return 16;
       case OP_I32:
       case OP_R32:
       case OP_EAX:
@@ -307,6 +321,7 @@ namespace baremetal {
       case OP_B32:
       case OP_MOFF32:
       case OP_M32:
+      case OP_M32_K:
       case OP_REL32_RIP:
 			case OP_VM32X:
 			case OP_VM32Y:
@@ -319,6 +334,7 @@ namespace baremetal {
       case OP_R64:
       case OP_MOFF64:
       case OP_M64:
+      case OP_M64_K:
       case OP_CREG:
       case OP_DREG:
       case OP_MMX:
@@ -327,7 +343,7 @@ namespace baremetal {
       case OP_RAX:
       case OP_MIB:
       case OP_K_K:
-      case OP_K:
+     case OP_K:
 			case OP_VM64X:
 			case OP_VM64Y:
 			case OP_VM64Z:
@@ -341,15 +357,18 @@ namespace baremetal {
       case OP_XMM:
       case OP_XMM_K:
       case OP_XMM_KZ:
-      case OP_M128: return 128;
+      case OP_M128:
+      case OP_M128_K: return 128;
       case OP_YMM:
       case OP_YMM_K:
       case OP_YMM_KZ:
-      case OP_M256: return 256;
+      case OP_M256:
+      case OP_M256_K: return 256;
       case OP_ZMM:
       case OP_ZMM_K:
       case OP_ZMM_KZ:
-      case OP_M512: return 512;
+      case OP_M512:
+      case OP_M512_K: return 512;
       case OP_TMEM:
       case OP_TMM: return 1024;
     }
@@ -359,6 +378,12 @@ namespace baremetal {
 
 	inline auto is_operand_masked(operand_type op) -> bool {
 		switch(op) {
+			case OP_M16_K:
+			case OP_M32_K:
+			case OP_M64_K:
+			case OP_M128_K:
+			case OP_M256_K:
+			case OP_M512_K:
 			case OP_VM32X_K:
 			case OP_VM32Y_K:
 			case OP_VM32Z_K:

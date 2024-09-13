@@ -1153,11 +1153,23 @@ namespace baremetal {
 			}
 			case ENC_EVEX_RVM: {
 				switch(index_byte) {
-					case 0b00000000: break;
+					case 0b00000000: {
+						// if(is_operand_masked(inst->operands[0])) {
+						// 	rx = 8;
+						// 	base = 0;
+						// 	index = 0;
+						// }
+
+						break;
+					}
 					case 0b00001000: base = registers[2]; break;
 					case 0b00100000: {
-
-						if(is_operand_mem(inst->operands[1]) || inst->operand_count == 2) {
+						if(is_operand_masked(inst->operands[0])) {
+							rx = 8;
+							base = 0;
+							index = 0;
+						}
+						else if(is_operand_mem(inst->operands[1]) || inst->operand_count == 2) {
 							base = registers[1];
 						}
 
@@ -1179,7 +1191,12 @@ namespace baremetal {
 					case 0b00001100: rx = registers[0]; base = registers[2]; index = registers[2]; break;    
 					case 0b00101100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
 					case 0b00110000: {
-						if(inst->operand_count == 2) {
+						if(is_operand_masked(inst->operands[0])) {
+							rx = 8;
+							base = 0;
+							index = 0;
+						}
+						else if(inst->operand_count == 2) {
 							rx = registers[0]; 
 							base = registers[1];
 							index = 8;
