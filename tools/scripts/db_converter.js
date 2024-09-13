@@ -73,8 +73,6 @@ function extract_inst_operands(inst) {
     { s: 'mm/m64', r: 'mmx/m64' },
     { s: 'st(0)', r: 'st0' },
     { s: 'st(i)', r: 'st' },
-    { s: 'vm64y', r: 'm64' },
-    { s: 'vm64x', r: 'm64' },
 	];
 
 	const masks = ['{kz}', '{k}'];
@@ -313,7 +311,17 @@ function main() {
 			combinations.forEach(comb => {
 				let variant = {
 					name: comb[0],
-					operands: comb.slice(1),
+					operands: comb.slice(1).map(op => {
+						switch(op) {
+							case 'm16_kz': return 'm16_k';
+							case 'm32_kz': return 'm32_k';
+							case 'm64_kz': return 'm64_k';
+							case 'm128_kz': return 'm128_k';
+							case 'm256_kz': return 'm256_k';
+							case 'm512_kz': return 'm512_k';
+							default: return op;
+						}
+					}),
 					enc: extract_encoding(inst.op),
 					extension: [],
 					category: group.category.split(' ')
@@ -365,7 +373,7 @@ function main() {
 		//  test all categories
 		if(
 			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86') 
+			!inst.extension.includes('X86') && inst.operands.some(op => !op.includes('k') && op.includes('vm') && op.includes('m') && !(op.includes('xmm') || op.includes('ymm') || op.includes('zmm'))) 
 		) { 
 			gp_inst.push(inst);
 		}

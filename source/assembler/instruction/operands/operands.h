@@ -65,6 +65,13 @@ namespace baremetal {
 		OP_MOFF64,
 		OP_MIB,
 
+		OP_VM32X,
+		OP_VM32Y,
+		OP_VM32Z,
+		OP_VM64X,
+		OP_VM64Y,
+		OP_VM64Z,
+
 		// immediate operands
 		OP_I8,
 		OP_I16,
@@ -188,7 +195,13 @@ namespace baremetal {
 			case OP_M8:
 			case OP_M16:
 			case OP_M32:
+			case OP_VM32X:
+			case OP_VM32Y:
+			case OP_VM32Z:
 			case OP_M64:
+			case OP_VM64X:
+			case OP_VM64Y:
+			case OP_VM64Z:
 			case OP_M80:
 			case OP_M128:
 			case OP_M256:
@@ -281,6 +294,9 @@ namespace baremetal {
       case OP_MOFF32:
       case OP_M32:
       case OP_REL32_RIP:
+			case OP_VM32X:
+			case OP_VM32Y:
+			case OP_VM32Z:
       case OP_REL32: return 32;
       case OP_I64:
       case OP_R64:
@@ -295,6 +311,9 @@ namespace baremetal {
       case OP_MIB:
       case OP_K_K:
       case OP_K:
+			case OP_VM64X:
+			case OP_VM64Y:
+			case OP_VM64Z:
       case OP_B64: return 64;
       case OP_M80:
       case OP_ST:

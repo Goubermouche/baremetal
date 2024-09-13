@@ -2,6 +2,7 @@
 
 #include "assembler/instruction/instruction.h"
 #include "assembler/instruction/operands/operands.h"
+#include "assembler/instruction/operands/registers.h"
 
 #include <utility/algorithms/sort.h>
 
@@ -312,6 +313,10 @@ namespace baremetal {
 				return static_cast<bool>((operands[1].r & 0b00010000));
 			}
 			case ENC_EVEX_RM:{
+				if(is_operand_mem(inst->operands[1]) && operands[1].memory.has_index && is_sse_reg(operands[1].memory.index)) {
+					return static_cast<bool>((operands[1].memory.index.index & 0b00010000));
+				}
+
 				if(inst->operand_count == 2 || (m_reg_count == 2 && !is_operand_mem(inst->operands[2]))) {
 					return 0;
 				}
@@ -669,7 +674,7 @@ namespace baremetal {
 				imm displacement = memory.displacement;
 
 				if(displacement.value == 0) {
-					if(memory.has_base && memory.base.type != REG_RIP) {
+					if(memory.has_base && memory.base.type != REG_RIP && !is_sse_reg(memory.base)) {
 						continue; // skip 0 displacements
 					}
 				}
@@ -697,6 +702,9 @@ namespace baremetal {
 						}
 
 						displacement = imm(new_displacement);
+						ty = OP_I32;
+					}
+					else if(is_sse_reg(memory.base)) {
 						ty = OP_I32;
 					}
 					else if(displacement.min_bits <= 8) {
@@ -813,6 +821,9 @@ namespace baremetal {
 			else if(memory.base.type == REG_RIP) {
 				m_bytes.push_back(indirect(rx, 0b101));
 			}
+			else if(is_sse_reg(memory.base)) {
+				m_bytes.push_back(indirect(rx, 0b100));
+			}
 			else if(memory.displacement.value == 0) {
 				m_bytes.push_back(indirect(rx, has_sib ? 0b100 : memory.base.index));
 			}
@@ -885,6 +896,9 @@ namespace baremetal {
 			operand.type == OP_TMEM
 		) {
 			m_bytes.push_back(sib(scale, index, base));
+		}
+		else if(memory.has_base && is_sse_reg(memory.base)) {
+			m_bytes.push_back(sib(scale, base, memory.has_index ? memory.index.index : 0b101));
 		}
 	}
 
@@ -1208,6 +1222,14 @@ namespace baremetal {
 							base = registers[1];
 						}
 
+						if(
+							is_operand_mem(inst->operands[1]) && 
+							operands[1].memory.has_index && 
+							operands[1].memory.index.index > 15
+						) {
+							index = 0;
+						}
+
 						break;
 					} 
 					case 0b00101000: rx = registers[0]; base = registers[2]; break;   
@@ -1223,9 +1245,21 @@ namespace baremetal {
 							base = registers[1];
 						}
 
+						if(
+							is_operand_mem(inst->operands[1]) && 
+							operands[1].memory.has_index && 
+							operands[1].memory.index.index > 15
+						) {
+							index = 0;
+						}
+
 						break;
 					} 
-					case 0b10101000: rx = registers[0]; base = registers[1]; break;
+					case 0b10101000: {
+						rx = registers[0];
+						base = registers[1];
+						break;
+					}
 					case 0b00001100: rx = registers[0]; base = registers[2]; index = registers[2]; break;    
 					case 0b00101100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
 					case 0b00110000: {
@@ -1544,12 +1578,56 @@ namespace baremetal {
 					switch(index_byte) {
 						case 0b00001000:
 						case 0b00001010:
-						case 0b00001100:
-						case 0b00001110:
 						case 0b00000000:
 						case 0b00000010: rx = registers[0]; base = registers[1]; break;
-						case 0b00000110: rx = registers[0]; base = registers[2]; break;
-						case 0b00000100: rx = registers[2]; base = registers[1]; break;
+						case 0b00001100:
+						case 0b00001110: {
+							rx = registers[0]; 
+							base = registers[1];
+
+							if(
+								is_operand_mem(inst->operands[1]) && 
+								operands[1].memory.has_index && 
+								operands[1].memory.index.index > 15
+							) {
+								base = 8;
+								index = 0;
+							}
+
+							break;
+						}
+						case 0b00000110: {
+							rx = registers[0]; 
+							base = registers[2];
+
+							if(
+								is_operand_mem(inst->operands[1]) && 
+								operands[1].memory.has_index && 
+								operands[1].memory.index.index > 15
+							) {
+								rx = 0;
+								base = 8;
+								index = 0;
+							}
+
+							break;
+						}
+						case 0b00000100: {
+							rx = registers[2];
+							base = registers[1]; 
+
+							if(
+								is_operand_mem(inst->operands[1]) && 
+								operands[1].memory.has_index && 
+								operands[1].memory.index.index > 15
+							) {
+								rx = 0;
+								base = 8;
+								index = 0;
+							}
+
+							break;
+						}
 						default: ASSERT(false, "unhandled rex case 2");
 					}
 

@@ -2,6 +2,7 @@
 
 #include "assembler/instruction/instruction.h"
 #include "assembler/instruction/operands/operands.h"
+#include "assembler/instruction/operands/registers.h"
 #include "utility/types.h"
 
 #define EXPECT_TOKEN(expected)                            \
@@ -26,19 +27,22 @@ namespace baremetal {
 	
 		auto inst_match(operand_type a, operand b) -> bool{
 			switch(a) {
-				case OP_FS:  return b.type == OP_SREG && b.r == fs.index;
-				case OP_GS:  return b.type == OP_SREG && b.r == gs.index;
-				case OP_AL:  return b.type == OP_R8 && b.r == al.index;
-				case OP_AX:  return b.type == OP_R16 && b.r == ax.index;
-				case OP_EAX: return b.type == OP_R32 && b.r == eax.index;
-				case OP_RAX: return b.type == OP_R64 && b.r == rax.index;
-				case OP_CL:  return b.type == OP_R8 && b.r == cl.index;
-				case OP_DX:  return b.type == OP_R16 && b.r == dx.index;
-				case OP_ECX: return b.type == OP_R32 && b.r == ecx.index;
-				case OP_RCX: return b.type == OP_R64 && b.r == rcx.index;
-				case OP_ST0: return b.type == OP_ST && b.r == st0.index;
-				case OP_MEM: return b.type == OP_M128;
-				default:     return a == b.type;
+				case OP_FS:    return b.type == OP_SREG && b.r == fs.index;
+				case OP_GS:    return b.type == OP_SREG && b.r == gs.index;
+				case OP_AL:    return b.type == OP_R8 && b.r == al.index;
+				case OP_AX:    return b.type == OP_R16 && b.r == ax.index;
+				case OP_EAX:   return b.type == OP_R32 && b.r == eax.index;
+				case OP_RAX:   return b.type == OP_R64 && b.r == rax.index;
+				case OP_CL:    return b.type == OP_R8 && b.r == cl.index;
+				case OP_DX:    return b.type == OP_R16 && b.r == dx.index;
+				case OP_ECX:   return b.type == OP_R32 && b.r == ecx.index;
+				case OP_RCX:   return b.type == OP_R64 && b.r == rcx.index;
+				case OP_ST0:   return b.type == OP_ST && b.r == st0.index;
+				case OP_MEM:   return b.type == OP_M128;
+				case OP_VM64X: return b.type == OP_VM32X || a == b.type;
+				case OP_VM64Y: return b.type == OP_VM32Y || a == b.type;
+				case OP_VM64Z: return b.type == OP_VM32Z || a == b.type;
+				default:       return a == b.type;
 			}
 		}
 	
@@ -292,18 +296,45 @@ namespace baremetal {
 				TRY(parse_memory(memory.memory));
 				EXPECT_TOKEN(TOK_RBRACKET);
 
+				// TODO: move this over to the memory parser
+				if(memory.memory.has_base) {
+					switch(memory.memory.base.type) {
+						case REG_XMM: memory.type = OP_VM32X; break;
+						case REG_YMM: memory.type = OP_VM32Y; break;
+						case REG_ZMM: memory.type = OP_VM32Z; break;
+						default: break;
+					}
+				}
+				
+				if(memory.memory.has_index) {
+					switch(memory.memory.index.type) {
+						case REG_XMM: memory.type = OP_VM32X; break;
+						case REG_YMM: memory.type = OP_VM32Y; break;
+						case REG_ZMM: memory.type = OP_VM32Z; break;
+						default: break;
+					}
+				}
+			
+				if(memory.memory.has_index && memory.memory.has_base) {
+					if(memory.memory.index.type != memory.memory.base.type) {
+						if(!is_gp_reg(memory.memory.index) && !is_gp_reg(memory.memory.base)) {
+							return utility::error("invalid combination of register types in memory");
+						}
+					}
+				}
+
 				if(m_lexer.get_next_token() == TOK_LBRACE) {
 					// broadcast
 					u8 n = 0;
 					m_lexer.force_keyword = true;
 
 					switch(m_lexer.get_next_token()) {
-						case TOK_1TO2: n = 2; break;
-						case TOK_1TO4: n = 4; break;
-						case TOK_1TO8: n = 8; break;
+						case TOK_1TO2:  n = 2; break;
+						case TOK_1TO4:  n = 4; break;
+						case TOK_1TO8:  n = 8; break;
 						case TOK_1TO16: n = 16; break;
 						case TOK_1TO32: n = 32; break;
-						default: return utility::error("invalid broadcast specified");
+						default: return utility::error("invalid broadcast operand specified");
 					}
 
 					m_lexer.get_next_token();
@@ -329,7 +360,7 @@ namespace baremetal {
 					}
 
 					if(ty == OP_NONE) {
-						return utility::error("invalid broadcast operand");
+						return utility::error("invalid broadcast operand specified");
 					}
 
 					if(broadcast_to_bits(ty) * n != inst_size_to_int(instruction_db[index].op_size)) {

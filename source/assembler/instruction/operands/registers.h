@@ -478,6 +478,15 @@ enum reg_type : u8 {
 		}
 	}
 
+	inline auto is_sse_reg(reg r) {
+		switch(r.type) {
+			case REG_XMM:
+			case REG_YMM:
+			case REG_ZMM: return true;
+			default: return false;
+		}
+	}
+
 	inline auto is_stack_pointer(reg r) -> bool {
 		return r.index == rsp.index && is_gp_reg(r);
 	}
