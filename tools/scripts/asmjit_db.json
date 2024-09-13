@@ -974,9 +974,6 @@
       {"inst": "lsl w:r16, R:r16/m16"                                       , "op": "RM: 66 0F 03 /r"                , "io": "ZF=W"},
       {"inst": "lsl W:r32, R:r32/m16"                                       , "op": "RM: 0F 03 /r"                   , "io": "ZF=W"},
       {"inst": "lsl W:r64, R:r32/m16"                                       , "op": "RM: REX.W 0F 03 /r"             , "io": "ZF=W"},
-      {"inst": "lss x:r16, m16"                                          , "op": "RM: 66 0F B2 /r"},
-      {"inst": "lss X:r32, m16"                                          , "op": "RM: 0F B2 /r"},
-      {"inst": "lss X:r64, m16"                                          , "op": "RM: REX.W 0F B2 /r"},
       {"inst": "pause"                                                      , "op": "F3 90"},
       {"inst": "rsm"                                                        , "op": "0F AA"                          , "arch": "X86", "io": "OF=U SF=U ZF=U AF=U PF=U CF=U"},
       {"inst": "sgdt W:mem"                                                 , "op": "0F 01 /0"},
@@ -2932,12 +2929,6 @@
       {"inst": "vcvtdq2ps W:ymm {kz}, ymm/m256/b32"                         , "op": "RM-FV: EVEX.256.0F.W0.32 5B /r"             , "vl": 1},
       {"inst": "vcvtdq2ps W:zmm {kz}, zmm/m512/b32 {er}"                    , "op": "RM-FV: EVEX.512.0F.W0.32 5B /r"             , "vl": 0},
       {"inst": "vcvtpd2ps W:ymm {kz}, zmm/m512/b64 {er}"                    , "op": "RM-FV: EVEX.512.66.0F.W1 5A /r"          , "vl": 0},
-      {"inst": "vcvtpd2dq W:xmm[63:0] {kz}, xmm/m128/b64"                   , "op": "RM-FV: EVEX.128.F2.0F.W1 E6 /r"          , "vl": 1},
-      {"inst": "vcvtpd2dq W:xmm {kz}, ymm/m256/b64"                         , "op": "RM-FV: EVEX.256.F2.0F.W1 E6 /r"          , "vl": 1},
-      {"inst": "vcvtpd2dq W:ymm {kz}, zmm/m512/b64 {er}"                    , "op": "RM-FV: EVEX.512.F2.0F.W1 E6 /r"          , "vl": 0},
-      {"inst": "vcvtpd2udq W:xmm[63:0] {kz}, xmm/m128/b64"                  , "op": "RM-FV: EVEX.128.0F.W1 79 /r"             , "vl": 1},
-      {"inst": "vcvtpd2udq W:xmm {kz}, ymm/m256/b64"                        , "op": "RM-FV: EVEX.256.0F.W1 79 /r"             , "vl": 1},
-      {"inst": "vcvtpd2udq W:ymm {kz}, zmm/m512/b64 {er}"                   , "op": "RM-FV: EVEX.512.0F.W1 79 /r"             , "vl": 0},
       {"inst": "vcvtph2ps W:xmm {kz}, xmm[63:0]/m64"                        , "op": "RM-HVM: EVEX.128.66.0F38.W0 13 /r"       , "vl": 1},
       {"inst": "vcvtph2ps W:ymm {kz}, xmm/m128"                             , "op": "RM-HVM: EVEX.256.66.0F38.W0 13 /r"       , "vl": 1},
       {"inst": "vcvtph2ps W:zmm {kz}, ymm/m256 {sae}"                       , "op": "RM-HVM: EVEX.512.66.0F38.W0 13 /r"       , "vl": 0},
@@ -2954,9 +2945,6 @@
       {"inst": "vcvttpd2qq W:xmm {kz}, xmm/m128/b64"                        , "op": "RM-FV: EVEX.128.66.0F.W1 7A /r"          , "vl": 1},
       {"inst": "vcvttpd2qq W:ymm {kz}, ymm/m256/b64"                        , "op": "RM-FV: EVEX.256.66.0F.W1 7A /r"          , "vl": 1},
       {"inst": "vcvttpd2qq W:zmm {kz}, zmm/m512/b64 {sae}"                  , "op": "RM-FV: EVEX.512.66.0F.W1 7A /r"          , "vl": 0},
-      {"inst": "vcvttpd2udq W:xmm[63:0] {kz}, xmm/m128/b64"                 , "op": "RM-FV: EVEX.128.0F.W1 78 /r"             , "vl": 1},
-      {"inst": "vcvttpd2udq W:xmm {kz}, ymm/m256/b64"                       , "op": "RM-FV: EVEX.256.0F.W1 78 /r"             , "vl": 1},
-      {"inst": "vcvttpd2udq W:ymm {kz}, zmm/m512/b64 {sae}"                 , "op": "RM-FV: EVEX.512.0F.W1 78 /r"             , "vl": 0},
       {"inst": "vcvttps2dq W:xmm {kz}, xmm/m128/b32"                        , "op": "RM-FV: EVEX.128.F3.0F.W0.32 5B /r"          , "vl": 1},
       {"inst": "vcvttps2dq W:ymm {kz}, ymm/m256/b32"                        , "op": "RM-FV: EVEX.256.F3.0F.W0.32 5B /r"          , "vl": 1},
       {"inst": "vcvttps2dq W:zmm {kz}, zmm/m512/b32 {sae}"                  , "op": "RM-FV: EVEX.512.F3.0F.W0.32 5B /r"          , "vl": 0},
@@ -3780,8 +3768,6 @@
       {"inst": "vcvtqq2pd W:xmm {kz}, xmm/m128/b64"                         , "op": "RM-FV: EVEX.128.F3.0F.W1 E6 /r"          , "vl": 1},
       {"inst": "vcvtqq2pd W:ymm {kz}, ymm/m256/b64"                         , "op": "RM-FV: EVEX.256.F3.0F.W1 E6 /r"          , "vl": 1},
       {"inst": "vcvtqq2pd W:zmm {kz}, zmm/m512/b64 {er}"                    , "op": "RM-FV: EVEX.512.F3.0F.W1 E6 /r"          , "vl": 0},
-      {"inst": "vcvtqq2ps W:xmm[63:0] {kz}, xmm/m128/b64"                   , "op": "RM-FV: EVEX.128.0F.W1 5B /r"             , "vl": 1},
-      {"inst": "vcvtqq2ps W:xmm {kz}, ymm/m256/b64"                         , "op": "RM-FV: EVEX.256.0F.W1 5B /r"             , "vl": 1},
       {"inst": "vcvtqq2ps W:ymm {kz}, zmm/m512/b64 {er}"                    , "op": "RM-FV: EVEX.512.0F.W1 5B /r"             , "vl": 0},
       {"inst": "vcvttpd2uqq W:xmm {kz}, xmm/m128/b64"                       , "op": "RM-FV: EVEX.128.66.0F.W1 78 /r"          , "vl": 1},
       {"inst": "vcvttpd2uqq W:ymm {kz}, ymm/m256/b64"                       , "op": "RM-FV: EVEX.256.66.0F.W1 78 /r"          , "vl": 1},
@@ -3795,8 +3781,6 @@
       {"inst": "vcvtuqq2pd W:xmm {kz}, xmm/m128/b64"                        , "op": "RM-FV: EVEX.128.F3.0F.W1 7A /r"          , "vl": 1},
       {"inst": "vcvtuqq2pd W:ymm {kz}, ymm/m256/b64"                        , "op": "RM-FV: EVEX.256.F3.0F.W1 7A /r"          , "vl": 1},
       {"inst": "vcvtuqq2pd W:zmm {kz}, zmm/m512/b64 {er}"                   , "op": "RM-FV: EVEX.512.F3.0F.W1 7A /r"          , "vl": 0},
-      {"inst": "vcvtuqq2ps W:xmm[63:0] {kz}, xmm/m128/b64"                  , "op": "RM-FV: EVEX.128.F2.0F.W1 7A /r"          , "vl": 1},
-      {"inst": "vcvtuqq2ps W:xmm {kz}, ymm/m256/b64"                        , "op": "RM-FV: EVEX.256.F2.0F.W1 7A /r"          , "vl": 1},
       {"inst": "vcvtuqq2ps W:ymm {kz}, zmm/m512/b64 {er}"                   , "op": "RM-FV: EVEX.512.F2.0F.W1 7A /r"          , "vl": 0},
       {"inst": "vextractf32x8 W:ymm/m256 {kz}, zmm, ib/ub"                  , "op": "MR-T8: EVEX.512.66.0F3A.W0 1B /r ib"     , "vl": 0},
       {"inst": "vextractf64x2 W:xmm/m128 {kz}, ymm, ib/ub"                  , "op": "MR-T2: EVEX.256.66.0F3A.W1 19 /r ib"     , "vl": 1},
@@ -3804,12 +3788,12 @@
       {"inst": "vextracti32x8 W:ymm/m256 {kz}, zmm, ib/ub"                  , "op": "MR-T8: EVEX.512.66.0F3A.W0 3B /r ib"     , "vl": 0},
       {"inst": "vextracti64x2 W:xmm/m128 {kz}, ymm, ib/ub"                  , "op": "MR-T2: EVEX.256.66.0F3A.W1 39 /r ib"     , "vl": 1},
       {"inst": "vextracti64x2 W:xmm/m128 {kz}, zmm, ib/ub"                  , "op": "MR-T2: EVEX.512.66.0F3A.W1 39 /r ib"     , "vl": 0},
-      {"inst": "vfpclasspd W:k {k}, xmm/m128/b64, ib/ub"                    , "op": "RM-FV: EVEX.128.66.0F3A.W1 66 /r ib"     , "vl": 1, "k": "zeroing"},
-      {"inst": "vfpclasspd W:k {k}, ymm/m256/b64, ib/ub"                    , "op": "RM-FV: EVEX.256.66.0F3A.W1 66 /r ib"     , "vl": 1, "k": "zeroing"},
-      {"inst": "vfpclasspd W:k {k}, zmm/m512/b64, ib/ub"                    , "op": "RM-FV: EVEX.512.66.0F3A.W1 66 /r ib"     , "vl": 0, "k": "zeroing"},
-      {"inst": "vfpclassps W:k {k}, xmm/m128/b32, ib/ub"                    , "op": "RM-FV: EVEX.128.66.0F3A.W0 66 /r ib"     , "vl": 1, "k": "zeroing"},
-      {"inst": "vfpclassps W:k {k}, ymm/m256/b32, ib/ub"                    , "op": "RM-FV: EVEX.256.66.0F3A.W0 66 /r ib"     , "vl": 1, "k": "zeroing"},
-      {"inst": "vfpclassps W:k {k}, zmm/m512/b32, ib/ub"                    , "op": "RM-FV: EVEX.512.66.0F3A.W0 66 /r ib"     , "vl": 0, "k": "zeroing"},
+      {"inst": "vfpclasspd W:k {k}, xmm/b64, ib/ub"                    , "op": "RM-FV: EVEX.128.66.0F3A.W1 66 /r ib"     , "vl": 1, "k": "zeroing"},
+      {"inst": "vfpclasspd W:k {k}, ymm/b64, ib/ub"                    , "op": "RM-FV: EVEX.256.66.0F3A.W1 66 /r ib"     , "vl": 1, "k": "zeroing"},
+      {"inst": "vfpclasspd W:k {k}, zmm/b64, ib/ub"                    , "op": "RM-FV: EVEX.512.66.0F3A.W1 66 /r ib"     , "vl": 0, "k": "zeroing"},
+      {"inst": "vfpclassps W:k {k}, zmm/b32, ib/ub"                    , "op": "RM-FV: EVEX.512.66.0F3A.W0 66 /r ib"     , "vl": 0, "k": "zeroing"},
+      {"inst": "vfpclassps W:k {k}, xmm/b32, ib/ub"                    , "op": "RM-FV: EVEX.128.66.0F3A.W0 66 /r ib"     , "vl": 1, "k": "zeroing"},
+      {"inst": "vfpclassps W:k {k}, ymm/b32, ib/ub"                    , "op": "RM-FV: EVEX.256.66.0F3A.W0 66 /r ib"     , "vl": 1, "k": "zeroing"},
       {"inst": "vinsertf32x8 W:zmm {kz}, zmm, ymm/m256, ib/ub"              , "op": "RVM-T8: EVEX.512.66.0F3A.W0 1A /r ib"    , "vl": 0},
       {"inst": "vinsertf64x2 W:ymm {kz}, ymm, xmm/m128, ib/ub"              , "op": "RVM-T2: EVEX.256.66.0F3A.W1 18 /r ib"    , "vl": 1},
       {"inst": "vinsertf64x2 W:zmm {kz}, zmm, xmm/m128, ib/ub"              , "op": "RVM-T2: EVEX.512.66.0F3A.W1 18 /r ib"    , "vl": 0},
@@ -3824,8 +3808,6 @@
       {"inst": "vorps W:zmm {kz}, ~zmm, ~zmm/m512/b32"                      , "op": "RVM-FV: EVEX.512.0F.W0 56 /r"            , "vl": 0},
       {"inst": "vpextrd W:r32/m32, xmm, ib/ub"                              , "op": "MR-T1S: EVEX.128.66.0F3A.W0 16 /r ib"    , "vl": 0},
       {"inst": "vpextrq W:r64/m64, xmm, ib/ub"                              , "op": "MR-T1S: EVEX.128.66.0F3A.W1 16 /r ib"    , "vl": 0},
-      {"inst": "vpinsrd W:xmm {kz}, xmm, r32/m32, ib/ub"                    , "op": "RVM-T1S: EVEX.128.66.0F3A.W0 22 /r ib"   , "vl": 0},
-      {"inst": "vpinsrq W:xmm {kz}, xmm, r64/m64, ib/ub"                    , "op": "RVM-T1S: EVEX.128.66.0F3A.W1 22 /r ib"   , "vl": 0},
       {"inst": "vpmovd2m W:k, xmm"                                          , "op": "RM: EVEX.128.F3.0F38.W0 39 /r"           , "vl": 1},
       {"inst": "vpmovd2m W:k, ymm"                                          , "op": "RM: EVEX.256.F3.0F38.W0 39 /r"           , "vl": 1},
       {"inst": "vpmovd2m W:k, zmm"                                          , "op": "RM: EVEX.512.F3.0F38.W0 39 /r"           , "vl": 0},
@@ -3958,12 +3940,12 @@
       {"inst": "vpcmpub W:k {k}, xmm, xmm/m128, ib/ub"                      , "op": "RVM-FVM: EVEX.128.66.0F3A.W0 3E /r ib"   , "vl": 1, "k": "zeroing"},
       {"inst": "vpcmpub W:k {k}, ymm, ymm/m256, ib/ub"                      , "op": "RVM-FVM: EVEX.256.66.0F3A.W0 3E /r ib"   , "vl": 1, "k": "zeroing"},
       {"inst": "vpcmpub W:k {k}, zmm, zmm/m512, ib/ub"                      , "op": "RVM-FVM: EVEX.512.66.0F3A.W0 3E /r ib"   , "vl": 0, "k": "zeroing"},
-      {"inst": "vpcmpuw W:k {k}, xmm, xmm/m128/b64, ib/ub"                  , "op": "RVM-FVM: EVEX.128.66.0F3A.W1 3E /r ib"   , "vl": 1, "k": "zeroing"},
-      {"inst": "vpcmpuw W:k {k}, ymm, ymm/m256/b64, ib/ub"                  , "op": "RVM-FVM: EVEX.256.66.0F3A.W1 3E /r ib"   , "vl": 1, "k": "zeroing"},
-      {"inst": "vpcmpuw W:k {k}, zmm, zmm/m512/b64, ib/ub"                  , "op": "RVM-FVM: EVEX.512.66.0F3A.W1 3E /r ib"   , "vl": 0, "k": "zeroing"},
-      {"inst": "vpcmpw W:k {k}, xmm, xmm/m128/b64, ib/ub"                   , "op": "RVM-FVM: EVEX.128.66.0F3A.W1 3F /r ib"   , "vl": 1, "k": "zeroing"},
-      {"inst": "vpcmpw W:k {k}, ymm, ymm/m256/b64, ib/ub"                   , "op": "RVM-FVM: EVEX.256.66.0F3A.W1 3F /r ib"   , "vl": 1, "k": "zeroing"},
-      {"inst": "vpcmpw W:k {k}, zmm, zmm/m512/b64, ib/ub"                   , "op": "RVM-FVM: EVEX.512.66.0F3A.W1 3F /r ib"   , "vl": 0, "k": "zeroing"},
+      {"inst": "vpcmpuw W:k {k}, xmm, xmm/m128, ib/ub"                  , "op": "RVM-FVM: EVEX.128.66.0F3A.W1 3E /r ib"   , "vl": 1, "k": "zeroing"},
+      {"inst": "vpcmpuw W:k {k}, ymm, ymm/m256, ib/ub"                  , "op": "RVM-FVM: EVEX.256.66.0F3A.W1 3E /r ib"   , "vl": 1, "k": "zeroing"},
+      {"inst": "vpcmpuw W:k {k}, zmm, zmm/m512, ib/ub"                  , "op": "RVM-FVM: EVEX.512.66.0F3A.W1 3E /r ib"   , "vl": 0, "k": "zeroing"},
+      {"inst": "vpcmpw W:k {k}, xmm, xmm/m128, ib/ub"                   , "op": "RVM-FVM: EVEX.128.66.0F3A.W1 3F /r ib"   , "vl": 1, "k": "zeroing"},
+      {"inst": "vpcmpw W:k {k}, ymm, ymm/m256, ib/ub"                   , "op": "RVM-FVM: EVEX.256.66.0F3A.W1 3F /r ib"   , "vl": 1, "k": "zeroing"},
+      {"inst": "vpcmpw W:k {k}, zmm, zmm/m512, ib/ub"                   , "op": "RVM-FVM: EVEX.512.66.0F3A.W1 3F /r ib"   , "vl": 0, "k": "zeroing"},
       {"inst": "vpermi2w X:xmm {kz}, xmm, xmm/m128"                         , "op": "RVM-FVM: EVEX.128.66.0F38.W1 75 /r"      , "vl": 1},
       {"inst": "vpermi2w X:ymm {kz}, ymm, ymm/m256"                         , "op": "RVM-FVM: EVEX.256.66.0F38.W1 75 /r"      , "vl": 1},
       {"inst": "vpermi2w X:zmm {kz}, zmm, zmm/m512"                         , "op": "RVM-FVM: EVEX.512.66.0F38.W1 75 /r"      , "vl": 0},
@@ -3976,8 +3958,6 @@
       {"inst": "vpextrb W:r32[7:0]/m8 , xmm, ib/ub"                         , "op": "MR-T1S: EVEX.128.66.0F3A.WIG 14 /r ib"   , "vl": 0},
       {"inst": "vpextrw W:r32[15:0], xmm, ib/ub"                            , "op": "RM: EVEX.128.66.0F.WIG C5 /r ib"         , "vl": 0},
       {"inst": "vpextrw W:r32[15:0]/m16, xmm, ib/ub"                        , "op": "MR-T1S: EVEX.128.66.0F3A.WIG 15 /r ib"   , "vl": 0},
-      {"inst": "vpinsrb W:xmm {kz}, xmm, r32[7:0]/m8, ib/ub"                , "op": "RVM-T1S: EVEX.128.66.0F3A.WIG 20 /r ib"  , "vl": 0},
-      {"inst": "vpinsrw W:xmm {kz}, xmm, r32[15:0]/m16, ib/ub"              , "op": "RVM-T1S: EVEX.128.66.0F.WIG C4 /r ib"    , "vl": 0},
       {"inst": "vpmaddubsw W:xmm {kz}, ~xmm, ~xmm/m128"                     , "op": "RVM-FVM: EVEX.128.66.0F38.WIG 04 /r"     , "vl": 1},
       {"inst": "vpmaddubsw W:ymm {kz}, ~ymm, ~ymm/m256"                     , "op": "RVM-FVM: EVEX.256.66.0F38.WIG 04 /r"     , "vl": 1},
       {"inst": "vpmaddubsw W:zmm {kz}, ~zmm, ~zmm/m512"                     , "op": "RVM-FVM: EVEX.512.66.0F38.WIG 04 /r"     , "vl": 0},
@@ -4202,12 +4182,12 @@
     ]},
 
     {"category": "AVX512 SIMD", "ext": "AVX512_VPOPCNTDQ", "data": [
-      {"inst": "vpopcntd W:xmm {kz}, xmm/m128/b32"                          , "op": "RM-FVM: EVEX.128.66.0F38.W0 55 /r"       , "vl": 1},
-      {"inst": "vpopcntd W:ymm {kz}, ymm/m256/b32"                          , "op": "RM-FVM: EVEX.256.66.0F38.W0 55 /r"       , "vl": 1},
-      {"inst": "vpopcntd W:zmm {kz}, zmm/m512/b32"                          , "op": "RM-FVM: EVEX.512.66.0F38.W0 55 /r"       , "vl": 0},
-      {"inst": "vpopcntq W:xmm {kz}, xmm/m128/b64"                          , "op": "RM-FVM: EVEX.128.66.0F38.W1 55 /r"       , "vl": 1},
-      {"inst": "vpopcntq W:ymm {kz}, ymm/m256/b64"                          , "op": "RM-FVM: EVEX.256.66.0F38.W1 55 /r"       , "vl": 1},
-      {"inst": "vpopcntq W:zmm {kz}, zmm/m512/b64"                          , "op": "RM-FVM: EVEX.512.66.0F38.W1 55 /r"       , "vl": 0}
+      {"inst": "vpopcntd W:xmm {kz}, xmm/m128"                          , "op": "RM-FVM: EVEX.128.66.0F38.W0 55 /r"       , "vl": 1},
+      {"inst": "vpopcntd W:ymm {kz}, ymm/m256"                          , "op": "RM-FVM: EVEX.256.66.0F38.W0 55 /r"       , "vl": 1},
+      {"inst": "vpopcntd W:zmm {kz}, zmm/m512"                          , "op": "RM-FVM: EVEX.512.66.0F38.W0 55 /r"       , "vl": 0},
+      {"inst": "vpopcntq W:xmm {kz}, xmm/m128"                          , "op": "RM-FVM: EVEX.128.66.0F38.W1 55 /r"       , "vl": 1},
+      {"inst": "vpopcntq W:ymm {kz}, ymm/m256"                          , "op": "RM-FVM: EVEX.256.66.0F38.W1 55 /r"       , "vl": 1},
+      {"inst": "vpopcntq W:zmm {kz}, zmm/m512"                          , "op": "RM-FVM: EVEX.512.66.0F38.W1 55 /r"       , "vl": 0}
     ]},
 
     {"category": "AVX512 SIMD", "ext": "AVX512_VBMI", "data": [
@@ -4277,15 +4257,9 @@
     ]},
 
     {"category": "AVX512 SIMD", "ext": "AVX512_4FMAPS", "data": [
-      {"inst": "v4fmaddps X:zmm {kz}, zmm, m128"       , "op": "RM-T1_4X: EVEX.512.F2.0F38.W0 9A /r"     , "vl": 0},
-      {"inst": "v4fmaddss X:xmm {kz}, xmm, m128"       , "op": "RM-T1_4X: EVEX.LIG.F2.0F38.W0 9B /r"     , "vl": 0},
-      {"inst": "v4fnmaddps X:zmm {kz}, zmm, m128"      , "op": "RM-T1_4X: EVEX.512.F2.0F38.W0 AA /r"     , "vl": 0},
-      {"inst": "v4fnmaddss X:xmm {kz}, xmm, m128"      , "op": "RM-T1_4X: EVEX.LIG.F2.0F38.W0 AB /r"     , "vl": 0}
     ]},
 
     {"category": "AVX512 SIMD", "ext": "AVX512_4VNNIW", "data": [
-      {"inst": "vp4dpwssd W:zmm {kz}, zmm, m128"       , "op": "RM-T1_4X: EVEX.512.F2.0F38.W0 52 /r"     , "vl": 0},
-      {"inst": "vp4dpwssds W:zmm {kz}, zmm, m128"      , "op": "RM-T1_4X: EVEX.512.F2.0F38.W0 53 /r"     , "vl": 0}
     ]},
 
     {"category": "AVX512 SIMD", "ext": "AVX512_VNNI", "data": [
@@ -4316,24 +4290,18 @@
     ]},
 
     {"category": "AVX512 SIMD", "ext": "AVX512_VP2INTERSECT", "data": [
-      {"inst": "vp2intersectd W:k, W:k+1, xmm, xmm/m128/b32"                , "op": "RVM: EVEX.128.F2.0F38.W0 68 /r"          , "vl": 1},
-      {"inst": "vp2intersectd W:k, W:k+1, ymm, ymm/m256/b32"                , "op": "RVM: EVEX.256.F2.0F38.W0 68 /r"          , "vl": 1},
-      {"inst": "vp2intersectd W:k, W:k+1, zmm, zmm/m512/b32"                , "op": "RVM: EVEX.512.F2.0F38.W0 68 /r"          , "vl": 0},
-      {"inst": "vp2intersectq W:k, W:k+1, xmm, xmm/m128/b64"                , "op": "RVM: EVEX.128.F2.0F38.W1 68 /r"          , "vl": 1},
-      {"inst": "vp2intersectq W:k, W:k+1, ymm, ymm/m256/b64"                , "op": "RVM: EVEX.256.F2.0F38.W1 68 /r"          , "vl": 1},
-      {"inst": "vp2intersectq W:k, W:k+1, zmm, zmm/m512/b64"                , "op": "RVM: EVEX.512.F2.0F38.W1 68 /r"          , "vl": 0}
+      {"inst": "vp2intersectd W:k, xmm, xmm/m128"                , "op": "RVM: EVEX.128.F2.0F38.W0 68 /r"          , "vl": 1},
+      {"inst": "vp2intersectd W:k, ymm, ymm/m256"                , "op": "RVM: EVEX.256.F2.0F38.W0 68 /r"          , "vl": 1},
+      {"inst": "vp2intersectd W:k, zmm, zmm/m512"                , "op": "RVM: EVEX.512.F2.0F38.W0 68 /r"          , "vl": 0}
     ]},
 
     {"category": "AVX512 SIMD", "ext": "AVX512_BF16", "data": [
       {"inst": "vcvtne2ps2bf16 W:xmm {kz}, xmm, xmm/m128/b32"               , "op": "RVM-FV: EVEX.128.F2.0F38.W0 72 /r"       , "vl": 1},
       {"inst": "vcvtne2ps2bf16 W:ymm {kz}, ymm, ymm/m256/b32"               , "op": "RVM-FV: EVEX.256.F2.0F38.W0 72 /r"       , "vl": 1},
       {"inst": "vcvtne2ps2bf16 W:zmm {kz}, zmm, zmm/m512/b32"               , "op": "RVM-FV: EVEX.512.F2.0F38.W0 72 /r"       , "vl": 0},
-      {"inst": "vcvtneps2bf16 W:xmm {kz}, xmm/m128/b32"                     , "op": "RM-FV: EVEX.128.F3.0F38.W0 72 /r"        , "vl": 1},
-      {"inst": "vcvtneps2bf16 W:xmm {kz}, ymm/m256/b32"                     , "op": "RM-FV: EVEX.256.F3.0F38.W0 72 /r"        , "vl": 1},
-      {"inst": "vcvtneps2bf16 W:ymm {kz}, zmm/m512/b32"                     , "op": "RM-FV: EVEX.512.F3.0F38.W0 72 /r"        , "vl": 0},
-      {"inst": "vdpbf16ps W:xmm {kz}, xmm, xmm/m128/b32"                    , "op": "RVM-FV: EVEX.128.F3.0F38.W0 52 /r"       , "vl": 1},
-      {"inst": "vdpbf16ps W:ymm {kz}, ymm, ymm/m256/b32"                    , "op": "RVM-FV: EVEX.256.F3.0F38.W0 52 /r"       , "vl": 1},
-      {"inst": "vdpbf16ps W:zmm {kz}, zmm, zmm/m512/b32"                    , "op": "RVM-FV: EVEX.512.F3.0F38.W0 52 /r"       , "vl": 0}
+      {"inst": "vdpbf16ps W:xmm {kz}, xmm, xmm/m128"                    , "op": "RVM-FV: EVEX.128.F3.0F38.W0 52 /r"       , "vl": 1},
+      {"inst": "vdpbf16ps W:ymm {kz}, ymm, ymm/m256"                    , "op": "RVM-FV: EVEX.256.F3.0F38.W0 52 /r"       , "vl": 1},
+      {"inst": "vdpbf16ps W:zmm {kz}, zmm, zmm/m512"                    , "op": "RVM-FV: EVEX.512.F3.0F38.W0 52 /r"       , "vl": 0}
     ]},
 
     {"category": "AVX512 SCALAR", "ext": "AVX512_FP16", "data": [

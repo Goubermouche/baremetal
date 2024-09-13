@@ -336,6 +336,7 @@ namespace baremetal {
 				}
 
 				if(m_lexer.get_next_token() == TOK_LBRACE) {
+					m_lexer.force_keyword = true;
 					m_lexer.get_next_token();
 
 					// masked memory operand
@@ -364,9 +365,8 @@ namespace baremetal {
 					// broadcast
 					else {
 						u8 n = 0;
-						m_lexer.force_keyword = true;
 
-						switch(m_lexer.get_next_token()) {
+						switch(m_lexer.current) {
 							case TOK_1TO2:  n = 2; break;
 							case TOK_1TO4:  n = 4; break;
 							case TOK_1TO8:  n = 8; break;
