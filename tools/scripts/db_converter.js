@@ -179,6 +179,7 @@ function extract_encoding(enc) {
 				else if(p === '256') {
 					result.size = 256;
 				}
+
 				else if(['0F38', '0F', '0F3A'].some(i => i == p)) {
 					result.opcode.push(p);
 				}
@@ -368,56 +369,6 @@ function main() {
 		'EVEX_VM',
 		'EVEX_M', // technically not implemented
 	];
-
-	const allowed = [
-    "vpcompressw",
-    "vpcompressb",
-    "vpmovwb",
-    "vpmovuswb",
-    "vpmovswb",
-    "vpextrw",
-    "vmovdqu8",
-    "vmovdqu16",
-    "vextracti64x2",
-    "vextracti32x8",
-    "vextractf64x2",
-    "vextractf32x8",
-    "vpmovusqw",
-    "vpmovusqb",
-    "vpmovusqd",
-    "vpmovusdw",
-    "vpmovusdb",
-    "vpmovsqw",
-    "vpmovsqd",
-    "vpmovsqb",
-    "vpmovsdw",
-    "vpmovsdb",
-    "vpmovqw",
-    "vpmovqb",
-    "vpmovqd",
-    "vpmovdw",
-    "vpmovdb",
-    "vpcompressq",
-    "vpcompressd",
-    "vmovups",
-    "vmovupd",
-    "vmovsldup",
-    "vmovupd",
-    "vmovshdup",
-    "vmovdqu64",
-    "vmovdqu32",
-    "vmovdqa64",
-    "vmovdqa32",
-    "vmovaps",
-    "vmovapd",
-    "vextracti64x4",
-    "vmovaps",
-    "vextracti32x4",
-    "vextractf64x4",
-    "vextractf32x4",
-    "vmovss",
-    "vmovsd"
-];
 
 	instructions.forEach(inst => {
 		//  test all categories

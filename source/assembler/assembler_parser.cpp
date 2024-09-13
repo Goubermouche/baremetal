@@ -58,7 +58,7 @@ namespace baremetal {
 			}
 		}
 	
-		auto is_operand_match(u32 inst_i, operand* operands) -> bool {
+		auto is_operand_match(u32 inst_i, operand* operands, u8 broadcast_n) -> bool {
 			const instruction& inst = instruction_db[inst_i];
 	
 			for(u8 i = 0; i < 4; ++i) {
@@ -76,6 +76,13 @@ namespace baremetal {
 				}
 
 				if(is_operand_reg(operands[i].type) && operands[i].r > 15 && !inst.is_evex()) {
+					return false;
+				}
+
+				if(
+					inst.has_broadcast_operand() &&
+					broadcast_to_bits(inst.operands[inst.get_broadcast_operand()])  * broadcast_n != inst_size_to_int(inst.op_size)
+				) {
 					return false;
 				}
 			}
@@ -172,7 +179,7 @@ namespace baremetal {
 		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
 
 		while(instruction_i < db_size && utility::compare_strings(instruction_db[instruction_i].name, instruction_db[first_instruction].name) == 0) {
-			if(detail::is_operand_match(instruction_i, operands)) {
+			if(detail::is_operand_match(instruction_i, operands, m_broadcast_n)) {
 				for(u8 j = 0; j < operand_i; ++j) {
 					operands[j].type = instruction_db[instruction_i].operands[j]; // HACK: just modify all instructions to the actual type (relocations, mem256)
 
@@ -364,14 +371,12 @@ namespace baremetal {
 					}
 					// broadcast
 					else {
-						u8 n = 0;
-
 						switch(m_lexer.current) {
-							case TOK_1TO2:  n = 2; break;
-							case TOK_1TO4:  n = 4; break;
-							case TOK_1TO8:  n = 8; break;
-							case TOK_1TO16: n = 16; break;
-							case TOK_1TO32: n = 32; break;
+							case TOK_1TO2:  m_broadcast_n = 2; break;
+							case TOK_1TO4:  m_broadcast_n = 4; break;
+							case TOK_1TO8:  m_broadcast_n = 8; break;
+							case TOK_1TO16: m_broadcast_n = 16; break;
+							case TOK_1TO32: m_broadcast_n = 32; break;
 							default: return utility::error("invalid broadcast operand specified");
 						}
 
@@ -381,7 +386,7 @@ namespace baremetal {
 
 						constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
 						u32 index = first_instruction;
-						operand_type ty = OP_NONE;
+						bool met_broadcast = false;
 
 						// find the bn from the current instruction
 						while(index < db_size && utility::compare_strings(instruction_db[first_instruction].name, instruction_db[index].name) == 0) {
@@ -389,25 +394,27 @@ namespace baremetal {
 								const instruction& current = instruction_db[index];
 
 								if(current.has_broadcast_operand()) {
-									ty = current.operands[current.get_broadcast_operand()];
-									break;
+									operand_type ty = current.operands[current.get_broadcast_operand()];
+									met_broadcast = true;
+
+									if(broadcast_to_bits(ty) * m_broadcast_n == inst_size_to_int(current.op_size)) {
+										operand op;
+										op.type = ty;
+										operands[operand_i++] = op;
+
+										return SUCCESS;
+									}
 								}
 							}
 
 							index++;
 						}
 
-						if(ty == OP_NONE) {
-							return utility::error("invalid broadcast operand specified");
-						}
-
-						if(broadcast_to_bits(ty) * n != inst_size_to_int(instruction_db[index].op_size)) {
+						if(met_broadcast) {
 							return utility::error("mismatch in the number of broadcasting elements");
 						}
 
-						operand op;
-						op.type = ty;
-						operands[operand_i++] = op;
+						return utility::error("invalid broadcast operand specified");
 					}
 				}
 				else {

@@ -6,7 +6,7 @@
 
 namespace baremetal {
 	namespace detail {
-		auto is_operand_match(u32 inst_i, operand* operands) -> bool;
+		auto is_operand_match(u32 inst_i, operand* operands, u8 broadcast_n) -> bool;
 		auto imm_to_scale(const imm& i) -> utility::result<scale>;
 		auto inst_match(operand_type a, operand b) -> bool;
 	} // namespace detail
@@ -41,6 +41,8 @@ namespace baremetal {
 
 		operand operands[4];
 		u8 operand_i = 0;
+
+		u8 m_broadcast_n;
 	};
 } // namespace baremetal
 

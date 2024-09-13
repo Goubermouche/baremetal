@@ -1,8 +1,6 @@
 #include "assembler.h"
 
 #include "assembler/instruction/instruction.h"
-#include "assembler/instruction/operands/operands.h"
-#include "assembler/instruction/operands/registers.h"
 
 #include <utility/algorithms/sort.h>
 
@@ -276,22 +274,15 @@ namespace baremetal {
 	}
 
 	void assembler::emit_opcode_prefix_vex_two(const instruction* inst, const operand* operands) {
-		// two byte vex prefix
-		m_bytes.push_back(0xc5);
-
 		const u8 rex = get_instruction_rex(inst, operands);
-
-		// second byte
-		// ~R    [X_______]
-		// ~vvvv [_XXXX___]
-		// L     [_____X__]
-		// pp    [______XX]
 		u8 second = 0;
 
-		second |= !(rex & 0b00000100) << 7;
-		second |= get_instruction_vvvv(inst, operands) << 3;
-		second |= get_instruction_l(inst) << 2;
-		second |= get_instruction_imp(inst);
+		m_bytes.push_back(0xc5); // two byte vex prefix
+
+		second |= !(rex & 0b00000100) << 7;                  // ~R    [X_______]
+		second |= get_instruction_vvvv(inst, operands) << 3; // ~vvvv [_XXXX___]
+		second |= get_instruction_l(inst) << 2;              // L     [_____X__]
+		second |= get_instruction_imp(inst);                 // pp    [______XX]
 
 		m_bytes.push_back(second);
 	}
@@ -394,78 +385,52 @@ namespace baremetal {
 	}
 
 	void assembler::emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands) {
+		const u8 rex = get_instruction_rex(inst, operands);
+
+		u8 second = 0;
+		u8 third = 0;
+
+		// vex/xop prefix
 		if(inst->is_xop()) {
 			m_bytes.push_back(0x8f);
 		} else {
 			m_bytes.push_back(0xc4);
 		}
 
-		const u8 rex = get_instruction_rex(inst, operands);
+		second |= !(rex & 0b00000100) << 7;                 // ~R         [X_______] 
+		second |= !(rex & 0b00000010) << 6;                 // ~X         [_X______]
+		second |= !(rex & 0b00000001) << 5;                 // ~B         [__X_____] 
+		second |= get_instruction_map_select(inst);         // map_select [___XXXXX]
 
-		// second byte
-		// ~R         [X_______]
-		// ~X         [_X______]
-		// ~B         [__X_____]
-		// map_select [___XXXXX]
-		u8 second = 0;
-
-		second |= !(rex & 0b00000100) << 7; // ~R inverted REX.r
-		second |= !(rex & 0b00000010) << 6; // ~X inverted REX.x
-		second |= !(rex & 0b00000001) << 5; // ~B inverted REX.b
-		second |= get_instruction_map_select(inst);
-
-		m_bytes.push_back(second);
-
-		// third byte
-		// W/E   [X_______]
-		// ~vvvv [_XXXX___]
-		// L     [_____X__]
-		// pp    [______XX]
-		u8 third = 0;
-
-		third |= static_cast<u8>((inst->is_rexw()) << 7);
-		third |= get_instruction_vvvv(inst, operands) << 3;
-		third |= get_instruction_l(inst) << 2;
-		third |= get_instruction_imp(inst);
+		third |= static_cast<u8>((inst->is_rexw()) << 7);   // W/E        [X_______]
+		third |= get_instruction_vvvv(inst, operands) << 3; // ~vvvv      [_XXXX___]
+		third |= get_instruction_l(inst) << 2;              // L          [_____X__]
+		third |= get_instruction_imp(inst);                 // pp         [______XX]
 		
+		m_bytes.push_back(second);
 		m_bytes.push_back(third);
 	}
 
 	void assembler::emit_opcode_prefix_evex(const instruction* inst, const operand* operands) {
-		m_bytes.push_back(0x62); // always the same, derived from an unused opcode
-
 		const u8 rex = get_instruction_rex(inst, operands);
+		const u8 modrm = get_mod_rm_reg(inst, operands);
 
-		// second byte
-		// ~R         [X_______]
-		// ~X         [_X______]
-		// ~B         [__X_____]
-		// ~R'        [___X____]
-		//            [____0___]
-		// map select [_____XXX] - NOTE: older EVEX versions only contain a two bit map select
 		u8 second = 0;
-		
-		second |= !(rex & 0b00000100) << 7; // ~R inverted REX.r
-		second |= !(rex & 0b00000010) << 6;// ~X inverted REX.x
-		second |= !(rex & 0b00000001) << 5; // ~B inverted REX.b
-		second |= !(get_mod_rm_reg(inst, operands) & 0b00010000) << 4; // ~R' inverted R (reg)
-		second |= get_instruction_map_select(inst);
-
-		m_bytes.push_back(second);
-		
-		// third byte
-		// W                              [X_______]
-		// ~vvvv                          [_XXXX___]
-		//                                [_____1__]
-		// operand size and type prefixes [______XX]
 		u8 third = 0;
+		u8 fourth = 0;
 
-		third |= static_cast<u8>((inst->is_rexw()) << 7);
-		third |= get_instruction_vvvv(inst, operands) << 3;
-		third |= 0b1 << 2;
-		third |= get_instruction_imp(inst);
+		m_bytes.push_back(0x62); // evex prefix
 
-		m_bytes.push_back(third);
+		second |= !(rex & 0b00000100) << 7;                 // ~R         [X_______] 
+		second |= !(rex & 0b00000010) << 6;                 // ~X         [_X______] 
+		second |= !(rex & 0b00000001) << 5;                 // ~B         [__X_____] 
+		second |= !(modrm & 0b00010000) << 4;               // ~R'        [___X____]
+		second |= get_instruction_map_select(inst);         // map select [____0XXX]
+
+		third |= static_cast<u8>((inst->is_rexw()) << 7);   // W          [X_______]
+		third |= get_instruction_vvvv(inst, operands) << 3; // ~vvvv      [_XXXX___]
+		third |= 0b1 << 2;                                  //            [_____1__]
+		third |= get_instruction_imp(inst);                 // imp        [______XX]
 
 		// fourth
 		// merge or zero                                                                  [X_______]
@@ -475,8 +440,6 @@ namespace baremetal {
 		// ~V (expands vvvv)                                                              [____X___]
 		// operand mask register (k0–k7) for vector instructions                          [_____XXX]
 		
-		u8 fourth = 0;
-
 		fourth |= !get_instruction_v(inst, operands) << 3;
 
 		// broadcast
@@ -537,6 +500,8 @@ namespace baremetal {
 			fourth |= ll;
 		}
 
+		m_bytes.push_back(second);
+		m_bytes.push_back(third);
 		m_bytes.push_back(fourth);
 	}
 

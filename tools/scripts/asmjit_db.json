@@ -3750,6 +3750,12 @@
     ]},
 
     {"category": "AVX512 SIMD", "ext": "AVX512_DQ", "data": [
+			{"inst": "vfpclasspd W:k {k}, xmm/b64, ib/ub"                    , "op": "RM-FV: EVEX.128.66.0F3A.W1 66 /r ib"     , "vl": 1, "k": "zeroing"},
+      {"inst": "vfpclasspd W:k {k}, ymm/b64, ib/ub"                    , "op": "RM-FV: EVEX.256.66.0F3A.W1 66 /r ib"     , "vl": 1, "k": "zeroing"},
+      {"inst": "vfpclasspd W:k {k}, zmm/b64, ib/ub"                    , "op": "RM-FV: EVEX.512.66.0F3A.W1 66 /r ib"     , "vl": 0, "k": "zeroing"},
+      {"inst": "vfpclassps W:k {k}, xmm/b32, ib/ub"                    , "op": "RM-FV: EVEX.128.66.0F3A.W0 66 /r ib"     , "vl": 1, "k": "zeroing"},
+      {"inst": "vfpclassps W:k {k}, ymm/b32, ib/ub"                    , "op": "RM-FV: EVEX.256.66.0F3A.W0 66 /r ib"     , "vl": 1, "k": "zeroing"},
+      {"inst": "vfpclassps W:k {k}, zmm/b32, ib/ub"                    , "op": "RM-FV: EVEX.512.66.0F3A.W0 66 /r ib"     , "vl": 0, "k": "zeroing"},
       {"inst": "vandnpd W:xmm {kz}, xmm, xmm/m128/b64"                      , "op": "RVM-FV: EVEX.128.66.0F.W1 55 /r"         , "vl": 1},
       {"inst": "vandnpd W:ymm {kz}, ymm, ymm/m256/b64"                      , "op": "RVM-FV: EVEX.256.66.0F.W1 55 /r"         , "vl": 1},
       {"inst": "vandnpd W:zmm {kz}, zmm, zmm/m512/b64"                      , "op": "RVM-FV: EVEX.512.66.0F.W1 55 /r"         , "vl": 0},

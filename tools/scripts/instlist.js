@@ -17,17 +17,23 @@ function main() {
 	}
 
 	let names = new Set();
+	let names_total = 0;
 
 	db.forEach(inst => {
 		names.add(inst.name);
+		names_total++;
 	})
 
-	let names_arr = [...names].sort();
+	// let names_arr = [...names].sort();
 
-	// print the final array
-	names_arr.forEach(name => {
-		console.log(name);
-	})
+	// // print the final array
+	// names_arr.forEach(name => {
+	// 	console.log(name);
+	// })
+	//
+	
+	console.log(`${names_total} total instruction variants`);
+	console.log(`${names.size} instruction instances`);
 
 	return 0;
 }
