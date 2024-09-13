@@ -240,8 +240,7 @@ function extract_encoding(enc) {
 					result.size = 512;
 				}
 				else {
-					result.op_size = p;
-					// console.log(p);
+					console.log(p);
 				}
 			}
 		}
@@ -340,51 +339,11 @@ function main() {
 
 	gp_inst = [];
 
-	// VIRTUALIZATION
-	const supported_categories = [
-		'GP', 'GP_IN_OUT', 'GP_EXT', 'CRYPTO_HASH', 'VIRTUALIZATION', 'FPU', 'SSE', 'STATE', 'SCALAR', 'MASK', 'AMX',
-		'AVX512', 'SIMD', 'AVX'
-	];
-	
-	const supported_encodings = [
-		'RM',
-		'MR', 
-		'M', 
-		'NORMAL',
-		'R',
-		'VEX', 
-		'VEX_R', 
-		'VEX_VM',
-		'VEX_RM',
-		'VEX_RVM',
-		'VEX_RMV',
-		'VEX_MVR',
-		'VEX_RVMN',
-		'VEX_RVMS',
-		'XOP',
-		'XOP_VM',
-		'EVEX_RVM',
-		'EVEX_RM',
-		'EVEX_MR',
-		'EVEX_VM',
-		'EVEX_M', // technically not implemented
-	];
-
 	instructions.forEach(inst => {
 		//  test all categories
-		if(
-			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86')
-		) { 
+		if(!inst.extension.includes('X86')) { 
 			gp_inst.push(inst);
 		}
-
-		// test specific categories
-		// if(
-		// 	!inst.extension.includes('X86') && inst.operands.some(op => op.includes('b'))
-		// ) {
-		// 	gp_inst.push(inst);
-		// }
 	});
 
 	let rows = [];
@@ -401,7 +360,6 @@ function main() {
 		row.push(`"rm": "${inst.enc.rm === undefined ? "" : inst.enc.rm}"`);
 		row.push(`"ri": "${inst.enc.opcode_extend === undefined ? "" : inst.enc.opcode_extend}"`);
 		row.push(`"size": ${inst.enc.size === undefined ? "64" : inst.enc.size}`);
-		row.push(`"op_size": ${inst.enc.op_size === undefined ? "64" : inst.enc.op_size}`);
 		row.push(`"map": "${inst.enc.map === undefined ? '' : inst.enc.map}"`);
 		row.push(`"l": "${inst.enc.l ===  undefined ? '' : inst.enc.l}"`);
 		

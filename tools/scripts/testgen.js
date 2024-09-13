@@ -178,8 +178,8 @@ function generate_combinations(inst) {
 
 		if(!operand_map.has(current)) {
 			if(current.includes('b')) {
-				const new_op_size = Number(current.slice(1)); // Exclude first letter and convert to number
-				current_array = [`[rax]{1to${inst.size / new_op_size}}`]; // Replace inst.op_size with new_op_size
+				const new_op_size = Number(current.slice(1));
+				current_array = [`[rax]{1to${inst.size / new_op_size}}`];
 			}
 			else {
 				console.error(`unknown operand '${current}'`);
