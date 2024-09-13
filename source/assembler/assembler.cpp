@@ -747,7 +747,13 @@ namespace baremetal {
 			case ENC_VEX_RVM: destination = m_regs[2]; break;
 			case ENC_EVEX_RVM: {
 				if(inst->operand_count == 2) {
-					destination = m_regs[1];
+					if(!is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
+						rx = m_regs[1];
+						destination = m_regs[0];
+					}
+					else {
+						destination = m_regs[1];
+					}
 				}
 				else {
 					destination = m_regs[2];
@@ -977,6 +983,18 @@ namespace baremetal {
 		switch(inst->enc) {
 			case ENC_VEX_MR: rx = m_regs[m_reg_count - 1]; break;
 			case ENC_EVEX_MR: rx = m_regs[m_reg_count - 1]; break;
+			case ENC_EVEX_RVM: {
+				if(inst->operand_count == 2) {
+					if(is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0])) {
+						rx = 0;
+					}
+					else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
+						rx = m_regs[1];
+					}
+				}
+
+				break;
+			}
 			case ENC_VEX_MVR: {
 				if(m_reg_count == 3) {
 					rx = m_regs[1]; 
@@ -1158,8 +1176,16 @@ namespace baremetal {
 					}
 					case 0b00001000: base = registers[2]; break;
 					case 0b00100000: {
-
-						if(is_operand_mem(inst->operands[1]) || inst->operand_count == 2) {
+						if(inst->operand_count == 2 && is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
+							base = 8;
+						}
+						else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
+							rx = 8;
+						}
+						else if(is_operand_mem(inst->operands[1]) && inst->operand_count == 2) {
+							base = registers[1];
+						}
+						else if(is_operand_mem(inst->operands[1]) || inst->operand_count == 2) {
 							if(is_operand_masked(inst->operands[0])) {
 								rx = 8;
 								base = 0;
@@ -1173,7 +1199,19 @@ namespace baremetal {
 						break;
 					}
 					case 0b00101000: rx = registers[0]; base = registers[2]; break;   
-					case 0b10000000: rx = registers[0]; break; 
+					case 0b10000000: {
+						if(is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
+							rx = 8;
+						}
+						else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
+							base = 8;
+						}
+						else {
+							rx = registers[0]; 
+						}
+
+						break;
+					}
 					case 0b10001000: rx = registers[0]; base = registers[2]; break; 
 					case 0b10100000: {
 						rx = registers[0];
@@ -1189,7 +1227,13 @@ namespace baremetal {
 					case 0b00101100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
 					case 0b00110000: {
 						if(inst->operand_count == 2) {
-							if(is_operand_masked(inst->operands[0])) {
+							if(is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0])) {
+								base = index = 8;
+							}
+							else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
+								rx = 8;
+							}
+							else if(is_operand_masked(inst->operands[0])) {
 								rx = 8;
 								base = 0;
 								index = 0;
@@ -1209,9 +1253,17 @@ namespace baremetal {
 					case 0b10101100: rx = registers[0]; base = registers[2]; index = registers[1]; break;   
 					case 0b10110000: {
 						if(inst->operand_count == 2) {
-							rx = registers[0];
-							base = registers[1];
-							index = 8;
+							if(is_operand_masked(inst->operands[0])) {
+								rx = base = index = 8;
+							}
+							else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
+								base = rx = 8;
+							}
+							else {
+								rx = registers[0];
+								base = registers[1];
+								index = 8;
+							}
 						}
 						else {
 							rx = registers[0]; 
@@ -1222,7 +1274,16 @@ namespace baremetal {
 					}
 					case 0b10111000: rx = registers[0]; base = registers[2]; break;  
 					case 0b10111100: rx = registers[0]; base = registers[2]; index = registers[1]; break; 
-					case 0b11000000: rx = registers[0]; break;  
+					case 0b11000000: {
+						if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
+							base = index = 8;
+						}
+						else {
+							rx = registers[0];
+						}
+
+						break;  
+					}
 					case 0b11001000: rx = registers[0]; base = registers[2]; break;  
 					case 0b11001100: rx = registers[0]; base = registers[2]; index = registers[2]; break; 
 					case 0b11101000: rx = registers[0]; base = registers[1]; break;  
@@ -1394,13 +1455,40 @@ namespace baremetal {
 					case 0b10110000: rx = registers[0]; base = registers[1]; break;  
 					case 0b10111000: rx = registers[0]; base = registers[2]; break;  
 					case 0b10111100: rx = registers[0]; base = registers[2]; index = registers[1]; break; 
-					case 0b11000000: rx = registers[0]; break;  
+					case 0b11000000: {
+						if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
+							base = index = 8;
+						}
+						else {
+							rx = registers[0]; 
+						}
+
+						break;  
+					}
 					case 0b11001000: rx = registers[0]; base = registers[2]; break;  
 					case 0b11001100: rx = registers[0]; base = registers[2]; index = registers[2]; break; 
-					case 0b11100000: rx = registers[1]; break;  
+					case 0b11100000: {
+						if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
+							rx = base = index = 8;
+						}
+						else {
+							rx = registers[1]; 
+						}
+
+						break;
+					}
 					case 0b11101000: rx = registers[0]; base = registers[1]; break;  
 					case 0b11101100: rx = registers[0]; base = registers[1]; index = registers[2]; break;
-					case 0b11110000: rx = registers[1]; break; 
+					case 0b11110000: {
+						if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
+							rx = base = index = 8;
+						}
+						else {
+							rx = registers[1];
+						}
+
+						break; 
+					}
 					case 0b11111000: rx = registers[0]; base = registers[1]; break;  
 					case 0b11111100: rx = registers[0]; base = registers[1]; index = registers[2]; break; 				
 					default: ASSERT(false, "unknown index byte {}\n", index_byte);

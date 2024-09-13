@@ -369,11 +369,61 @@ function main() {
 		'EVEX_M', // technically not implemented
 	];
 
+	const allowed = [
+    "vpcompressw",
+    "vpcompressb",
+    "vpmovwb",
+    "vpmovuswb",
+    "vpmovswb",
+    "vpextrw",
+    "vmovdqu8",
+    "vmovdqu16",
+    "vextracti64x2",
+    "vextracti32x8",
+    "vextractf64x2",
+    "vextractf32x8",
+    "vpmovusqw",
+    "vpmovusqb",
+    "vpmovusqd",
+    "vpmovusdw",
+    "vpmovusdb",
+    "vpmovsqw",
+    "vpmovsqd",
+    "vpmovsqb",
+    "vpmovsdw",
+    "vpmovsdb",
+    "vpmovqw",
+    "vpmovqb",
+    "vpmovqd",
+    "vpmovdw",
+    "vpmovdb",
+    "vpcompressq",
+    "vpcompressd",
+    "vmovups",
+    "vmovupd",
+    "vmovsldup",
+    "vmovupd",
+    "vmovshdup",
+    "vmovdqu64",
+    "vmovdqu32",
+    "vmovdqa64",
+    "vmovdqa32",
+    "vmovaps",
+    "vmovapd",
+    "vextracti64x4",
+    "vmovaps",
+    "vextracti32x4",
+    "vextractf64x4",
+    "vextractf32x4",
+    "vmovss",
+    "vmovsd"
+];
+
 	instructions.forEach(inst => {
 		//  test all categories
 		if(
 			inst.category.some(r => supported_categories.includes(r)) && 
-			!inst.extension.includes('X86') 
+			!inst.extension.includes('X86') && allowed.includes(inst.name) 
 		) { 
 			gp_inst.push(inst);
 		}
