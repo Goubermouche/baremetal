@@ -22,5 +22,10 @@ namespace baremetal {
 		scale s = SCALE_1;
 		imm displacement;
 	};
+
+	struct masked_mem {
+		mem memory;
+		u8 k;
+	};
 } // namespace baremetal
 

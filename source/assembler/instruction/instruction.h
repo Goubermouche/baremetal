@@ -87,6 +87,7 @@ namespace baremetal {
 		ENC_EVEX_MR,
 		ENC_EVEX_VM,
 		ENC_EVEX_RMZ,
+		ENC_EVEX_M,
 		// XOP
 		ENC_XOP_VM,
 		ENC_XOP,
@@ -154,6 +155,7 @@ namespace baremetal {
 				case ENC_EVEX_MR:
 				case ENC_EVEX_VM:
 				case ENC_EVEX_RMZ:
+				case ENC_EVEX_M:
 				case ENC_EVEX_RM: return true;
 				default: return false;
 			}
@@ -274,13 +276,13 @@ namespace baremetal {
 			return false;
 		}
 
-		auto get_masked_operand(const operand* data) const -> masked_reg {
-			if(is_operand_masked(operands[0])) { return data[0].mr; }
-			if(is_operand_masked(operands[1])) { return data[1].mr; }
-			if(is_operand_masked(operands[2])) { return data[2].mr; }
-			if(is_operand_masked(operands[3])) { return data[3].mr; }
+		auto get_masked_operand() const -> u8 {
+			if(is_operand_masked(operands[0])) { return 0; }
+			if(is_operand_masked(operands[1])) { return 1; }
+			if(is_operand_masked(operands[2])) { return 2; }
+			if(is_operand_masked(operands[3])) { return 3; }
 
-			return masked_reg();
+			return 0;
 		}
 
 		const char* name;         // instruction mnemonic

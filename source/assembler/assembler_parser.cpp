@@ -3,6 +3,7 @@
 #include "assembler/instruction/instruction.h"
 #include "assembler/instruction/operands/operands.h"
 #include "assembler/instruction/operands/registers.h"
+#include "assembler/lexer.h"
 #include "utility/types.h"
 
 #define EXPECT_TOKEN(expected)                            \
@@ -27,22 +28,25 @@ namespace baremetal {
 	
 		auto inst_match(operand_type a, operand b) -> bool{
 			switch(a) {
-				case OP_FS:    return b.type == OP_SREG && b.r == fs.index;
-				case OP_GS:    return b.type == OP_SREG && b.r == gs.index;
-				case OP_AL:    return b.type == OP_R8 && b.r == al.index;
-				case OP_AX:    return b.type == OP_R16 && b.r == ax.index;
-				case OP_EAX:   return b.type == OP_R32 && b.r == eax.index;
-				case OP_RAX:   return b.type == OP_R64 && b.r == rax.index;
-				case OP_CL:    return b.type == OP_R8 && b.r == cl.index;
-				case OP_DX:    return b.type == OP_R16 && b.r == dx.index;
-				case OP_ECX:   return b.type == OP_R32 && b.r == ecx.index;
-				case OP_RCX:   return b.type == OP_R64 && b.r == rcx.index;
-				case OP_ST0:   return b.type == OP_ST && b.r == st0.index;
-				case OP_MEM:   return b.type == OP_M128;
-				case OP_VM64X: return b.type == OP_VM32X || a == b.type;
-				case OP_VM64Y: return b.type == OP_VM32Y || a == b.type;
-				case OP_VM64Z: return b.type == OP_VM32Z || a == b.type;
-				default:       return a == b.type;
+				case OP_FS:      return b.type == OP_SREG && b.r == fs.index;
+				case OP_GS:      return b.type == OP_SREG && b.r == gs.index;
+				case OP_AL:      return b.type == OP_R8 && b.r == al.index;
+				case OP_AX:      return b.type == OP_R16 && b.r == ax.index;
+				case OP_EAX:     return b.type == OP_R32 && b.r == eax.index;
+				case OP_RAX:     return b.type == OP_R64 && b.r == rax.index;
+				case OP_CL:      return b.type == OP_R8 && b.r == cl.index;
+				case OP_DX:      return b.type == OP_R16 && b.r == dx.index;
+				case OP_ECX:     return b.type == OP_R32 && b.r == ecx.index;
+				case OP_RCX:     return b.type == OP_R64 && b.r == rcx.index;
+				case OP_ST0:     return b.type == OP_ST && b.r == st0.index;
+				case OP_MEM:     return b.type == OP_M128;
+				case OP_VM64X:   return b.type == OP_VM32X || a == b.type;
+				case OP_VM64Y:   return b.type == OP_VM32Y || a == b.type;
+				case OP_VM64Z:   return b.type == OP_VM32Z || a == b.type;
+				case OP_VM64X_K: return b.type == OP_VM32X_K || a == b.type;
+				case OP_VM64Y_K: return b.type == OP_VM32Y_K || a == b.type;
+				case OP_VM64Z_K: return b.type == OP_VM32Z_K || a == b.type;
+				default:         return a == b.type;
 			}
 		}
 	
@@ -324,52 +328,73 @@ namespace baremetal {
 				}
 
 				if(m_lexer.get_next_token() == TOK_LBRACE) {
-					// broadcast
-					u8 n = 0;
-					m_lexer.force_keyword = true;
-
-					switch(m_lexer.get_next_token()) {
-						case TOK_1TO2:  n = 2; break;
-						case TOK_1TO4:  n = 4; break;
-						case TOK_1TO8:  n = 8; break;
-						case TOK_1TO16: n = 16; break;
-						case TOK_1TO32: n = 32; break;
-						default: return utility::error("invalid broadcast operand specified");
-					}
-
-					m_lexer.get_next_token();
-					EXPECT_TOKEN(TOK_RBRACE);
 					m_lexer.get_next_token();
 
-					constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
-					u32 index = first_instruction;
-					operand_type ty = OP_NONE;
+					// masked memory operand
+					if(is_token_k(m_lexer.current)) {
+						memory.mm.k = m_lexer.current - TOK_K1 + 1;
 
-					// find the bn from the current instruction
-					while(index < db_size && utility::compare_strings(instruction_db[first_instruction].name, instruction_db[index].name) == 0) {
-						if(detail::is_operand_match_partial(index, operands, operand_i)) {
-							const instruction& current = instruction_db[index];
-
-							if(current.has_broadcast_operand()) {
-								ty = current.operands[current.get_broadcast_operand()];
-								break;
-							}
+						switch(memory.type) {
+							case OP_VM32X: memory.type = OP_VM32X_K; break;
+							case OP_VM32Y: memory.type = OP_VM32Y_K; break;
+							case OP_VM32Z: memory.type = OP_VM32Z_K; break;
+							default: ASSERT(false, "unhandled memory for masked memory operand\n");
 						}
 
-						index++;
-					}
+						m_lexer.get_next_token();
+						EXPECT_TOKEN(TOK_RBRACE);
+						m_lexer.get_next_token();
 
-					if(ty == OP_NONE) {
-						return utility::error("invalid broadcast operand specified");
+						operands[operand_i++] = memory;
 					}
+					// broadcast
+					else {
+						u8 n = 0;
+						m_lexer.force_keyword = true;
 
-					if(broadcast_to_bits(ty) * n != inst_size_to_int(instruction_db[index].op_size)) {
-						return utility::error("mismatch in the number of broadcasting elements");
+						switch(m_lexer.get_next_token()) {
+							case TOK_1TO2:  n = 2; break;
+							case TOK_1TO4:  n = 4; break;
+							case TOK_1TO8:  n = 8; break;
+							case TOK_1TO16: n = 16; break;
+							case TOK_1TO32: n = 32; break;
+							default: return utility::error("invalid broadcast operand specified");
+						}
+
+						m_lexer.get_next_token();
+						EXPECT_TOKEN(TOK_RBRACE);
+						m_lexer.get_next_token();
+
+						constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
+						u32 index = first_instruction;
+						operand_type ty = OP_NONE;
+
+						// find the bn from the current instruction
+						while(index < db_size && utility::compare_strings(instruction_db[first_instruction].name, instruction_db[index].name) == 0) {
+							if(detail::is_operand_match_partial(index, operands, operand_i)) {
+								const instruction& current = instruction_db[index];
+
+								if(current.has_broadcast_operand()) {
+									ty = current.operands[current.get_broadcast_operand()];
+									break;
+								}
+							}
+
+							index++;
+						}
+
+						if(ty == OP_NONE) {
+							return utility::error("invalid broadcast operand specified");
+						}
+
+						if(broadcast_to_bits(ty) * n != inst_size_to_int(instruction_db[index].op_size)) {
+							return utility::error("mismatch in the number of broadcasting elements");
+						}
+
+						operand op;
+						op.type = ty;
+						operands[operand_i++] = op;
 					}
-
-					operand op;
-					op.type = ty;
-					operands[operand_i++] = op;
 				}
 				else {
 					operands[operand_i++] = memory;

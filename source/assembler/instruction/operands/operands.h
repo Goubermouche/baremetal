@@ -72,6 +72,13 @@ namespace baremetal {
 		OP_VM64Y,
 		OP_VM64Z,
 
+		OP_VM32X_K,
+		OP_VM32Y_K,
+		OP_VM32Z_K,
+		OP_VM64X_K,
+		OP_VM64Y_K,
+		OP_VM64Z_K,
+
 		// immediate operands
 		OP_I8,
 		OP_I16,
@@ -109,6 +116,7 @@ namespace baremetal {
 			imm immediate;
 			mem memory;
 			u8 r; // register
+			masked_mem mm; // masked memory location
 			masked_reg mr; // masked register
 		};
 	};
@@ -198,10 +206,16 @@ namespace baremetal {
 			case OP_VM32X:
 			case OP_VM32Y:
 			case OP_VM32Z:
+			case OP_VM32X_K:
+			case OP_VM32Y_K:
+			case OP_VM32Z_K:
 			case OP_M64:
 			case OP_VM64X:
 			case OP_VM64Y:
 			case OP_VM64Z:
+			case OP_VM64X_K:
+			case OP_VM64Y_K:
+			case OP_VM64Z_K:
 			case OP_M80:
 			case OP_M128:
 			case OP_M256:
@@ -297,6 +311,9 @@ namespace baremetal {
 			case OP_VM32X:
 			case OP_VM32Y:
 			case OP_VM32Z:
+			case OP_VM32X_K:
+			case OP_VM32Y_K:
+			case OP_VM32Z_K:
       case OP_REL32: return 32;
       case OP_I64:
       case OP_R64:
@@ -314,6 +331,9 @@ namespace baremetal {
 			case OP_VM64X:
 			case OP_VM64Y:
 			case OP_VM64Z:
+			case OP_VM64X_K:
+			case OP_VM64Y_K:
+			case OP_VM64Z_K:
       case OP_B64: return 64;
       case OP_M80:
       case OP_ST:
@@ -339,6 +359,12 @@ namespace baremetal {
 
 	inline auto is_operand_masked(operand_type op) -> bool {
 		switch(op) {
+			case OP_VM32X_K:
+			case OP_VM32Y_K:
+			case OP_VM32Z_K:
+			case OP_VM64X_K:
+			case OP_VM64Y_K:
+			case OP_VM64Z_K:
 			case OP_K_K:
 			case OP_ZMM_K:
 			case OP_ZMM_KZ:

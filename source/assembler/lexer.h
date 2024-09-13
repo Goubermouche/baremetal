@@ -281,5 +281,7 @@ namespace baremetal {
 
 	auto token_to_register(token_type token) -> reg;
 	auto string_to_token(const utility::dynamic_string& str) -> token_type;
+
+	auto is_token_k(token_type token) -> bool;
 } // namespace baremetal
 

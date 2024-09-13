@@ -599,5 +599,12 @@ parse_number:
 
 		return it->second;
 	}
+
+	auto is_token_k(token_type token) -> bool {
+		switch(token) {
+			case TOK_K1 ... TOK_K7: return true;
+			default: return false;
+		}
+	}
 } // namespace baremetal
 

@@ -1294,3 +1294,115 @@ vpgatherqq ymm15{k7}, [ymm1] ;6272fd2f913c0d00000000
 vpgatherqq zmm1{k1}, [zmm1] ;62f2fd49910c0d00000000
 vpgatherqq zmm2{k2}, [zmm1] ;62f2fd4a91140d00000000
 vpgatherqq zmm15{k7}, [zmm1] ;6272fd4f913c0d00000000
+vpscatterdd [xmm1] {k4}, xmm0 ;62f27d0ca0040d00000000
+vpscatterdd [xmm1] {k4}, xmm1 ;62f27d0ca00c0d00000000
+vpscatterdd [xmm1] {k4}, xmm15 ;62727d0ca03c0d00000000
+vpscatterdd [xmm1] {k4}, xmm31 ;62627d0ca03c0d00000000
+vpscatterdd [ymm1] {k4}, ymm0 ;62f27d2ca0040d00000000
+vpscatterdd [ymm1] {k4}, ymm1 ;62f27d2ca00c0d00000000
+vpscatterdd [ymm1] {k4}, ymm15 ;62727d2ca03c0d00000000
+vpscatterdd [ymm1] {k4}, ymm31 ;62627d2ca03c0d00000000
+vpscatterdd [zmm1] {k4}, zmm0 ;62f27d4ca0040d00000000
+vpscatterdd [zmm1] {k4}, zmm1 ;62f27d4ca00c0d00000000
+vpscatterdd [zmm1] {k4}, zmm15 ;62727d4ca03c0d00000000
+vpscatterdd [zmm1] {k4}, zmm31 ;62627d4ca03c0d00000000
+vpscatterdq [xmm1] {k4}, xmm0 ;62f2fd0ca0040d00000000
+vpscatterdq [xmm1] {k4}, xmm1 ;62f2fd0ca00c0d00000000
+vpscatterdq [xmm1] {k4}, xmm15 ;6272fd0ca03c0d00000000
+vpscatterdq [xmm1] {k4}, xmm31 ;6262fd0ca03c0d00000000
+vpscatterdq [xmm1] {k4}, ymm0 ;62f2fd2ca0040d00000000
+vpscatterdq [xmm1] {k4}, ymm1 ;62f2fd2ca00c0d00000000
+vpscatterdq [xmm1] {k4}, ymm15 ;6272fd2ca03c0d00000000
+vpscatterdq [xmm1] {k4}, ymm31 ;6262fd2ca03c0d00000000
+vpscatterdq [ymm1] {k4}, zmm0 ;62f2fd4ca0040d00000000
+vpscatterdq [ymm1] {k4}, zmm1 ;62f2fd4ca00c0d00000000
+vpscatterdq [ymm1] {k4}, zmm15 ;6272fd4ca03c0d00000000
+vpscatterdq [ymm1] {k4}, zmm31 ;6262fd4ca03c0d00000000
+vpscatterqd [xmm1] {k4}, xmm0 ;62f27d0ca1040d00000000
+vpscatterqd [xmm1] {k4}, xmm1 ;62f27d0ca10c0d00000000
+vpscatterqd [xmm1] {k4}, xmm15 ;62727d0ca13c0d00000000
+vpscatterqd [xmm1] {k4}, xmm31 ;62627d0ca13c0d00000000
+vpscatterqd [ymm1] {k4}, xmm0 ;62f27d2ca1040d00000000
+vpscatterqd [ymm1] {k4}, xmm1 ;62f27d2ca10c0d00000000
+vpscatterqd [ymm1] {k4}, xmm15 ;62727d2ca13c0d00000000
+vpscatterqd [ymm1] {k4}, xmm31 ;62627d2ca13c0d00000000
+vpscatterqd [zmm1] {k4}, ymm0 ;62f27d4ca1040d00000000
+vpscatterqd [zmm1] {k4}, ymm1 ;62f27d4ca10c0d00000000
+vpscatterqd [zmm1] {k4}, ymm15 ;62727d4ca13c0d00000000
+vpscatterqd [zmm1] {k4}, ymm31 ;62627d4ca13c0d00000000
+vpscatterqq [xmm1] {k4}, xmm0 ;62f2fd0ca1040d00000000
+vpscatterqq [xmm1] {k4}, xmm1 ;62f2fd0ca10c0d00000000
+vpscatterqq [xmm1] {k4}, xmm15 ;6272fd0ca13c0d00000000
+vpscatterqq [xmm1] {k4}, xmm31 ;6262fd0ca13c0d00000000
+vpscatterqq [ymm1] {k4}, ymm0 ;62f2fd2ca1040d00000000
+vpscatterqq [ymm1] {k4}, ymm1 ;62f2fd2ca10c0d00000000
+vpscatterqq [ymm1] {k4}, ymm15 ;6272fd2ca13c0d00000000
+vpscatterqq [ymm1] {k4}, ymm31 ;6262fd2ca13c0d00000000
+vpscatterqq [zmm1] {k4}, zmm0 ;62f2fd4ca1040d00000000
+vpscatterqq [zmm1] {k4}, zmm1 ;62f2fd4ca10c0d00000000
+vpscatterqq [zmm1] {k4}, zmm15 ;6272fd4ca13c0d00000000
+vpscatterqq [zmm1] {k4}, zmm31 ;6262fd4ca13c0d00000000
+vscatterdpd [xmm1] {k4}, xmm0 ;62f2fd0ca2040d00000000
+vscatterdpd [xmm1] {k4}, xmm1 ;62f2fd0ca20c0d00000000
+vscatterdpd [xmm1] {k4}, xmm15 ;6272fd0ca23c0d00000000
+vscatterdpd [xmm1] {k4}, xmm31 ;6262fd0ca23c0d00000000
+vscatterdpd [xmm1] {k4}, ymm0 ;62f2fd2ca2040d00000000
+vscatterdpd [xmm1] {k4}, ymm1 ;62f2fd2ca20c0d00000000
+vscatterdpd [xmm1] {k4}, ymm15 ;6272fd2ca23c0d00000000
+vscatterdpd [xmm1] {k4}, ymm31 ;6262fd2ca23c0d00000000
+vscatterdpd [ymm1] {k4}, zmm0 ;62f2fd4ca2040d00000000
+vscatterdpd [ymm1] {k4}, zmm1 ;62f2fd4ca20c0d00000000
+vscatterdpd [ymm1] {k4}, zmm15 ;6272fd4ca23c0d00000000
+vscatterdpd [ymm1] {k4}, zmm31 ;6262fd4ca23c0d00000000
+vscatterdps [xmm1] {k4}, xmm0 ;62f27d0ca2040d00000000
+vscatterdps [xmm1] {k4}, xmm1 ;62f27d0ca20c0d00000000
+vscatterdps [xmm1] {k4}, xmm15 ;62727d0ca23c0d00000000
+vscatterdps [xmm1] {k4}, xmm31 ;62627d0ca23c0d00000000
+vscatterdps [ymm1] {k4}, ymm0 ;62f27d2ca2040d00000000
+vscatterdps [ymm1] {k4}, ymm1 ;62f27d2ca20c0d00000000
+vscatterdps [ymm1] {k4}, ymm15 ;62727d2ca23c0d00000000
+vscatterdps [ymm1] {k4}, ymm31 ;62627d2ca23c0d00000000
+vscatterdps [zmm1] {k4}, zmm0 ;62f27d4ca2040d00000000
+vscatterdps [zmm1] {k4}, zmm1 ;62f27d4ca20c0d00000000
+vscatterdps [zmm1] {k4}, zmm15 ;62727d4ca23c0d00000000
+vscatterdps [zmm1] {k4}, zmm31 ;62627d4ca23c0d00000000
+vscatterqpd [xmm1] {k4}, xmm0 ;62f2fd0ca3040d00000000
+vscatterqpd [xmm1] {k4}, xmm1 ;62f2fd0ca30c0d00000000
+vscatterqpd [xmm1] {k4}, xmm15 ;6272fd0ca33c0d00000000
+vscatterqpd [xmm1] {k4}, xmm31 ;6262fd0ca33c0d00000000
+vscatterqpd [ymm1] {k4}, ymm0 ;62f2fd2ca3040d00000000
+vscatterqpd [ymm1] {k4}, ymm1 ;62f2fd2ca30c0d00000000
+vscatterqpd [ymm1] {k4}, ymm15 ;6272fd2ca33c0d00000000
+vscatterqpd [ymm1] {k4}, ymm31 ;6262fd2ca33c0d00000000
+vscatterqpd [zmm1] {k4}, zmm0 ;62f2fd4ca3040d00000000
+vscatterqpd [zmm1] {k4}, zmm1 ;62f2fd4ca30c0d00000000
+vscatterqpd [zmm1] {k4}, zmm15 ;6272fd4ca33c0d00000000
+vscatterqpd [zmm1] {k4}, zmm31 ;6262fd4ca33c0d00000000
+vscatterqps [xmm1] {k4}, xmm0 ;62f27d0ca3040d00000000
+vscatterqps [xmm1] {k4}, xmm1 ;62f27d0ca30c0d00000000
+vscatterqps [xmm1] {k4}, xmm15 ;62727d0ca33c0d00000000
+vscatterqps [xmm1] {k4}, xmm31 ;62627d0ca33c0d00000000
+vscatterqps [ymm1] {k4}, xmm0 ;62f27d2ca3040d00000000
+vscatterqps [ymm1] {k4}, xmm1 ;62f27d2ca30c0d00000000
+vscatterqps [ymm1] {k4}, xmm15 ;62727d2ca33c0d00000000
+vscatterqps [ymm1] {k4}, xmm31 ;62627d2ca33c0d00000000
+vscatterqps [zmm1] {k4}, ymm0 ;62f27d4ca3040d00000000
+vscatterqps [zmm1] {k4}, ymm1 ;62f27d4ca30c0d00000000
+vscatterqps [zmm1] {k4}, ymm15 ;62727d4ca33c0d00000000
+vscatterqps [zmm1] {k4}, ymm31 ;62627d4ca33c0d00000000
+vgatherpf0dpd [ymm1] {k4} ;62f2fd4cc60c0d00000000
+vgatherpf0dps [zmm1] {k4} ;62f27d4cc60c0d00000000
+vgatherpf0qpd [zmm1] {k4} ;62f2fd4cc70c0d00000000
+vgatherpf0qps [zmm1] {k4} ;62f27d4cc70c0d00000000
+vgatherpf1dpd [ymm1] {k4} ;62f2fd4cc6140d00000000
+vgatherpf1dps [zmm1] {k4} ;62f27d4cc6140d00000000
+vgatherpf1qpd [zmm1] {k4} ;62f2fd4cc7140d00000000
+vgatherpf1qps [zmm1] {k4} ;62f27d4cc7140d00000000
+vscatterpf0dpd [ymm1] {k4} ;62f2fd4cc62c0d00000000
+vscatterpf0dps [zmm1] {k4} ;62f27d4cc62c0d00000000
+vscatterpf0qpd [zmm1] {k4} ;62f2fd4cc72c0d00000000
+vscatterpf0qps [zmm1] {k4} ;62f27d4cc72c0d00000000
+vscatterpf1dpd [ymm1] {k4} ;62f2fd4cc6340d00000000
+vscatterpf1dps [zmm1] {k4} ;62f27d4cc6340d00000000
+vscatterpf1qpd [zmm1] {k4} ;62f2fd4cc7340d00000000
+vscatterpf1qps [zmm1] {k4} ;62f27d4cc7340d00000000

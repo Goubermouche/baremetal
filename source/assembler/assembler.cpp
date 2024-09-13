@@ -299,6 +299,7 @@ namespace baremetal {
 	auto assembler::get_instruction_v(const instruction* inst, const operand* operands) -> u8 {
 		switch(inst->enc) {
 			case ENC_VEX_VM:
+			case ENC_EVEX_M:
 			case ENC_EVEX_VM:  return static_cast<bool>((operands[0].r & 0b00010000));
 			case ENC_VEX_RVM:   
 			case ENC_EVEX_MVR: return static_cast<bool>((operands[1].r & 0b00010000));
@@ -353,6 +354,7 @@ namespace baremetal {
 			case ENC_VEX_R:    
 			case ENC_VEX_MR:   
 			case ENC_VEX_RM:    
+			case ENC_EVEX_M:
 			case ENC_EVEX_MR:  
 			case ENC_VEX_RVMN: return 0b1111; 
 			// EVEX
@@ -483,10 +485,19 @@ namespace baremetal {
 		}
 
 		if(inst->has_masked_operand()) {
-			masked_reg r = inst->get_masked_operand(operands);
+			u8 i = inst->get_masked_operand();
+			u8 k;
+
+			if(is_operand_mem(inst->operands[i])) {
+				// masked memory
+				k = operands[i].mm.k;
+			}
+			else {
+				// masked register
+				k = operands[i].mr.k;
+			}
 
 			// merge or zero
-			//
 			switch (inst->operands[0]) {
 				case OP_XMM_KZ:	
 				case OP_YMM_KZ:	
@@ -495,7 +506,7 @@ namespace baremetal {
 			}
 
 			// operand mask register
-			fourth |= r.k;
+			fourth |= k;
 
 			// operand size and type
 			if(inst->op_size == OPS_256) {
@@ -1472,6 +1483,14 @@ namespace baremetal {
 					case 0b11000000: base = registers[1]; break;
 					case 0b11100000: base = registers[1]; break;
 					case 0b11110000: base = registers[0]; index = 8; break;
+					default: ASSERT(false, "unknown index byte {}\n", index_byte);
+				}
+
+				break;
+			}
+			case ENC_EVEX_M: {
+				switch(index_byte) {
+					case 0: break;
 					default: ASSERT(false, "unknown index byte {}\n", index_byte);
 				}
 
