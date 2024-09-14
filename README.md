@@ -17,7 +17,7 @@ $ ./output/bin/tests/tests
 ```
 
 ## Project structure
-```shell
+```
 - source       # assembler source directory
   |- assembler # source code for the assembler implementation
   `- tests     # test runners and test cases
