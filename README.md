@@ -8,7 +8,48 @@
 - Better support for memory operands with SSE registers
 - Better error checking
 
+## Grammar
+```
+identifier   = letter [{ letter | digit }]
+type         = { byte, word, dword, qword, tword } 
+
+immediate    = { digit, binary, hexadecimal }
+relocation   = (rip) immediate
+
+8-bit gpr    = { al, cl, dl, bl, spl, bpl, sil, dil, ah, ch, dh, bh, r8d, r9d, r10d, r11d, r12d, r13d, r14d, r15d }
+16-bit gpr   = { ax, cx, dx, bx, sp, bp, si, di, r8w, r10w, r11w, r12w, r13w, r14w, r15w  }
+32-bit gpr   = { eax, ecx, edx, ebx, esp, ebp, esi, edi, r8d, r9d, r10d, r11d, r12d, r13d, r14d, r15d }
+64-bit gpr   = { rax, rcx, rdx, rbx, rsp, rbp, rsi, rdi, r8, r9, r10, r11, r12, r13, r14, r15 }
+gpr          = { 8-bit gpr, 16-bit gpr, 32-bit gpr, 64-bit gpr }
+mmx          = { mm0, mm1, mm2, mm3. mm4, mm5, mm6, mm7 }
+bnd          = { bnd0, bnd1, bnd2, bnd3  }
+sreg         = { es, cs, ss, ds, fs, gs  }
+dreg         = { dr0, dr1, dr2, dr3, dr4, dr5, dr6, dr7 }
+creg         = { cr0, cr1, cr2, cr3, cr4, cr8 }
+xmm          = { xmm0 - xmm31 }
+ymm          = { ymm0 - ymm31 }
+zmm          = { zmm0 - zmm31 }
+k            = { k0, k1, k2, k3, k4, k5, k6, k7 }
+mk           = '{' k '}'
+mkz          = mk '{z}'
+rip          = rel $
+register     = { gpr, mmx, bnd, sreg, dreg, creg } | { xmm, ymm, zmm }(mkz, mk) | { k }(mkz)
+
+index        = register * { 1, 2, 4, 8 }
+base         = register (+ relocation)
+memory       = (type) '[' <relocation, index, base>  ']'
+
+broadcast    = memory '{' { 1to1, 1to2, 1to4, 1to8, 1to16, 1to32 } '}'
+moff         = '[' type immediate ']'
+
+operand      = { immediate, relocation, register, memory, broadcast, meoff }
+statement    = identifier [operand]
+
+program      = [statement]
+```
+
 ## Acknowledgements
 - The original instruction database has been ported from the [AsmJit](https://asmjit.com/) project, although it has been slightly modified. 
 - Massive thanks to [Martins](https://github.com/mmozeiko), ratchetfreak, codaaaaaa, and others from the [HMN](https://handmade.network/) for guiding me through the pitfalls of x86/64.
+
 
