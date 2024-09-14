@@ -501,6 +501,8 @@
 	{ "name": "push"             , "operands": ["m64"]                        , "enc": "NORMAL"  , "opcode": "FF"    , "prefix": []          , "rexw": false, "rm": "6"  , "ri": "" , "size": 64 , "map": "" , "l": ""  },
 	{ "name": "push"             , "operands": ["r16"]                        , "enc": "NORMAL"  , "opcode": "50"    , "prefix": ["66"]      , "rexw": false, "rm": ""   , "ri": "r", "size": 64 , "map": "" , "l": ""  },
 	{ "name": "push"             , "operands": ["r64"]                        , "enc": "NORMAL"  , "opcode": "50"    , "prefix": []          , "rexw": false, "rm": ""   , "ri": "r", "size": 64 , "map": "" , "l": ""  },
+	{ "name": "push"             , "operands": ["i8"]                         , "enc": "NORMAL"  , "opcode": "6A"    , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
+	{ "name": "push"             , "operands": ["i32"]                        , "enc": "NORMAL"  , "opcode": "68"    , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
 	{ "name": "push"             , "operands": ["fs"]                         , "enc": "NORMAL"  , "opcode": "0FA0"  , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
 	{ "name": "push"             , "operands": ["gs"]                         , "enc": "NORMAL"  , "opcode": "0FA8"  , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
 	{ "name": "pushf"            , "operands": []                             , "enc": "NORMAL"  , "opcode": "9C"    , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },

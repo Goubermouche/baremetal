@@ -1,9 +1,50 @@
 ## baremetal
-- Basic assembler which (currently) supports most x64 instructions, including the AVX and AVX-512 extensions. Currently the project functions as a simple instruction translator, and doesn't provide any support for more 'complex' concepts. such as labels, hence it's not ready for actual use.
+Basic assembler which (currently) supports most x64 instructions, including the AVX and AVX-512 extensions. Currently the project functions as a simple instruction translator, and doesn't provide any support for more 'complex' concepts. such as labels, hence it's not ready for actual use.
+
+## Getting up and running
+Get started by running:
+```shell
+# clone the repository
+$ git clone https://github.com/Goubermouche/assembler.git --recursive
+$ cd assembler
+
+# generate build files using premake5 (see premake5 targets for more info)
+$ premake5 gmake  
+
+# compile the project using gmake and run tests
+$ make
+$ ./output/bin/tests/tests
+```
+
+## Project structure
+```shell
+- source       # assembler source directory
+  |- assembler # source code for the assembler implementation
+  `- tests     # test runners and test cases
+- tools        # utilities used for managing the instruction database and tests
+  `- scripts   # implementations of the utility programs
+```
+To achieve overall correctness, the project utilizes a variety of tests, some of which may need to be regenerated once breaking changes to the instruction database are introduced.  
+
+> [!IMPORTANT]
+>
+> **baremetal** invokes [Nasm](https://www.nasm.us/) when generating instruction tests, depending on the number of instructions the test generation process may take up to 30 minutes.  
+>
+
+The following commands are intended to be used to aid the developer when manipulating the instruction database: 
+```shell
+./tools/regenerate.sh        # invokes the table_generator and convert_db scripts
+./tools/test_generator.sh    # generates a series of instruction tests based off of the contents of ./tools/scripts/db.json
+./tools/list_instructions.sh # lists statistics about the current instruction set
+
+./tools/table_generator.sh   # regenerates database tables used by the main assembler project 
+./tools/convert_db.sh        # converts ./tools/scripts/asmjit_db.json into the format used by baremetal
+```
 
 ## Planned
-- PUSH instructions and support for default operand sizes
 - Labels, data segments, etc.
+- Executable/binary emission 
+- Optional type prefixes
 - CI & GH LFS for test storage?
 - Better support for memory operands with SSE registers
 - Better error checking
@@ -51,5 +92,4 @@ program      = [statement]
 ## Acknowledgements
 - The original instruction database has been ported from the [AsmJit](https://asmjit.com/) project, although it has been slightly modified. 
 - Massive thanks to [Martins](https://github.com/mmozeiko), ratchetfreak, codaaaaaa, and others from the [HMN](https://handmade.network/) for guiding me through the pitfalls of x86/64.
-
 

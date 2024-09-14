@@ -341,6 +341,7 @@ namespace baremetal {
 	};
 
 	constexpr u32 instruction_db_size = sizeof(instruction_db) / sizeof(instruction);
+	static_assert(instruction_db_size < 16384, "magic number limit reached");
 
 	// locates the first instruction in the instruction database with the specified name
 	inline auto find_instruction_by_name(const char* name) -> u32 {

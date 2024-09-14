@@ -153,7 +153,7 @@ function get_instruction_flags(inst) {
 }
 
 function encode_special(id, index) {
-  if (id < 0 || id > 3 || index < 0 || index > 16383) {
+  if (id < 0 || id > 3 || index < 0 || index > 16384) {
     throw new Error('invalid id or index');
   }
 
@@ -170,7 +170,7 @@ function is_immediate(op) {
   }
 }
 
-function calculate_magic(inst, dest_to_source, lookup) {
+function calculate_magic(inst, dest_to_source) {
 	if(inst.name === 'mov' && inst.operands[0] === 'r64' && inst.operands[1] === 'i32') {
 		// 0
 		return encode_special(0, dest_to_source.get(`${inst.name}:r32:i32`))
@@ -187,16 +187,6 @@ function calculate_magic(inst, dest_to_source, lookup) {
 
 		if(dest_to_source.has(key) && inst.operands[2] !== 'i8') {
 			return encode_special(2, dest_to_source.get(key));
-		}
-	}
-
-	if(inst.enc.includes('VEX') && !inst.enc.includes('EVEX')) {
-		// 3
-		const enc = inst.enc.replace('VEX', 'EVEX');
-		const key = `${inst.name}:${enc}:${inst.operands.join(':')}`;
-
-		if(lookup.has(key)) {
-			console.error('match');
 		}
 	}
 
