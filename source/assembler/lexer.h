@@ -262,6 +262,45 @@ namespace baremetal {
 		TOK_REL,  // rel
 	};
 
+	enum data_type : u8 {
+		DT_NONE = 0,
+		DT_BYTE,
+		DT_WORD,
+		DT_DWORD,
+		DT_QWORD,
+		DT_TWORD,
+	};
+
+	enum mask_type : u8 {
+		MASK_NONE = 0, 
+		MASK_K0, // {k0}
+		MASK_K1,
+		MASK_K2,
+		MASK_K3,
+		MASK_K4,
+		MASK_K5,
+		MASK_K6,
+		MASK_K7, 
+		MASK_K0_Z, // {k0} {z}
+		MASK_K1_Z,
+		MASK_K2_Z,
+		MASK_K3_Z,
+		MASK_K4_Z,
+		MASK_K5_Z,
+		MASK_K6_Z,
+		MASK_K7_Z,
+		MASK_BROADCAST_1TO2,
+		MASK_BROADCAST_1TO4,
+		MASK_BROADCAST_1TO8,
+		MASK_BROADCAST_1TO16,
+		MASK_BROADCAST_1TO32,
+	};
+
+	auto is_mask_broadcast(mask_type mask) -> bool;
+
+	auto mask_to_k(mask_type mask) -> u8;
+	auto mask_to_broadcast_n(mask_type mask) -> u8;
+
 	class lexer {
 		public:
 			void set_text(const utility::dynamic_string& text);
@@ -279,9 +318,12 @@ namespace baremetal {
 			bool force_keyword = false;
 	};
 
+	auto token_to_data_type(token_type token) -> data_type;
 	auto token_to_register(token_type token) -> reg;
+
 	auto string_to_token(const utility::dynamic_string& str) -> token_type;
 
+	auto is_token_broadcast(token_type token) -> bool;
 	auto is_token_k(token_type token) -> bool;
 } // namespace baremetal
 

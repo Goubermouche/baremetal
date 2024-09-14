@@ -21,6 +21,18 @@ namespace baremetal {
 
 		scale s = SCALE_1;
 		imm displacement;
+
+		constexpr auto has_sse_operands() const -> bool {
+			if(has_base && is_sse_reg(base)) {
+				return true;
+			}
+
+			if(has_index && is_sse_reg(index)) {
+				return true;
+			}
+
+			return false;
+		}
 	};
 
 	struct masked_mem {

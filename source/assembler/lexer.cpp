@@ -1,7 +1,5 @@
 #include "lexer.h"
 
-#include "utility/types.h"
-
 #include <utility/containers/map.h>
 
 namespace baremetal {
@@ -72,7 +70,7 @@ parse_number:
 		}
 
 		// keyword or identifier
-		if(utility::is_alpha(m_current_char) || (force_keyword && utility::is_digit(m_current_char))) {
+		if(utility::is_alpha(m_current_char) || force_keyword) {
 			while(utility::is_alphanum(m_current_char)) {
 				current_string += m_current_char;
 				get_next_char();
@@ -105,6 +103,61 @@ parse_number:
 
 		ASSERT(false, "unknown character: '{}'\n", (i32)m_current_char);
 		return {};
+	}
+
+	auto is_mask_broadcast(mask_type mask) -> bool {
+		switch(mask) {
+			case MASK_BROADCAST_1TO2: 
+			case MASK_BROADCAST_1TO4: 
+			case MASK_BROADCAST_1TO8: 
+			case MASK_BROADCAST_1TO16:
+			case MASK_BROADCAST_1TO32: return true;
+      default: return false;
+    }
+	}
+
+	auto mask_to_k(mask_type mask) -> u8 {
+		switch(mask) {
+      case MASK_K0: 
+			case MASK_K0_Z: return 0;
+      case MASK_K1: 
+			case MASK_K1_Z: return 1;
+      case MASK_K2:
+			case MASK_K2_Z: return 2;
+      case MASK_K3: 
+			case MASK_K3_Z: return 3;
+      case MASK_K4:
+			case MASK_K4_Z: return 4;
+      case MASK_K5:
+			case MASK_K5_Z: return 5;
+      case MASK_K6:
+			case MASK_K6_Z: return 6;
+      case MASK_K7: 
+			case MASK_K7_Z: return 7;
+      default: return 0;
+    }
+	}
+
+	auto mask_to_broadcast_n(mask_type mask) -> u8 {
+		switch(mask) {
+			case MASK_BROADCAST_1TO2:  return 2;
+			case MASK_BROADCAST_1TO4:  return 4;
+			case MASK_BROADCAST_1TO8:  return 8;
+			case MASK_BROADCAST_1TO16: return 16;
+			case MASK_BROADCAST_1TO32: return 32;
+      default: return 0;
+    }
+	}
+
+	auto token_to_data_type(token_type token) -> data_type {
+		switch(token) {
+			case TOK_BYTE: return DT_BYTE;
+			case TOK_WORD: return DT_WORD;
+			case TOK_DWORD: return DT_DWORD;
+			case TOK_QWORD: return DT_QWORD;
+			case TOK_TWORD: return DT_TWORD;
+			default: return DT_NONE;
+		}
 	}
 
 	auto token_to_register(token_type token) -> reg {
@@ -598,6 +651,17 @@ parse_number:
 		}
 
 		return it->second;
+	}
+
+	auto is_token_broadcast(token_type token) -> bool {
+		switch(token) {
+			case TOK_1TO2:  
+			case TOK_1TO4:  
+			case TOK_1TO8:  
+			case TOK_1TO16: 
+			case TOK_1TO32: return true; 
+			default: return false;
+		}
 	}
 
 	auto is_token_k(token_type token) -> bool {

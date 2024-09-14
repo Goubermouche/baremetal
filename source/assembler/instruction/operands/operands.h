@@ -176,6 +176,18 @@ namespace baremetal {
 		}
 	}
 
+	inline auto is_operand_masked_mem(operand_type op) -> bool {
+		switch(op) {
+			case OP_M16_K: 
+			case OP_M32_K: 
+			case OP_M64_K: 
+			case OP_M128_K: 
+			case OP_M256_K: 
+			case OP_M512_K: return true;
+			default: return false;
+		}
+	}
+
 	inline auto is_operand_rax(operand_type op) -> bool {
 		switch(op) {
 			case OP_RAX:

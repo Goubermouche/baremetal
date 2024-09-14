@@ -340,6 +340,8 @@ namespace baremetal {
 		#include "assembler/instruction/databases/database.inc"
 	};
 
+	constexpr u32 instruction_db_size = sizeof(instruction_db) / sizeof(instruction);
+
 	// locates the first instruction in the instruction database with the specified name
 	inline auto find_instruction_by_name(const char* name) -> u32 {
 		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction_db[0]);

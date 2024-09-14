@@ -1,10 +1,6 @@
 #include "assembler_parser.h"
 
 #include "assembler/instruction/instruction.h"
-#include "assembler/instruction/operands/operands.h"
-#include "assembler/instruction/operands/registers.h"
-#include "assembler/lexer.h"
-#include "utility/types.h"
 
 #define EXPECT_TOKEN(expected)                            \
   do {                                                    \
@@ -46,31 +42,22 @@ namespace baremetal {
 				case OP_VM64X_K: return b.type == OP_VM32X_K || a == b.type;
 				case OP_VM64Y_K: return b.type == OP_VM32Y_K || a == b.type;
 				case OP_VM64Z_K: return b.type == OP_VM32Z_K || a == b.type;
-				case OP_M16_K:
-				case OP_M32_K:
-				case OP_M64_K:
-				case OP_M128_K:
-				case OP_M256_K:
-				case OP_M512_K:   return b.type == OP_M128_K || a == b.type; // TODO: temp hack - we can't really parse 
-																																		 // masked memory operands which have a
-																																		 // specified size, hence we default to M128
+				case OP_M256:    return b.type == OP_M128;
+				case OP_M512:    return b.type == OP_M128;
+				case OP_TMEM:    return b.type == OP_M128;
 				default:         return a == b.type;
 			}
 		}
 	
-		auto is_operand_match(u32 inst_i, operand* operands, u8 broadcast_n) -> bool {
-			const instruction& inst = instruction_db[inst_i];
-	
-			for(u8 i = 0; i < 4; ++i) {
-				// if the operands at a given index are both imm we ignore their difference
+		auto is_operand_match(const instruction& inst, operand* operands, u8 broadcast_n, u8 count) -> bool {
+			// TODO: this entire thing needs to go
+			for(u8 i = 0; i < count; ++i) {
 				if(
 					!(inst_match(inst.operands[i], operands[i])) &&
 					!(is_operand_imm(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
 					!(is_operand_moff(inst.operands[i]) && is_operand_moff(operands[i].type)) &&
-					!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
-					!(inst.operands[i] == OP_M256 && operands[i].type == OP_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
-					!(inst.operands[i] == OP_M512 && operands[i].type == OP_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
-					!(inst.operands[i] == OP_TMEM && operands[i].type == OP_M128) // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
+					!(is_operand_masked_mem(inst.operands[i]) && is_operand_masked_mem(operands[i].type)) &&
+					!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type))                  
 				) {
 					return false;
 				}
@@ -81,7 +68,7 @@ namespace baremetal {
 
 				if(
 					inst.has_broadcast_operand() &&
-					broadcast_to_bits(inst.operands[inst.get_broadcast_operand()])  * broadcast_n != inst_size_to_int(inst.op_size)
+					broadcast_to_bits(inst.operands[inst.get_broadcast_operand()]) * broadcast_n != inst_size_to_int(inst.op_size)
 				) {
 					return false;
 				}
@@ -90,29 +77,39 @@ namespace baremetal {
 			return true;
 		}
 
-		auto is_operand_match_partial(u32 inst_i, operand* operands, u8 count) -> bool {
-			const instruction& inst = instruction_db[inst_i];
-	
-			for(u8 i = 0; i < count; ++i) {
-				// if the operands at a given index are both imm we ignore their difference
-				if(
-					!(inst_match(inst.operands[i], operands[i])) &&
-					!(is_operand_imm(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
-					!(is_operand_moff(inst.operands[i]) && is_operand_moff(operands[i].type)) &&
-					!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
-					!(inst.operands[i] == OP_M256 && operands[i].type == OP_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
-					!(inst.operands[i] == OP_M512 && operands[i].type == OP_M128) && // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
-					!(inst.operands[i] == OP_TMEM && operands[i].type == OP_M128) // HACK - we don't really know if we're dealing with a mem128 or a mem256, this depends on the instruction
-				) {
-					return false;
-				}
+		auto mask_operand(operand_type op, mask_type mask) -> utility::result<operand_type> {
+			ASSERT(is_mask_broadcast(mask) == false, "cannot mask operand using a broadcast\n");
 
-				if(is_operand_reg(operands[i].type) && operands[i].r > 15 && !inst.is_evex()) {
-					return false;
+			if(mask > 8) {
+				// {k} {z}
+				switch(op) {
+					case OP_XMM: return OP_XMM_KZ;
+					case OP_YMM: return OP_YMM_KZ;
+					case OP_ZMM: return OP_ZMM_KZ;
+					default:     return utility::error("operand cannot have a zeroing mask");
 				}
 			}
-	
-			return true;
+			else {
+				// {k}
+				switch(op) {
+					case OP_VM32X: return OP_VM32X_K;
+					case OP_VM32Y: return OP_VM32Y_K;
+					case OP_VM32Z: return OP_VM32Z_K;
+					case OP_M16:   return OP_M16_K;
+					case OP_M32:   return OP_M32_K;
+					case OP_M64:   return OP_M64_K;
+					case OP_M128:  return OP_M128_K; 
+					case OP_M256:  return OP_M256_K; 
+					case OP_M512:  return OP_M512_K;
+					case OP_XMM:   return OP_XMM_K;
+					case OP_YMM:   return OP_YMM_K;
+					case OP_ZMM:   return OP_ZMM_K;
+					case OP_K:     return OP_K_K;  
+					default:       return utility::error("operand cannot have a mask");
+				}	
+			}
+
+			return OP_NONE; // unreachable
 		}
 	} // namespace detail
 
@@ -139,31 +136,29 @@ namespace baremetal {
 	}
 
 	auto assembler_parser::parse_instruction() -> utility::result<void> {
-		// instruction mnemonic
-		utility::dynamic_string instruction_identifier;
+		EXPECT_TOKEN(TOK_IDENTIFIER);
 
-		// PARSER_VERIFY(KW_IDENTIFIER);
-		instruction_identifier = utility::dynamic_string(m_lexer.current_string);
+		// locate the first instruction with the specified name
+		utility::dynamic_string instruction_identifier = m_lexer.current_string;
+		m_instruction_i = find_instruction_by_name(instruction_identifier.get_data());
 
-		first_instruction = find_instruction_by_name(instruction_identifier.get_data());
-
-		if(first_instruction == utility::limits<u32>::max()) {
+		if(m_instruction_i == utility::limits<u32>::max()) {
 			// instruction doesn't exist
 			return utility::error("unknown instruction specified");
 		}
 
 		// ensure our destination is clean
-		utility::memset(operands, 0, sizeof(operand) * 4);
-		operand_i = 0;
+		utility::memset(m_operands, 0, sizeof(operand) * 4);
+		m_operand_i = 0;
 
-		// operands
+		// parse individual operands
 		while(m_lexer.get_next_token() != TOK_EOF) {
-			switch (m_lexer.current) {
+			switch(m_lexer.current) {
 				case TOK_DOLLARSIGN:         TRY(parse_rip_relative_rel()); break;
 				case TOK_MINUS:              TRY(parse_number_negative()); break;
+				case TOK_LBRACKET:           TRY(parse_memory(DT_NONE)); break; 
 				case TOK_CR0 ... TOK_R15B:   TRY(parse_register()); break;
-				case TOK_LBRACKET:           TRY(parse_bracket()); break; 
-				case TOK_BYTE ... TOK_TWORD: TRY(parse_memory()); break;
+				case TOK_BYTE ... TOK_TWORD: TRY(parse_type()); break;
 				case TOK_NUMBER:             parse_number(); break;	
 				default: return utility::error("unexpected token received as instruction operand");
 			};
@@ -175,49 +170,236 @@ namespace baremetal {
 		}
 
 		// locate the specific variant (dumb linear search in our specific group)
-		u32 instruction_i = first_instruction;
-		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
+		while(m_instruction_i < instruction_db_size) {
+			const instruction& current = instruction_db[m_instruction_i]; 
 
-		while(instruction_i < db_size && utility::compare_strings(instruction_db[instruction_i].name, instruction_db[first_instruction].name) == 0) {
-			if(detail::is_operand_match(instruction_i, operands, m_broadcast_n)) {
-				for(u8 j = 0; j < operand_i; ++j) {
-					operands[j].type = instruction_db[instruction_i].operands[j]; // HACK: just modify all instructions to the actual type (relocations, mem256)
+			// verify that the instruction names are the same and that we've not left our instruction group
+			if(instruction_identifier != current.name) {
+				break;
+			}
 
-					if(is_operand_rel(instruction_db[instruction_i].operands[j])) {
-						rel r = rel(static_cast<i32>(operands[j].immediate.value));
-						operands[j].relocation = r; 
+			// verify that the current instruction matches the provided operands
+			if(detail::is_operand_match(current, m_operands, m_broadcast_n, m_operand_i)) {
+				// operands match, but, in some cases we need to retype some of them to the actual type, ie. 
+				// immediates can actually be relocations
+				for(u8 j = 0; j < m_operand_i; ++j) {
+					m_operands[j].type = current.operands[j];
+
+					if(is_operand_rel(current.operands[j])) {
+						rel r = rel(static_cast<i32>(m_operands[j].immediate.value));
+						m_operands[j].relocation = r; 
 					}
 				}
 
-				m_assembler.emit_instruction(instruction_i, operands);
+				// emit the final instruction
+				m_assembler.emit_instruction(m_instruction_i, m_operands);
 				return SUCCESS;
 			}
 
-			instruction_i++;
+			m_instruction_i++;
 		}
 
 		// invalid instruction and operand combination
 		return utility::error("invalid operand combination for the specified instruction");
 	}
 
-	auto assembler_parser::parse_register() -> utility::result<void> {		
-		operands[operand_i] = operand(token_to_register(m_lexer.current));
+	auto assembler_parser::parse_type() -> utility::result<void> {
+		// parse an operand which begins with a type keyword 
+		data_type type = token_to_data_type(m_lexer.current);
 
-		// parse mask operands (ie. "{k1} {z0}")
-		while(true) {
-			TRY(bool result, parse_mask_register(operands[operand_i]));
-
-			if(result == false) {
-				break;
-			}
+		switch(m_lexer.get_next_token()) {
+			case TOK_LBRACKET: parse_memory(type); break;
+			default: return utility::error("unexpected token following type");
 		}
 
-		operand_i++;
+		return SUCCESS;
+	}
+
+	auto assembler_parser::parse_moff(data_type type) -> utility::result<void> {
+		if(type != DT_NONE) {
+			return utility::error("duplicate data type specified in memory/moff operand");
+		}
+
+		m_lexer.get_next_token();
+		EXPECT_TOKEN(TOK_NUMBER);
+
+		m_operands[m_operand_i++] = operand(moff(m_lexer.current_immediate.value));
+
+		m_lexer.get_next_token();
+		EXPECT_TOKEN(TOK_RBRACKET);
+
+		m_lexer.get_next_token(); // prime the next token
+		return SUCCESS;
+	}
+
+	auto assembler_parser::parse_memory(data_type type) -> utility::result<void> {
+		EXPECT_TOKEN(TOK_LBRACKET);
+		operand op;
+
+		switch(type) {
+			case DT_NONE:  op.type = OP_M128; break; // M128 currently works as an infer keyword
+			case DT_BYTE:  op.type = OP_M8;   break;
+			case DT_WORD : op.type = OP_M16;  break;
+			case DT_DWORD: op.type = OP_M32;  break;
+			case DT_QWORD: op.type = OP_M64;  break;
+			case DT_TWORD: op.type = OP_M80;  break;
+		}
+
+		// we can potentially have types in here, which means we're handling a moff
+		switch(m_lexer.get_next_token()) {
+			case TOK_BYTE ... TOK_TWORD: return parse_moff(type);
+			default: break;
+		}
+
+		TRY(parse_memory(op));
+
+		EXPECT_TOKEN(TOK_RBRACKET);
+
+		// trailing mask or broadcast
+		TRY(mask_type mask, parse_mask_or_broadcast());
+
+		if(mask == MASK_NONE) {
+			m_operands[m_operand_i++] = op;
+			return SUCCESS; // no mask or broadcast
+		}
+
+		if(is_mask_broadcast(mask)) {
+			// broadcast
+			return parse_broadcast(mask);
+		}
+		else {
+			// mask
+			if(mask > 8) {
+				return utility::error("cannot encode memory operand with zeroing mask");
+			}
+
+			op.mm.k = mask_to_k(mask);
+			TRY(op.type, detail::mask_operand(op.type, mask));
+
+			m_operands[m_operand_i++] = op;
+		}
+
+		return SUCCESS;
+	}
+
+	auto assembler_parser::parse_broadcast(mask_type mask) -> utility::result<void> {
+		m_broadcast_n = mask_to_broadcast_n(mask);
+		
+		m_lexer.get_next_token();
+		EXPECT_TOKEN(TOK_RBRACE);
+		m_lexer.get_next_token(); // prime the next token
+
+		u32 index = m_instruction_i;
+		bool met_broadcast = false;
+
+		// find the bn from the current instruction
+		while(index < instruction_db_size) {
+			const instruction& current = instruction_db[index];
+
+			if(utility::compare_strings(instruction_db[m_instruction_i].name, current.name) != 0) {
+				break;
+			}
+
+			if(detail::is_operand_match(current, m_operands, m_broadcast_n, m_operand_i)) {
+				operand_type ty = current.operands[current.get_broadcast_operand()];
+				met_broadcast = true;
+
+				if(broadcast_to_bits(ty) * m_broadcast_n == inst_size_to_int(current.op_size)) {
+					operand op;
+					op.type = ty;
+					m_operands[m_operand_i++] = op;
+
+					return SUCCESS;
+				}
+			}
+
+			index++;
+		}
+
+		if(met_broadcast) {
+			return utility::error("mismatch in the number of broadcasting elements");
+		}
+
+		return utility::error("invalid broadcast operand specified");
+	}
+
+	auto assembler_parser::parse_mask_or_broadcast() -> utility::result<mask_type> {
+		mask_type result = MASK_NONE;
+		char* end;
+
+		if(m_lexer.get_next_token() != TOK_LBRACE) {
+			return result; // no mask
+		}
+
+		// parse the first mask operand '{' { k0, k1, k2, k3, k4, k5, k6, k7 } '}' or
+		// broadcast '{1to' { 2, 4, 8, 16, 32 } '}'
+		m_lexer.force_keyword = true;
+
+		switch(m_lexer.get_next_token()) {
+			case TOK_1TO2:  return MASK_BROADCAST_1TO2;
+			case TOK_1TO4:  return MASK_BROADCAST_1TO4;
+			case TOK_1TO8:  return MASK_BROADCAST_1TO8;
+			case TOK_1TO16: return MASK_BROADCAST_1TO16;
+			case TOK_1TO32: return MASK_BROADCAST_1TO32;
+			default: break; 
+		}
+
+		if(m_lexer.current_string.get_size() != 2 || m_lexer.current_string[0] != 'k') {
+			return utility::error("ill-formed mask register, expected 'k0-k7'");
+		}
+
+		u8 k = static_cast<u8>(strtoul(m_lexer.current_string.get_data() + 1, &end, 10));
+
+		if(k > 7) {
+			return utility::error("ill-formed mask register, expected 'k0-k7'");
+		}
+
+		result = static_cast<mask_type>(k + 1);
+
+		m_lexer.get_next_token();
+		EXPECT_TOKEN(TOK_RBRACE);
+
+		if(m_lexer.get_next_token() != TOK_LBRACE) {
+			return result; // no zero mask
+		}
+
+		// parse the second mask operand '{z}'
+		m_lexer.get_next_token();
+
+		if(m_lexer.current_string.get_size() != 1 || m_lexer.current_string[0] != 'z') {
+			return utility::error("ill-formed mask register, expected 'z'");
+		}
+
+		result = static_cast<mask_type>(result + 8);
+		m_lexer.get_next_token();
+		EXPECT_TOKEN(TOK_RBRACE);
+
+		m_lexer.get_next_token(); // prime the next token
+		return result;
+	}
+
+	auto assembler_parser::parse_register() -> utility::result<void> {		
+		operand op = operand(token_to_register(m_lexer.current));
+		TRY(mask_type mask, parse_mask_or_broadcast());
+
+		if(mask == MASK_NONE) {
+			m_operands[m_operand_i++] = op;
+			return SUCCESS; // no mask
+		}
+
+		if(is_mask_broadcast(mask)) {
+			return utility::error("unexpected broadcast on register operand, register operands are only eligible for masks");
+		}
+
+		op.mr.k = mask_to_k(mask);
+		TRY(op.type, detail::mask_operand(op.type, mask));
+
+		m_operands[m_operand_i++] = op;
 		return SUCCESS;
 	}
 
 	void assembler_parser::parse_number() {
-		operands[operand_i++] = operand(m_lexer.current_immediate); 
+		m_operands[m_operand_i++] = operand(m_lexer.current_immediate); 
 		m_lexer.get_next_token();
 	}
 
@@ -251,9 +433,9 @@ namespace baremetal {
 			rip_rel.immediate = m_lexer.current_immediate;
 		}
 
-		operands[operand_i++] = rip_rel;
-		m_lexer.get_next_token();
+		m_operands[m_operand_i++] = rip_rel;
 
+		m_lexer.get_next_token(); // prime the next token
 		return SUCCESS;
 	}
 
@@ -261,234 +443,17 @@ namespace baremetal {
 		m_lexer.get_next_token();
 		EXPECT_TOKEN(TOK_NUMBER);
 
-		operands[operand_i++] = operand(imm(-static_cast<i64>(m_lexer.current_immediate.value)));
+		m_operands[m_operand_i++] = operand(imm(-static_cast<i64>(m_lexer.current_immediate.value)));
 		m_lexer.get_next_token();
 
 		return SUCCESS;
 	}
 
-	auto assembler_parser::parse_memory() -> utility::result<void> {
-		token_type mem_type = m_lexer.current;
-		operand op;
-
-		m_lexer.get_next_token();
-		EXPECT_TOKEN(TOK_LBRACKET);
-
-		switch(mem_type) {
-			case TOK_BYTE:  op.type = OP_M8;  break;
-			case TOK_WORD:  op.type = OP_M16; break;
-			case TOK_DWORD: op.type = OP_M32; break;
-			case TOK_QWORD: op.type = OP_M64; break;
-			case TOK_TWORD: op.type = OP_M80; break;
-			default: ASSERT(false, "unreachable\n");
-		}
-
-		m_lexer.get_next_token();
-		TRY(parse_memory(op.memory));
-		
-		EXPECT_TOKEN(TOK_RBRACKET);
-		m_lexer.get_next_token();
-
-		operands[operand_i++] = op;
-		return SUCCESS;
-	}
-
-	auto assembler_parser::parse_bracket() -> utility::result<void> {
-		switch(m_lexer.get_next_token()) {
-			case TOK_BYTE ... TOK_QWORD: {
-				m_lexer.get_next_token();
-				EXPECT_TOKEN(TOK_NUMBER);
-
-				operands[operand_i++] = operand(moff(m_lexer.current_immediate.value));
-
-				m_lexer.get_next_token();
-				EXPECT_TOKEN(TOK_RBRACKET);
-				m_lexer.get_next_token();
-				break;
-			}
-			default: {
-				// large mem operand or broadcast
-				operand memory;
-
-				memory.type = OP_M128;
-
-				TRY(parse_memory(memory.memory));
-				EXPECT_TOKEN(TOK_RBRACKET);
-
-				// TODO: move this over to the memory parser
-				if(memory.memory.has_base) {
-					switch(memory.memory.base.type) {
-						case REG_XMM: memory.type = OP_VM32X; break;
-						case REG_YMM: memory.type = OP_VM32Y; break;
-						case REG_ZMM: memory.type = OP_VM32Z; break;
-						default: break;
-					}
-				}
-				
-				if(memory.memory.has_index) {
-					switch(memory.memory.index.type) {
-						case REG_XMM: memory.type = OP_VM32X; break;
-						case REG_YMM: memory.type = OP_VM32Y; break;
-						case REG_ZMM: memory.type = OP_VM32Z; break;
-						default: break;
-					}
-				}
-			
-				if(memory.memory.has_index && memory.memory.has_base) {
-					if(memory.memory.index.type != memory.memory.base.type) {
-						if(!is_gp_reg(memory.memory.index) && !is_gp_reg(memory.memory.base)) {
-							return utility::error("invalid combination of register types in memory");
-						}
-					}
-				}
-
-				if(m_lexer.get_next_token() == TOK_LBRACE) {
-					m_lexer.force_keyword = true;
-					m_lexer.get_next_token();
-
-					// masked memory operand
-					if(is_token_k(m_lexer.current)) {
-						memory.mm.k = m_lexer.current - TOK_K1 + 1;
-
-						switch(memory.type) {
-							case OP_VM32X: memory.type = OP_VM32X_K; break;
-							case OP_VM32Y: memory.type = OP_VM32Y_K; break;
-							case OP_VM32Z: memory.type = OP_VM32Z_K; break;
-							case OP_M16:   memory.type = OP_M16_K; break;
-							case OP_M32:   memory.type = OP_M32_K; break;
-							case OP_M64:   memory.type = OP_M64_K; break;
-							case OP_M128:  memory.type = OP_M128_K; break;
-							case OP_M256:  memory.type = OP_M256_K; break;
-							case OP_M512:  memory.type = OP_M512_K; break;
-							default: ASSERT(false, "unhandled memory for masked memory operand\n");
-						}
-
-						m_lexer.get_next_token();
-						EXPECT_TOKEN(TOK_RBRACE);
-						m_lexer.get_next_token();
-
-						operands[operand_i++] = memory;
-					}
-					// broadcast
-					else {
-						switch(m_lexer.current) {
-							case TOK_1TO2:  m_broadcast_n = 2; break;
-							case TOK_1TO4:  m_broadcast_n = 4; break;
-							case TOK_1TO8:  m_broadcast_n = 8; break;
-							case TOK_1TO16: m_broadcast_n = 16; break;
-							case TOK_1TO32: m_broadcast_n = 32; break;
-							default: return utility::error("invalid broadcast operand specified");
-						}
-
-						m_lexer.get_next_token();
-						EXPECT_TOKEN(TOK_RBRACE);
-						m_lexer.get_next_token();
-
-						constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction);
-						u32 index = first_instruction;
-						bool met_broadcast = false;
-
-						// find the bn from the current instruction
-						while(index < db_size && utility::compare_strings(instruction_db[first_instruction].name, instruction_db[index].name) == 0) {
-							if(detail::is_operand_match_partial(index, operands, operand_i)) {
-								const instruction& current = instruction_db[index];
-
-								if(current.has_broadcast_operand()) {
-									operand_type ty = current.operands[current.get_broadcast_operand()];
-									met_broadcast = true;
-
-									if(broadcast_to_bits(ty) * m_broadcast_n == inst_size_to_int(current.op_size)) {
-										operand op;
-										op.type = ty;
-										operands[operand_i++] = op;
-
-										return SUCCESS;
-									}
-								}
-							}
-
-							index++;
-						}
-
-						if(met_broadcast) {
-							return utility::error("mismatch in the number of broadcasting elements");
-						}
-
-						return utility::error("invalid broadcast operand specified");
-					}
-				}
-				else {
-					operands[operand_i++] = memory;
-				}
-
-				break;
-			}
-		}
-
-		return SUCCESS;
-	}
-
-	auto assembler_parser::parse_mask_register(operand& op) -> utility::result<bool> {
-		if(m_lexer.get_next_token() == TOK_LBRACE) {
-			m_lexer.get_next_token();
-			
-			char c = m_lexer.current_string[0];
-
-			switch(c) {
-				case 'k': {
-					if(m_lexer.current_string.get_size() != 2) {
-						return utility::error("invalid mask register specified");
-					}
-
-					char* end;
-					op.mr.k = static_cast<u8>(strtoul(m_lexer.current_string.get_data() + 1, &end, 10));
-
-					if(op.mr.k >= 8) {
-						utility::error("invalid mask register specified");
-					}
-
-					// operand {kn}
-					switch(op.type) {
-						case OP_XMM: op.type = OP_XMM_K; break;
-						case OP_YMM: op.type = OP_YMM_K; break;
-						case OP_ZMM: op.type = OP_ZMM_K; break;
-						case OP_K:   op.type = OP_K_K;   break;
-						default: return utility::error("invalid register for mask operation"); 
-					}
-
-					break;
-				}
-				case 'z': {
-					if(m_lexer.current_string.get_size() != 2) {
-						utility::error("invalid mask register specified");
-					}
-
-					// operand {kn} {z}
-					switch(op.type) {
-						case OP_XMM_K: op.type = OP_XMM_KZ; break;
-						case OP_YMM_K: op.type = OP_YMM_KZ; break;
-						case OP_ZMM_K: op.type = OP_ZMM_KZ; break;
-						default: return utility::error("invalid register for mask operation"); 
-					}
-
-					break;
-				}
-
-				return utility::error("unknown mask register specified");
-			}
-
-			m_lexer.get_next_token();
-			EXPECT_TOKEN(TOK_RBRACE);
-
-			return true;
-		}
-
-		return false;
-	}
-
-	auto assembler_parser::parse_memory(mem& memory) -> utility::result<void> {
+	auto assembler_parser::parse_memory(operand& op) -> utility::result<void> {
 		reg current_reg = reg::create_invalid();
+		mem& memory = op.memory;
 		imm current_imm;
+
 
 		bool displacement_set = false;
 		bool scale_mode = false;
@@ -617,6 +582,32 @@ namespace baremetal {
 						
 						memory.displacement = current_imm;
 						displacement_set = true;
+					}
+
+					if(memory.has_base) {
+						switch(memory.base.type) {
+							case REG_XMM: op.type = OP_VM32X; break;
+							case REG_YMM: op.type = OP_VM32Y; break;
+							case REG_ZMM: op.type = OP_VM32Z; break;
+							default: break;
+						}
+					}
+					
+					if(memory.has_index) {
+						switch(memory.index.type) {
+							case REG_XMM: op.type = OP_VM32X; break;
+							case REG_YMM: op.type = OP_VM32Y; break;
+							case REG_ZMM: op.type = OP_VM32Z; break;
+							default: break;
+						}
+					}
+				
+					if(memory.has_index && memory.has_base) {
+						if(memory.index.type != memory.base.type) {
+							if(!is_gp_reg(memory.index) && !is_gp_reg(memory.base)) {
+								return utility::error("invalid combination of register types in memory");
+							}
+						}
 					}
 
 					return SUCCESS;
