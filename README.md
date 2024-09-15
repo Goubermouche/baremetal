@@ -13,7 +13,7 @@ $ premake5 gmake
 
 # compile the project using gmake and run tests
 $ make
-$ ./output/bin/tests/tests
+$ ./output/bin/test_runner/test_runner
 ```
 
 ## Project structure
