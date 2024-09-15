@@ -197,94 +197,161 @@ namespace baremetal {
 		return is_operand_imm(instruction_db[b].operands[imm_index]);
 	}
 
+	void assembler::emit_opcode_prefix_rex(const instruction* inst, const operand* operands) {
+		if(inst->is_rexw() || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
+			m_bytes.push_back(get_instruction_rex_rex(inst, operands));
+		}
+		else if(is_operand_mem(operands[0].type)) {
+			emit_opcode_prefix_rex_mem(operands[0].memory);
+		}
+		else if(is_operand_mem(operands[1].type)) {
+			emit_opcode_prefix_rex_mem(operands[1].memory);
+		}
+	}
+
+	void assembler::emit_opcode_prefix_rex_mem(const mem& memory) {
+		// if our memory operand contains an extended register we have to emit a rex prefix
+		if((memory.has_base && memory.base.index >= 8) || (memory.has_index && memory.index.index >= 8)) {
+			m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
+		}
+	}
+
 	void assembler::emit_opcode_prefix_vex(const instruction* inst, const operand* operands) {
-		const u8 rex = get_instruction_rex(inst, operands);
+		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
 
 		const bool x = rex & 0b00000010;
 		const bool b = rex & 0b00000001;
-		const bool w = inst->is_rexw();
 
-		if(x == false && b == false && w == false && ((inst->opcode & 0xffff00) == 0x000f00)) {
-			// two byte variant
-			emit_opcode_prefix_vex_two(inst, operands);
+		// a VEX instruction whose values for certain fields are VEX.~X == 1, VEX.~B == 1, VEX.W/E == 0
+		// and map_select == b00001 may be encoded using the two byte VEX escape prefix (XOP)
+		if(!x && !b && !inst->is_rexw() && ((inst->opcode & 0xffff00) == 0x000f00)) {
+			emit_opcode_prefix_vex_two(inst, operands); // two byte variant
 		}
 		else {
-			// three byte variant
-			emit_opcode_prefix_vex_three(inst, operands);
+			emit_opcode_prefix_vex_three(inst, operands); // three byte variant
 		}
-	}
-
-	auto assembler::get_instruction_l(const instruction* inst) -> bool {
-		if(inst->is_l1()) {
-			return true;
-		}
-
-		if(inst->is_l0()) {
-			return false;
-		}
-
-		// vector length (0 = 128b, 1 = 256b)
-		return inst->op_size == OPS_256;
-	}
-
-	auto assembler::get_instruction_map_select(const instruction* inst) -> u8 {
-		if(inst->is_evex()) {
-			if(inst->is_map6()) {
-				return 0b110; 
-			}
-
-			if(inst->is_map5()) {
-				return 0b101; 
-			}
-		}
-		
-		if(inst->is_xop()) {
-			switch(inst->enc) {
-				case ENC_XOP:    return 0b01001;
-				case ENC_XOP_VM: return 0b01010;
-				default: ASSERT(false, "unknown xop encoding");
-			}
-		}
-
-		switch((inst->opcode & 0xffff00)) {
-			case 0x000000: return 0b000; 
-			case 0x000f00: return 0b001; 
-			case 0x0f3800: return 0b010;
-			case 0x0f3a00: return 0b011;
-			default: ASSERT(false, "unknown leading opcode 1 {}", inst->opcode & 0xffff00);
-		}
-
-		return 0;
-	}
-
-	auto assembler::get_instruction_imp(const instruction* inst) -> u8 {
-		if(inst->prefix == OPERAND_SIZE_OVERRIDE) {
-			return 0b01;
-		}
-
-		if(inst->prefix == REP) {
-			return 0b10;
-		}
-
-		if(inst->prefix == REPNE) {
-			return 0b11;
-		}
-
-		return 0;
 	}
 
 	void assembler::emit_opcode_prefix_vex_two(const instruction* inst, const operand* operands) {
-		const u8 rex = get_instruction_rex(inst, operands);
-		u8 second = 0;
+		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
+		u8 prefix = 0;
 
-		m_bytes.push_back(0xc5); // two byte vex prefix
+		m_bytes.push_back(0xc5); // two byte VEX prefix
 
-		second |= !(rex & 0b00000100) << 7;                  // ~R    [X_______]
-		second |= get_instruction_vvvv(inst, operands) << 3; // ~vvvv [_XXXX___]
-		second |= get_instruction_l(inst) << 2;              // L     [_____X__]
-		second |= get_instruction_imp(inst);                 // pp    [______XX]
+		prefix |= !(rex & 0b00000100) << 7;                     // ~R    [X_______]
+		prefix |= get_instruction_vvvv(inst, operands) << 3;    // ~vvvv [_XXXX___]
+		prefix |= get_instruction_l(inst) << 2;                 // L     [_____X__]
+		prefix |= get_instruction_imp(inst);                    // IMP    [______XX]
 
-		m_bytes.push_back(second);
+		m_bytes.push_back(prefix);
+	}
+
+	void assembler::emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands) {
+		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
+		u8 prefix[2] = {};
+
+		// VEX/XOP prefix
+		if(inst->is_xop()) {
+			m_bytes.push_back(0x8f);
+		} else {
+			m_bytes.push_back(0xc4);
+		}
+
+		prefix[0] |= !(rex & 0b00000100) << 7;                  // ~R         [X_______] 
+		prefix[0] |= !(rex & 0b00000010) << 6;                  // ~X         [_X______]
+		prefix[0] |= !(rex & 0b00000001) << 5;                  // ~B         [__X_____] 
+		prefix[0] |= get_instruction_map_select(inst);          // map_select [___XXXXX]
+
+		prefix[1] |= static_cast<u8>((inst->is_rexw()) << 7);   // W/E        [X_______]
+		prefix[1] |= get_instruction_vvvv(inst, operands) << 3; // ~vvvv      [_XXXX___]
+		prefix[1] |= get_instruction_l(inst) << 2;              // L          [_____X__]
+		prefix[1] |= get_instruction_imp(inst);                 // pp         [______XX]
+		
+		m_bytes.push_back(prefix[0]);
+		m_bytes.push_back(prefix[1]);
+	}
+
+	void assembler::emit_opcode_prefix_evex(const instruction* inst, const operand* operands) {
+		const u8 rex = get_instruction_rex_evex(inst, operands);
+		const u8 modrm = get_mod_rm_reg(inst, operands);
+		u8 prefix[3] = {};
+
+		m_bytes.push_back(0x62); // EVEX prefix
+
+		prefix[0] |= !(rex & 0b00000100) << 7;                  // ~R         [X_______] 
+		prefix[0] |= !(rex & 0b00000010) << 6;                  // ~X         [_X______] 
+		prefix[0] |= !(rex & 0b00000001) << 5;                  // ~B         [__X_____] 
+		prefix[0] |= !(modrm & 0b00010000) << 4;                // ~R'        [___X____]
+		prefix[0] |= get_instruction_map_select(inst);          // map select [____0XXX]
+
+		prefix[1] |= static_cast<u8>((inst->is_rexw()) << 7);   // W          [X_______]
+		prefix[1] |= get_instruction_vvvv(inst, operands) << 3; // ~VVVV      [_XXXX___]
+		prefix[1] |= 0b1 << 2;                                  //            [_____1__]
+		prefix[1] |= get_instruction_imp(inst);                 // IMP        [______XX]
+
+		prefix[2] |= get_evex_zero(inst) << 7;                  // zero mask  [X_______]
+		prefix[2] |= get_evex_operand_type(inst);               // size       [_XX_____]
+		prefix[2] |= inst->has_broadcast_operand() << 4;        // broadcast  [___X____]
+		prefix[2] |= !get_instruction_v(inst, operands) << 3;   // ~V         [____X___]
+		prefix[2] |= get_mask_register(inst, operands);         // mask       [_____XXX]
+
+		m_bytes.push_back(prefix[0]);
+		m_bytes.push_back(prefix[1]);
+		m_bytes.push_back(prefix[2]);
+	}
+
+	auto assembler::get_instruction_vvvv(const instruction* inst, const operand* operands) -> u8 {
+		switch(inst->enc) {
+			case ENC_VEX_VM:
+			case ENC_EVEX_RMZ:
+			case ENC_XOP_VM:   return static_cast<u8>((~operands[0].r & 0b00001111));
+			case ENC_VEX_RVM:  
+			case ENC_VEX_RVMS: 
+			case ENC_VEX_MVRR: 
+			case ENC_EVEX_MVR: return static_cast<u8>((~operands[1].r & 0b00001111));
+			case ENC_VEX:      
+			case ENC_VEX_RMV:  
+			case ENC_VEX_MVR:  return static_cast<u8>((~operands[2].r & 0b00001111));
+			case ENC_XOP:      
+			case ENC_VEX_R:    
+			case ENC_VEX_MR:   
+			case ENC_VEX_RM:    
+			case ENC_EVEX_M:
+			case ENC_EVEX_MR:  
+			case ENC_VEX_RVMN: return 0b1111; 
+			case ENC_EVEX_RVM: {
+				if(inst->operand_count == 2) {
+					return 0b1111; 
+				}
+
+				return static_cast<u8>((~operands[1].r & 0b00001111));
+			}
+			case ENC_EVEX_VM: {
+				if(is_operand_mem(inst->operands[0])) {
+					return 0;
+				}
+
+				if(is_operand_mem(inst->operands[1])) {
+					return static_cast<u8>((~m_regs[0] & 0b00001111));
+				}
+
+				if(inst->operand_count == 3) {
+					return static_cast<u8>((~m_regs[0] & 0b00001111));
+				}
+
+				return static_cast<u8>((~m_regs[m_reg_count - 1] & 0b00001111));
+			}
+			case ENC_EVEX_RM: {
+				if(m_reg_count == 3 || (is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false)) {
+					return static_cast<u8>((~operands[1].r & 0b00001111));
+				}
+
+				return 0b1111 ;
+			} 
+			default: ASSERT(false, "unhandled vvvv encoding {}\n", (i32)inst->enc);
+		}
+
+		return 0; // unreachable
 	}
 
 	auto assembler::get_instruction_v(const instruction* inst, const operand* operands) -> u8 {
@@ -328,194 +395,97 @@ namespace baremetal {
 		return 0; // unreachable
 	}
 
-	auto assembler::get_instruction_vvvv(const instruction* inst, const operand* operands) -> u8 {
-			switch(inst->enc) {
-			// VEX
-			case ENC_VEX_VM:
-			case ENC_EVEX_RMZ:
-			case ENC_XOP_VM:   return static_cast<u8>((~operands[0].r & 0b00001111));
-			case ENC_VEX_RVM:  
-			case ENC_VEX_RVMS: 
-			case ENC_VEX_MVRR: 
-			case ENC_EVEX_MVR: return static_cast<u8>((~operands[1].r & 0b00001111));
-			case ENC_VEX:      
-			case ENC_VEX_RMV:  
-			case ENC_VEX_MVR:  return static_cast<u8>((~operands[2].r & 0b00001111));
-			case ENC_XOP:      
-			case ENC_VEX_R:    
-			case ENC_VEX_MR:   
-			case ENC_VEX_RM:    
-			case ENC_EVEX_M:
-			case ENC_EVEX_MR:  
-			case ENC_VEX_RVMN: return 0b1111; 
-			// EVEX
-			case ENC_EVEX_RVM: {
-				if(inst->operand_count == 2) {
-					return 0b1111; 
-				}
-
-				return static_cast<u8>((~operands[1].r & 0b00001111));
-			}
-			case ENC_EVEX_VM: {
-				if(is_operand_mem(inst->operands[0])) {
-					return 0;
-				}
-
-				if(is_operand_mem(inst->operands[1])) {
-					return static_cast<u8>((~m_regs[0] & 0b00001111));
-				}
-
-				if(inst->operand_count == 3) {
-					return static_cast<u8>((~m_regs[0] & 0b00001111));
-				}
-
-				return static_cast<u8>((~m_regs[m_reg_count - 1] & 0b00001111));
-			}
-			case ENC_EVEX_RM: {
-				if(m_reg_count == 3 || (is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false)) {
-					return static_cast<u8>((~operands[1].r & 0b00001111));
-				}
-
-				return 0b1111 ;
-			} 
-			default: ASSERT(false, "unhandled vvvv encoding {}\n", (i32)inst->enc);
+	auto assembler::get_mask_register(const instruction* inst, const operand* operands) -> u8 {
+		if(inst->has_masked_operand() == false) {
+			return 0;
 		}
 
-		return 0; // unreachable
+		u8 i = inst->get_masked_operand();
+
+		if(is_operand_mem(inst->operands[i])) {
+			return operands[i].mm.k; // masked memory
+		}
+
+		return operands[i].mr.k; // masked register
 	}
 
-	void assembler::emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands) {
-		const u8 rex = get_instruction_rex(inst, operands);
+	auto assembler::get_instruction_map_select(const instruction* inst) -> u8 {
+		if(inst->is_evex()) {
+			if(inst->is_map6()) {
+				return 0b110; 
+			}
 
-		u8 second = 0;
-		u8 third = 0;
-
-		// vex/xop prefix
+			if(inst->is_map5()) {
+				return 0b101; 
+			}
+		}
+		
 		if(inst->is_xop()) {
-			m_bytes.push_back(0x8f);
-		} else {
-			m_bytes.push_back(0xc4);
+			switch(inst->enc) {
+				case ENC_XOP:    return 0b01001;
+				case ENC_XOP_VM: return 0b01010;
+				default: ASSERT(false, "unknown xop encoding");
+			}
 		}
 
-		second |= !(rex & 0b00000100) << 7;                 // ~R         [X_______] 
-		second |= !(rex & 0b00000010) << 6;                 // ~X         [_X______]
-		second |= !(rex & 0b00000001) << 5;                 // ~B         [__X_____] 
-		second |= get_instruction_map_select(inst);         // map_select [___XXXXX]
+		switch((inst->opcode & 0xffff00)) {
+			case 0x000000: return 0b000; 
+			case 0x000f00: return 0b001; 
+			case 0x0f3800: return 0b010;
+			case 0x0f3a00: return 0b011;
+			default: ASSERT(false, "unknown leading opcode 1 {}", inst->opcode & 0xffff00);
+		}
 
-		third |= static_cast<u8>((inst->is_rexw()) << 7);   // W/E        [X_______]
-		third |= get_instruction_vvvv(inst, operands) << 3; // ~vvvv      [_XXXX___]
-		third |= get_instruction_l(inst) << 2;              // L          [_____X__]
-		third |= get_instruction_imp(inst);                 // pp         [______XX]
-		
-		m_bytes.push_back(second);
-		m_bytes.push_back(third);
+		return 0;
 	}
 
-	void assembler::emit_opcode_prefix_evex(const instruction* inst, const operand* operands) {
-		const u8 rex = get_instruction_rex(inst, operands);
-		const u8 modrm = get_mod_rm_reg(inst, operands);
-
-		u8 second = 0;
-		u8 third = 0;
-		u8 fourth = 0;
-
-		m_bytes.push_back(0x62); // evex prefix
-
-		second |= !(rex & 0b00000100) << 7;                 // ~R         [X_______] 
-		second |= !(rex & 0b00000010) << 6;                 // ~X         [_X______] 
-		second |= !(rex & 0b00000001) << 5;                 // ~B         [__X_____] 
-		second |= !(modrm & 0b00010000) << 4;               // ~R'        [___X____]
-		second |= get_instruction_map_select(inst);         // map select [____0XXX]
-
-		third |= static_cast<u8>((inst->is_rexw()) << 7);   // W          [X_______]
-		third |= get_instruction_vvvv(inst, operands) << 3; // ~vvvv      [_XXXX___]
-		third |= 0b1 << 2;                                  //            [_____1__]
-		third |= get_instruction_imp(inst);                 // imp        [______XX]
-
-		// fourth
-		// merge or zero                                                                  [X_______]
-		// 12-bit vector length, or rounding control mode when combined with the next bit [_X______]
-		// specifies 256-bit vector length                                                [__X_____]
-		// source broadcast, rounding control (combined with L’L), or suppress exceptions [___X____]
-		// ~V (expands vvvv)                                                              [____X___]
-		// operand mask register (k0–k7) for vector instructions                          [_____XXX]
-		
-		fourth |= !get_instruction_v(inst, operands) << 3;
-
-		// broadcast
-		if(inst->has_broadcast_operand()) {
-			fourth |= 0b00010000;
+	auto assembler::get_evex_operand_type(const instruction* inst) -> u8 {
+		if(inst->op_size == OPS_256) {
+			return 0b00100000;
 		}
 
-		if(inst->has_masked_operand()) {
-			u8 i = inst->get_masked_operand();
-			u8 k;
-
-			if(is_operand_mem(inst->operands[i])) {
-				// masked memory
-				k = operands[i].mm.k;
-			}
-			else {
-				// masked register
-				k = operands[i].mr.k;
-			}
-
-			// merge or zero
-			switch (inst->operands[0]) {
-				case OP_XMM_KZ:	
-				case OP_YMM_KZ:	
-				case OP_ZMM_KZ: fourth |= 0b10000000; 
-				default: break;
-			}
-
-			// operand mask register
-			fourth |= k;
-
-			// operand size and type
-			if(inst->op_size == OPS_256) {
-				fourth |= 0b00100000;
-			}
-			else if(inst->op_size == OPS_512) {
-				fourth |= 0b01000000;
-			}
-		}
-		else {
-			// operand size and type
-			u8 ll = 0;
-
-			if(inst->op_size == OPS_64) {}
-			else if(inst->op_size == OPS_128) {
-				// ll = 0b00000010;
-			}
-			else if(inst->op_size == OPS_256) {
-				ll = 0b00100000;
-			}
-			else if(inst->op_size == OPS_512) {
-				ll = 0b01000000;
-			}
-			else {
-				ASSERT(false, "unepxected operand size {}\n", (u8)inst->op_size);
-			}
-
-			fourth |= ll;
+		if(inst->op_size == OPS_512) {
+			return  0b01000000;
 		}
 
-		m_bytes.push_back(second);
-		m_bytes.push_back(third);
-		m_bytes.push_back(fourth);
+		return 0;
 	}
 
-	void assembler::emit_opcode_prefix_rex(const instruction* inst, const operand* operands) {
-		const bool is_rexw = inst->is_rexw();
+	auto assembler::get_instruction_imp(const instruction* inst) -> u8 {
+		if(inst->prefix == OPERAND_SIZE_OVERRIDE) {
+			return 0b01;
+		}
 
-		if(is_rexw || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
-			m_bytes.push_back(get_instruction_rex(inst, operands));
+		if(inst->prefix == REP) {
+			return 0b10;
 		}
-		else if(is_operand_mem(operands[0].type)) {
-			emit_opcode_prefix_rex_mem(operands[0].memory);
+
+		if(inst->prefix == REPNE) {
+			return 0b11;
 		}
-		else if(is_operand_mem(operands[1].type)) {
-			emit_opcode_prefix_rex_mem(operands[1].memory);
+
+		return 0;
+	}
+
+	auto assembler::get_instruction_l(const instruction* inst) -> bool {
+		if(inst->is_l1()) {
+			return true;
+		}
+
+		if(inst->is_l0()) {
+			return false;
+		}
+
+		// vector length (0 = 128b, 1 = 256b)
+		return inst->op_size == OPS_256;
+	}
+
+	auto assembler::get_evex_zero(const instruction* inst) -> bool {
+		switch (inst->operands[0]) {
+			case OP_XMM_KZ:	
+			case OP_YMM_KZ:	
+			case OP_ZMM_KZ: return true; 
+			default:        return false;
 		}
 	}
 
@@ -566,40 +536,22 @@ namespace baremetal {
 	}
 	
 	void assembler::emit_instruction_opcode(const instruction* inst, const operand* operands) {
-		// VEX instructions have the leading opcode encoded in themselves, so we have to skip it here
+		emit_instruction_opcode_prefix(inst, operands);
+		
+		// emit the instruction opcode
+		u64 opcode = inst->opcode;
 		u8 opcode_end = 1;
-		u8 opcode_begin = 4;
 
-		// prefix
-		if(inst->is_rex()) {
-			emit_opcode_prefix_rex(inst, operands);
-		}
-		else if(inst->is_vex_xop()) {
+		if(inst->is_rex() == false) {
+			// VEX instructions have the leading opcode encoded in themselves, so we have to skip it here
 			opcode_end = 3;
-			if(inst->has_extended_vex(operands)) {
-				// when handling stuff like ymm16 we have to switch to evex
-				emit_opcode_prefix_evex(inst, operands);
-			}
-			else {
-				emit_opcode_prefix_vex(inst, operands);
-			}
 		}
-		else if(inst->is_evex()) {
-			opcode_end = 3;
-			emit_opcode_prefix_evex(inst, operands);
-		}
-		else {
-			ASSERT(false, "invalid or unknown opcode prefix\n");
-		}
-
-		// skip the first byte, since we've already pushed it (double instruction)
-		if(inst->enc == ENC_NORMALD) {
+		else if(inst->enc == ENC_NORMALD) {
+			// skip the first byte, since we've already pushed it (double instruction)
 			opcode_end = 2;
 		}
 
-		// opcode
-		u64 opcode = inst->opcode;
-
+		// opcode extensions (add a specific register to the opcode itself)
 		if(inst->is_ri()) {
 			if(inst->operands[0] == OP_ST0) {
 				opcode += m_regs[1] & 0b00000111;
@@ -616,8 +568,8 @@ namespace baremetal {
 		}
 
 		// append opcode bytes
-		for(; opcode_begin-- > opcode_end;) {
-			const u8 byte = (opcode >> (opcode_begin * 8)) & 0xFF;
+		for(u8 i = 4; i-- > opcode_end;) {
+			const u8 byte = (opcode >> (i * 8)) & 0xFF;
 
 			if(byte != 0) {
 				m_bytes.push_back(byte);
@@ -625,14 +577,21 @@ namespace baremetal {
 		}
 
 		// always push the last byte
-		const u8 byte = opcode & 0xFF;
-		m_bytes.push_back(byte);
+		m_bytes.push_back(opcode & 0xFF);
 	}
 
-	void assembler::emit_opcode_prefix_rex_mem(const mem& memory) {
-		// extended base
-		if((memory.has_base && memory.base.index >= 8) || (memory.has_index && memory.index.index >= 8)) {
-			m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
+	void assembler::emit_instruction_opcode_prefix(const instruction* inst, const operand* operands) {
+		if(inst->is_rex()) {
+			emit_opcode_prefix_rex(inst, operands);
+		}
+		else if(inst->is_vex_xop()) {
+			emit_opcode_prefix_vex(inst, operands);
+		}
+		else if(inst->is_evex()) {
+			emit_opcode_prefix_evex(inst, operands);
+		}
+		else {
+			ASSERT(false, "unknown instruction encoding specified (opcode prefix)\n");
 		}
 	}
 
@@ -705,11 +664,7 @@ namespace baremetal {
 
 		if(inst->is_is4()) {
 			// trailing register encoded as an immediate
-			u8 value = 0;
-
-			value |= operands[3].r << 4;
-
-			m_bytes.push_back(value);
+			m_bytes.push_back(operands[3].r << 4);
 		}
 	}
 
@@ -871,17 +826,12 @@ namespace baremetal {
 			}
 		}
 		else if(inst->is_rm()) {
-			if(inst->enc == ENC_EVEX_VM) {
-				m_bytes.push_back(direct(rx, m_regs[1]));
-			}
-			else if(inst->enc == ENC_VEX_RVMS) {
-				m_bytes.push_back(direct(rx, m_regs[2]));
-			}
-			else if(inst->enc == ENC_VEX_VM || inst->enc == ENC_XOP_VM) {
-				m_bytes.push_back(direct(rx, m_regs[1]));
-			}
-			else {
-				m_bytes.push_back(direct(rx, m_regs[0]));
+			switch(inst->enc) {
+				case ENC_VEX_VM:
+				case ENC_XOP_VM: 
+				case ENC_EVEX_VM:  m_bytes.push_back(direct(rx, m_regs[1])); break;
+				case ENC_VEX_RVMS: m_bytes.push_back(direct(rx, m_regs[2])); break;
+				default:           m_bytes.push_back(direct(rx, m_regs[0])); break; 
 			}
 		}
 	}
@@ -901,7 +851,6 @@ namespace baremetal {
 		}
 
 		const mem memory = operand.memory;
-
 		const u8 scale = memory.has_base  ? memory.s           : 0b000;
 		const u8 index = memory.has_index ? memory.index.index : 0b100;
 		const u8 base  = memory.has_base  ? memory.base.index  : 0b101;
@@ -914,7 +863,7 @@ namespace baremetal {
 		) {
 			m_bytes.push_back(sib(scale, index, base));
 		}
-		else if(memory.has_base && is_sse_reg(memory.base)) {
+		else if(memory.has_sse_operands()) {
 			m_bytes.push_back(sib(scale, base, memory.has_index ? memory.index.index : 0b101));
 		}
 	}
@@ -1137,7 +1086,6 @@ namespace baremetal {
 			detail::extract_operand_reg(operands[3]),
 		};
 
-		// op[0] is extended?      [XX______] (> 7, > 15)
 
 		index_byte |= (registers[0] > 7) << 7;
 		index_byte |= (registers[0] > 15) << 6;
@@ -1625,7 +1573,7 @@ namespace baremetal {
 		return rex(is_rexw, rx, base, index);
 	}
 
-	auto assembler::get_instruction_rex_vex(const instruction* inst, const operand* operands) -> u8 {
+	auto assembler::get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8 {
 		const bool is_rexw = inst->is_rexw();
 
 		u8 rx = 0;
@@ -1884,35 +1832,6 @@ namespace baremetal {
 
 		
 		return rex(is_rexw, rx, base, index);
-	}
-	
-	auto assembler::get_instruction_rex(const instruction* inst, const operand* operands) -> u8 {
-		const u8 operand_count = inst->operand_count;
-
-		if(operand_count == 0) {	
-			return rex(inst->is_rexw(), 0, 0, 0);
-		}
-
-		if(inst->is_rex()) {
-			return get_instruction_rex_rex(inst, operands);
-		}
-
-		if(inst->is_vex_xop()) {
-			if(inst->has_extended_vex(operands)) {
-				// when handling stuff like ymm16 we have to switch to evex
-				return get_instruction_rex_evex(inst, operands);
-			}
-			else {
-				return get_instruction_rex_vex(inst, operands);
-			}
-		}
-
-		if(inst->is_evex()) {
-			return get_instruction_rex_evex(inst, operands);
-		}
-		
-		ASSERT(false, "invalid/unknown opcode prefix\n");
-		return 0;
 	}
 
 	void assembler::emit_data_operand(u64 data, u16 bit_width) {

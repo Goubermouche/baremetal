@@ -29,43 +29,55 @@ namespace baremetal {
 
 		void emit_instruction(u32 index, const operand* operands);
 	private:
-		void instruction_begin(const operand* operands);
-		void emit_instruction_prefix(const instruction* inst);
-		void emit_instruction_opcode(const instruction* inst, const operand* operands);
-		void emit_instruction_mod_rm(const instruction* inst, const operand* operands);
-		void emit_instruction_sib(const operand* operands);
-		void emit_operands(const instruction* inst, const operand* operands);
-
+		// instruction emission
 		auto find_optimized_instruction(u32 index, const operand* operands) -> const instruction*;
 		auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
-		void emit_data_operand(u64 data, u16 bit_width);
+		void emit_instruction_prefix(const instruction* inst);
+		void instruction_begin(const operand* operands);
 
-		// opcode prefixes
+		// instruction opcodes
+		void emit_instruction_opcode(const instruction* inst, const operand* operands);
+		void emit_instruction_opcode_prefix(const instruction* inst, const operand* operands);
+
+		// REX opcode prefix
 		void emit_opcode_prefix_rex(const instruction* inst, const operand* operands);
-		void emit_opcode_prefix_vex(const instruction* inst, const operand* operands);
-		void emit_opcode_prefix_evex(const instruction* inst, const operand* operands);
-
-		void emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands);
-		void emit_opcode_prefix_vex_two(const instruction* inst, const operand* operands);
-
 		void emit_opcode_prefix_rex_mem(const mem& memory);
 
-		// rex
-		auto get_instruction_rex(const instruction* inst, const operand* operands) -> u8;
-
-		auto get_instruction_rex_rex(const instruction* inst, const operand* operands) -> u8;
-		auto get_instruction_rex_vex(const instruction* inst, const operand* operands) -> u8;
+		// pretty much all other prefixes also need a REX prefix in some shape or form, these utility
+		// functions are used for generating them
+		auto get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8;
 		auto get_instruction_rex_evex(const instruction* inst, const operand* operands) -> u8;
+		auto get_instruction_rex_rex(const instruction* inst, const operand* operands) -> u8;
 
-		// other
+		// VEX opcode prefix
+		void emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands);
+		void emit_opcode_prefix_vex_two(const instruction* inst, const operand* operands);
+		void emit_opcode_prefix_vex(const instruction* inst, const operand* operands);
+
+		// EVEX opcode prefix
+		void emit_opcode_prefix_evex(const instruction* inst, const operand* operands);
+
+		// instruction MOD/RM
+		void emit_instruction_mod_rm(const instruction* inst, const operand* operands);
 		auto get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8;
-		auto has_sib_byte(const operand* operands) -> bool;
 
+		// instruction SIB
+		void emit_instruction_sib(const operand* operands);
+		auto has_sib_byte(const operand* operands) -> bool;
+	
+		// instruction operands
+		void emit_operands(const instruction* inst, const operand* operands);
+		void emit_data_operand(u64 data, u16 bit_width);
+
+		// instruction prefix helpers
 		auto get_instruction_vvvv(const instruction* inst, const operand* operands) -> u8;
 		auto get_instruction_v(const instruction* inst, const operand* operands) -> u8;
+		auto get_mask_register(const instruction* inst, const operand* operands) -> u8;
 		auto get_instruction_map_select(const instruction* inst) -> u8;
+		auto get_evex_operand_type(const instruction* inst) -> u8;
 		auto get_instruction_imp(const instruction* inst) -> u8;
 		auto get_instruction_l(const instruction* inst) -> bool;
+		auto get_evex_zero(const instruction* inst) -> bool;
 
 		enum mod_mode : u8 {
 			INDIRECT        = 0b00,
