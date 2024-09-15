@@ -5,7 +5,7 @@ Basic assembler which (currently) supports most x64 instructions, including the 
 Get started by running:
 ```shell
 # clone the repository
-$ git clone https://github.com/Goubermouche/assembler.git --recursive
+$ git clone https://github.com/Goubermouche/baremetal.git --recursive
 $ cd assembler
 
 # generate build files using premake5 (see premake5 targets for more info)
