@@ -27,9 +27,87 @@ do {                                                                            
 } while(false)
 
 namespace baremetal::tests {
-	struct test_result {
-		u64 fail_count = 0;
-		u64 success_count = 0;
+	struct test_info {
+		test_info(const char* name, u64 total_tests, bool quiet) : m_name(name), m_total_tests(total_tests), m_quiet(quiet) {
+			ASSERT(m_total_tests > 0, "no tests provided\n");
+		}
+	
+		void add_success() {
+			if(m_quiet) {
+				return;
+			}
+
+			m_success_count++;
+			update();
+		}
+	
+		void add_failure() {
+			if(m_quiet) {
+				return;
+			}
+
+			m_fail_count++;
+			update();
+		}
+	
+		void begin_test() {
+			m_timer.start();
+		}
+	
+		void end_test() {
+			if(m_quiet) {
+				return;
+			}
+
+			m_timer.stop();
+			update(true);
+	
+			utility::console::print(
+				": {} ({}/{}) - {}s\n",
+				m_total_tests == m_success_count ? "PASS" : "FAIL",
+				m_success_count,
+				m_total_tests,
+				m_timer.get_elapsed_s()
+			);
+		}
+	private:
+		void update(bool force = false) {
+	    constexpr u8 max_segments = 20;
+	
+	    const u64 finished_count = m_success_count + m_fail_count;
+	    const f64 percentage = (static_cast<f64>(finished_count) / m_total_tests) * 100;
+	    const u8 completed_segments = static_cast<u8>((finished_count * max_segments) / m_total_tests);
+	
+			// only update the bar when we've surpassed another bar segment
+			if(completed_segments == m_completed_segment_count_old || force) {
+				return;
+			}
+	
+			m_completed_segment_count_old = completed_segments;
+	   
+			// render our progress bar
+			utility::console::print("\r[", static_cast<u8>(percentage));
+	
+			for(u8 i = 0; i < max_segments; ++i) {
+				if(i < completed_segments) {
+				  utility::console::print("#");
+				} else {
+				  utility::console::print(".");
+				}
+			}
+	
+			utility::console::print("]");
+			utility::console::print(" test '{}'", m_name);
+		}
+	
+		const char* m_name;
+		u64 m_total_tests;
+		bool m_quiet;
+
+		u64 m_fail_count = 0;
+		u64 m_success_count = 0;
+		u8 m_completed_segment_count_old = 1;
+		utility::timer m_timer;
 	};
 
 	inline auto bytes_to_string(const utility::dynamic_array<u8>& bytes) -> utility::dynamic_string {
