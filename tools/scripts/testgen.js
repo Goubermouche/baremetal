@@ -349,5 +349,5 @@ function main() {
 	return 0;
 }
 
-main();
+process.exit(main());
 

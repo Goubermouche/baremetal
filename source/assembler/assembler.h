@@ -28,13 +28,15 @@ namespace baremetal {
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<u8>&;
 
 		void emit_instruction(u32 index, const operand* operands);
+	private:
+		void instruction_begin(const operand* operands);
 		void emit_instruction_prefix(const instruction* inst);
 		void emit_instruction_opcode(const instruction* inst, const operand* operands);
 		void emit_instruction_mod_rm(const instruction* inst, const operand* operands);
 		void emit_instruction_sib(const operand* operands);
 		void emit_operands(const instruction* inst, const operand* operands);
 
-		auto find_instruction_info(u32 index, const operand* operands) -> const instruction*;
+		auto find_optimized_instruction(u32 index, const operand* operands) -> const instruction*;
 		auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
 		void emit_data_operand(u64 data, u16 bit_width);
 
@@ -81,7 +83,6 @@ namespace baremetal {
 		static auto indirect_disp_8(u8 rx, u8 base) -> u8;
 		static auto indirect_disp_32(u8 rx, u8 base) -> u8;
 
-		void instruction_begin(const instruction* inst, const operand* operands);
 		auto get_current_inst_size() const -> u8;
 	private:
 		u8 m_reg_count;
