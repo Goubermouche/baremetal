@@ -418,4 +418,4 @@ log*
 perf.data
 perf.data.old
 
-test.perf
+*.perf
