@@ -354,7 +354,7 @@ function main() {
 		row.push(`"name": "${inst.name}"`);
 		row.push(`"operands": [${inst.operands.map(op => `"${op}"`).join(", ")}]`);
 		row.push(`"enc": "${inst.enc.enc}"`);
-		row.push(`"opcode": "${inst.enc.opcode.join('')}"`);
+		row.push(`"opcode": "${inst.enc.opcode.join('').toLowerCase()}"`);
 		row.push(`"prefix": [${inst.enc.prefix.map(p => `"${p}"`).join(", ")}]`);
 		row.push(`"rexw": ${inst.enc.rexw}`);
 		row.push(`"rm": "${inst.enc.rm === undefined ? "" : inst.enc.rm}"`);

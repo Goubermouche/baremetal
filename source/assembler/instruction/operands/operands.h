@@ -65,6 +65,7 @@ namespace baremetal {
 		OP_MOFF64,
 		OP_MIB,
 
+		// memory operands with SSE registers
 		OP_VM32X,
 		OP_VM32Y,
 		OP_VM32Z,
@@ -72,6 +73,7 @@ namespace baremetal {
 		OP_VM64Y,
 		OP_VM64Z,
 
+		// masked memory operands
 		OP_M16_K,
 		OP_M32_K,
 		OP_M64_K,
@@ -79,6 +81,7 @@ namespace baremetal {
 		OP_M256_K,
 		OP_M512_K,
 
+		// masked memory operands with SSE registers
 		OP_VM32X_K,
 		OP_VM32Y_K,
 		OP_VM32Z_K,
@@ -103,7 +106,7 @@ namespace baremetal {
 		OP_REL32,
 		OP_REL8_RIP,  // rel8  + rip
 		OP_REL16_RIP, // rel16 + rip
-		OP_REL32_RIP, // rel16 + rip
+		OP_REL32_RIP, // rel32 + rip
 
 		OP_HIDDEN, // usually an operand which refers to an implicit value, ie a '1'
 	};
@@ -118,13 +121,15 @@ namespace baremetal {
 		operand_type type;
 
 		union {
-			moff memory_offset;
-			rel relocation;
-			imm immediate;
-			mem memory;
-			u8 r; // register
 			masked_mem mm; // masked memory location
 			masked_reg mr; // masked register
+
+			moff memory_offset;
+			mem memory;
+
+			rel relocation;
+			imm immediate;
+			u8 r; // register
 		};
 	};
 
@@ -206,7 +211,7 @@ namespace baremetal {
 		}
 	}
 
-	inline auto broadcast_to_bits(operand_type op) -> u16 {
+	inline auto broadcast_to_bits(operand_type op) -> u8 {
 		switch(op) {
 			case OP_B16: return 16;
 			case OP_B32: return 32;
@@ -244,7 +249,7 @@ namespace baremetal {
 			case OP_M256:
 			case OP_M256_K:
 			case OP_M512:
-			case OP_M512_K:  return true;
+			case OP_M512_K: return true;
 			default: return false;
 		}
 	}
@@ -289,7 +294,7 @@ namespace baremetal {
 
 	inline auto is_extended_reg(const operand& op) -> bool {
 		if(is_operand_reg(op.type)) {
-			return op.r >= 8;
+			return op.r > 7;
 		}
 
 		return false;
@@ -355,7 +360,7 @@ namespace baremetal {
       case OP_RAX:
       case OP_MIB:
       case OP_K_K:
-     case OP_K:
+			case OP_K:
 			case OP_VM64X:
 			case OP_VM64Y:
 			case OP_VM64Z:

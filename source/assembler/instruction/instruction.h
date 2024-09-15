@@ -1,6 +1,5 @@
 #pragma once
 #include "assembler/instruction/operands/operands.h"
-#include "assembler/instruction/operands/registers.h"
 
 #include <utility/assert.h>
 
@@ -64,8 +63,9 @@ namespace baremetal {
 		ENC_RM,
 		ENC_RMR,
 		ENC_NORMAL,
-		ENC_NORMALD, // NORMAL encoding, but interpret the first opcode byte as a separate instruction
-									// used by instructions which are formed using two other instructions (ie. fsave)
+		// NORMAL encoding, but interpret the first opcode byte as a separate instruction
+		// used by instructions which are formed using two other instructions (ie. fsave)
+		ENC_NORMALD, 
 
 		// VEX
 		ENC_VEX,
@@ -92,20 +92,6 @@ namespace baremetal {
 		ENC_XOP_VM,
 		ENC_XOP,
 	};
-
-
-	inline auto inst_size_to_int(inst_size s) -> u16 {
-		switch(s) {
-			case OPS_32:  return 32;
-			case OPS_64:  return 64;
-			case OPS_128: return 128;
-			case OPS_256: return 256;
-			case OPS_512: return 512;
-			default: ASSERT(false, "unhandled size\n");
-		}
-
-		return 0; // unreachable
-	}
 
 	struct instruction { 
 		constexpr auto is_rex() const -> bool {
@@ -335,6 +321,19 @@ namespace baremetal {
 		return result;
 	}
 
+	inline auto inst_size_to_int(inst_size s) -> u16 {
+		switch(s) {
+			case OPS_32:  return 32;
+			case OPS_64:  return 64;
+			case OPS_128: return 128;
+			case OPS_256: return 256;
+			case OPS_512: return 512;
+			default: ASSERT(false, "unhandled size\n");
+		}
+
+		return 0; // unreachable
+	}
+
 	// main isntruction database
 	static constexpr instruction instruction_db[] = {
 		#include "assembler/instruction/databases/database.inc"
@@ -345,10 +344,8 @@ namespace baremetal {
 
 	// locates the first instruction in the instruction database with the specified name
 	inline auto find_instruction_by_name(const char* name) -> u32 {
-		constexpr u32 db_size = sizeof(instruction_db) / sizeof(instruction_db[0]);
-
     i32 left = 0;
-    i32 right = db_size - 1;
+    i32 right = instruction_db_size - 1;
 
 		// since our instructions are sorted alphabetically, we can just do a quick binary search
     while(left <= right) {

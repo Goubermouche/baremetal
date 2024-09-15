@@ -1,6 +1,7 @@
 #include "utilities.h"
 
 #include "utility/system/console.h"
+
 #include <utility/system/filepath.h>
 #include <utility/system/file.h> 
 
@@ -11,7 +12,7 @@ auto main() -> i32 {
 	timer.start();
 
 	// load up our tests
-	const utility::filepath test_path = "source/tests/tests.txt"; 
+	const utility::filepath test_path = "source/tests_runner/tests.txt"; 
 	const utility::dynamic_string test_file = utility::file::read(test_path);
 
 	utility::dynamic_string instruction;

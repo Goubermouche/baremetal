@@ -45,14 +45,14 @@ workspace "assembler"
         includedirs { "source", "source/utility/" }
         links { "utility" }
 
-    project "tests"
+    project "test_runner"
         kind "ConsoleApp"
-        location "source/tests"
+        location "source/test_runner"
 
         targetdir ("output/bin/%{prj.name}")
         objdir ("output/obj/%{prj.name}")
 
-        files { "source/tests/**.cpp", "source/tests/**.h" }
+        files { "source/test_runner/**.cpp", "source/test_runner/**.h" }
 
         includedirs { "source", "source/utility/", "source/assembler" }
         links { "utility", "assembler" }
