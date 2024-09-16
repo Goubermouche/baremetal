@@ -1,19 +1,15 @@
 #include "utilities.h"
 
-#include <utility/system/filepath.h>
 #include <utility/system/file.h> 
 
 using namespace baremetal::tests;
 
-const utility::dynamic_array<utility::dynamic_string> g_all_groups = {
-	"encoding"
-};
-
+const utility::filepath g_test_path = "source/test_runner/tests";
 bool g_quiet = false;
 
 namespace detail {
 	void run_test_encoding() {
-		const utility::filepath test_path = "source/test_runner/tests.txt"; 
+		const utility::filepath test_path = g_test_path / "encoding/test.txt"; 
 		const utility::dynamic_string test_file = utility::file::read(test_path);
 
 		test_info info("encoding", utility::file::get_file_line_count(test_path), g_quiet);
@@ -77,7 +73,35 @@ namespace detail {
 	
 		info.end_test();
 	}
+
+	void run_test_sections() {
+		const utility::filepath group_path = g_test_path / "sections/";
+		const auto tests = utility::directory::read(group_path);
+
+		test_info info("sections", tests.get_size(), g_quiet);
+		info.begin_test();
+
+		// for(const auto& : tests) {
+		// 	info.add_success();
+		// }
+		
+		info.add_success();
+		info.end_test();
+	}
 } // namespace detail
+
+auto get_all_groups() -> utility::dynamic_array<utility::dynamic_string> {
+	const auto group_paths = utility::directory::read(g_test_path);
+	utility::dynamic_array<utility::dynamic_string> groups;
+	
+	groups.reserve(group_paths.get_size());
+
+	for(const auto& path : group_paths) {
+		groups.push_back(path.get_filename().get_string());
+	}
+
+	return groups;
+}
 
 void print_help() {
 	if(g_quiet) {
@@ -106,6 +130,9 @@ auto run_tests(const utility::dynamic_array<utility::dynamic_string>& groups) ->
 		if(groups[i] == "encoding") {
 			detail::run_test_encoding();
 		}
+		else if(groups[i] == "sections") {
+			detail::run_test_sections();
+		}
 		else {
 			utility::console::print_err("error: unknown instruction group '{}', exiting (type '--help' for help)\n", groups[i]);
 			return 1;
@@ -129,7 +156,7 @@ auto list_groups() -> i32 {
 		return 0;
 	} 
 
-	for(const auto& g : g_all_groups) {
+	for(const auto& g : get_all_groups()) {
 		utility::console::print("{}\n", g);
 	}
 
@@ -140,7 +167,7 @@ auto main(i32 argc, const char** argv) -> i32 {
 	u8 argi = 1;
 
 	if(argc == 1) {
-		return run_tests(g_all_groups);
+		return run_tests(get_all_groups());
 	}
 
 	// quiet
@@ -166,7 +193,7 @@ auto main(i32 argc, const char** argv) -> i32 {
 			return 1;
 		}
 
-		return run_tests(g_all_groups);
+		return run_tests(get_all_groups());
 	}
 
 	// list available groups

@@ -1,0 +1,3 @@
+section .data
+    msg db "Hello world!", 0ah
+

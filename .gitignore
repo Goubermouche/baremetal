@@ -405,11 +405,6 @@ generated_*.*
 Makefile
 .make
 
-# ignore everything in source/tests directory
-
-# except utilities.h
-!source/tests/utilities.h
-
 compile_commands.json
 
 temp*
