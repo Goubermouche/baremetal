@@ -1,4 +1,4 @@
-#include "assembler.h"
+#include "assembler_backend.h"
 
 #include "assembler/instruction/instruction.h"
 
@@ -59,20 +59,73 @@ namespace baremetal {
 	
 			return utility::limits<u8>::max();
 		}
+
+		auto mod_rm(mod_mode mod, u8 rx, u8 rm) -> u8 {
+			ASSERT(mod < 4, "invalid modR/M mod specified\n");
+			u8 value = 0;
+
+			// calculate the modR/M byte
+			value |= mod << 6;               // mod  [XX______]
+			value |= (rx & 0b00000111) << 3; // rx   [__XXX___]
+			value |= rm & 0b00000111;        // rm   [_____XXX]
+
+			return value;
+		}
+
+		auto sib(u8 scale, u8 index, u8 base) -> u8 {
+			ASSERT(scale < 4, "invalid SIB scale specified\n");
+			u8 value = 0;
+
+			// calculate the SIB byte
+			value |= scale << 6;                // scale [XX______]
+			value |= (index & 0b00000111) << 3; // index [__XXX___]
+			value |= (base & 0b00000111);       // base  [_____XXX] 
+
+			return value; 
+		}
+
+		auto rex(bool w, u8 rx, u8 base, u8 index) -> u8 {
+			u8 value = 0;
+
+			// calculate the REX byte
+			value |= 0b01000000;                                 // rex prefix      [0100____]
+			value |= w << 3;                                     // 64-bit mode     [____X___]
+			value |= static_cast<bool>(rx & 0b00011000) << 2;    // rx extension    [_____X__]
+			value |= static_cast<bool>(index & 0b00011000) << 1; // index extension [______X_]
+			value |= static_cast<bool>(base & 0b00011000);       // base extension  [_______X]
+
+			return value;
+		}
+
+		auto direct(u8 rx, u8 reg) -> u8 {
+			return mod_rm(DIRECT, rx, reg);
+		}
+
+		auto indirect(u8 rx, u8 base) -> u8 {
+			return mod_rm(INDIRECT, rx, base);
+		}
+
+		auto indirect_disp_8(u8 rx, u8 base) -> u8 {
+			return mod_rm(INDIRECT_DISP8, rx, base);
+		}
+
+		auto indirect_disp_32(u8 rx, u8 base) -> u8 {
+			return mod_rm(INDIRECT_DISP32, rx, base);
+		}
 	} // namespace detail
 
-	assembler::assembler() : m_current_inst_begin(0) {}
+	assembler_backend::assembler_backend() : m_current_inst_begin(0) {}
 
-	void assembler::clear() {
+	void assembler_backend::clear() {
 		m_bytes.clear();
 		m_current_inst_begin = 0;
 	}
 
-	auto assembler::get_bytes() const -> const utility::dynamic_array<u8>& {
+	auto assembler_backend::get_bytes() const -> const utility::dynamic_array<u8>& {
 		return m_bytes;
 	}
 
-	void assembler::emit_instruction(u32 index, const operand* operands) {
+	void assembler_backend::emit_instruction(u32 index, const operand* operands) {
 		// locate the actual instruction we want to assemble (this doesn't have to match the specified
 		// index, since we can apply optimizations which focus on stuff like shorter encodings)
 		const instruction* inst = find_optimized_instruction(index, operands);
@@ -80,7 +133,7 @@ namespace baremetal {
 		// mark the instruction start
 		instruction_begin(operands); 
 
-		// emit instruction parts
+		// emit individual instruction parts
 		emit_instruction_prefix(inst);
 		emit_instruction_opcode(inst, operands);
 		emit_instruction_mod_rm(inst, operands);
@@ -88,7 +141,7 @@ namespace baremetal {
 		emit_operands(inst, operands);
 	}
 
-	auto assembler::find_optimized_instruction(u32 index, const operand* operands)  -> const instruction* {
+	auto assembler_backend::find_optimized_instruction(u32 index, const operand* operands)  -> const instruction* {
 		u8 imm_index = utility::limits<u8>::max();
 
 		// locate the first immediate operand
@@ -206,7 +259,7 @@ namespace baremetal {
 		return nullptr;
 	}
 
-	auto assembler::is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool {
+	auto assembler_backend::is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool {
 		const u8 operand_count = instruction_db[a].operand_count - 1;
 
 		for(u8 i = 0; i < operand_count; ++i) {
@@ -218,7 +271,7 @@ namespace baremetal {
 		return is_operand_imm(instruction_db[b].operands[imm_index]);
 	}
 
-	void assembler::emit_instruction_prefix(const instruction* inst) {
+	void assembler_backend::emit_instruction_prefix(const instruction* inst) {
 		if(inst->enc == ENC_NORMALD) {
 			// instruction composed of two instructions, emit the first one here
 			m_bytes.push_back((inst->opcode & 0x0000FF00) >> 8);
@@ -264,7 +317,7 @@ namespace baremetal {
 		}
 	}
 	
-	void assembler::instruction_begin(const operand* operands) {
+	void assembler_backend::instruction_begin(const operand* operands) {
 		m_current_inst_begin = m_bytes.get_size();
 
 		utility::memset(m_regs, 0, sizeof(u8) * 4);
@@ -279,7 +332,7 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_instruction_opcode(const instruction* inst, const operand* operands) {
+	void assembler_backend::emit_instruction_opcode(const instruction* inst, const operand* operands) {
 		emit_instruction_opcode_prefix(inst, operands);
 		
 		// emit the instruction opcode
@@ -324,7 +377,7 @@ namespace baremetal {
 		m_bytes.push_back(opcode & 0xFF);
 	}
 
-	void assembler::emit_instruction_opcode_prefix(const instruction* inst, const operand* operands) {
+	void assembler_backend::emit_instruction_opcode_prefix(const instruction* inst, const operand* operands) {
 		if(inst->is_rex()) {
 			emit_opcode_prefix_rex(inst, operands);
 		}
@@ -339,7 +392,7 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_opcode_prefix_rex(const instruction* inst, const operand* operands) {
+	void assembler_backend::emit_opcode_prefix_rex(const instruction* inst, const operand* operands) {
 		if(inst->is_rexw() || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
 			m_bytes.push_back(get_instruction_rex_rex(inst, operands));
 		}
@@ -351,15 +404,15 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_opcode_prefix_rex_mem(const mem& memory) {
+	void assembler_backend::emit_opcode_prefix_rex_mem(const mem& memory) {
 		// if our memory operand contains an extended register we have to emit a rex prefix
 		if((memory.has_base && memory.base.index >= 8) || (memory.has_index && memory.index.index >= 8)) {
-			m_bytes.push_back(rex(false, 0, memory.base.index, memory.index.index));
+			m_bytes.push_back(detail::rex(false, 0, memory.base.index, memory.index.index));
 		}
 	}
 
 	// TODO: 
-	auto assembler::get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8 {
+	auto assembler_backend::get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8 {
 		const bool is_rexw = inst->is_rexw();
 
 		u8 rx = 0;
@@ -617,11 +670,11 @@ namespace baremetal {
 		}
 
 		
-		return rex(is_rexw, rx, base, index);
+		return detail::rex(is_rexw, rx, base, index);
 	}
 
 	// TODO
-	auto assembler::get_instruction_rex_evex(const instruction* inst, const operand* operands) -> u8 {
+	auto assembler_backend::get_instruction_rex_evex(const instruction* inst, const operand* operands) -> u8 {
 		const bool is_rexw = inst->is_rexw();
 
 		u8 rx = 0;
@@ -965,7 +1018,7 @@ namespace baremetal {
 					case 0b00001100: rx = registers[0]; base = registers[2]; index = registers[2]; break;    
 					case 0b00101100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
 					case 0b00110000: rx = registers[1]; break;
- 					case 0b00111000: rx = registers[0]; base = registers[2]; break;  
+					case 0b00111000: rx = registers[0]; base = registers[2]; break;  
 					case 0b00111100: rx = registers[0]; base = registers[2]; index = registers[2]; break;  
 					case 0b10001100: rx = registers[0]; base = registers[2]; index = registers[2]; break; 
 					case 0b10101100: rx = registers[0]; base = registers[2]; index = registers[1]; break;   
@@ -1129,11 +1182,11 @@ namespace baremetal {
 			default: ASSERT(false, "unhandled rex case in EVEX {}\n", (i32)inst->enc);
 		}
 
-		return rex(is_rexw, rx, base, index);
+		return detail::rex(is_rexw, rx, base, index);
 	}
 
 	// TODO
-	auto assembler::get_instruction_rex_rex(const instruction* inst, const operand* operands) -> u8 {
+	auto assembler_backend::get_instruction_rex_rex(const instruction* inst, const operand* operands) -> u8 {
 		const bool is_rexw = inst->is_rexw();
 		const u8 operand_count = inst->operand_count;
 
@@ -1200,10 +1253,10 @@ namespace baremetal {
 			}
 		}
 		
-		return rex(is_rexw, rx, base, index);
+		return detail::rex(is_rexw, rx, base, index);
 	}
 
-	void assembler::emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands) {
+	void assembler_backend::emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands) {
 		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
 		u8 prefix[2] = {};
 
@@ -1228,7 +1281,7 @@ namespace baremetal {
 		m_bytes.push_back(prefix[1]);
 	}
 
-	void assembler::emit_opcode_prefix_vex_two(const instruction* inst, const operand* operands) {
+	void assembler_backend::emit_opcode_prefix_vex_two(const instruction* inst, const operand* operands) {
 		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
 		u8 prefix = 0;
 
@@ -1242,7 +1295,7 @@ namespace baremetal {
 		m_bytes.push_back(prefix);
 	}
 
-	void assembler::emit_opcode_prefix_vex(const instruction* inst, const operand* operands) {
+	void assembler_backend::emit_opcode_prefix_vex(const instruction* inst, const operand* operands) {
 		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
 
 		const bool x = rex & 0b00000010;
@@ -1258,7 +1311,7 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_opcode_prefix_evex(const instruction* inst, const operand* operands) {
+	void assembler_backend::emit_opcode_prefix_evex(const instruction* inst, const operand* operands) {
 		const u8 rex = get_instruction_rex_evex(inst, operands);
 		const u8 modrm = get_mod_rm_reg(inst, operands);
 		u8 prefix[3] = {};
@@ -1288,7 +1341,7 @@ namespace baremetal {
 	}
 
 	// TODO:
-	void assembler::emit_instruction_mod_rm(const instruction* inst, const operand* operands) {
+	void assembler_backend::emit_instruction_mod_rm(const instruction* inst, const operand* operands) {
 		u8 rx = m_regs[0];
 		u8 destination = m_regs[1];
 
@@ -1405,59 +1458,59 @@ namespace baremetal {
 			ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
 			if(memory.has_base == false) {
-				m_bytes.push_back(indirect(rx, 0b100));
+				m_bytes.push_back(detail::indirect(rx, 0b100));
 			}
 			else if(memory.base.type == REG_RIP) {
-				m_bytes.push_back(indirect(rx, 0b101));
+				m_bytes.push_back(detail::indirect(rx, 0b101));
 			}
 			else if(is_sse_reg(memory.base)) {
-				m_bytes.push_back(indirect(rx, 0b100));
+				m_bytes.push_back(detail::indirect(rx, 0b100));
 			}
 			else if(memory.displacement.value == 0) {
-				m_bytes.push_back(indirect(rx, has_sib ? 0b100 : memory.base.index));
+				m_bytes.push_back(detail::indirect(rx, has_sib ? 0b100 : memory.base.index));
 			}
 			else if(memory.displacement.min_bits <= 8) {
 				// 8 bit displacement
-				m_bytes.push_back(indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index));
+				m_bytes.push_back(detail::indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index));
 			}
 			else {
 				// 32 bit displacemen
-				m_bytes.push_back(indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index));
+				m_bytes.push_back(detail::indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index));
 			}
 
 			return; // nothing else to do
 		}
 
 		if(inst->has_broadcast_operand()) {
-			m_bytes.push_back(indirect(rx, destination));
+			m_bytes.push_back(detail::indirect(rx, destination));
 			return;
 		}
 
 		// forced mod/rm
 		if(inst->is_r()) {
 			if(inst->enc == ENC_VEX_R) {
-				m_bytes.push_back(direct(m_regs[0], 0));
+				m_bytes.push_back(detail::direct(m_regs[0], 0));
 			}
 			else if(inst->operand_count == 1) {
-				m_bytes.push_back(direct(0, m_regs[0]));
+				m_bytes.push_back(detail::direct(0, m_regs[0]));
 			}
 			else {
-				m_bytes.push_back(direct(rx, destination));
+				m_bytes.push_back(detail::direct(rx, destination));
 			}
 		}
 		else if(inst->is_rm()) {
 			switch(inst->enc) {
 				case ENC_VEX_VM:
 				case ENC_XOP_VM: 
-				case ENC_EVEX_VM:  m_bytes.push_back(direct(rx, m_regs[1])); break;
-				case ENC_VEX_RVMS: m_bytes.push_back(direct(rx, m_regs[2])); break;
-				default:           m_bytes.push_back(direct(rx, m_regs[0])); break; 
+				case ENC_EVEX_VM:  m_bytes.push_back(detail::direct(rx, m_regs[1])); break;
+				case ENC_VEX_RVMS: m_bytes.push_back(detail::direct(rx, m_regs[2])); break;
+				default:           m_bytes.push_back(detail::direct(rx, m_regs[0])); break; 
 			}
 		}
 	}
 
 	// TODO
-	auto assembler::get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8 {
+	auto assembler_backend::get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8 {
 		u8 rx = m_regs[0];
 
 		switch(inst->enc) {
@@ -1529,7 +1582,7 @@ namespace baremetal {
 		return 0;
 	}
 
-	void assembler::emit_instruction_sib(const operand* operands) {
+	void assembler_backend::emit_instruction_sib(const operand* operands) {
 		operand operand;
 
 		for(u8 i = 0; i < 3; ++i) {
@@ -1554,14 +1607,14 @@ namespace baremetal {
 			memory.has_base == false || 
 			operand.type == OP_TMEM
 		) {
-			m_bytes.push_back(sib(scale, index, base));
+			m_bytes.push_back(detail::sib(scale, index, base));
 		}
 		else if(memory.has_sse_operands()) {
-			m_bytes.push_back(sib(scale, base, memory.has_index ? memory.index.index : 0b101));
+			m_bytes.push_back(detail::sib(scale, base, memory.has_index ? memory.index.index : 0b101));
 		}
 	}
 
-	auto assembler::has_sib_byte(const operand* operands) -> bool {
+	auto assembler_backend::has_sib_byte(const operand* operands) -> bool {
 		operand operand;
 
 		for(u8 i = 0; i < 3; ++i) {
@@ -1596,7 +1649,7 @@ namespace baremetal {
 		return false;
 	}
 
-	void assembler::emit_operands(const instruction* inst, const operand* operands) {
+	void assembler_backend::emit_operands(const instruction* inst, const operand* operands) {
 		for(u8 i = 0; i < inst->operand_count; ++i) {
 			const operand_type current = inst->operands[i];
 
@@ -1669,13 +1722,13 @@ namespace baremetal {
 		}
 	}
 
-	void assembler::emit_data_operand(u64 data, u16 bit_width) {
+	void assembler_backend::emit_data_operand(u64 data, u16 bit_width) {
 		for(u16 i = 0; i < bit_width / 8; ++i) {
 			m_bytes.push_back(data >> (i * 8) & 0xFF);
 		}
 	}
 
-	auto assembler::get_instruction_vvvv(const instruction* inst, const operand* operands) -> u8 {
+	auto assembler_backend::get_instruction_vvvv(const instruction* inst, const operand* operands) -> u8 {
 		switch(inst->enc) {
 			case ENC_VEX_VM:
 			case ENC_EVEX_RMZ:
@@ -1729,7 +1782,7 @@ namespace baremetal {
 		return 0; // unreachable
 	}
 
-	auto assembler::get_instruction_v(const instruction* inst, const operand* operands) -> u8 {
+	auto assembler_backend::get_instruction_v(const instruction* inst, const operand* operands) -> u8 {
 		switch(inst->enc) {
 			case ENC_VEX_VM:
 			case ENC_EVEX_M:
@@ -1747,7 +1800,11 @@ namespace baremetal {
 				return static_cast<bool>((operands[1].r & 0b00010000));
 			}
 			case ENC_EVEX_RM:{
-				if(is_operand_mem(inst->operands[1]) && operands[1].memory.has_index && is_sse_reg(operands[1].memory.index)) {
+				if(
+					is_operand_mem(inst->operands[1]) &&
+					operands[1].memory.has_index && 
+					is_sse_reg(operands[1].memory.index)
+				) {
 					return static_cast<bool>((operands[1].memory.index.index & 0b00010000));
 				}
 
@@ -1758,7 +1815,10 @@ namespace baremetal {
 				return static_cast<bool>((operands[1].r & 0b00010000));
 			}
 			case ENC_EVEX_MR: {
-				if(inst->operand_count == 2 || (inst->operand_count == 3 && is_operand_imm(inst->operands[inst->operand_count - 1]))) {
+				if(
+					inst->operand_count == 2 || 
+					(inst->operand_count == 3 && is_operand_imm(inst->operands[inst->operand_count - 1]))
+				) {
 					return 0; 
 				}
 
@@ -1770,7 +1830,7 @@ namespace baremetal {
 		return 0; // unreachable
 	}
 
-	auto assembler::get_mask_register(const instruction* inst, const operand* operands) -> u8 {
+	auto assembler_backend::get_mask_register(const instruction* inst, const operand* operands) -> u8 {
 		if(inst->has_masked_operand() == false) {
 			return 0;
 		}
@@ -1784,7 +1844,7 @@ namespace baremetal {
 		return operands[i].mr.k; // masked register
 	}
 
-	auto assembler::get_instruction_map_select(const instruction* inst) -> u8 {
+	auto assembler_backend::get_instruction_map_select(const instruction* inst) -> u8 {
 		if(inst->is_evex()) {
 			if(inst->is_map6()) {
 				return 0b110; 
@@ -1814,7 +1874,7 @@ namespace baremetal {
 		return 0;
 	}
 
-	auto assembler::get_evex_operand_type(const instruction* inst) -> u8 {
+	auto assembler_backend::get_evex_operand_type(const instruction* inst) -> u8 {
 		if(inst->op_size == OPS_256) {
 			return 0b00100000;
 		}
@@ -1826,7 +1886,7 @@ namespace baremetal {
 		return 0;
 	}
 
-	auto assembler::get_instruction_imp(const instruction* inst) -> u8 {
+	auto assembler_backend::get_instruction_imp(const instruction* inst) -> u8 {
 		if(inst->prefix == OPERAND_SIZE_OVERRIDE) {
 			return 0b01;
 		}
@@ -1842,7 +1902,7 @@ namespace baremetal {
 		return 0;
 	}
 
-	auto assembler::get_instruction_l(const instruction* inst) -> bool {
+	auto assembler_backend::get_instruction_l(const instruction* inst) -> bool {
 		if(inst->is_l1()) {
 			return true;
 		}
@@ -1855,7 +1915,7 @@ namespace baremetal {
 		return inst->op_size == OPS_256;
 	}
 
-	auto assembler::get_evex_zero(const instruction* inst) -> bool {
+	auto assembler_backend::get_evex_zero(const instruction* inst) -> bool {
 		switch (inst->operands[0]) {
 			case OP_XMM_KZ:	
 			case OP_YMM_KZ:	
@@ -1864,64 +1924,7 @@ namespace baremetal {
 		}
 	}
 
-	// TODO:
-	auto assembler::mod_rx_rm(u8 mod, u8 rx, u8 rm) -> u8 {
-		// mod  [XX______] (addressing mode)
-		// rx   [__XXX___]
-		// rm   [_____XXX]
-
-		return static_cast<u8>((rm & 7) | ((rx & 7) << 3) | (mod << 6));
-	}
-
-	// TODO:
-	auto assembler::sib(u8 scale, u8 index, u8 base) -> u8 {
-		ASSERT(scale <= 3, "invalid scale");
-
-		// scale [XX______]
-		// index [__XXX___]
-		// base  [_____XXX]
-
-		return static_cast<u8>((scale << 6) | ((index & 0x7) << 3) | (base & 0x7));
-	}
-
-	// TODO:
-	auto assembler::rex(bool w, u8 rx, u8 base, u8 index) -> u8 {
-		// rex prefix                         [0100____]
-		// w (64 bit mode)                    [____X___]
-		// r (mod R/M extension) (rx > RDI)   [_____X__]
-		// x (sib extension) (index > RDI)    [______X_]
-		// b (mod R/M extension) (base > RDI) [_______X]
-		
-		// TODO: this is a temporary hack
-		rx = utility::clamp(rx, 0, 15);
-		base = utility::clamp(base, 0, 15);
-		index = utility::clamp(index, 0, 15);
-
-		const u8 index_mask = static_cast<u8>((index >> 3) << 1);
-		const u8 rx_mask = static_cast<u8>((rx >> 3) << 2);
-		const u8 w_mask = static_cast<u8>(w << 3);
-		const u8 base_mask = base >> 3;
-
-		return 0x40 | base_mask | index_mask | rx_mask | w_mask;
-	}
-
-	auto assembler::direct(u8 rx, u8 reg) -> u8 {
-		return mod_rx_rm(DIRECT, rx, reg);
-	}
-
-	auto assembler::indirect(u8 rx, u8 base) -> u8 {
-		return mod_rx_rm(INDIRECT, rx, base);
-	}
-
-	auto assembler::indirect_disp_8(u8 rx, u8 base) -> u8 {
-		return mod_rx_rm(INDIRECT_DISP8, rx, base);
-	}
-
-	auto assembler::indirect_disp_32(u8 rx, u8 base) -> u8 {
-		return mod_rx_rm(INDIRECT_DISP32, rx, base);
-	}
-
-	auto assembler::get_current_inst_size() const -> u8 {
+	auto assembler_backend::get_current_inst_size() const -> u8 {
 		return static_cast<u8>(m_bytes.get_size() - m_current_inst_begin);
 	}
 } // namespace baremetal

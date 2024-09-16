@@ -80,6 +80,10 @@ namespace detail {
 } // namespace detail
 
 void print_help() {
+	if(g_quiet) {
+		return;
+	}
+
 	utility::console::print("test_runner [FLAG] [OPTION] [ARGUMENT]\n\n");
 	utility::console::print("flags:\n");
 	utility::console::print("  -q, --quiet   don't produce any stdout outputs\n\n");
@@ -121,6 +125,10 @@ auto check_invalid_option(i32 argc, i32 argi) -> i32 {
 }
 
 auto list_groups() -> i32 {
+	if(g_quiet) {
+		return 0;
+	} 
+
 	for(const auto& g : g_all_groups) {
 		utility::console::print("{}\n", g);
 	}
@@ -139,6 +147,11 @@ auto main(i32 argc, const char** argv) -> i32 {
 	if(compare_commands("-q", "--quiet", argv[argi])) {
 		g_quiet = true;
 		argi++;
+
+		if(argi == argc) {
+			utility::console::print_err("error: flag cannot be the only argument  (type '--help' for help)\n");
+			return 1;
+		}
 	}
 
 	// help

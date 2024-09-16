@@ -1,5 +1,5 @@
 #pragma once
-#include "assembler/assembler.h"
+#include "assembler/assembler_backend.h"
 #include "assembler/lexer.h"
 
 #include <utility/result.h>
@@ -37,7 +37,7 @@ namespace baremetal {
 		auto parse_memory(operand& op) -> utility::result<void>;
 	private:
 		utility::dynamic_string m_assembly;
-		assembler m_assembler;
+		assembler_backend m_assembler;
 		lexer m_lexer;
 
 		// instruction context

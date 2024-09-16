@@ -18,11 +18,27 @@ namespace baremetal {
 		auto is_operand_of_same_kind(operand_type a, operand_type b) -> bool;
 		auto extract_operand_reg_beg(const operand& op) -> u8;
 		auto extract_operand_reg(const operand& op) -> u8;
+
+		enum mod_mode : u8 {
+			INDIRECT        = 0b00,
+			INDIRECT_DISP8  = 0b01,
+			INDIRECT_DISP32 = 0b10,
+			DIRECT          = 0b11
+		};
+
+		auto mod_rm(mod_mode mod, u8 rx, u8 rm) -> u8;
+		auto sib(u8 scale, u8 index, u8 base) -> u8;
+		auto rex(bool w, u8 rx, u8 base, u8 index) -> u8;
+
+		auto direct(u8 rx, u8 reg) -> u8;
+		auto indirect(u8 rx, u8 base) -> u8;
+		auto indirect_disp_8(u8 rx, u8 base) -> u8;
+		auto indirect_disp_32(u8 rx, u8 base) -> u8;
 	} // namespace detail
 	
-	class assembler {
+	class assembler_backend {
 	public:
-		assembler();
+		assembler_backend();
 
 		void clear();
 		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<u8>&;
@@ -45,6 +61,7 @@ namespace baremetal {
 
 		// pretty much all other prefixes also need a REX prefix in some shape or form, these utility
 		// functions are used for generating them
+		// TODO: these are a mess, we need to fix them after we implement support for enough instructions
 		auto get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8;
 		auto get_instruction_rex_evex(const instruction* inst, const operand* operands) -> u8;
 		auto get_instruction_rex_rex(const instruction* inst, const operand* operands) -> u8;
@@ -58,6 +75,7 @@ namespace baremetal {
 		void emit_opcode_prefix_evex(const instruction* inst, const operand* operands);
 
 		// instruction MOD/RM
+		// TODO: these are a mess, we need to fix them after we implement support for enough instructions
 		void emit_instruction_mod_rm(const instruction* inst, const operand* operands);
 		auto get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8;
 
@@ -68,6 +86,7 @@ namespace baremetal {
 		// instruction operands
 		void emit_operands(const instruction* inst, const operand* operands);
 		void emit_data_operand(u64 data, u16 bit_width);
+		auto get_current_inst_size() const -> u8;
 
 		// instruction prefix helpers
 		auto get_instruction_vvvv(const instruction* inst, const operand* operands) -> u8;
@@ -78,24 +97,6 @@ namespace baremetal {
 		auto get_instruction_imp(const instruction* inst) -> u8;
 		auto get_instruction_l(const instruction* inst) -> bool;
 		auto get_evex_zero(const instruction* inst) -> bool;
-
-		enum mod_mode : u8 {
-			INDIRECT        = 0b00,
-			INDIRECT_DISP8  = 0b01,
-			INDIRECT_DISP32 = 0b10,
-			DIRECT          = 0b11
-		};
-
-		static auto mod_rx_rm(u8 mod, u8 rx, u8 rm) -> u8;
-		static auto sib(u8 scale, u8 index, u8 base) -> u8;
-		static auto rex(bool w, u8 rx, u8 base, u8 index) -> u8;
-
-		static auto direct(u8 rx, u8 reg) -> u8;
-		static auto indirect(u8 rx, u8 base) -> u8;
-		static auto indirect_disp_8(u8 rx, u8 base) -> u8;
-		static auto indirect_disp_32(u8 rx, u8 base) -> u8;
-
-		auto get_current_inst_size() const -> u8;
 	private:
 		u8 m_reg_count;
 		u8 m_regs[4];
