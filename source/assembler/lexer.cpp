@@ -97,6 +97,7 @@ parse_number:
 			case '-':  get_next_char();  return current = TOK_MINUS;
 			case '*':  get_next_char();  return current = TOK_ASTERISK;
 			case '$':  get_next_char();  return current = TOK_DOLLARSIGN;
+			case '.':  get_next_char();  return current = TOK_DOT;
 			case '\n': get_next_char();  return current = TOK_NEWLINE;
 			case utility::g_eof:         return current = TOK_EOF;
 		}
@@ -641,7 +642,12 @@ parse_number:
 			{ "1to32", TOK_1TO32 },
 
 			// keywords
-			{ "rel"  , TOK_REL   },
+			{ "rel"    , TOK_REL     },
+			{ "section", TOK_SECTION },
+			{ "db"     , TOK_DB      },
+			{ "dw"     , TOK_DW      },
+			{ "dd"     , TOK_DD      },
+			{ "dq"     , TOK_DQ      },
 		};
 		
 		const auto it = operand_map.find(str);

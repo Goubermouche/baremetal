@@ -1,8 +1,6 @@
 #pragma once
 #include "assembler/instruction/instruction.h"
-
-#include <utility/containers/dynamic_string.h>
-#include <utility/containers/dynamic_array.h>
+#include "assembler/binary/module.h"
 
 namespace baremetal {
 	namespace detail {
@@ -41,9 +39,11 @@ namespace baremetal {
 		assembler_backend();
 
 		void clear();
-		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<u8>&;
+		[[nodiscard]] auto get_bytes() const -> utility::dynamic_array<u8>;
 
 		void emit_instruction(u32 index, const operand* operands);
+		void set_section(const char* name);
+		void push_byte(u8 value);
 	private:
 		// instruction emission
 		auto find_optimized_instruction(u32 index, const operand* operands) -> const instruction*;
@@ -98,11 +98,11 @@ namespace baremetal {
 		auto get_instruction_l(const instruction* inst) -> bool;
 		auto get_evex_zero(const instruction* inst) -> bool;
 	private:
+		u64 m_current_inst_begin;
 		u8 m_reg_count;
 		u8 m_regs[4];
 
-		utility::dynamic_array<u8> m_bytes;
-		u64 m_current_inst_begin;
+		module m_module;	
 	};
 } // namespace baremetal
 

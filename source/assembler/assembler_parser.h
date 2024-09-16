@@ -17,13 +17,15 @@ namespace baremetal {
 		
 		auto parse(const utility::dynamic_string& assembly) -> utility::result<void>; 
 
-		[[nodiscard]] auto get_bytes() const -> const utility::dynamic_array<u8>&;
+		[[nodiscard]] auto get_bytes() const -> utility::dynamic_array<u8>;
 		void clear();
 	private:
-		// instructions
+		auto parse_identifier() -> utility::result<void>;
 		auto parse_instruction() -> utility::result<void>;
+		auto parse_section() -> utility::result<void>;
+		auto parse_define_memory() -> utility::result<void>;
 
-		// operands
+		// instruction operands
 		auto parse_broadcast(mask_type mask) -> utility::result<void>;
 		auto parse_memory(data_type type) -> utility::result<void>;
 		auto parse_moff(data_type type) -> utility::result<void>;
@@ -39,6 +41,8 @@ namespace baremetal {
 		utility::dynamic_string m_assembly;
 		assembler_backend m_assembler;
 		lexer m_lexer;
+
+		utility::dynamic_string m_current_identifier;
 
 		// instruction context
 		u32 m_instruction_i; // best guess for the current instruction index

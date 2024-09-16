@@ -12,20 +12,6 @@ using namespace utility::types;
     total_fail    += result.fail_count;      \
   } while(false)
 
-#define TEST_INST(expected, instruction)                                                                           \
-do {                                                                                                               \
-  assembler.instruction;                                                                                           \
-  string = bytes_to_string(assembler.get_bytes());                                                                 \
-  if((expected) != string) {                                                                                       \
-    utility::console::print("error: \"{}\", expected \"{}\", but got \"{}\"\n", #instruction, (expected), string); \
-    result.fail_count++;                                                                                           \
-  }                                                                                                                \
-  else {                                                                                                           \
-    result.success_count++;                                                                                        \
-  }                                                                                                                \
-  assembler.clear();                                                                                               \
-} while(false)
-
 namespace baremetal::tests {
 	struct test_info {
 		test_info(const char* name, u64 total_tests, bool quiet) : m_name(name), m_total_tests(total_tests), m_quiet(quiet) {

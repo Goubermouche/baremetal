@@ -251,6 +251,7 @@ namespace baremetal {
 		TOK_COMMA,      // ,
 		TOK_NEWLINE,    // \n
 		TOK_DOLLARSIGN, // $
+		TOK_DOT,        // .
 
 		// broadcast keywords
 		TOK_1TO2,  // 1to2
@@ -259,7 +260,12 @@ namespace baremetal {
 		TOK_1TO16, // 1to16
 		TOK_1TO32, // 1to32
 
-		TOK_REL,  // rel
+		TOK_REL,     // rel
+		TOK_SECTION, // section
+		TOK_DB,      // db
+		TOK_DW,      // dw
+		TOK_DD,      // dd
+		TOK_DQ,      // dq
 	};
 
 	enum data_type : u8 {

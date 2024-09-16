@@ -117,12 +117,12 @@ namespace baremetal {
 	assembler_backend::assembler_backend() : m_current_inst_begin(0) {}
 
 	void assembler_backend::clear() {
-		m_bytes.clear();
+		m_module.clear();
 		m_current_inst_begin = 0;
 	}
 
-	auto assembler_backend::get_bytes() const -> const utility::dynamic_array<u8>& {
-		return m_bytes;
+	auto assembler_backend::get_bytes() const -> utility::dynamic_array<u8> {
+		return m_module.emit_binary();
 	}
 
 	void assembler_backend::emit_instruction(u32 index, const operand* operands) {
@@ -139,6 +139,10 @@ namespace baremetal {
 		emit_instruction_mod_rm(inst, operands);
 		emit_instruction_sib(operands);
 		emit_operands(inst, operands);
+	}
+
+	void assembler_backend::set_section(const char* name) {
+		m_module.set_section(name);
 	}
 
 	auto assembler_backend::find_optimized_instruction(u32 index, const operand* operands)  -> const instruction* {
@@ -274,7 +278,7 @@ namespace baremetal {
 	void assembler_backend::emit_instruction_prefix(const instruction* inst) {
 		if(inst->enc == ENC_NORMALD) {
 			// instruction composed of two instructions, emit the first one here
-			m_bytes.push_back((inst->opcode & 0x0000FF00) >> 8);
+			push_byte((inst->opcode & 0x0000FF00) >> 8);
 		}
 
 		if(inst->is_vex_xop() || inst->is_evex()) {
@@ -287,38 +291,38 @@ namespace baremetal {
 
 		// group 4
 		if(inst->prefix & ADDRESS_SIZE_OVERRIDE) {
-			m_bytes.push_back(0x67);
+			push_byte(0x67);
 		}
 
 		// group 3
 		if(inst->prefix & OPERAND_SIZE_OVERRIDE) {
-			m_bytes.push_back(0x66);
+			push_byte(0x66);
 		}
 
 		// group 2
 		switch(inst->prefix & 0b00111100) {
-			case CS_SEGMENT:       m_bytes.push_back(0x2E); break;
-			case SS_SEGMENT:       m_bytes.push_back(0x36); break;
-			case DS_SEGMENT:       m_bytes.push_back(0x3E); break;
-			case ES_SEGMENT:       m_bytes.push_back(0x26); break;
-			case FS_SEGMENT:       m_bytes.push_back(0x64); break;
-			case GS_SEGMENT:       m_bytes.push_back(0x65); break;
-			case BRANCH_NOT_TAKEN: m_bytes.push_back(0x2E); break;
-			case BRANCH_TAKEN:     m_bytes.push_back(0x3E); break;
+			case CS_SEGMENT:       push_byte(0x2E); break;
+			case SS_SEGMENT:       push_byte(0x36); break;
+			case DS_SEGMENT:       push_byte(0x3E); break;
+			case ES_SEGMENT:       push_byte(0x26); break;
+			case FS_SEGMENT:       push_byte(0x64); break;
+			case GS_SEGMENT:       push_byte(0x65); break;
+			case BRANCH_NOT_TAKEN: push_byte(0x2E); break;
+			case BRANCH_TAKEN:     push_byte(0x3E); break;
 			default:                                        break;
 		}
 
 		// group 1
 		switch(inst->prefix & 0b00000011) {
-			case LOCK:  m_bytes.push_back(0xF0); break;
-			case REPNE: m_bytes.push_back(0xF2); break;
-			case REP:   m_bytes.push_back(0xF3); break;
+			case LOCK:  push_byte(0xF0); break;
+			case REPNE: push_byte(0xF2); break;
+			case REP:   push_byte(0xF3); break;
 			default:                             break;
 		}
 	}
 	
 	void assembler_backend::instruction_begin(const operand* operands) {
-		m_current_inst_begin = m_bytes.get_size();
+		m_current_inst_begin = m_module.get_size();
 
 		utility::memset(m_regs, 0, sizeof(u8) * 4);
 		m_reg_count = 0;
@@ -369,12 +373,12 @@ namespace baremetal {
 			const u8 byte = (opcode >> (i * 8)) & 0xFF;
 
 			if(byte != 0) {
-				m_bytes.push_back(byte);
+				push_byte(byte);
 			}
 		}
 
 		// always push the last byte
-		m_bytes.push_back(opcode & 0xFF);
+		push_byte(opcode & 0xFF);
 	}
 
 	void assembler_backend::emit_instruction_opcode_prefix(const instruction* inst, const operand* operands) {
@@ -394,7 +398,7 @@ namespace baremetal {
 
 	void assembler_backend::emit_opcode_prefix_rex(const instruction* inst, const operand* operands) {
 		if(inst->is_rexw() || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
-			m_bytes.push_back(get_instruction_rex_rex(inst, operands));
+			push_byte(get_instruction_rex_rex(inst, operands));
 		}
 		else if(is_operand_mem(operands[0].type)) {
 			emit_opcode_prefix_rex_mem(operands[0].memory);
@@ -407,7 +411,7 @@ namespace baremetal {
 	void assembler_backend::emit_opcode_prefix_rex_mem(const mem& memory) {
 		// if our memory operand contains an extended register we have to emit a rex prefix
 		if((memory.has_base && memory.base.index >= 8) || (memory.has_index && memory.index.index >= 8)) {
-			m_bytes.push_back(detail::rex(false, 0, memory.base.index, memory.index.index));
+			push_byte(detail::rex(false, 0, memory.base.index, memory.index.index));
 		}
 	}
 
@@ -1262,9 +1266,9 @@ namespace baremetal {
 
 		// VEX/XOP prefix
 		if(inst->is_xop()) {
-			m_bytes.push_back(0x8f);
+			push_byte(0x8f);
 		} else {
-			m_bytes.push_back(0xc4);
+			push_byte(0xc4);
 		}
 
 		prefix[0] |= !(rex & 0b00000100) << 7;                  // ~R         [X_______] 
@@ -1277,22 +1281,22 @@ namespace baremetal {
 		prefix[1] |= get_instruction_l(inst) << 2;              // L          [_____X__]
 		prefix[1] |= get_instruction_imp(inst);                 // pp         [______XX]
 		
-		m_bytes.push_back(prefix[0]);
-		m_bytes.push_back(prefix[1]);
+		push_byte(prefix[0]);
+		push_byte(prefix[1]);
 	}
 
 	void assembler_backend::emit_opcode_prefix_vex_two(const instruction* inst, const operand* operands) {
 		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
 		u8 prefix = 0;
 
-		m_bytes.push_back(0xc5); // two byte VEX prefix
+		push_byte(0xc5); // two byte VEX prefix
 
 		prefix |= !(rex & 0b00000100) << 7;                     // ~R    [X_______]
 		prefix |= get_instruction_vvvv(inst, operands) << 3;    // ~vvvv [_XXXX___]
 		prefix |= get_instruction_l(inst) << 2;                 // L     [_____X__]
 		prefix |= get_instruction_imp(inst);                    // IMP    [______XX]
 
-		m_bytes.push_back(prefix);
+		push_byte(prefix);
 	}
 
 	void assembler_backend::emit_opcode_prefix_vex(const instruction* inst, const operand* operands) {
@@ -1316,7 +1320,7 @@ namespace baremetal {
 		const u8 modrm = get_mod_rm_reg(inst, operands);
 		u8 prefix[3] = {};
 
-		m_bytes.push_back(0x62); // EVEX prefix
+		push_byte(0x62); // EVEX prefix
 
 		prefix[0] |= !(rex & 0b00000100) << 7;                  // ~R         [X_______] 
 		prefix[0] |= !(rex & 0b00000010) << 6;                  // ~X         [_X______] 
@@ -1335,9 +1339,9 @@ namespace baremetal {
 		prefix[2] |= !get_instruction_v(inst, operands) << 3;   // ~V         [____X___]
 		prefix[2] |= get_mask_register(inst, operands);         // mask       [_____XXX]
 
-		m_bytes.push_back(prefix[0]);
-		m_bytes.push_back(prefix[1]);
-		m_bytes.push_back(prefix[2]);
+		push_byte(prefix[0]);
+		push_byte(prefix[1]);
+		push_byte(prefix[2]);
 	}
 
 	// TODO:
@@ -1458,53 +1462,53 @@ namespace baremetal {
 			ASSERT(memory.displacement.min_bits <= 32, "too many displacement bits");
 
 			if(memory.has_base == false) {
-				m_bytes.push_back(detail::indirect(rx, 0b100));
+				push_byte(detail::indirect(rx, 0b100));
 			}
 			else if(memory.base.type == REG_RIP) {
-				m_bytes.push_back(detail::indirect(rx, 0b101));
+				push_byte(detail::indirect(rx, 0b101));
 			}
 			else if(is_sse_reg(memory.base)) {
-				m_bytes.push_back(detail::indirect(rx, 0b100));
+				push_byte(detail::indirect(rx, 0b100));
 			}
 			else if(memory.displacement.value == 0) {
-				m_bytes.push_back(detail::indirect(rx, has_sib ? 0b100 : memory.base.index));
+				push_byte(detail::indirect(rx, has_sib ? 0b100 : memory.base.index));
 			}
 			else if(memory.displacement.min_bits <= 8) {
 				// 8 bit displacement
-				m_bytes.push_back(detail::indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index));
+				push_byte(detail::indirect_disp_8(rx, has_sib ? 0b100 : memory.base.index));
 			}
 			else {
 				// 32 bit displacemen
-				m_bytes.push_back(detail::indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index));
+				push_byte(detail::indirect_disp_32(rx, has_sib ? 0b100 : memory.base.index));
 			}
 
 			return; // nothing else to do
 		}
 
 		if(inst->has_broadcast_operand()) {
-			m_bytes.push_back(detail::indirect(rx, destination));
+			push_byte(detail::indirect(rx, destination));
 			return;
 		}
 
 		// forced mod/rm
 		if(inst->is_r()) {
 			if(inst->enc == ENC_VEX_R) {
-				m_bytes.push_back(detail::direct(m_regs[0], 0));
+				push_byte(detail::direct(m_regs[0], 0));
 			}
 			else if(inst->operand_count == 1) {
-				m_bytes.push_back(detail::direct(0, m_regs[0]));
+				push_byte(detail::direct(0, m_regs[0]));
 			}
 			else {
-				m_bytes.push_back(detail::direct(rx, destination));
+				push_byte(detail::direct(rx, destination));
 			}
 		}
 		else if(inst->is_rm()) {
 			switch(inst->enc) {
 				case ENC_VEX_VM:
 				case ENC_XOP_VM: 
-				case ENC_EVEX_VM:  m_bytes.push_back(detail::direct(rx, m_regs[1])); break;
-				case ENC_VEX_RVMS: m_bytes.push_back(detail::direct(rx, m_regs[2])); break;
-				default:           m_bytes.push_back(detail::direct(rx, m_regs[0])); break; 
+				case ENC_EVEX_VM:  push_byte(detail::direct(rx, m_regs[1])); break;
+				case ENC_VEX_RVMS: push_byte(detail::direct(rx, m_regs[2])); break;
+				default:           push_byte(detail::direct(rx, m_regs[0])); break; 
 			}
 		}
 	}
@@ -1607,10 +1611,10 @@ namespace baremetal {
 			memory.has_base == false || 
 			operand.type == OP_TMEM
 		) {
-			m_bytes.push_back(detail::sib(scale, index, base));
+			push_byte(detail::sib(scale, index, base));
 		}
 		else if(memory.has_sse_operands()) {
-			m_bytes.push_back(detail::sib(scale, base, memory.has_index ? memory.index.index : 0b101));
+			push_byte(detail::sib(scale, base, memory.has_index ? memory.index.index : 0b101));
 		}
 	}
 
@@ -1718,13 +1722,13 @@ namespace baremetal {
 
 		if(inst->is_is4()) {
 			// trailing register encoded as an immediate
-			m_bytes.push_back(operands[3].r << 4);
+			push_byte(operands[3].r << 4);
 		}
 	}
 
 	void assembler_backend::emit_data_operand(u64 data, u16 bit_width) {
 		for(u16 i = 0; i < bit_width / 8; ++i) {
-			m_bytes.push_back(data >> (i * 8) & 0xFF);
+			push_byte(data >> (i * 8) & 0xFF);
 		}
 	}
 
@@ -1924,8 +1928,12 @@ namespace baremetal {
 		}
 	}
 
+	void assembler_backend::push_byte(u8 value) {
+		m_module.push_byte(value);
+	}
+
 	auto assembler_backend::get_current_inst_size() const -> u8 {
-		return static_cast<u8>(m_bytes.get_size() - m_current_inst_begin);
+		return static_cast<u8>(m_module.get_size() - m_current_inst_begin);
 	}
 } // namespace baremetal
 

@@ -1,6 +1,7 @@
 #include "assembler_parser.h"
 
 #include "assembler/instruction/instruction.h"
+#include "assembler/lexer.h"
 
 #define EXPECT_TOKEN(expected)                            \
   do {                                                    \
@@ -120,13 +121,17 @@ namespace baremetal {
 		m_lexer.get_next_token();
 
 		while(m_lexer.current != TOK_EOF) {
-			TRY(parse_instruction());
+			switch(m_lexer.current) {
+				case TOK_SECTION:    TRY(parse_section()); break;
+				case TOK_IDENTIFIER: TRY(parse_identifier()); break; 
+				default: return utility::error("unexpected top-level token received");
+			}
 		}
 
 		return SUCCESS;
 	}
 
-	auto assembler_parser::get_bytes() const -> const utility::dynamic_array<u8>& {
+	auto assembler_parser::get_bytes() const -> utility::dynamic_array<u8> {
 		return m_assembler.get_bytes();
 	}
 
@@ -135,18 +140,25 @@ namespace baremetal {
 		m_assembler.clear();
 	}
 
-	auto assembler_parser::parse_instruction() -> utility::result<void> {
+	auto assembler_parser::parse_identifier() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
-		// locate the first instruction with the specified name
-		utility::dynamic_string instruction_identifier = m_lexer.current_string;
-		m_instruction_i = find_instruction_by_name(instruction_identifier.get_data());
+		// TODO: get rid of this copy
+		m_current_identifier = utility::dynamic_string(m_lexer.current_string);
+		m_instruction_i = find_instruction_by_name(m_current_identifier.get_data());
 
-		if(m_instruction_i == utility::limits<u32>::max()) {
-			// instruction doesn't exist
-			return utility::error("unknown instruction specified");
+		if(m_instruction_i != utility::limits<u32>::max()) {
+			return parse_instruction();
 		}
 
+		// other identifiers
+		switch(m_lexer.get_next_token()) {
+			case TOK_DB ... TOK_DQ: return parse_define_memory(); 
+			default:                return utility::error("unexpected token received after an identifier");
+		}
+	}
+
+	auto assembler_parser::parse_instruction() -> utility::result<void> {
 		// ensure our destination is clean
 		utility::memset(m_operands, 0, sizeof(operand) * 4);
 		m_operand_i = 0;
@@ -174,7 +186,7 @@ namespace baremetal {
 			const instruction& current = instruction_db[m_instruction_i]; 
 
 			// verify that the instruction names are the same and that we've not left our instruction group
-			if(instruction_identifier != current.name) {
+			if(m_current_identifier != current.name) {
 				break;
 			}
 
@@ -201,6 +213,27 @@ namespace baremetal {
 
 		// invalid instruction and operand combination
 		return utility::error("invalid operand combination for the specified instruction");
+	}
+
+	auto assembler_parser::parse_section() -> utility::result<void> {
+		EXPECT_TOKEN(TOK_SECTION);
+
+		m_lexer.get_next_token();
+		EXPECT_TOKEN(TOK_DOT);
+
+		m_lexer.get_next_token();
+		EXPECT_TOKEN(TOK_IDENTIFIER);
+
+		// NOTE: we don't care if a section is 'declared' multiple times
+		m_assembler.set_section(m_lexer.current_string.get_data());
+
+		m_lexer.get_next_token(); // prime the next token
+		return SUCCESS;
+	}
+
+	auto assembler_parser::parse_define_memory() -> utility::result<void> {
+		ASSERT(false, "TODO\n");
+		return SUCCESS;
 	}
 
 	auto assembler_parser::parse_type() -> utility::result<void> {
