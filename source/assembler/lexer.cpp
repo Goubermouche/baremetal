@@ -88,17 +88,17 @@ parse_number:
 
 		// special characters
 		switch(m_current_char) {
-			case ',': get_next_char();  return current = TOK_COMMA;
-			case '[': get_next_char();  return current = TOK_LBRACKET;
-			case ']': get_next_char();  return current = TOK_RBRACKET;
-			case '{': get_next_char();  return current = TOK_LBRACE;
-			case '}': get_next_char();  return current = TOK_RBRACE;
-			case '+': get_next_char();  return current = TOK_PLUS;
-			case '-': get_next_char();  return current = TOK_MINUS;
-			case '*': get_next_char();  return current = TOK_ASTERISK;
-			case '$': get_next_char();  return current = TOK_DOLLARSIGN;
-			case '\n': get_next_char(); return current = TOK_NEWLINE;
-			case utility::g_eof:        return current = TOK_EOF;
+			case ',':  get_next_char();  return current = TOK_COMMA;
+			case '[':  get_next_char();  return current = TOK_LBRACKET;
+			case ']':  get_next_char();  return current = TOK_RBRACKET;
+			case '{':  get_next_char();  return current = TOK_LBRACE;
+			case '}':  get_next_char();  return current = TOK_RBRACE;
+			case '+':  get_next_char();  return current = TOK_PLUS;
+			case '-':  get_next_char();  return current = TOK_MINUS;
+			case '*':  get_next_char();  return current = TOK_ASTERISK;
+			case '$':  get_next_char();  return current = TOK_DOLLARSIGN;
+			case '\n': get_next_char();  return current = TOK_NEWLINE;
+			case utility::g_eof:         return current = TOK_EOF;
 		}
 
 		ASSERT(false, "unknown character: '{}'\n", (i32)m_current_char);

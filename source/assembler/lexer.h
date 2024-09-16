@@ -289,6 +289,8 @@ namespace baremetal {
 		MASK_K5_Z,
 		MASK_K6_Z,
 		MASK_K7_Z,
+		// since masks and broadcasts are the only thing which can be in trailing braces we can store 
+		// broadcasts in here as well
 		MASK_BROADCAST_1TO2,
 		MASK_BROADCAST_1TO4,
 		MASK_BROADCAST_1TO8,
@@ -302,20 +304,20 @@ namespace baremetal {
 	auto mask_to_broadcast_n(mask_type mask) -> u8;
 
 	class lexer {
-		public:
-			void set_text(const utility::dynamic_string& text);
-			auto get_next_token() -> token_type;
-		private:
-			auto get_next_char() -> char;
-		private:
-			u64 m_index;
-			utility::dynamic_string m_text;
-			char m_current_char;
-		public:
-			token_type current;
-			imm current_immediate;
-			utility::dynamic_string current_string;
-			bool force_keyword = false;
+	public:
+		void set_text(const utility::dynamic_string& text);
+		auto get_next_token() -> token_type;
+	private:
+		auto get_next_char() -> char;
+	private:
+		u64 m_index;
+		utility::dynamic_string m_text;
+		char m_current_char;
+	public:
+		token_type current;
+		imm current_immediate;
+		utility::dynamic_string current_string;
+		bool force_keyword = false; // consider the next number as a keyword instead of a numerical literal
 	};
 
 	auto token_to_data_type(token_type token) -> data_type;

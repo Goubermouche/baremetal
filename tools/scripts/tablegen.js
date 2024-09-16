@@ -74,7 +74,8 @@ function get_instruction_prefix(prefix_arr) {
 
 	prefix_arr.forEach(p => {
 		switch(p) {
-			// TODO: branch not take/taken aren't reachable right now, for more, see: 
+			// IGNORE: this doesn't seem to be an issue :chad:
+			// TODO: branch not taken/taken aren't reachable right now, for more, see: 
 			// https://community.intel.com/t5/Software-Archive/Developer-s-manual-0x66-0xF2-instruction-prefixes/td-p/947293?profile.language=pt&countrylabel=Chile
 
 			// group 4
