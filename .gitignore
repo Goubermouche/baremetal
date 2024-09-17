@@ -414,3 +414,6 @@ perf.data
 perf.data.old
 
 *.perf
+
+\\
+\\/

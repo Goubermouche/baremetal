@@ -13,7 +13,7 @@ function main() {
 	const out_path = 'out.txt';
 
   const nasm_command = `nasm -w+all -f bin -o ${bin_path} ${asm_path} > ${temp_path} 2>&1`;
-  let hexdump_command = `xxd -g 1 ${bin_path} > ${out_path}`;
+  let hexdump_command = `xxd -g 999999 ${bin_path} > ${out_path}`;
 
 	if(process.argv.length === 4) {
 		switch(process.argv[3]) {

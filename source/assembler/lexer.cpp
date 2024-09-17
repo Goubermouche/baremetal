@@ -19,11 +19,63 @@ namespace baremetal {
 		return m_current_char;
 	}
 
+	auto lexer::get_next_char_escaped() -> char {
+		if(m_current_char == '\\') {
+			get_next_char();
+
+			switch(m_current_char) {
+				case '\\': return '\\';
+				case '\'': return '\'';
+				case '\"': return '\"';
+				case '?':  return '\?';
+				case 'a':  return '\a';
+				case 'b':  return '\b';
+				case 'f':  return '\f';
+				case 'n':  return '\n';
+				case 'r':  return '\r';
+				case 't':  return '\t';
+				case 'v':  return '\v';
+				case '0':  return '\0';
+				default: ASSERT(false, "unexpected escaped character '\\{}' specified\n", m_current_char);
+			}
+		}
+
+		return m_current_char;
+	}
+
 	auto lexer::get_next_token() -> token_type {
+		// TODO: cleanup, add end error checking
 		current_string.clear();
 
 		// consume spaces
 		while(utility::is_space(m_current_char)) { get_next_char(); }
+
+		// string literals
+		if(m_current_char == '"') {
+			get_next_char();
+
+			while(m_current_char != '"') {
+				current_string += get_next_char_escaped();
+				get_next_char();
+			}
+
+			ASSERT(m_current_char == '"', "unescaped string literal detected\n");
+			get_next_char();
+
+			return current = TOK_STRING;
+		}
+
+		// char literals
+		if(m_current_char == '\'') {
+			get_next_char();
+			current_string += get_next_char_escaped();
+			get_next_char();
+
+			ASSERT(m_current_char == '\'', "unescaped char literal detected\n");
+			get_next_char();
+
+			return current = TOK_CHAR;
+		}
 
 		// numbers
 		if(utility::is_digit(m_current_char) && force_keyword == false) {

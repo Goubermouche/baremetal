@@ -123,7 +123,8 @@ namespace baremetal {
 		while(m_lexer.current != TOK_EOF) {
 			switch(m_lexer.current) {
 				case TOK_SECTION:    TRY(parse_section()); break;
-				case TOK_IDENTIFIER: TRY(parse_identifier()); break; 
+				case TOK_IDENTIFIER: TRY(parse_identifier()); break;
+				case TOK_NEWLINE:    m_lexer.get_next_token(); break;
 				default: return utility::error("unexpected top-level token received");
 			}
 		}
@@ -151,6 +152,7 @@ namespace baremetal {
 			return parse_instruction();
 		}
 
+		// TODO: check for multiple symbols
 		// other identifiers
 		switch(m_lexer.get_next_token()) {
 			case TOK_DB ... TOK_DQ: return parse_define_memory(); 
@@ -164,7 +166,7 @@ namespace baremetal {
 		m_operand_i = 0;
 
 		// parse individual operands
-		while(m_lexer.get_next_token() != TOK_EOF) {
+		while(m_lexer.get_next_token() != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
 			switch(m_lexer.current) {
 				case TOK_DOLLARSIGN:         TRY(parse_rip_relative_rel()); break;
 				case TOK_MINUS:              TRY(parse_number_negative()); break;
@@ -211,6 +213,9 @@ namespace baremetal {
 			m_instruction_i++;
 		}
 
+		m_lexer.get_next_token();
+		EXPECT_TOKEN(TOK_NEWLINE);
+
 		// invalid instruction and operand combination
 		return utility::error("invalid operand combination for the specified instruction");
 	}
@@ -227,12 +232,46 @@ namespace baremetal {
 		// NOTE: we don't care if a section is 'declared' multiple times
 		m_assembler.set_section(m_lexer.current_string.get_data());
 
+		m_lexer.get_next_token();
+		EXPECT_TOKEN(TOK_NEWLINE);
+
 		m_lexer.get_next_token(); // prime the next token
 		return SUCCESS;
 	}
 
 	auto assembler_parser::parse_define_memory() -> utility::result<void> {
-		ASSERT(false, "TODO\n");
+		// TODO: dw, dd, dq
+		while(m_lexer.get_next_token() != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
+			switch(m_lexer.current) {
+				case TOK_CHAR: 
+				case TOK_STRING: {
+					for(const char c : m_lexer.current_string) {
+						m_assembler.push_byte(c);
+					}
+
+					break;
+				}
+				case TOK_MINUS: ASSERT(false, "TODO\n"); break;
+				case TOK_NUMBER: {
+					if(m_lexer.current_immediate.min_bits > 8) {
+						utility::console::print("warning: byte data exceeds bounds\n");
+					}
+
+					m_assembler.push_byte(static_cast<u8>(m_lexer.current_immediate.value));
+					break;
+				}
+				default: return utility::error("unexpected token following memory definition");
+			}
+
+			// memory define operands should be comma separated
+			if(m_lexer.get_next_token() != TOK_COMMA) {
+				break;
+			}
+		}
+
+		EXPECT_TOKEN(TOK_NEWLINE);
+
+		m_lexer.get_next_token();
 		return SUCCESS;
 	}
 

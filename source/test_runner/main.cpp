@@ -75,17 +75,25 @@ namespace detail {
 	}
 
 	void run_test_sections() {
-		const utility::filepath group_path = g_test_path / "sections/";
-		const auto tests = utility::directory::read(group_path);
+		const auto tests = utility::directory::read(g_test_path / "sections");
+		baremetal::assembler_parser assembler;
 
 		test_info info("sections", tests.get_size(), g_quiet);
 		info.begin_test();
 
-		// for(const auto& : tests) {
-		// 	info.add_success();
-		// }
+		for(const auto& test : tests) {
+			assembler.clear();
+
+			if(const auto result = assembler.parse(utility::file::read(test)); result.has_error()) {
+				utility::console::print_err("error: '{}'\n", result.get_error());
+				info.add_failure();
+			}
+			else {
+				utility::console::print("{}\n", bytes_to_string(assembler.get_bytes()));
+				info.add_success();
+			}
+		}
 		
-		info.add_success();
 		info.end_test();
 	}
 } // namespace detail

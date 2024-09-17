@@ -29,7 +29,7 @@ namespace baremetal {
 
 	void module::set_section(const char* name) {
 		// basic linear search for the next section, we don't really care about doing a linear search,
-		// since there won't be many sections and this is a rarely called func
+		// since there won't be many sections and this is a rarely called function
 		for(u64 i = 0; i < m_sections.get_size(); ++i) {
 			if(utility::compare_strings(name, m_sections[i].name) == 0) {
 				m_current_section = i;
@@ -44,6 +44,20 @@ namespace baremetal {
 		utility::dynamic_array<u8> bytes;
 
 		for(const section& s : m_sections) {
+			if(s.data.is_empty()) {
+				continue; // skip empty sections
+			}
+
+			// before appending the section, realign to 8 bytes
+			const u64 alignment_offset = utility::align(bytes.get_size(), 8) - bytes.get_size(); 
+
+			if(alignment_offset != 0) {
+				for(u64 i = 0; i < alignment_offset; ++i) {
+					bytes.push_back(0);
+				}
+			}
+
+			// append the section
 			bytes.insert(bytes.end(), s.data.begin(), s.data.end());
 		}	
 

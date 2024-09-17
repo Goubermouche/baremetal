@@ -5,7 +5,7 @@
 #include <utility/containers/dynamic_string.h> 
 
 namespace baremetal {
-	enum token_type : u8 {
+	enum token_type : u16 {
 		TOK_NONE = 0,
 
 		// registers
@@ -237,21 +237,23 @@ namespace baremetal {
 		TOK_TWORD,
 
 		TOK_IDENTIFIER,
+		TOK_STRING,
+		TOK_CHAR,
 		TOK_NUMBER,
 
 		// special characters
 		TOK_EOF,
-		TOK_LBRACKET,   // [ 
-		TOK_RBRACKET,   // ]
-		TOK_LBRACE,     // {
-		TOK_RBRACE,     // }
-		TOK_PLUS,       // +
-		TOK_MINUS,      // -
-		TOK_ASTERISK,   // *
-		TOK_COMMA,      // ,
-		TOK_NEWLINE,    // \n
-		TOK_DOLLARSIGN, // $
-		TOK_DOT,        // .
+		TOK_LBRACKET,    // [ 
+		TOK_RBRACKET,    // ]
+		TOK_LBRACE,      // {
+		TOK_RBRACE,      // }
+		TOK_PLUS,        // +
+		TOK_MINUS,       // -
+		TOK_ASTERISK,    // *
+		TOK_COMMA,       // ,
+		TOK_NEWLINE,     // \n
+		TOK_DOLLARSIGN,  // $
+		TOK_DOT,         // .
 
 		// broadcast keywords
 		TOK_1TO2,  // 1to2
@@ -315,6 +317,7 @@ namespace baremetal {
 		auto get_next_token() -> token_type;
 	private:
 		auto get_next_char() -> char;
+		auto get_next_char_escaped() -> char;
 	private:
 		u64 m_index;
 		utility::dynamic_string m_text;
