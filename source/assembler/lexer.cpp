@@ -47,8 +47,16 @@ namespace baremetal {
 		// TODO: cleanup, add end error checking
 		current_string.clear();
 
-		// consume spaces
-		while(utility::is_space(m_current_char)) { get_next_char(); }
+		// consume spaces (excluding newlines)
+		while(
+			m_current_char == '\t' ||
+			m_current_char == '\v' || 
+			m_current_char == '\f' ||
+			m_current_char == '\r' || 
+			m_current_char == ' '
+		) {
+			get_next_char();
+		}
 
 		// string literals
 		if(m_current_char == '"') {
