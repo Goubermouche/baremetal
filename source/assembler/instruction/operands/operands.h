@@ -1,6 +1,8 @@
 #pragma once
 #include "assembler/instruction/operands/memory.h"
 
+#include <utility/containers/string_view.h>
+
 namespace baremetal {
 	enum operand_type : u8 {
 		OP_NONE = 0,
@@ -107,6 +109,7 @@ namespace baremetal {
 		OP_REL8_RIP,  // rel8  + rip
 		OP_REL16_RIP, // rel16 + rip
 		OP_REL32_RIP, // rel32 + rip
+		OP_REL_UNKNOWN,
 
 		OP_HIDDEN, // usually an operand which refers to an implicit value, ie a '1'
 	};
@@ -117,10 +120,13 @@ namespace baremetal {
 		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
 		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
 		constexpr operand(rel r) : type(OP_REL32), relocation(r) {}
+		constexpr operand(utility::string_view symbol) : type(OP_REL_UNKNOWN), symbol(symbol) {}
 
 		operand_type type;
 
 		union {
+			utility::string_view symbol;
+
 			masked_mem mm; // masked memory location
 			masked_reg mr; // masked register
 
@@ -304,6 +310,7 @@ namespace baremetal {
     switch(op) {
       case OP_NONE:
       case OP_MEM:
+			case OP_REL_UNKNOWN:
       case OP_HIDDEN: return 0;
       case OP_I8:
       case OP_R8:

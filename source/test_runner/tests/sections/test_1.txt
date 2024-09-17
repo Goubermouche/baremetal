@@ -1,12 +1,11 @@
+bits 64
+
 section .data
 	msg db "Hello world!", 0x0a
 
 section .text
-  mov rax, 1
-  mov rdi, 1
-  mov rdx, 13
-  syscall
-  mov rax, 60
-  mov rdi, 0
-  syscall
+  mov rdi, msg
+
+
+
 

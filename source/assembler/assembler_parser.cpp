@@ -1,7 +1,8 @@
 #include "assembler_parser.h"
 
 #include "assembler/instruction/instruction.h"
-#include "assembler/lexer.h"
+
+#include <utility/algorithms/sort.h>
 
 #define EXPECT_TOKEN(expected)                            \
   do {                                                    \
@@ -58,7 +59,8 @@ namespace baremetal {
 					!(is_operand_imm(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
 					!(is_operand_moff(inst.operands[i]) && is_operand_moff(operands[i].type)) &&
 					!(is_operand_masked_mem(inst.operands[i]) && is_operand_masked_mem(operands[i].type)) &&
-					!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type))                  
+					!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
+					!(is_operand_imm(inst.operands[i]) && operands[i].type == OP_REL_UNKNOWN)
 				) {
 					return false;
 				}
@@ -114,7 +116,7 @@ namespace baremetal {
 		}
 	} // namespace detail
 
-	assembler_parser::assembler_parser() {}
+	assembler_parser::assembler_parser() :m_allocator(4096) {}
 
 	auto assembler_parser::parse(const utility::dynamic_string& assembly) -> utility::result<void> {
 		m_lexer.set_text(assembly);
@@ -144,13 +146,19 @@ namespace baremetal {
 	auto assembler_parser::parse_identifier() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
-		// TODO: get rid of this copy
-		m_current_identifier = utility::dynamic_string(m_lexer.current_string);
-		m_instruction_i = find_instruction_by_name(m_current_identifier.get_data());
+		const u64 str_len = m_lexer.current_string.get_size(); 
+		const char* str = m_lexer.current_string.get_data(); 
+
+		m_instruction_i = find_instruction_by_name(str);
 
 		if(m_instruction_i != utility::limits<u32>::max()) {
 			return parse_instruction();
 		}
+
+		// copy the identifier into long-term memory
+		char* identifier = static_cast<char*>(m_allocator.allocate(str_len));
+		utility::memcpy(identifier, str, str_len);
+		m_current_identifier = utility::string_view(identifier, str_len);
 
 		// TODO: check for multiple symbols
 		// other identifiers
@@ -163,11 +171,13 @@ namespace baremetal {
 	auto assembler_parser::parse_instruction() -> utility::result<void> {
 		// ensure our destination is clean
 		utility::memset(m_operands, 0, sizeof(operand) * 4);
+		m_relocated_operand = false;
 		m_operand_i = 0;
 
 		// parse individual operands
 		while(m_lexer.get_next_token() != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
 			switch(m_lexer.current) {
+				case TOK_IDENTIFIER:         TRY(parse_identifier_operand()); break;
 				case TOK_DOLLARSIGN:         TRY(parse_rip_relative_rel()); break;
 				case TOK_MINUS:              TRY(parse_number_negative()); break;
 				case TOK_LBRACKET:           TRY(parse_memory(DT_NONE)); break; 
@@ -183,34 +193,86 @@ namespace baremetal {
 			}
 		}
 
-		// locate the specific variant (dumb linear search in our specific group)
-		while(m_instruction_i < instruction_db_size) {
-			const instruction& current = instruction_db[m_instruction_i]; 
+		u32 first_instruction = m_instruction_i; 
 
-			// verify that the instruction names are the same and that we've not left our instruction group
-			if(m_current_identifier != current.name) {
-				break;
+		if(m_relocated_operand) {
+			utility::dynamic_array<const instruction*> legal_variants;
+			u8 imm_index;
+
+			// locate the first immediate operand
+			for(u8 i = 0; i < 4; ++i) {
+				if(m_operands[i].type == OP_REL_UNKNOWN) {
+					imm_index = i;
+					break;
+				}
 			}
 
-			// verify that the current instruction matches the provided operands
-			if(detail::is_operand_match(current, m_operands, m_broadcast_n, m_operand_i)) {
-				// operands match, but, in some cases we need to retype some of them to the actual type, ie. 
-				// immediates can actually be relocations
-				for(u8 j = 0; j < m_operand_i; ++j) {
-					m_operands[j].type = current.operands[j];
+			while(m_instruction_i < instruction_db_size) {
+				const instruction& current = instruction_db[m_instruction_i]; 
 
-					if(is_operand_rel(current.operands[j])) {
-						rel r = rel(static_cast<i32>(m_operands[j].immediate.value));
-						m_operands[j].relocation = r; 
-					}
+				// verify that the instruction names are the same and that we've not left our instruction group
+				if(utility::compare_strings(instruction_db[first_instruction].name, current.name) != 0) {
+					break;
 				}
 
-				// emit the final instruction
-				m_assembler.emit_instruction(m_instruction_i, m_operands);
-				return SUCCESS;
+				// verify that the current instruction matches the provided operands
+				if(detail::is_operand_match(current, m_operands, m_broadcast_n, m_operand_i)) {
+					legal_variants.push_back(&current);
+				}
+
+				m_instruction_i++;
 			}
 
-			m_instruction_i++;
+			utility::stable_sort(legal_variants.begin(), legal_variants.end(), [=](auto a, auto b) {
+				const u16 a_width = get_operand_bit_width(a->operands[imm_index]);
+				const u16 b_width = get_operand_bit_width(b->operands[imm_index]);
+
+				return a_width > b_width;
+			});
+
+			for(u8 j = 0; j < m_operand_i; ++j) {
+				m_operands[j].type = legal_variants[0]->operands[j];
+
+				if(is_operand_rel(legal_variants[0]->operands[j])) {
+					rel r = rel(static_cast<i32>(m_operands[j].immediate.value));
+					m_operands[j].relocation = r; 
+				}
+			}
+
+			m_operands[imm_index].type = OP_REL_UNKNOWN;
+			m_assembler.emit_instruction_direct(legal_variants[0], m_operands);
+			return SUCCESS;
+		}
+		else {
+			// locate the specific variant (dumb linear search in our specific group)
+			while(m_instruction_i < instruction_db_size) {
+				const instruction& current = instruction_db[m_instruction_i]; 
+
+				// verify that the instruction names are the same and that we've not left our instruction group
+				if(utility::compare_strings(instruction_db[first_instruction].name, current.name) != 0) {
+					break;
+				}
+
+				// verify that the current instruction matches the provided operands
+				if(detail::is_operand_match(current, m_operands, m_broadcast_n, m_operand_i)) {
+					// operands match, but, in some cases we need to retype some of them to the actual type, ie. 
+					// immediates can actually be relocations
+					for(u8 j = 0; j < m_operand_i; ++j) {
+						m_operands[j].type = current.operands[j];
+
+						if(is_operand_rel(current.operands[j])) {
+							rel r = rel(static_cast<i32>(m_operands[j].immediate.value));
+							m_operands[j].relocation = r; 
+						}
+					}
+
+					// emit the final instruction
+					m_assembler.emit_instruction(m_instruction_i, m_operands);
+					return SUCCESS;
+				}
+
+				m_instruction_i++;
+			}
 		}
 
 		m_lexer.get_next_token();
@@ -230,7 +292,7 @@ namespace baremetal {
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
 		// NOTE: we don't care if a section is 'declared' multiple times
-		m_assembler.set_section(m_lexer.current_string.get_data());
+		m_assembler.get_module().set_section(m_lexer.current_string.get_data());
 
 		m_lexer.get_next_token();
 		EXPECT_TOKEN(TOK_NEWLINE);
@@ -240,6 +302,8 @@ namespace baremetal {
 	}
 
 	auto assembler_parser::parse_define_memory() -> utility::result<void> {
+		m_assembler.get_module().add_symbol(m_current_identifier);
+
 		// TODO: dw, dd, dq
 		while(m_lexer.get_next_token() != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
 			switch(m_lexer.current) {
@@ -284,6 +348,20 @@ namespace baremetal {
 			default: return utility::error("unexpected token following type");
 		}
 
+		return SUCCESS;
+	}
+
+	auto assembler_parser::parse_identifier_operand() -> utility::result<void> {
+		const u64 str_len = m_lexer.current_string.get_size(); 
+		const char* str = m_lexer.current_string.get_data(); 
+
+		// copy the identifier into long-term memory
+		char* identifier = static_cast<char*>(m_allocator.allocate(str_len));
+		utility::memcpy(identifier, str, str_len);
+		m_operands[m_operand_i++] = operand(utility::string_view(identifier, str_len));
+		m_relocated_operand = true;
+
+		m_lexer.get_next_token(); // prime the next token
 		return SUCCESS;
 	}
 

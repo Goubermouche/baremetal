@@ -42,8 +42,10 @@ namespace baremetal {
 		[[nodiscard]] auto get_bytes() const -> utility::dynamic_array<u8>;
 
 		void emit_instruction(u32 index, const operand* operands);
-		void set_section(const char* name);
+		void emit_instruction_direct(const instruction* inst, const operand* operands);
+
 		void push_byte(u8 value);
+		auto get_module() -> module&;
 	private:
 		// instruction emission
 		auto find_optimized_instruction(u32 index, const operand* operands) -> const instruction*;

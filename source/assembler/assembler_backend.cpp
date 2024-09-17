@@ -129,7 +129,11 @@ namespace baremetal {
 		// locate the actual instruction we want to assemble (this doesn't have to match the specified
 		// index, since we can apply optimizations which focus on stuff like shorter encodings)
 		const instruction* inst = find_optimized_instruction(index, operands);
+		emit_instruction_direct(inst, operands);
 
+	}
+
+	void assembler_backend::emit_instruction_direct(const instruction* inst, const operand* operands) {
 		// mark the instruction start
 		instruction_begin(operands); 
 
@@ -141,8 +145,8 @@ namespace baremetal {
 		emit_operands(inst, operands);
 	}
 
-	void assembler_backend::set_section(const char* name) {
-		m_module.set_section(name);
+	auto assembler_backend::get_module() -> module& {
+		return m_module;
 	}
 
 	auto assembler_backend::find_optimized_instruction(u32 index, const operand* operands)  -> const instruction* {
@@ -1658,8 +1662,14 @@ namespace baremetal {
 			const operand_type current = inst->operands[i];
 
 			if(is_operand_imm(current)) {
-				// immediate operand
-				emit_data_operand(operands[i].immediate.value, get_operand_bit_width(current));
+				if(operands[i].type == OP_REL_UNKNOWN) {
+					m_module.add_relocation(operands[i].symbol, get_operand_bit_width(current) / 8);
+					emit_data_operand(0, get_operand_bit_width(current));
+				}
+				else {
+					// immediate operand
+					emit_data_operand(operands[i].immediate.value, get_operand_bit_width(current));
+				}
 			}
 			else if(is_operand_moff(current)) {
 				// memory offset operand (always 64-bit)

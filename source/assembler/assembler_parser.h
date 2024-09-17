@@ -2,6 +2,7 @@
 #include "assembler/assembler_backend.h"
 #include "assembler/lexer.h"
 
+#include <utility/allocators/block_allocator.h>
 #include <utility/result.h>
 
 namespace baremetal {
@@ -29,6 +30,7 @@ namespace baremetal {
 		auto parse_broadcast(mask_type mask) -> utility::result<void>;
 		auto parse_memory(data_type type) -> utility::result<void>;
 		auto parse_moff(data_type type) -> utility::result<void>;
+		auto parse_identifier_operand() -> utility::result<void>;
 		auto parse_rip_relative_rel() -> utility::result<void>;
 		auto parse_number_negative() -> utility::result<void>;
 		auto parse_register() -> utility::result<void>;
@@ -38,13 +40,15 @@ namespace baremetal {
 		auto parse_mask_or_broadcast() -> utility::result<mask_type>;
 		auto parse_memory(operand& op) -> utility::result<void>;
 	private:
+		utility::block_allocator m_allocator;
+		utility::string_view m_current_identifier;
+
 		utility::dynamic_string m_assembly;
 		assembler_backend m_assembler;
 		lexer m_lexer;
 
-		utility::dynamic_string m_current_identifier;
-
 		// instruction context
+		bool m_relocated_operand;
 		u32 m_instruction_i; // best guess for the current instruction index
 		operand m_operands[4];
 		u8 m_operand_i = 0;
