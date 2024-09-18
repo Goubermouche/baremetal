@@ -8,15 +8,22 @@ namespace baremetal {
 		m_strings.clear();
 	}
 
+	void string_interner::print() {
+		for(const auto& [key, value] : m_strings) {
+			utility::console::print("{}\n", key);
+		}
+	}
+
 	auto string_interner::add(const utility::dynamic_string& string) -> utility::string_view* {
+		// TODO: potentially hash the string before, so that we can dodge the memcpy
+
 		// since the allocation in a block allocator is effectively an increment we can afford to 
 		// temporarily allocate a block
 		auto safepoint = m_allocator.create_safepoint();
 		char* memory = static_cast<char*>(m_allocator.allocate(string.get_size()));
 		utility::memcpy(memory, string.get_data(), string.get_size());
-
 	  utility::string_view* view = m_allocator.emplace<utility::string_view>(memory, string.get_size());
-		const auto result = m_strings.insert({ *view, view });
+		auto result = m_strings.insert({ *view, view });
 
 		// utility::console::print("intern attempt '{}'\n", *view);
 

@@ -132,6 +132,7 @@ namespace baremetal {
 			}
 		}
 
+		// m_interner.print();
 		return SUCCESS;
 	}
 
@@ -142,7 +143,7 @@ namespace baremetal {
 	void assembler_parser::clear() {
 		m_assembly.clear();
 		m_assembler.clear();
-		// TODO: interner clear
+		m_interner.clear();
 	}
 
 	auto assembler_parser::parse_identifier() -> utility::result<void> {

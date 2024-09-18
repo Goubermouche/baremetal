@@ -317,8 +317,17 @@ namespace baremetal {
 		void set_text(const utility::dynamic_string& text);
 		auto get_next_token() -> token_type;
 	private:
-		auto get_next_char() -> char;
 		auto get_next_char_escaped() -> char;
+		auto get_next_char() -> char;
+		auto is_at_end() -> bool;
+
+		void consume_spaces();
+
+		auto get_next_token_identifier() -> token_type;
+		auto get_next_token_comment() -> token_type;
+		auto get_next_token_number() -> token_type;
+		auto get_next_token_string() -> token_type;
+		auto get_next_token_char() -> token_type;
 	private:
 		u64 m_index;
 		utility::dynamic_string m_text;

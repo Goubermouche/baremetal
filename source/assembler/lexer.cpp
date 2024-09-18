@@ -10,20 +10,21 @@ namespace baremetal {
 	}
 
 	auto lexer::get_next_char() -> char {
-		if(m_index + 1 >= m_text.get_size()) {
+		if(is_at_end()) {
 			m_current_char = utility::g_eof;
 			return utility::g_eof;
 		}
 
-		m_current_char = m_text[m_index++];
-		return m_current_char;
+		return m_current_char = m_text[m_index++];
+	}
+
+	auto lexer::is_at_end() -> bool {
+		return m_index + 1 >= m_text.get_size();
 	}
 
 	auto lexer::get_next_char_escaped() -> char {
 		if(m_current_char == '\\') {
-			get_next_char();
-
-			switch(m_current_char) {
+			switch(get_next_char()) {
 				case '\\': return '\\';
 				case '\'': return '\'';
 				case '\"': return '\"';
@@ -44,110 +45,22 @@ namespace baremetal {
 	}
 
 	auto lexer::get_next_token() -> token_type {
-		// TODO: cleanup, add end error checking, eof checks 
 		current_string.clear();
 
-		// consume spaces (excluding newlines)
-		while(
-			m_current_char == '\t' ||
-			m_current_char == '\v' || 
-			m_current_char == '\f' ||
-			m_current_char == '\r' || 
-			m_current_char == ' '
-		) {
-			get_next_char();
-		}
-
-		// string literals
-		if(m_current_char == '"') {
-			get_next_char();
-
-			while(m_current_char != '"') {
-				current_string += get_next_char_escaped();
-				get_next_char();
-			}
-
-			ASSERT(m_current_char == '"', "unescaped string literal detected\n");
-			get_next_char();
-
-			return current = TOK_STRING;
-		}
-
-		// char literals
-		if(m_current_char == '\'') {
-			get_next_char();
-			current_string += get_next_char_escaped();
-			get_next_char();
-
-			ASSERT(m_current_char == '\'', "unescaped char literal detected\n");
-			get_next_char();
-
-			return current = TOK_CHAR;
-		}
-
-		// numbers
-		if(utility::is_digit(m_current_char) && force_keyword == false) {
-			i32 base = 10;
-
-			if(m_current_char == '0') {
-				get_next_char();
-
-				// hex
-				if(m_current_char == 'x') {
-					base = 16;
-					get_next_char();
-
-					while(utility::is_digit_hex(m_current_char)) {
-						current_string += m_current_char;
-						get_next_char();
-					}
-
-					goto parse_number;
-				}
-				else if(m_current_char == 'b') {
-					base = 2;
-					get_next_char();
-
-					while(utility::is_digit_hex(m_current_char)) {
-						current_string += m_current_char;
-						get_next_char();
-					}
-
-					goto parse_number;
-				}
-			}
-
-			while(utility::is_digit(m_current_char)) {
-				current_string += m_current_char;
-				get_next_char();
-			}
-
-parse_number:
-			char* end;
-			u64 num = strtoull(current_string.get_data(), &end, base);
-			current_immediate = imm(num);
-			return current = TOK_NUMBER;
-		}
-
-		// keyword or identifier
-		if(utility::is_alpha(m_current_char) || force_keyword) {
-			while(utility::is_alphanum(m_current_char)) {
-				current_string += m_current_char;
-				get_next_char();
-			}
-
-			const auto token = string_to_token(current_string);
-			force_keyword = false;
-		
-			if(token != TOK_NONE) {
-				return current = token;
-			}
-
-			return current = TOK_IDENTIFIER;
-		}
+		// get rid of leading space-like characters
+		consume_spaces();
 
 		// special characters
 		switch(m_current_char) {
+			case '0' ... '9': if(force_keyword == false) { return get_next_token_number(); }
+			[[fallthrough]]; // fallthrough, check for identifiers
+			case 'a' ... 'z':
+			case 'A' ... 'Z': return get_next_token_identifier();
+
+			case ';':  return get_next_token_comment(); 
+			case '"':  return get_next_token_string();
+			case '\'': return get_next_token_char();
+
 			case ',':  get_next_char();  return current = TOK_COMMA;
 			case '[':  get_next_char();  return current = TOK_LBRACKET;
 			case ']':  get_next_char();  return current = TOK_RBRACKET;
@@ -159,20 +72,130 @@ parse_number:
 			case '$':  get_next_char();  return current = TOK_DOLLARSIGN;
 			case '.':  get_next_char();  return current = TOK_DOT;
 			case '\n': get_next_char();  return current = TOK_NEWLINE;
-			case utility::g_eof:         return current = TOK_EOF;
-			case ';': {
-				// skip over comments
-				do {
-					get_next_char();
-				} while(m_current_char != '\n' && m_current_char != '\r');
-
-				// return the next token
-				return get_next_token();
-			} 
+			case -1:                     return current = TOK_EOF;
 		}
 
-		ASSERT(false, "unknown character: '{}'\n", (i32)m_current_char);
+		ASSERT(false, "unknown character: '{}'\n", m_current_char);
 		return {};
+	}
+
+	auto is_whitespace(char c) -> bool {
+		return c == '\t' || c == '\v' || c == '\f' || c == '\r' || c == ' ';
+	}
+
+	void lexer::consume_spaces() {
+		// consume spaces (excluding newlines)
+		while(is_whitespace(m_current_char)) {
+			get_next_char();
+		}
+	}
+
+	auto lexer::get_next_token_string() -> token_type {
+		get_next_char();
+
+		while(!is_at_end() && m_current_char != '"') {
+			current_string += get_next_char_escaped();
+			get_next_char();
+		}
+
+		ASSERT(m_current_char == '"', "unescaped string literal detected\n");
+		get_next_char();
+
+		return current = TOK_STRING;
+	}
+
+	auto lexer::get_next_token_char() -> token_type {
+		get_next_char();
+		current_string += get_next_char_escaped();
+		get_next_char();
+
+		ASSERT(m_current_char == '\'', "unescaped char literal detected\n");
+		get_next_char();
+
+		return current = TOK_CHAR;
+	}
+
+	auto lexer::get_next_token_number() -> token_type {
+		current_string.clear();
+		i32 base = 10;
+
+		if(m_current_char == '0') {
+			switch(get_next_char()) {
+				// hex literals
+				case 'x': {
+					base = 16;
+					get_next_char();
+
+					while(utility::is_digit_hex(m_current_char)) {
+						current_string += m_current_char;
+						get_next_char();
+					}
+
+					goto parse_number;
+				}
+				// octal literals
+				case '0' ... '7': {
+					base = 8;
+					get_next_char();
+
+					while(utility::is_digit_oct(m_current_char)) {
+						current_string += m_current_char;
+						get_next_char();
+					}
+
+					goto parse_number;
+				}
+				// binary literals
+				case 'b': {
+					base = 2;
+					get_next_char();
+
+					while(utility::is_digit_hex(m_current_char)) {
+						current_string += m_current_char;
+						get_next_char();
+					}
+
+					goto parse_number;
+				}
+			}
+		}
+
+		while(utility::is_digit(m_current_char)) {
+			current_string += m_current_char;
+			get_next_char();
+		}
+parse_number:
+		char* end;
+		u64 num = strtoull(current_string.get_data(), &end, base);
+		current_immediate = imm(num);
+
+		return current = TOK_NUMBER;
+	}
+
+	auto lexer::get_next_token_identifier() -> token_type {
+		while(utility::is_alphanum(m_current_char)) {
+			current_string += m_current_char;
+			get_next_char();
+		}
+
+		const auto token = string_to_token(current_string);
+		force_keyword = false;
+		
+		if(token != TOK_NONE) {
+			return current = token;
+		}
+
+		return current = TOK_IDENTIFIER;
+	}
+
+	auto lexer::get_next_token_comment() -> token_type {
+		// skip over comments
+		do {
+			get_next_char();
+		} while(!is_at_end() && m_current_char != '\n' && m_current_char != '\r');
+
+		// return the next token
+		return get_next_token();
 	}
 
 	auto is_mask_broadcast(mask_type mask) -> bool {

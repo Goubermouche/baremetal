@@ -8,7 +8,9 @@ namespace baremetal {
 		string_interner();
 
 		auto add(const utility::dynamic_string& string) -> utility::string_view*;
+
 		void clear();
+		void print();
 	private:
 		utility::map<utility::string_view, utility::string_view*> m_strings;
 		utility::block_allocator m_allocator;
