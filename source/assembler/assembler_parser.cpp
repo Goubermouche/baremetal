@@ -116,7 +116,7 @@ namespace baremetal {
 		}
 	} // namespace detail
 
-	assembler_parser::assembler_parser() :m_allocator(4096) {}
+	assembler_parser::assembler_parser() {}
 
 	auto assembler_parser::parse(const utility::dynamic_string& assembly) -> utility::result<void> {
 		m_lexer.set_text(assembly);
@@ -142,25 +142,19 @@ namespace baremetal {
 	void assembler_parser::clear() {
 		m_assembly.clear();
 		m_assembler.clear();
-		m_allocator.clear();
+		// TODO: interner clear
 	}
 
 	auto assembler_parser::parse_identifier() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
-		const u64 str_len = m_lexer.current_string.get_size(); 
-		const char* str = m_lexer.current_string.get_data(); 
-
-		m_instruction_i = find_instruction_by_name(str);
+		m_instruction_i = find_instruction_by_name(m_lexer.current_string.get_data());
 
 		if(m_instruction_i != utility::limits<u32>::max()) {
 			return parse_instruction();
 		}
 
-		// copy the identifier into long-term memory
-		char* identifier = static_cast<char*>(m_allocator.allocate(str_len));
-		utility::memcpy(identifier, str, str_len);
-		m_current_identifier = utility::string_view(identifier, str_len);
+		m_current_identifier = m_interner.add(m_lexer.current_string);
 
 		// TODO: check for multiple symbols
 		// other identifiers
@@ -199,7 +193,7 @@ namespace baremetal {
 
 		if(m_relocated_operand) {
 			utility::dynamic_array<const instruction*> legal_variants;
-			u8 imm_index;
+			u8 imm_index = 0;
 
 			// locate the first immediate operand
 			for(u8 i = 0; i < 4; ++i) {
@@ -384,15 +378,8 @@ namespace baremetal {
 	}
 
 	auto assembler_parser::parse_identifier_operand() -> utility::result<void> {
-		const u64 str_len = m_lexer.current_string.get_size(); 
-		const char* str = m_lexer.current_string.get_data(); 
-
-		// copy the identifier into long-term memory
-		char* identifier = static_cast<char*>(m_allocator.allocate(str_len));
-		utility::memcpy(identifier, str, str_len);
-		m_operands[m_operand_i++] = operand(utility::string_view(identifier, str_len));
+		m_operands[m_operand_i++] = operand(m_interner.add(m_lexer.current_string));
 		m_relocated_operand = true;
-
 		m_lexer.get_next_token(); // prime the next token
 		return SUCCESS;
 	}

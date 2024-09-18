@@ -1,0 +1,35 @@
+#include "string_interner.h"
+
+namespace baremetal {
+	string_interner::string_interner() : m_allocator(1024) {}
+
+	void string_interner::clear() {
+		m_allocator.clear();
+		m_strings.clear();
+	}
+
+	auto string_interner::add(const utility::dynamic_string& string) -> utility::string_view* {
+		// since the allocation in a block allocator is effectively an increment we can afford to 
+		// temporarily allocate a block
+		auto safepoint = m_allocator.create_safepoint();
+		char* memory = static_cast<char*>(m_allocator.allocate(string.get_size()));
+		utility::memcpy(memory, string.get_data(), string.get_size());
+
+	  utility::string_view* view = m_allocator.emplace<utility::string_view>(memory, string.get_size());
+		const auto result = m_strings.insert({ *view, view });
+
+		// utility::console::print("intern attempt '{}'\n", *view);
+
+		if(result.second == false) {
+			// string already exists, undo the allocation
+			// utility::console::print("string already interned '{}'\n", *view);
+			m_allocator.restore_safepoint(safepoint);
+			return result.first->second;
+		}
+
+		// new string added
+		// utility::console::print("string interned '{}'\n", *view);
+		return view;
+	}
+} // namespace baremetal
+

@@ -76,25 +76,29 @@ namespace detail {
 		info.end_test();
 	}
 
-	void run_test_sections() {
-		// various tests related to assembly sections
+	void run_test_layout() {
+		// various tests related to binary layout
 		// test format:
 		//   ; description
 		//   ; expect: expected_output_in_hex
 		//   assembly
 	
-		const auto tests = utility::directory::read(g_test_path / "sections");
+		const auto tests = utility::directory::read(g_test_path / "layout");
 		baremetal::assembler_parser assembler;
 
 		utility::dynamic_string test_text;
 		utility::dynamic_string hex_result;
 		utility::dynamic_string expected;
 
-		test_info info("sections", tests.get_size(), g_quiet);
+		test_info info("layout", tests.get_size(), g_quiet);
 
 		info.begin_test();
 
 		for(const auto& test : tests) {
+			// if(test.get_string().find("define_memory") == utility::dynamic_string::invalid_pos) {
+			// 	continue;
+			// }
+
 			test_text.clear();
 			assembler.clear();
 			expected.clear();
@@ -181,8 +185,8 @@ auto run_tests(const utility::dynamic_array<utility::dynamic_string>& groups) ->
 		if(groups[i] == "encoding") {
 			detail::run_test_encoding();
 		}
-		else if(groups[i] == "sections") {
-			detail::run_test_sections();
+		else if(groups[i] == "layout") {
+			detail::run_test_layout();
 		}
 		else {
 			utility::console::print_err("error: unknown instruction group '{}', exiting (type '--help' for help)\n", groups[i]);

@@ -120,12 +120,12 @@ namespace baremetal {
 		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
 		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
 		constexpr operand(rel r) : type(OP_REL32), relocation(r) {}
-		constexpr operand(utility::string_view symbol) : type(OP_REL_UNKNOWN), symbol(symbol) {}
+		constexpr operand(utility::string_view* symbol) : type(OP_REL_UNKNOWN), symbol(symbol) {}
 
 		operand_type type;
 
 		union {
-			utility::string_view symbol;
+			utility::string_view* symbol;
 
 			masked_mem mm; // masked memory location
 			masked_reg mr; // masked register

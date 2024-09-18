@@ -1,5 +1,6 @@
 #pragma once
 #include "assembler/assembler_backend.h"
+#include "assembler/string_interner.h"
 #include "assembler/lexer.h"
 
 #include <utility/allocators/block_allocator.h>
@@ -41,8 +42,8 @@ namespace baremetal {
 		auto parse_mask_or_broadcast() -> utility::result<mask_type>;
 		auto parse_memory(operand& op) -> utility::result<void>;
 	private:
-		utility::block_allocator m_allocator;
-		utility::string_view m_current_identifier;
+		utility::string_view* m_current_identifier;
+		string_interner m_interner;
 
 		utility::dynamic_string m_assembly;
 		assembler_backend m_assembler;

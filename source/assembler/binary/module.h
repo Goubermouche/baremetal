@@ -8,7 +8,7 @@ namespace baremetal {
 
 	struct module {
 		struct relocation {
-			utility::string_view symbol;
+			utility::string_view* symbol;
 			u64 position;
 			u8 size;
 		};
@@ -16,7 +16,7 @@ namespace baremetal {
 		struct section {
 			section(const utility::dynamic_string& name);
 
-			utility::map<utility::string_view, u64> symbols;
+			utility::map<utility::string_view*, u64> symbols;
 			utility::dynamic_array<relocation> relocations;
 			utility::dynamic_array<u8> data;
 			utility::dynamic_string name;
@@ -29,8 +29,8 @@ namespace baremetal {
 
 		void set_section(const utility::dynamic_string& name);
 
-		void add_symbol(utility::string_view name);
-		void add_relocation(utility::string_view symbol, u8 size);
+		void add_symbol(utility::string_view* name);
+		void add_relocation(utility::string_view* symbol, u8 size);
 		void add_section(const utility::dynamic_string& name);
 
 		auto emit_binary() const -> utility::dynamic_array<u8>;
