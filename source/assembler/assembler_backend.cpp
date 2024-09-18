@@ -1942,6 +1942,14 @@ namespace baremetal {
 		m_module.push_byte(value);
 	}
 
+	void assembler_backend::push_data(u64 value, u8 count) {
+		for(u8 i = 0; i < count; ++i) {
+      u8 byte = static_cast<u8>(value & 0xFF);
+      push_byte(byte);
+      value >>= 8;
+    }
+	}
+
 	auto assembler_backend::get_current_inst_size() const -> u8 {
 		return static_cast<u8>(m_module.get_size() - m_current_inst_begin);
 	}

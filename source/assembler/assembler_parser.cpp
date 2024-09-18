@@ -304,7 +304,16 @@ namespace baremetal {
 	auto assembler_parser::parse_define_memory() -> utility::result<void> {
 		m_assembler.get_module().add_symbol(m_current_identifier);
 
-		// TODO: dw, dd, dq
+		u8 bytes = 0;
+
+		switch(m_lexer.current) {
+			case TOK_DB: bytes = 1; break;
+			case TOK_DW: bytes = 2; break;
+			case TOK_DD: bytes = 4; break;
+			case TOK_DQ: bytes = 8; break;
+			default: ASSERT(false, "unreachable\n");
+		}
+
 		while(m_lexer.get_next_token() != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
 			switch(m_lexer.current) {
 				case TOK_CHAR: 
@@ -313,15 +322,23 @@ namespace baremetal {
 						m_assembler.push_byte(c);
 					}
 
+					// apend missing bytes, so that we're aligned with our data type
+					const u64 offset = m_lexer.current_string.get_size();
+					const u64 alignment_offset = utility::align(offset, bytes) - offset; 
+
+					for(u64 i = 0; i < alignment_offset; ++i) {
+						m_assembler.push_byte(0);
+					}
+
 					break;
 				}
 				case TOK_MINUS: ASSERT(false, "TODO\n"); break;
 				case TOK_NUMBER: {
-					if(m_lexer.current_immediate.min_bits > 8) {
+					if(m_lexer.current_immediate.min_bits / 8 > bytes) {
 						utility::console::print("warning: byte data exceeds bounds\n");
 					}
 
-					m_assembler.push_byte(static_cast<u8>(m_lexer.current_immediate.value));
+					m_assembler.push_data(static_cast<u8>(m_lexer.current_immediate.value), bytes);
 					break;
 				}
 				default: return utility::error("unexpected token following memory definition");

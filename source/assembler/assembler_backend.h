@@ -45,6 +45,7 @@ namespace baremetal {
 		void emit_instruction_direct(const instruction* inst, const operand* operands);
 
 		void push_byte(u8 value);
+		void push_data(u64 value, u8 count);
 		auto get_module() -> module&;
 	private:
 		// instruction emission

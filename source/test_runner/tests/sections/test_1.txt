@@ -1,10 +1,10 @@
-bits 64
-
 section .data
-	msg db "Hello world!", 0x0a
+	msg0 db "Hello world!", 0x0a
+	msg1 dw "Hello world!", 0x0a
+	msg2 dd "Hello world!", 0x0a
+	msg3 dq "Hello world!", 0x0a
 
 section .text
-  mov rdi, msg
 
 
 
