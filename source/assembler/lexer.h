@@ -264,6 +264,7 @@ namespace baremetal {
 
 		TOK_REL,     // rel
 		TOK_SECTION, // section
+		TOK_BITS,    // bits
 		TOK_DB,      // db
 		TOK_DW,      // dw
 		TOK_DD,      // dd

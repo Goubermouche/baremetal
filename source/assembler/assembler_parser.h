@@ -25,6 +25,7 @@ namespace baremetal {
 		auto parse_instruction() -> utility::result<void>;
 		auto parse_section() -> utility::result<void>;
 		auto parse_define_memory() -> utility::result<void>;
+		auto parse_bits() -> utility::result<void>;
 
 		// instruction operands
 		auto parse_broadcast(mask_type mask) -> utility::result<void>;

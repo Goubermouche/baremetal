@@ -127,6 +127,7 @@ namespace baremetal {
 				case TOK_SECTION:    TRY(parse_section()); break;
 				case TOK_IDENTIFIER: TRY(parse_identifier()); break;
 				case TOK_NEWLINE:    m_lexer.get_next_token(); break;
+				case TOK_BITS:       TRY(parse_bits()); break;
 				default: return utility::error("unexpected top-level token received");
 			}
 		}
@@ -353,6 +354,19 @@ namespace baremetal {
 		EXPECT_TOKEN(TOK_NEWLINE);
 
 		m_lexer.get_next_token();
+		return SUCCESS;
+	}
+
+	auto assembler_parser::parse_bits() -> utility::result<void> {
+		m_lexer.get_next_token();
+
+		EXPECT_TOKEN(TOK_NUMBER);
+
+		if(m_lexer.current_immediate.value != 64) {
+			return utility::error("unexpected bit count received");
+		}
+
+		m_lexer.get_next_token(); // prime the next token
 		return SUCCESS;
 	}
 

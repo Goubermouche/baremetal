@@ -160,6 +160,15 @@ parse_number:
 			case '.':  get_next_char();  return current = TOK_DOT;
 			case '\n': get_next_char();  return current = TOK_NEWLINE;
 			case utility::g_eof:         return current = TOK_EOF;
+			case ';': {
+				// skip over comments
+				do {
+					get_next_char();
+				} while(m_current_char != '\n' && m_current_char != '\r');
+
+				// return the next token
+				return get_next_token();
+			} 
 		}
 
 		ASSERT(false, "unknown character: '{}'\n", (i32)m_current_char);
@@ -704,6 +713,7 @@ parse_number:
 			// keywords
 			{ "rel"    , TOK_REL     },
 			{ "section", TOK_SECTION },
+			{ "bits"   , TOK_BITS    },
 			{ "db"     , TOK_DB      },
 			{ "dw"     , TOK_DW      },
 			{ "dd"     , TOK_DD      },
