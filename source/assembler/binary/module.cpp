@@ -2,20 +2,19 @@
 
 namespace baremetal {
 	module::module() {
-		add_section("text");
-		add_section("data");
+		clear();
+	}
+
+	module::section::section(const utility::dynamic_string& name) : name(name) {}
+
+	void module::clear() {
+		m_sections.clear();
 
 		m_current_section = 0;
 		m_byte_count = 0;
-	}
 
-	module::section::section(const char* name) : name(name) {}
-
-	void module::clear() {
-		// NOTE: doesn't clear user-declared sections
-		for(section& s : m_sections) {
-			s.data.clear();
-		}	
+		// only add the .text section by default
+		add_section("text");
 	}
 
 	void module::push_byte(u8 value) {
@@ -32,21 +31,23 @@ namespace baremetal {
 		m_sections[m_current_section].relocations.push_back(r);
 	}
 
-	void module::add_section(const char* name) {
+	void module::add_section(const utility::dynamic_string& name) {
 		m_sections.emplace_back(name);	
 	}
 
-	void module::set_section(const char* name) {
+	void module::set_section(const utility::dynamic_string& name) {
 		// basic linear search for the next section, we don't really care about doing a linear search,
 		// since there won't be many sections and this is a rarely called function
 		for(u64 i = 0; i < m_sections.get_size(); ++i) {
-			if(utility::compare_strings(name, m_sections[i].name) == 0) {
+			if(name == m_sections[i].name) {
 				m_current_section = i;
 				return; 
 			}
 		}
 
-		ASSERT(false, "unknown section '{}' specified\n", name);
+		// new section
+		m_current_section = m_sections.get_size();
+		add_section(name);
 	}
 
 	auto module::emit_binary() const -> utility::dynamic_array<u8> {

@@ -44,7 +44,7 @@ namespace baremetal {
 	}
 
 	auto lexer::get_next_token() -> token_type {
-		// TODO: cleanup, add end error checking
+		// TODO: cleanup, add end error checking, eof checks 
 		current_string.clear();
 
 		// consume spaces (excluding newlines)

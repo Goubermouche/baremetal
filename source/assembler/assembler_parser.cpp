@@ -142,6 +142,7 @@ namespace baremetal {
 	void assembler_parser::clear() {
 		m_assembly.clear();
 		m_assembler.clear();
+		m_allocator.clear();
 	}
 
 	auto assembler_parser::parse_identifier() -> utility::result<void> {
@@ -293,7 +294,7 @@ namespace baremetal {
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
 		// NOTE: we don't care if a section is 'declared' multiple times
-		m_assembler.get_module().set_section(m_lexer.current_string.get_data());
+		m_assembler.get_module().set_section(utility::dynamic_string(m_lexer.current_string));
 
 		m_lexer.get_next_token();
 		EXPECT_TOKEN(TOK_NEWLINE);

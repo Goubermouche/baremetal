@@ -14,13 +14,12 @@ namespace baremetal {
 		};
 
 		struct section {
-			section(const char* name);
+			section(const utility::dynamic_string& name);
 
 			utility::map<utility::string_view, u64> symbols;
 			utility::dynamic_array<relocation> relocations;
 			utility::dynamic_array<u8> data;
-
-			const char* name;
+			utility::dynamic_string name;
 		};
 
 		module();
@@ -28,11 +27,11 @@ namespace baremetal {
 		void clear();
 		void push_byte(u8 value);
 
-		void set_section(const char* name);
+		void set_section(const utility::dynamic_string& name);
 
 		void add_symbol(utility::string_view name);
 		void add_relocation(utility::string_view symbol, u8 size);
-		void add_section(const char* name);
+		void add_section(const utility::dynamic_string& name);
 
 		auto emit_binary() const -> utility::dynamic_array<u8>;
 
