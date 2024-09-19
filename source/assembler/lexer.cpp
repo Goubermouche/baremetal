@@ -54,6 +54,7 @@ namespace baremetal {
 		switch(m_current_char) {
 			case '0' ... '9': if(force_keyword == false) { return get_next_token_number(); }
 			[[fallthrough]]; // fallthrough, check for identifiers
+			case '_':
 			case 'a' ... 'z':
 			case 'A' ... 'Z': return get_next_token_identifier();
 
@@ -71,6 +72,7 @@ namespace baremetal {
 			case '*':  get_next_char();  return current = TOK_ASTERISK;
 			case '$':  get_next_char();  return current = TOK_DOLLARSIGN;
 			case '.':  get_next_char();  return current = TOK_DOT;
+			case ':':  get_next_char();  return current = TOK_COLON;
 			case '\n': get_next_char();  return current = TOK_NEWLINE;
 			case -1:                     return current = TOK_EOF;
 		}

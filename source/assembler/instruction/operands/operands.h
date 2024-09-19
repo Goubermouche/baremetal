@@ -175,6 +175,15 @@ namespace baremetal {
 		}
 	}
 
+	inline auto is_operand_rip_rel(operand_type op) -> bool {
+		switch(op) {
+			case OP_REL8_RIP:
+			case OP_REL16_RIP:
+			case OP_REL32_RIP: return true;
+			default: return false;
+		}
+	}
+
 	inline auto is_operand_rel(operand_type op) -> bool {
 		switch(op) {
 			case OP_REL8:

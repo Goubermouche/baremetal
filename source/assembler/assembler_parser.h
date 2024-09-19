@@ -22,11 +22,12 @@ namespace baremetal {
 		[[nodiscard]] auto get_bytes() const -> utility::dynamic_array<u8>;
 		void clear();
 	private:
-		auto parse_identifier() -> utility::result<void>;
-		auto parse_instruction() -> utility::result<void>;
-		auto parse_section() -> utility::result<void>;
-		auto parse_define_memory() -> utility::result<void>;
 		auto parse_reserve_memory() -> utility::result<void>;
+		auto parse_define_memory() -> utility::result<void>;
+		auto parse_instruction() -> utility::result<void>;
+		auto parse_identifier() -> utility::result<void>;
+		auto parse_section() -> utility::result<void>;
+		auto parse_label() -> utility::result<void>;
 		auto parse_bits() -> utility::result<void>;
 
 		// instruction operands
@@ -37,17 +38,17 @@ namespace baremetal {
 		auto parse_rip_relative_rel() -> utility::result<void>;
 		auto parse_number_negative() -> utility::result<void>;
 		auto parse_register() -> utility::result<void>;
-		auto parse_type() -> utility::result<void>;
 		auto parse_number() -> utility::result<void>;
+		auto parse_type() -> utility::result<void>;
 
 		auto parse_mask_or_broadcast() -> utility::result<mask_type>;
 		auto parse_memory(operand& op) -> utility::result<void>;
 	private:
 		utility::string_view* m_current_identifier;
-		string_interner m_interner;
+		string_interner m_strings;
 
 		utility::dynamic_string m_assembly;
-		assembler_backend m_assembler;
+		assembler_backend m_backend;
 		lexer m_lexer;
 
 		// instruction context

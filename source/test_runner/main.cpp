@@ -76,21 +76,21 @@ namespace detail {
 		info.end_test();
 	}
 
-	void run_test_layout() {
+	void run_test_binary() {
 		// various tests related to binary layout
 		// test format:
 		//   ; description
 		//   ; expect: expected_output_in_hex
 		//   assembly
 	
-		const auto tests = utility::directory::read(g_test_path / "layout");
+		const auto tests = utility::directory::read(g_test_path / "binary");
 		baremetal::assembler_parser assembler;
 
 		utility::dynamic_string test_text;
 		utility::dynamic_string hex_result;
 		utility::dynamic_string expected;
 
-		test_info info("layout", tests.get_size(), g_quiet);
+		test_info info("binary", tests.get_size(), g_quiet);
 
 		info.begin_test();
 
@@ -185,8 +185,8 @@ auto run_tests(const utility::dynamic_array<utility::dynamic_string>& groups) ->
 		if(groups[i] == "encoding") {
 			detail::run_test_encoding();
 		}
-		else if(groups[i] == "layout") {
-			detail::run_test_layout();
+		else if(groups[i] == "binary") {
+			detail::run_test_binary();
 		}
 		else {
 			utility::console::print_err("error: unknown instruction group '{}', exiting (type '--help' for help)\n", groups[i]);

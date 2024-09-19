@@ -36,7 +36,7 @@ namespace baremetal {
 	
 	class assembler_backend {
 	public:
-		assembler_backend();
+		assembler_backend(string_interner* strings);
 
 		void clear();
 		[[nodiscard]] auto get_bytes() const -> utility::dynamic_array<u8>;

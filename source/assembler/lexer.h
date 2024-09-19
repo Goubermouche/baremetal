@@ -255,6 +255,7 @@ namespace baremetal {
 		TOK_NEWLINE,     // \n
 		TOK_DOLLARSIGN,  // $
 		TOK_DOT,         // .
+		TOK_COLON,       // :
 
 		// broadcast keywords
 		TOK_1TO2,  // 1to2

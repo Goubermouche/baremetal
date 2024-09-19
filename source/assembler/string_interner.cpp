@@ -25,17 +25,13 @@ namespace baremetal {
 	  utility::string_view* view = m_allocator.emplace<utility::string_view>(memory, string.get_size());
 		auto result = m_strings.insert({ *view, view });
 
-		// utility::console::print("intern attempt '{}'\n", *view);
-
 		if(result.second == false) {
 			// string already exists, undo the allocation
-			// utility::console::print("string already interned '{}'\n", *view);
 			m_allocator.restore_safepoint(safepoint);
 			return result.first->second;
 		}
 
 		// new string added
-		// utility::console::print("string interned '{}'\n", *view);
 		return view;
 	}
 } // namespace baremetal
