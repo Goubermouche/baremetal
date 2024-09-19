@@ -1,6 +1,7 @@
 #include "assembler_parser.h"
 
 #include "assembler/instruction/instruction.h"
+#include "assembler/lexer.h"
 
 #include <utility/algorithms/sort.h>
 
@@ -120,13 +121,13 @@ namespace baremetal {
 
 	auto assembler_parser::parse(const utility::dynamic_string& assembly) -> utility::result<void> {
 		m_lexer.set_text(assembly);
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 
 		while(m_lexer.current != TOK_EOF) {
 			switch(m_lexer.current) {
 				case TOK_SECTION:    TRY(parse_section()); break;
 				case TOK_IDENTIFIER: TRY(parse_identifier()); break;
-				case TOK_NEWLINE:    m_lexer.get_next_token(); break;
+				// case TOK_NEWLINE:    TRY(m_lexer.get_next_token()); break;
 				case TOK_BITS:       TRY(parse_bits()); break;
 				default: return utility::error("unexpected top-level token received");
 			}
@@ -158,10 +159,14 @@ namespace baremetal {
 		m_current_identifier = m_interner.add(m_lexer.current_string);
 
 		// TODO: check for multiple symbols
+		
+		TRY(m_lexer.get_next_token());
+
 		// other identifiers
-		switch(m_lexer.get_next_token()) {
-			case TOK_DB ... TOK_DQ: return parse_define_memory(); 
-			default:                return utility::error("unexpected token received after an identifier");
+		switch(m_lexer.current) {
+			case TOK_DB ... TOK_DQ:     return parse_define_memory(); 
+			case TOK_RESB ... TOK_RESQ: return parse_reserve_memory(); 
+			default:                    return utility::error("unexpected token received after an identifier");
 		}
 	}
 
@@ -171,8 +176,10 @@ namespace baremetal {
 		m_relocated_operand = false;
 		m_operand_i = 0;
 
+		TRY(m_lexer.get_next_token());
+
 		// parse individual operands
-		while(m_lexer.get_next_token() != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
+		while(m_lexer.current != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
 			switch(m_lexer.current) {
 				case TOK_IDENTIFIER:         TRY(parse_identifier_operand()); break;
 				case TOK_DOLLARSIGN:         TRY(parse_rip_relative_rel()); break;
@@ -188,6 +195,8 @@ namespace baremetal {
 			if(m_lexer.current != TOK_COMMA) {
 				break;
 			}
+
+			TRY(m_lexer.get_next_token());
 		}
 
 		u32 first_instruction = m_instruction_i; 
@@ -272,8 +281,8 @@ namespace baremetal {
 			}
 		}
 
-		m_lexer.get_next_token();
-		EXPECT_TOKEN(TOK_NEWLINE);
+	// 	TRY(m_lexer.get_next_token());
+	// 	EXPECT_TOKEN(TOK_NEWLINE);
 
 		// invalid instruction and operand combination
 		return utility::error("invalid operand combination for the specified instruction");
@@ -282,19 +291,47 @@ namespace baremetal {
 	auto assembler_parser::parse_section() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_SECTION);
 
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_DOT);
 
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
 		// NOTE: we don't care if a section is 'declared' multiple times
 		m_assembler.get_module().set_section(utility::dynamic_string(m_lexer.current_string));
 
-		m_lexer.get_next_token();
-		EXPECT_TOKEN(TOK_NEWLINE);
+		// TRY(m_lexer.get_next_token());
+		// EXPECT_TOKEN(TOK_NEWLINE);
 
-		m_lexer.get_next_token(); // prime the next token
+		TRY(m_lexer.get_next_token());
+		return SUCCESS;
+	}
+
+	auto assembler_parser::parse_reserve_memory() -> utility::result<void> {
+		m_assembler.get_module().add_symbol(m_current_identifier);
+
+		// u8 bytes = 0;
+
+		// switch(m_lexer.current) {
+		// 	case TOK_RESB: bytes = 1; break;
+		// 	case TOK_RESW: bytes = 2; break;
+		// 	case TOK_RESD: bytes = 4; break;
+		// 	case TOK_RESQ: bytes = 8; break;
+		// 	default: ASSERT(false, "unreachable\n");
+		// }
+
+		TRY(m_lexer.get_next_token());
+		EXPECT_TOKEN(TOK_NUMBER);
+
+		// NOTE: do nothing for now, when we begin implementing some more complex formats we can focus on 
+		// actually doing stuff with the .bss section
+		// for(u64 i = 0; i < m_lexer.current_immediate.value; ++i) {
+		// 	for(u8 j = 0; j < bytes; ++j) { 
+		// 		m_assembler.push_byte(0);
+		// 	}
+		// }
+
+		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}
 
@@ -311,7 +348,9 @@ namespace baremetal {
 			default: ASSERT(false, "unreachable\n");
 		}
 
-		while(m_lexer.get_next_token() != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
+		TRY(m_lexer.get_next_token());
+
+		while(m_lexer.current != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
 			switch(m_lexer.current) {
 				case TOK_CHAR: 
 				case TOK_STRING: {
@@ -335,34 +374,35 @@ namespace baremetal {
 						utility::console::print("warning: byte data exceeds bounds\n");
 					}
 
-					m_assembler.push_data(static_cast<u8>(m_lexer.current_immediate.value), bytes);
+					m_assembler.push_data(m_lexer.current_immediate.value, bytes);
 					break;
 				}
 				default: return utility::error("unexpected token following memory definition");
 			}
+			
+			TRY(m_lexer.get_next_token());
 
 			// memory define operands should be comma separated
-			if(m_lexer.get_next_token() != TOK_COMMA) {
+			if(m_lexer.current != TOK_COMMA) {
 				break;
 			}
+			
+			TRY(m_lexer.get_next_token());
 		}
 
-		EXPECT_TOKEN(TOK_NEWLINE);
-
-		m_lexer.get_next_token();
+		// TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}
 
 	auto assembler_parser::parse_bits() -> utility::result<void> {
-		m_lexer.get_next_token();
-
+		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_NUMBER);
 
 		if(m_lexer.current_immediate.value != 64) {
 			return utility::error("unexpected bit count received");
 		}
 
-		m_lexer.get_next_token(); // prime the next token
+		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}
 
@@ -370,7 +410,9 @@ namespace baremetal {
 		// parse an operand which begins with a type keyword 
 		data_type type = token_to_data_type(m_lexer.current);
 
-		switch(m_lexer.get_next_token()) {
+		TRY(m_lexer.get_next_token());
+
+		switch(m_lexer.current) {
 			case TOK_LBRACKET: parse_memory(type); break;
 			default: return utility::error("unexpected token following type");
 		}
@@ -381,7 +423,8 @@ namespace baremetal {
 	auto assembler_parser::parse_identifier_operand() -> utility::result<void> {
 		m_operands[m_operand_i++] = operand(m_interner.add(m_lexer.current_string));
 		m_relocated_operand = true;
-		m_lexer.get_next_token(); // prime the next token
+
+		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}
 
@@ -390,15 +433,15 @@ namespace baremetal {
 			return utility::error("duplicate data type specified in memory/moff operand");
 		}
 
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_NUMBER);
 
 		m_operands[m_operand_i++] = operand(moff(m_lexer.current_immediate.value));
 
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_RBRACKET);
 
-		m_lexer.get_next_token(); // prime the next token
+		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}
 
@@ -414,9 +457,11 @@ namespace baremetal {
 			case DT_QWORD: op.type = OP_M64;  break;
 			case DT_TWORD: op.type = OP_M80;  break;
 		}
+		
+		TRY(m_lexer.get_next_token());
 
 		// we can potentially have types in here, which means we're handling a moff
-		switch(m_lexer.get_next_token()) {
+		switch(m_lexer.current) {
 			case TOK_BYTE ... TOK_TWORD: return parse_moff(type);
 			default: break;
 		}
@@ -455,9 +500,9 @@ namespace baremetal {
 	auto assembler_parser::parse_broadcast(mask_type mask) -> utility::result<void> {
 		m_broadcast_n = mask_to_broadcast_n(mask);
 		
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_RBRACE);
-		m_lexer.get_next_token(); // prime the next token
+		TRY(m_lexer.get_next_token());
 
 		u32 index = m_instruction_i;
 		bool met_broadcast = false;
@@ -497,7 +542,9 @@ namespace baremetal {
 		mask_type result = MASK_NONE;
 		char* end;
 
-		if(m_lexer.get_next_token() != TOK_LBRACE) {
+		TRY(m_lexer.get_next_token());
+
+		if(m_lexer.current != TOK_LBRACE) {
 			return result; // no mask
 		}
 
@@ -505,7 +552,9 @@ namespace baremetal {
 		// broadcast '{1to' { 2, 4, 8, 16, 32 } '}'
 		m_lexer.force_keyword = true;
 
-		switch(m_lexer.get_next_token()) {
+		TRY(m_lexer.get_next_token());
+
+		switch(m_lexer.current) {
 			case TOK_1TO2:  return MASK_BROADCAST_1TO2;
 			case TOK_1TO4:  return MASK_BROADCAST_1TO4;
 			case TOK_1TO8:  return MASK_BROADCAST_1TO8;
@@ -526,22 +575,24 @@ namespace baremetal {
 
 		result = static_cast<mask_type>(k + 1);
 
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_RBRACE);
 
-		if(m_lexer.get_next_token() != TOK_LBRACE) {
+		TRY(m_lexer.get_next_token());
+
+		if(m_lexer.current != TOK_LBRACE) {
 			return result; // no zero mask
 		}
 
 		// parse the second mask operand '{z}'
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 
 		if(m_lexer.current_string.get_size() != 1 || m_lexer.current_string[0] != 'z') {
 			return utility::error("ill-formed mask register, expected 'z'");
 		}
 
 		result = static_cast<mask_type>(result + 8);
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_RBRACE);
 
 		m_lexer.get_next_token(); // prime the next token
@@ -568,23 +619,28 @@ namespace baremetal {
 		return SUCCESS;
 	}
 
-	void assembler_parser::parse_number() {
+	auto assembler_parser::parse_number() -> utility::result<void> {
 		m_operands[m_operand_i++] = operand(m_lexer.current_immediate); 
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
+		return SUCCESS;
 	}
 
 	auto assembler_parser::parse_rip_relative_rel() -> utility::result<void> {
-		if(m_lexer.get_next_token() != TOK_PLUS) {
+		TRY(m_lexer.get_next_token());
+
+		if(m_lexer.current != TOK_PLUS) {
 			return utility::error("unexpected token received in rip-relative address");
 		}
 
 		operand rip_rel; 
 
-		if(m_lexer.get_next_token() == TOK_MINUS) {
+		TRY(m_lexer.get_next_token());
+
+		if(m_lexer.current == TOK_MINUS) {
 			// negative relocations are always rel32 (without being rip-relative)
 			rip_rel.type = OP_REL32;
 
-			m_lexer.get_next_token();
+			TRY(m_lexer.get_next_token());
 			EXPECT_TOKEN(TOK_NUMBER);
 
 			rip_rel.immediate = imm(-1 * static_cast<i64>(m_lexer.current_immediate.value));
@@ -605,17 +661,16 @@ namespace baremetal {
 
 		m_operands[m_operand_i++] = rip_rel;
 
-		m_lexer.get_next_token(); // prime the next token
+		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}
 
 	auto assembler_parser::parse_number_negative() -> utility::result<void> {
-		m_lexer.get_next_token();
+		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_NUMBER);
 
 		m_operands[m_operand_i++] = operand(imm(-static_cast<i64>(m_lexer.current_immediate.value)));
-		m_lexer.get_next_token();
-
+		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}
 
@@ -658,7 +713,7 @@ namespace baremetal {
 				}
 				// rel $
 				case TOK_REL: {
-					m_lexer.get_next_token();
+					TRY(m_lexer.get_next_token());
 					EXPECT_TOKEN(TOK_DOLLARSIGN);
 					current_reg = rip;
 					break;
@@ -787,7 +842,7 @@ namespace baremetal {
 				}
 			}
 
-			m_lexer.get_next_token();
+			TRY(m_lexer.get_next_token());
 		}
 	}
 } // namespace baremetal

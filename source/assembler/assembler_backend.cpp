@@ -130,7 +130,6 @@ namespace baremetal {
 		// index, since we can apply optimizations which focus on stuff like shorter encodings)
 		const instruction* inst = find_optimized_instruction(index, operands);
 		emit_instruction_direct(inst, operands);
-
 	}
 
 	void assembler_backend::emit_instruction_direct(const instruction* inst, const operand* operands) {

@@ -60,7 +60,7 @@ namespace baremetal {
 				continue; // skip empty sections
 			}
 
-			// before appending the section, realign to 8 bytes
+			// before appending the section, realign to 4 bytes
 			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size(); 
 
 			for(u64 i = 0; i < alignment_offset; ++i) {

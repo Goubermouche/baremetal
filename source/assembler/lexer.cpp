@@ -44,7 +44,7 @@ namespace baremetal {
 		return m_current_char;
 	}
 
-	auto lexer::get_next_token() -> token_type {
+	auto lexer::get_next_token() -> utility::result<token_type> {
 		current_string.clear();
 
 		// get rid of leading space-like characters
@@ -75,8 +75,7 @@ namespace baremetal {
 			case -1:                     return current = TOK_EOF;
 		}
 
-		ASSERT(false, "unknown character: '{}'\n", m_current_char);
-		return {};
+		return utility::error("unknown character received");
 	}
 
 	auto is_whitespace(char c) -> bool {
@@ -85,12 +84,12 @@ namespace baremetal {
 
 	void lexer::consume_spaces() {
 		// consume spaces (excluding newlines)
-		while(is_whitespace(m_current_char)) {
+		while(utility::is_space(m_current_char)) {
 			get_next_char();
 		}
 	}
 
-	auto lexer::get_next_token_string() -> token_type {
+	auto lexer::get_next_token_string() -> utility::result<token_type> {
 		get_next_char();
 
 		while(!is_at_end() && m_current_char != '"') {
@@ -98,25 +97,29 @@ namespace baremetal {
 			get_next_char();
 		}
 
-		ASSERT(m_current_char == '"', "unescaped string literal detected\n");
-		get_next_char();
+		if(m_current_char != '"') {
+			return utility::error("unescaped string literal detected");
+		}
 
+		get_next_char();
 		return current = TOK_STRING;
 	}
 
-	auto lexer::get_next_token_char() -> token_type {
+	auto lexer::get_next_token_char() -> utility::result<token_type> {
 		get_next_char();
 		current_string += get_next_char_escaped();
 		get_next_char();
 
-		ASSERT(m_current_char == '\'', "unescaped char literal detected\n");
+		if(m_current_char != '\'') {
+			return utility::error("unescaped char literal detected");
+		}
+
 		get_next_char();
 
 		return current = TOK_CHAR;
 	}
 
-	auto lexer::get_next_token_number() -> token_type {
-		current_string.clear();
+	auto lexer::get_next_token_number() -> utility::result<token_type> {
 		i32 base = 10;
 
 		if(m_current_char == '0') {
@@ -172,8 +175,8 @@ parse_number:
 		return current = TOK_NUMBER;
 	}
 
-	auto lexer::get_next_token_identifier() -> token_type {
-		while(utility::is_alphanum(m_current_char)) {
+	auto lexer::get_next_token_identifier() -> utility::result<token_type> {
+		while(utility::is_alphanum(m_current_char) || m_current_char == '_') {
 			current_string += m_current_char;
 			get_next_char();
 		}
@@ -188,7 +191,7 @@ parse_number:
 		return current = TOK_IDENTIFIER;
 	}
 
-	auto lexer::get_next_token_comment() -> token_type {
+	auto lexer::get_next_token_comment() -> utility::result<token_type> {
 		// skip over comments
 		do {
 			get_next_char();
@@ -741,6 +744,10 @@ parse_number:
 			{ "dw"     , TOK_DW      },
 			{ "dd"     , TOK_DD      },
 			{ "dq"     , TOK_DQ      },
+			{ "resb"   , TOK_RESB    },
+			{ "resw"   , TOK_RESW    },
+			{ "resd"   , TOK_RESD    },
+			{ "resq"   , TOK_RESQ    },
 		};
 		
 		const auto it = operand_map.find(str);

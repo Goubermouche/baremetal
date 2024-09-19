@@ -26,6 +26,7 @@ namespace baremetal {
 		auto parse_instruction() -> utility::result<void>;
 		auto parse_section() -> utility::result<void>;
 		auto parse_define_memory() -> utility::result<void>;
+		auto parse_reserve_memory() -> utility::result<void>;
 		auto parse_bits() -> utility::result<void>;
 
 		// instruction operands
@@ -37,7 +38,7 @@ namespace baremetal {
 		auto parse_number_negative() -> utility::result<void>;
 		auto parse_register() -> utility::result<void>;
 		auto parse_type() -> utility::result<void>;
-		void parse_number();
+		auto parse_number() -> utility::result<void>;
 
 		auto parse_mask_or_broadcast() -> utility::result<mask_type>;
 		auto parse_memory(operand& op) -> utility::result<void>;

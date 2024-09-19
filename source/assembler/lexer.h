@@ -3,6 +3,7 @@
 #include "assembler/instruction/operands/registers.h"
 
 #include <utility/containers/dynamic_string.h> 
+#include <utility/result.h> 
 
 namespace baremetal {
 	enum token_type : u16 {
@@ -269,6 +270,10 @@ namespace baremetal {
 		TOK_DW,      // dw
 		TOK_DD,      // dd
 		TOK_DQ,      // dq
+		TOK_RESB,    // resb
+		TOK_RESW,    // resw
+		TOK_RESD,    // resd
+		TOK_RESQ,    // resq
 	};
 
 	enum data_type : u8 {
@@ -315,7 +320,7 @@ namespace baremetal {
 	class lexer {
 	public:
 		void set_text(const utility::dynamic_string& text);
-		auto get_next_token() -> token_type;
+		auto get_next_token() -> utility::result<token_type>;
 	private:
 		auto get_next_char_escaped() -> char;
 		auto get_next_char() -> char;
@@ -323,11 +328,11 @@ namespace baremetal {
 
 		void consume_spaces();
 
-		auto get_next_token_identifier() -> token_type;
-		auto get_next_token_comment() -> token_type;
-		auto get_next_token_number() -> token_type;
-		auto get_next_token_string() -> token_type;
-		auto get_next_token_char() -> token_type;
+		auto get_next_token_identifier() -> utility::result<token_type>;
+		auto get_next_token_comment() -> utility::result<token_type>;
+		auto get_next_token_number() -> utility::result<token_type>;
+		auto get_next_token_string() -> utility::result<token_type>;
+		auto get_next_token_char() -> utility::result<token_type>;
 	private:
 		u64 m_index;
 		utility::dynamic_string m_text;
