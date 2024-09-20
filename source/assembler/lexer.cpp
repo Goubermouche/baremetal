@@ -9,6 +9,11 @@ namespace baremetal {
 		get_next_char();
 	}
 
+	void assembler_lexer::restore_safepoint(safepoint safepoint) {
+		m_index = safepoint.index;
+		m_current_char = safepoint.current_char;
+	}
+
 	auto assembler_lexer::get_next_char() -> char {
 		if(is_at_end()) {
 			m_current_char = utility::g_eof;
@@ -44,6 +49,10 @@ namespace baremetal {
 		return m_current_char;
 	}
 
+	auto assembler_lexer::create_safepoint() -> safepoint {
+		return { .current_char = m_current_char, .index = m_index };
+	}
+
 	auto assembler_lexer::get_next_token() -> utility::result<token_type> {
 		current_string.clear();
 
@@ -73,15 +82,20 @@ namespace baremetal {
 			case '$':  get_next_char();  return current = TOK_DOLLARSIGN;
 			case '.':  get_next_char();  return current = TOK_DOT;
 			case ':':  get_next_char();  return current = TOK_COLON;
+			case '\n': get_next_char();  return current = TOK_NEWLINE;
 			case -1:                     return current = TOK_EOF;
 		}
 
 		return utility::error("unknown character received");
 	}
 
+	auto is_whitespace(char c) -> bool {
+		return (c == '\t' || c == '\v' || c == '\f' || c == '\r' || c == ' ');
+	}
+
 	void assembler_lexer::consume_spaces() {
 		// consume spaces (excluding newlines)
-		while(utility::is_space(m_current_char)) {
+		while(is_whitespace(m_current_char)) {
 			get_next_char();
 		}
 	}
@@ -736,6 +750,7 @@ parse_number:
 			// keywords
 			{ "rel"    , TOK_REL     },
 			{ "section", TOK_SECTION },
+			{ "times"  , TOK_TIMES   },
 			{ "bits"   , TOK_BITS    },
 			{ "db"     , TOK_DB      },
 			{ "dw"     , TOK_DW      },

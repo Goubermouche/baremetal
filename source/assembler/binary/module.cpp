@@ -108,6 +108,8 @@ namespace baremetal {
 					default: ASSERT(false, "unhandled symbol type specified\n"); 
 				}
 
+				utility::console::print("\n{}\n", new_position);
+
 				const auto result = symbols.insert({ name, symbol(sym.type, new_position) });
 
 				ASSERT(result.second, "symbol '{}' has already been declared before\n", *name);

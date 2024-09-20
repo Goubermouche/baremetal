@@ -22,12 +22,13 @@ namespace baremetal {
 		void clear();
 	private:
 		// statements
-		auto parse_reserve_memory() -> utility::result<void>;
-		auto parse_define_memory() -> utility::result<void>;
+		auto parse_reserve_memory(utility::string_view* symbol) -> utility::result<void>;
+		auto parse_define_memory(utility::string_view* symbol) -> utility::result<void>;
 		auto parse_instruction() -> utility::result<void>;
 		auto parse_identifier() -> utility::result<void>;
 		auto parse_section() -> utility::result<void>;
 		auto parse_label() -> utility::result<void>;
+		auto parse_times() -> utility::result<void>;
 		auto parse_bits() -> utility::result<void>;
 
 		// instruction operands

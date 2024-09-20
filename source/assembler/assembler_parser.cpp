@@ -1,4 +1,5 @@
 #include "assembler_parser.h"
+#include "utility/result.h"
 
 #include <utility/algorithms/sort.h>
 
@@ -123,8 +124,10 @@ namespace baremetal {
 
 		while(m_lexer.current != TOK_EOF) {
 			switch(m_lexer.current) {
-				case TOK_SECTION:    TRY(parse_section()); break;
+				case TOK_NEWLINE:    m_lexer.get_next_token(); break;
 				case TOK_IDENTIFIER: TRY(parse_identifier()); break;
+				case TOK_SECTION:    TRY(parse_section()); break;
+				case TOK_TIMES:      TRY(parse_times()); break;
 				case TOK_BITS:       TRY(parse_bits()); break;
 				default: return utility::error("unexpected top-level token received");
 			}
@@ -160,8 +163,8 @@ namespace baremetal {
 
 		// other identifiers
 		switch(m_lexer.current) {
-			case TOK_RESB ... TOK_RESQ: return parse_reserve_memory(); 
-			case TOK_DB ... TOK_DQ:     return parse_define_memory(); 
+			case TOK_RESB ... TOK_RESQ: return parse_reserve_memory(m_current_identifier); 
+			case TOK_DB ... TOK_DQ:     return parse_define_memory(m_current_identifier); 
 			case TOK_COLON:             return parse_label(); 
 			case TOK_EOF:               return SUCCESS;
 			default:                    return utility::error("unexpected token received after an identifier");
@@ -177,7 +180,7 @@ namespace baremetal {
 		TRY(m_lexer.get_next_token());
 
 		// parse individual operands
-		while(m_lexer.current != TOK_EOF) {
+		while(m_lexer.current != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
 			switch(m_lexer.current) {
 				case TOK_IDENTIFIER:         TRY(parse_identifier_operand()); break;
 				case TOK_DOLLARSIGN:         TRY(parse_rip_relative_rel()); break;
@@ -234,20 +237,29 @@ namespace baremetal {
 				return a_width > b_width;
 			});
 
+			// TODO: we can probably get rid of this eventually
+			// this either picks the largest non-rel variant, or the smallest rel variant
+			const auto& temp = legal_variants[0];
+			const instruction* inst = legal_variants[0];
+
+			if(is_operand_rel(temp->operands[temp->operand_count - 1])) {
+			    inst = legal_variants[legal_variants.get_size() - 1];
+			}
+
 			for(u8 j = 0; j < m_operand_i; ++j) {
 				if(j == imm_index) {
 					continue;
 				}
 
-				m_operands[j].type = legal_variants[0]->operands[j];
+				m_operands[j].type = inst->operands[j];
 
-				if(is_operand_rel(legal_variants[0]->operands[j])) {
+				if(is_operand_rel(inst->operands[j])) {
 					rel r = rel(static_cast<i32>(m_operands[j].immediate.value));
 					m_operands[j].relocation = r; 
 				}
 			}
 
-			m_backend.emit_instruction_direct(legal_variants[0], m_operands);
+			m_backend.emit_instruction_direct(inst, m_operands);
 			return SUCCESS;
 		}
 		else {
@@ -293,6 +305,41 @@ namespace baremetal {
 		return SUCCESS;	
 	}
 
+	auto assembler_parser::parse_times() -> utility::result<void> {
+		EXPECT_TOKEN(TOK_TIMES);
+
+		TRY(m_lexer.get_next_token());
+		EXPECT_TOKEN(TOK_NUMBER);
+
+		u64 times = m_lexer.current_immediate.value;
+		auto safepoint = m_lexer.create_safepoint();
+
+		for(u64 i = 0; i < times; ++i) {
+			m_lexer.restore_safepoint(safepoint);
+
+			TRY(m_lexer.get_next_token());
+
+			switch(m_lexer.current) {
+				case TOK_RESB ... TOK_RESQ: TRY(parse_reserve_memory(nullptr)); break;
+				case TOK_DB ... TOK_DQ:     TRY(parse_define_memory(nullptr)); break;
+				case TOK_IDENTIFIER: {
+					m_instruction_i = find_instruction_by_name(m_lexer.current_string.get_data());
+
+					if(m_instruction_i == utility::limits<u32>::max()) {
+						return utility::error("expected instruction");
+					}
+
+					TRY(parse_instruction());
+					break;
+				}
+				default: return utility::error("unexpected token received after times keyword");
+			}
+		}
+
+		TRY(m_lexer.get_next_token());
+		return SUCCESS;
+	}
+
 	auto assembler_parser::parse_section() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_SECTION);
 
@@ -309,8 +356,10 @@ namespace baremetal {
 		return SUCCESS;
 	}
 
-	auto assembler_parser::parse_reserve_memory() -> utility::result<void> {
-		m_backend.get_module().add_symbol(m_current_identifier, module::SYM_GLOBAL);
+	auto assembler_parser::parse_reserve_memory(utility::string_view* symbol) -> utility::result<void> {
+		if(symbol) {
+			m_backend.get_module().add_symbol(symbol, module::SYM_GLOBAL);
+		}
 
 		// u8 bytes = 0;
 
@@ -337,8 +386,10 @@ namespace baremetal {
 		return SUCCESS;
 	}
 
-	auto assembler_parser::parse_define_memory() -> utility::result<void> {
-		m_backend.get_module().add_symbol(m_current_identifier, module::SYM_GLOBAL);
+	auto assembler_parser::parse_define_memory(utility::string_view* symbol) -> utility::result<void> {
+		if(symbol) {
+			m_backend.get_module().add_symbol(symbol, module::SYM_GLOBAL);
+		}
 
 		u8 bytes = 0;
 
@@ -425,35 +476,33 @@ namespace baremetal {
 
 	auto assembler_parser::parse_identifier_operand() -> utility::result<void> {
 		utility::string_view* identifier = m_context->strings.add(m_lexer.current_string);	
-		const auto& module = m_backend.get_module();
+		// const auto& module = m_backend.get_module();
 
 		// .text section
-		if(module.get_current_section() == 0) {
-			const auto symbol = module.get_symbol(identifier);
-			operand op;
+		// if(module.get_current_section() == 0) {
+		// 	const auto symbol = module.get_symbol(identifier);
+		// 	operand op;
 
-			// symbol exists in .text section
-			if(symbol.type == module::SYM_RELATIVE) {
-				const i32 offset = static_cast<i32>(symbol.position) - static_cast<i32>(module.get_size_current_section());
-				op = imm(offset);
+		// 	// symbol exists in .text section
+		// 	if(symbol.type == module::SYM_RELATIVE) {
+		// 		const i32 offset = static_cast<i32>(symbol.position) - static_cast<i32>(module.get_size_current_section());
+		// 		op = imm(offset);
 
-				switch(m_lexer.current_immediate.min_bits) {
-					case 8:  op.type = OP_REL8_RIP;  break;
-					case 16: op.type = OP_REL16_RIP; break;
-					case 32: op.type = OP_REL32_RIP; break;
-					default: return utility::error("invalid rip-relative address width");
-				}
-				
-				m_operands[m_operand_i++] = op;
-				TRY(m_lexer.get_next_token());
-				return SUCCESS;
-			}
-		}
+		// 		switch(m_lexer.current_immediate.min_bits) {
+		// 			case 8:  op.type = OP_REL8_RIP;  break;
+		// 			case 16: op.type = OP_REL16_RIP; break;
+		// 			case 32: op.type = OP_REL32_RIP; break;
+		// 			default: return utility::error("invalid rip-relative address width");
+		// 		}
+		// 		
+		// 		m_operands[m_operand_i++] = op;
+		// 		TRY(m_lexer.get_next_token());
+		// 		return SUCCESS;
+		// 	}
+		// }
 
-		// fallback to a relocation
 		m_operands[m_operand_i++] = operand(identifier);
 		m_relocated_operand = true;
-
 		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}

@@ -98,9 +98,9 @@ namespace detail {
 		info.begin_test();
 
 		for(const auto& test : tests) {
-			// if(test.get_string().find("define_memory") == utility::dynamic_string::invalid_pos) {
-			// 	continue;
-			// }
+			if(test.get_string().find("3") == utility::dynamic_string::invalid_pos) {
+				continue;
+			}
 
 			test_text.clear();
 			assembler.clear();

@@ -255,6 +255,7 @@ namespace baremetal {
 		TOK_DOLLARSIGN,  // $
 		TOK_DOT,         // .
 		TOK_COLON,       // :
+		TOK_NEWLINE,     // :
 
 		// broadcast keywords
 		TOK_1TO2,  // 1to2
@@ -265,6 +266,7 @@ namespace baremetal {
 
 		TOK_REL,     // rel
 		TOK_SECTION, // section
+		TOK_TIMES,   // section
 		TOK_BITS,    // bits
 		TOK_DB,      // db
 		TOK_DW,      // dw
@@ -319,8 +321,16 @@ namespace baremetal {
 
 	class assembler_lexer {
 	public:
+		struct safepoint {
+			char current_char;
+			u64 index;
+		};
+
 		void set_text(const utility::dynamic_string& text);
+		void restore_safepoint(safepoint safepoint);
+
 		auto get_next_token() -> utility::result<token_type>;
+		auto create_safepoint() -> safepoint;
 	private:
 		auto get_next_char_escaped() -> char;
 		auto get_next_char() -> char;
