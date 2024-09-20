@@ -252,7 +252,6 @@ namespace baremetal {
 		TOK_MINUS,       // -
 		TOK_ASTERISK,    // *
 		TOK_COMMA,       // ,
-		TOK_NEWLINE,     // \n
 		TOK_DOLLARSIGN,  // $
 		TOK_DOT,         // .
 		TOK_COLON,       // :
@@ -318,7 +317,7 @@ namespace baremetal {
 	auto mask_to_k(mask_type mask) -> u8;
 	auto mask_to_broadcast_n(mask_type mask) -> u8;
 
-	class lexer {
+	class assembler_lexer {
 	public:
 		void set_text(const utility::dynamic_string& text);
 		auto get_next_token() -> utility::result<token_type>;

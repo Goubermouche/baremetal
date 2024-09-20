@@ -12,7 +12,8 @@ namespace detail {
 		const utility::filepath test_path = g_test_path / "encoding/test.txt"; 
 		const utility::dynamic_string test_file = utility::file::read(test_path);
 
-		baremetal::assembler_parser assembler;
+		baremetal::assembler_context context;
+		baremetal::assembler_parser assembler(&context);
 
 		utility::dynamic_string instruction;
 		utility::dynamic_string hex_result;
@@ -84,7 +85,9 @@ namespace detail {
 		//   assembly
 	
 		const auto tests = utility::directory::read(g_test_path / "binary");
-		baremetal::assembler_parser assembler;
+
+		baremetal::assembler_context context;
+		baremetal::assembler_parser assembler(&context);
 
 		utility::dynamic_string test_text;
 		utility::dynamic_string hex_result;

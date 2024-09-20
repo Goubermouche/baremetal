@@ -3,13 +3,13 @@
 #include <utility/containers/map.h>
 
 namespace baremetal {
-	void lexer::set_text(const utility::dynamic_string& text) {
+	void assembler_lexer::set_text(const utility::dynamic_string& text) {
 		m_index = 0;
 		m_text = utility::dynamic_string(text);
 		get_next_char();
 	}
 
-	auto lexer::get_next_char() -> char {
+	auto assembler_lexer::get_next_char() -> char {
 		if(is_at_end()) {
 			m_current_char = utility::g_eof;
 			return utility::g_eof;
@@ -18,11 +18,11 @@ namespace baremetal {
 		return m_current_char = m_text[m_index++];
 	}
 
-	auto lexer::is_at_end() -> bool {
+	auto assembler_lexer::is_at_end() -> bool {
 		return m_index + 1 >= m_text.get_size();
 	}
 
-	auto lexer::get_next_char_escaped() -> char {
+	auto assembler_lexer::get_next_char_escaped() -> char {
 		if(m_current_char == '\\') {
 			switch(get_next_char()) {
 				case '\\': return '\\';
@@ -44,7 +44,7 @@ namespace baremetal {
 		return m_current_char;
 	}
 
-	auto lexer::get_next_token() -> utility::result<token_type> {
+	auto assembler_lexer::get_next_token() -> utility::result<token_type> {
 		current_string.clear();
 
 		// get rid of leading space-like characters
@@ -73,25 +73,20 @@ namespace baremetal {
 			case '$':  get_next_char();  return current = TOK_DOLLARSIGN;
 			case '.':  get_next_char();  return current = TOK_DOT;
 			case ':':  get_next_char();  return current = TOK_COLON;
-			case '\n': get_next_char();  return current = TOK_NEWLINE;
 			case -1:                     return current = TOK_EOF;
 		}
 
 		return utility::error("unknown character received");
 	}
 
-	auto is_whitespace(char c) -> bool {
-		return c == '\t' || c == '\v' || c == '\f' || c == '\r' || c == ' ';
-	}
-
-	void lexer::consume_spaces() {
+	void assembler_lexer::consume_spaces() {
 		// consume spaces (excluding newlines)
 		while(utility::is_space(m_current_char)) {
 			get_next_char();
 		}
 	}
 
-	auto lexer::get_next_token_string() -> utility::result<token_type> {
+	auto assembler_lexer::get_next_token_string() -> utility::result<token_type> {
 		get_next_char();
 
 		while(!is_at_end() && m_current_char != '"') {
@@ -107,7 +102,7 @@ namespace baremetal {
 		return current = TOK_STRING;
 	}
 
-	auto lexer::get_next_token_char() -> utility::result<token_type> {
+	auto assembler_lexer::get_next_token_char() -> utility::result<token_type> {
 		get_next_char();
 		current_string += get_next_char_escaped();
 		get_next_char();
@@ -121,7 +116,7 @@ namespace baremetal {
 		return current = TOK_CHAR;
 	}
 
-	auto lexer::get_next_token_number() -> utility::result<token_type> {
+	auto assembler_lexer::get_next_token_number() -> utility::result<token_type> {
 		i32 base = 10;
 
 		if(m_current_char == '0') {
@@ -177,7 +172,7 @@ parse_number:
 		return current = TOK_NUMBER;
 	}
 
-	auto lexer::get_next_token_identifier() -> utility::result<token_type> {
+	auto assembler_lexer::get_next_token_identifier() -> utility::result<token_type> {
 		while(utility::is_alphanum(m_current_char) || m_current_char == '_') {
 			current_string += m_current_char;
 			get_next_char();
@@ -193,7 +188,7 @@ parse_number:
 		return current = TOK_IDENTIFIER;
 	}
 
-	auto lexer::get_next_token_comment() -> utility::result<token_type> {
+	auto assembler_lexer::get_next_token_comment() -> utility::result<token_type> {
 		// skip over comments
 		do {
 			get_next_char();

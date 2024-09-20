@@ -1,8 +1,5 @@
 #include "assembler_backend.h"
 
-#include "assembler/instruction/instruction.h"
-#include "assembler/instruction/operands/operands.h"
-
 #include <utility/algorithms/sort.h>
 
 namespace baremetal {
@@ -115,8 +112,8 @@ namespace baremetal {
 		}
 	} // namespace detail
 
-	assembler_backend::assembler_backend(string_interner* strings)
-		: m_current_inst_begin(0), m_module(strings) {}
+	assembler_backend::assembler_backend(assembler_context* context)
+		: m_current_inst_begin(0), m_module(context) {}
 
 	void assembler_backend::clear() {
 		m_module.clear();
@@ -1663,10 +1660,8 @@ namespace baremetal {
 			const operand_type current = inst->operands[i];
 
 			if(is_operand_imm(current)) {
-				const u16 operand_size = get_operand_bit_width(current);
-
 				if(operands[i].type == OP_REL_UNKNOWN) {
-					m_module.add_relocation(operands[i].symbol, get_operand_bit_width(current) / 8, operand_size / 8);
+					m_module.add_relocation(operands[i].symbol, get_operand_bit_width(current) / 8);
 					emit_data_operand(0, get_operand_bit_width(current));
 				}
 				else {
@@ -1683,7 +1678,7 @@ namespace baremetal {
 				const u16 operand_size = get_operand_bit_width(current);
 
 				if(operands[i].type == OP_REL_UNKNOWN) {
-					m_module.add_relocation(operands[i].symbol, get_operand_bit_width(current) / 8,  operand_size / 8);
+					m_module.add_relocation(operands[i].symbol, get_operand_bit_width(current) / 8);
 					emit_data_operand(0, operand_size);
 				}
 				else {

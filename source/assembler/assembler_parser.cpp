@@ -1,8 +1,5 @@
 #include "assembler_parser.h"
 
-#include "assembler/instruction/instruction.h"
-#include "assembler/lexer.h"
-
 #include <utility/algorithms/sort.h>
 
 #define EXPECT_TOKEN(expected)                            \
@@ -118,7 +115,7 @@ namespace baremetal {
 		}
 	} // namespace detail
 
-	assembler_parser::assembler_parser() : m_backend(&m_strings) {}
+	assembler_parser::assembler_parser(assembler_context* context) : m_context(context), m_backend(context) {}
 
 	auto assembler_parser::parse(const utility::dynamic_string& assembly) -> utility::result<void> {
 		m_lexer.set_text(assembly);
@@ -128,7 +125,6 @@ namespace baremetal {
 			switch(m_lexer.current) {
 				case TOK_SECTION:    TRY(parse_section()); break;
 				case TOK_IDENTIFIER: TRY(parse_identifier()); break;
-				// case TOK_NEWLINE:    TRY(m_lexer.get_next_token()); break;
 				case TOK_BITS:       TRY(parse_bits()); break;
 				default: return utility::error("unexpected top-level token received");
 			}
@@ -143,8 +139,7 @@ namespace baremetal {
 	}
 
 	void assembler_parser::clear() {
-		m_strings.clear();
-		m_assembly.clear();
+		m_context->clear();
 		m_backend.clear();
 	}
 
@@ -157,7 +152,7 @@ namespace baremetal {
 			return parse_instruction();
 		}
 
-		m_current_identifier = m_strings.add(m_lexer.current_string);
+		m_current_identifier = m_context->strings.add(m_lexer.current_string);
 
 		// TODO: check for multiple symbols
 		
@@ -182,7 +177,7 @@ namespace baremetal {
 		TRY(m_lexer.get_next_token());
 
 		// parse individual operands
-		while(m_lexer.current != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
+		while(m_lexer.current != TOK_EOF) {
 			switch(m_lexer.current) {
 				case TOK_IDENTIFIER:         TRY(parse_identifier_operand()); break;
 				case TOK_DOLLARSIGN:         TRY(parse_rip_relative_rel()); break;
@@ -287,9 +282,6 @@ namespace baremetal {
 			}
 		}
 
-	// 	TRY(m_lexer.get_next_token());
-	// 	EXPECT_TOKEN(TOK_NEWLINE);
-
 		// invalid instruction and operand combination
 		return utility::error("invalid operand combination for the specified instruction");
 	}
@@ -311,7 +303,7 @@ namespace baremetal {
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
 		// NOTE: we don't care if a section is 'declared' multiple times
-		m_backend.get_module().set_section(m_strings.add(m_lexer.current_string));
+		m_backend.get_module().set_section(m_context->strings.add(m_lexer.current_string));
 
 		TRY(m_lexer.get_next_token());
 		return SUCCESS;
@@ -360,7 +352,7 @@ namespace baremetal {
 
 		TRY(m_lexer.get_next_token());
 
-		while(m_lexer.current != TOK_EOF && m_lexer.current != TOK_NEWLINE) {
+		while(m_lexer.current != TOK_EOF) {
 			switch(m_lexer.current) {
 				case TOK_CHAR: 
 				case TOK_STRING: {
@@ -432,7 +424,7 @@ namespace baremetal {
 	}
 
 	auto assembler_parser::parse_identifier_operand() -> utility::result<void> {
-		utility::string_view* identifier = m_strings.add(m_lexer.current_string);	
+		utility::string_view* identifier = m_context->strings.add(m_lexer.current_string);	
 		const auto& module = m_backend.get_module();
 
 		// .text section

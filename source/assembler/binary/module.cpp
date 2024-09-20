@@ -1,11 +1,18 @@
 #include "module.h"
 
 namespace baremetal {
-	module::module(string_interner* strings) : m_strings(strings) {
+	module::module(assembler_context* context) : m_context(context) {
 		clear();
 	}
 
-	module::section::section(utility::string_view* name) : name(name) {}
+	module::section::section(utility::string_view* name)
+		: name(name) {}
+
+	module::symbol::symbol(symbol_type type, u64 position)
+		: type(type), position(position) {}
+
+	module::relocation::relocation(utility::string_view* symbol, u64 position, u8 size)
+		: symbol(symbol), position(position), size(size) {}
 
 	void module::clear() {
 		m_sections.clear();
@@ -14,30 +21,34 @@ namespace baremetal {
 		m_byte_count = 0;
 
 		// only add the .text section by default
-		add_section(m_strings->add("text"));
-	}
-
-	void module::push_byte(u8 value) {
-		m_sections[m_current_section].data.push_back(value);
-		m_byte_count++;
+		add_section(m_context->strings.add("text"));
 	}
 
 	void module::add_symbol(utility::string_view* name, symbol_type type) {
-		u64 size = m_sections[m_current_section].data.get_size();
-		symbol sym = { .type = type, .position = size };
-		const auto result = m_sections[m_current_section].symbols.insert({ name, sym  });
+		section& section = m_sections[m_current_section];
+		u64 size = section.data.get_size();
+
+		// insert the new symbol
+		const auto result = section.symbols.insert({ name, symbol(type, size)  });
 
 		ASSERT(result.second, "symbol '{}' has already been declared before\n", *name);
 		SUPPRESS_C4100(result);
 	}
 
-	void module::add_relocation(utility::string_view* symbol, u8 size, u8 inst_len) {
-		relocation r = { .symbol = symbol, .position = get_size_current_section(), .size = size, .inst_len = inst_len };
-		m_sections[m_current_section].relocations.push_back(r);
+	void module::add_relocation(utility::string_view* symbol, u8 size) {
+		relocation relocation(symbol, get_size_current_section(), size);
+
+		// insert the new relocation
+		m_sections[m_current_section].relocations.push_back(relocation);
 	}
 
 	void module::add_section(utility::string_view* name) {
 		m_sections.emplace_back(name);	
+	}
+
+	void module::push_byte(u8 value) {
+		m_sections[m_current_section].data.push_back(value);
+		m_byte_count++;
 	}
 
 	void module::set_section(utility::string_view* name) {
@@ -50,16 +61,25 @@ namespace baremetal {
 			}
 		}
 
-		// new section
+		// section doesn't exist - create a new one
 		m_current_section = m_sections.get_size();
 		add_section(name);
 	}
 
+	auto module::emit_object_elf() const -> utility::dynamic_array<u8> {
+		ASSERT(false, "not implemented\n");
+		return {};
+	}
+
 	auto module::emit_binary() const -> utility::dynamic_array<u8> {
+		// updated symbols
 		utility::map<utility::string_view*, symbol> symbols;
 		utility::dynamic_array<relocation> relocations;
+
+		// result
 		utility::dynamic_array<u8> bytes;
 
+		// first pass - append data and update symbol data
 		for(const section& s : m_sections) {
 			if(s.data.is_empty()) {
 				continue; // skip empty sections
@@ -72,23 +92,26 @@ namespace baremetal {
 				bytes.push_back(0);
 			}
 
-			// relocations
+			// update relocations
 			for(relocation r : s.relocations) {
 				r.position += bytes.get_size();
 				relocations.push_back(r);
 			}
 
-			// symbols
-			for(const auto& [name, symbol] : s.symbols) {
+			// update symbols
+			for(const auto& [name, sym] : s.symbols) {
 				u64 new_position = 0;
 
-				switch(symbol.type) {
-					case SYM_GLOBAL:   new_position = symbol.position + bytes.get_size(); break; 
-					case SYM_RELATIVE: new_position = symbol.position; break; 
+				switch(sym.type) {
+					case SYM_GLOBAL:   new_position = sym.position + bytes.get_size(); break; 
+					case SYM_RELATIVE: new_position = sym.position; break; 
 					default: ASSERT(false, "unhandled symbol type specified\n"); 
 				}
 
-				symbols[name] = { .type = symbol.type, .position = new_position };
+				const auto result = symbols.insert({ name, symbol(sym.type, new_position) });
+
+				ASSERT(result.second, "symbol '{}' has already been declared before\n", *name);
+				SUPPRESS_C4100(result);
 			}
 
 			// append the section
@@ -96,19 +119,19 @@ namespace baremetal {
 		}	
 
 		// apply relocations
-		for(const relocation& r : relocations) {
-			const auto it = symbols.find(r.symbol);
-			ASSERT(it != symbols.end(), "invalid symbol '{}' specified\n", *r.symbol);
+		for(const relocation& relocation : relocations) {
+			const auto it = symbols.find(relocation.symbol);
+			ASSERT(it != symbols.end(), "invalid symbol '{}' specified\n", *relocation.symbol);
 
 			u64 value = it->second.position;
 
 			switch(it->second.type) {
 				case SYM_GLOBAL:   break; 
-				case SYM_RELATIVE: value -= r.position + r.inst_len; break;
+				case SYM_RELATIVE: value -= relocation.position + relocation.size; break;
 				default: ASSERT(false, "unhandled symbol type specified\n"); 
 			}
 
-			utility::memcpy(bytes.get_data() + r.position, &value, r.size);
+			utility::memcpy(bytes.get_data() + relocation.position, &value, relocation.size);
 		}
 
 		return bytes;
@@ -118,7 +141,7 @@ namespace baremetal {
 		const auto it = m_sections[m_current_section].symbols.find(name);
 
 		if(it == m_sections[m_current_section].symbols.end()) {
-			return { .type = SYM_NONE, .position = utility::limits<u64>::max() };
+			return symbol(SYM_NONE, 0);
 		}
 
 		return it->second;
