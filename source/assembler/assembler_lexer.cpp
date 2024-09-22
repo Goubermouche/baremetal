@@ -1,8 +1,12 @@
-#include "lexer.h"
+#include "assembler_lexer.h"
 
 #include <utility/containers/map.h>
 
 namespace baremetal {
+	assembler_lexer::assembler_lexer(const utility::dynamic_string& text) {
+		set_text(text);
+	}
+
 	void assembler_lexer::set_text(const utility::dynamic_string& text) {
 		m_index = 0;
 		m_text = utility::dynamic_string(text);
@@ -206,10 +210,33 @@ parse_number:
 		// skip over comments
 		do {
 			get_next_char();
-		} while(!is_at_end() && m_current_char != '\n' && m_current_char != '\r');
+		} while(!is_at_end() && m_current_char != '\n');
 
+		get_next_char(); // NOTE:
+		
 		// return the next token
 		return get_next_token();
+	}
+
+	void token_buffer::print() {
+		for(token tok : value) {
+			utility::console::print("TOK: {}", token_to_string(tok.type));
+
+			switch(tok.type) {
+				case TOK_IDENTIFIER: 
+				case TOK_STRING:     utility::console::print(" {}\n", *tok.identifier);     break;
+				case TOK_NUMBER:     utility::console::print(" {}\n", tok.immediate.value); break;
+				default:             utility::console::print("\n");                        break;
+			}
+		}
+	}
+
+	auto token_buffer::operator[](u64 i) -> token {
+		if(i >= value.get_size()) {
+			return value[value.get_size() - 1]; 
+		}
+
+		return value[i];
 	}
 
 	auto is_mask_broadcast(mask_type mask) -> bool {
@@ -769,6 +796,55 @@ parse_number:
 		}
 
 		return it->second;
+	}
+
+	auto token_to_string(token_type token) -> const char* {
+		switch(token) {
+			case TOK_CR0 ... TOK_R15B: return "REG";
+			case TOK_NONE:             return "NONE";
+			case TOK_BYTE:             return "BYTE";
+			case TOK_WORD:             return "WORD";
+			case TOK_DWORD:            return "DWORD";
+			case TOK_QWORD:            return "QWORD";
+			case TOK_TWORD:            return "TWORD";
+			case TOK_IDENTIFIER:       return "IDENTIFIER";
+			case TOK_STRING:           return "STRING";
+			case TOK_CHAR:             return "CHAR";
+			case TOK_NUMBER:           return "NUMBER";
+			case TOK_EOF:              return "EOF";
+			case TOK_LBRACKET:         return "LBRACKET";
+			case TOK_RBRACKET:         return "RBRACKET";
+			case TOK_LBRACE:           return "LBRACE";
+			case TOK_RBRACE:           return "RBRACE";
+			case TOK_PLUS:             return "PLUS";
+			case TOK_MINUS:            return "MINUS";
+			case TOK_ASTERISK:         return "ASTERISK";
+			case TOK_COMMA:            return "COMMA";
+			case TOK_DOLLARSIGN:       return "DOLLARSIGN";
+			case TOK_DOT:              return "DOT";
+			case TOK_COLON:            return "COLON";
+			case TOK_NEWLINE:          return "NEWLINE";
+			case TOK_1TO2:             return "1TO2";
+			case TOK_1TO4:             return "1TO4";
+			case TOK_1TO8:             return "1TO8";
+			case TOK_1TO16:            return "1TO16";
+			case TOK_1TO32:            return "1TO32";
+			case TOK_REL:              return "REL";
+			case TOK_SECTION:          return "SECTION";
+			case TOK_TIMES:            return "TIMES";
+			case TOK_BITS:             return "BITS";
+			case TOK_DB:               return "DB";
+			case TOK_DW:               return "DW";
+			case TOK_DD:               return "DD";
+			case TOK_DQ:               return "DQ";
+			case TOK_RESB:             return "RESB";
+			case TOK_RESW:             return "RESW";
+			case TOK_RESD:             return "RESD";
+			case TOK_RESQ:             return "RESQ";
+			default: ASSERT(false, "unhandled token specified\n");
+		}
+
+		return "invalid token";
 	}
 
 	auto is_token_broadcast(token_type token) -> bool {

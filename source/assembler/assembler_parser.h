@@ -1,6 +1,6 @@
 #pragma once
 #include "assembler/assembler_backend.h"
-#include "assembler/lexer.h"
+#include "assembler/assembler_lexer.h"
 
 #include <utility/allocators/block_allocator.h>
 #include <utility/result.h>

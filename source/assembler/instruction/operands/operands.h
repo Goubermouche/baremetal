@@ -2,6 +2,7 @@
 #include "assembler/instruction/operands/memory.h"
 
 #include <utility/containers/string_view.h>
+#include <utility/assert.h>
 
 namespace baremetal {
 	enum operand_type : u8 {
@@ -138,6 +139,100 @@ namespace baremetal {
 			u8 r; // register
 		};
 	};
+
+	inline auto operand_type_to_string(operand_type op) -> const char* {
+		switch(op) {
+			case OP_NONE:        return "NONE"; 
+			case OP_R8:          return "R8"; 
+			case OP_R16:         return "R16"; 
+			case OP_R32:         return "R32"; 
+			case OP_R64:         return "R64"; 
+			case OP_XMM:         return "XMM"; 
+			case OP_YMM:         return "YMM"; 
+			case OP_ZMM:         return "ZMM"; 
+			case OP_TMM:         return "TMM"; 
+			case OP_MMX:         return "MMX"; 
+			case OP_K:           return "K"; 
+			case OP_ST:          return "ST"; 
+			case OP_SREG:        return "SREG"; 
+			case OP_DREG:        return "DREG"; 
+			case OP_CREG:        return "CREG"; 
+			case OP_BND:         return "BND"; 
+			case OP_AL:          return "AL"; 
+			case OP_CL:          return "CL"; 
+			case OP_AX:          return "AX"; 
+			case OP_DX:          return "DX"; 
+			case OP_EAX:         return "EAX"; 
+			case OP_ECX:         return "ECX"; 
+			case OP_EDX:         return "EDX"; 
+			case OP_RAX:         return "RAX"; 
+			case OP_RCX:         return "RCX"; 
+			case OP_ST0:         return "ST0"; 
+			case OP_ES:          return "ES"; 
+			case OP_CS:          return "CS"; 
+			case OP_SS:          return "SS"; 
+			case OP_DS:          return "DS"; 
+			case OP_FS:          return "FS"; 
+			case OP_GS:          return "GS"; 
+			case OP_K_K:         return "K_K"; 
+			case OP_XMM_K:       return "XMM_K"; 
+			case OP_XMM_KZ:      return "XMM_KZ"; 
+			case OP_YMM_K:       return "YMM_K"; 
+			case OP_YMM_KZ:      return "YMM_KZ"; 
+			case OP_ZMM_K:       return "ZMM_K"; 
+			case OP_ZMM_KZ:      return "ZMM_KZ"; 
+			case OP_M8:          return "M8"; 
+			case OP_M16:         return "M16"; 
+			case OP_M32:         return "M32"; 
+			case OP_M64:         return "M64"; 
+			case OP_M80:         return "M80"; 
+			case OP_M128:        return "M128"; 
+			case OP_M256:        return "M256"; 
+			case OP_M512:        return "M512"; 
+			case OP_MEM:         return "MEM"; 
+			case OP_TMEM:        return "TMEM"; 
+			case OP_MOFF8:       return "MOFF8"; 
+			case OP_MOFF16:      return "MOFF16"; 
+			case OP_MOFF32:      return "MOFF32"; 
+			case OP_MOFF64:      return "MOFF64"; 
+			case OP_MIB:         return "MIB"; 
+			case OP_VM32X:       return "VM32X"; 
+			case OP_VM32Y:       return "VM32Y"; 
+			case OP_VM32Z:       return "VM32Z"; 
+			case OP_VM64X:       return "VM64X"; 
+			case OP_VM64Y:       return "VM64Y"; 
+			case OP_VM64Z:       return "VM64Z"; 
+			case OP_M16_K:       return "M16_K"; 
+			case OP_M32_K:       return "M32_K"; 
+			case OP_M64_K:       return "M64_K"; 
+			case OP_M128_K:      return "M128_K"; 
+			case OP_M256_K:      return "M256_K"; 
+			case OP_M512_K:      return "M512_K"; 
+			case OP_VM32X_K:     return "VM32X_K"; 
+			case OP_VM32Y_K:     return "VM32Y_K"; 
+			case OP_VM32Z_K:     return "VM32Z_K"; 
+			case OP_VM64X_K:     return "VM64X_K"; 
+			case OP_VM64Y_K:     return "VM64Y_K"; 
+			case OP_VM64Z_K:     return "VM64Z_K"; 
+			case OP_I8:          return "I8"; 
+			case OP_I16:         return "I16"; 
+			case OP_I32:         return "I32"; 
+			case OP_I64:         return "I64"; 
+			case OP_B16:         return "B16"; 
+			case OP_B32:         return "B32"; 
+			case OP_B64:         return "B64"; 
+			case OP_REL8:        return "REL8"; 
+			case OP_REL16:       return "REL16"; 
+			case OP_REL32:       return "REL32"; 
+			case OP_REL8_RIP:    return "REL8_RIP"; 
+			case OP_REL16_RIP:   return "REL16_RIP"; 
+			case OP_REL32_RIP:   return "REL32_RIP"; 
+			case OP_REL_UNKNOWN: return "REL_UNKNOWN"; 
+			case OP_HIDDEN:      return "HIDDEN"; 
+		}
+
+		return "";
+	}
 
 	inline auto is_operand_xmm(operand_type op) -> bool {
 		return op == OP_XMM || op == OP_XMM_K || op == OP_XMM_KZ;

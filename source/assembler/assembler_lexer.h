@@ -3,6 +3,8 @@
 #include "assembler/instruction/operands/registers.h"
 
 #include <utility/containers/dynamic_string.h> 
+#include <utility/containers/dynamic_array.h> 
+#include <utility/containers/string_view.h> 
 #include <utility/result.h> 
 
 namespace baremetal {
@@ -314,6 +316,26 @@ namespace baremetal {
 		MASK_BROADCAST_1TO32,
 	};
 
+	struct token {
+		token_type type;
+
+		friend auto operator==(token_type left, token right) {
+			return left == right.type;
+		}
+
+		union {
+			utility::string_view* identifier;
+			imm immediate;
+		};
+	};
+
+	struct token_buffer {
+		void print();
+		auto operator[](u64 i) -> token;
+
+		utility::dynamic_array<token> value;
+	};
+
 	auto is_mask_broadcast(mask_type mask) -> bool;
 
 	auto mask_to_k(mask_type mask) -> u8;
@@ -321,6 +343,9 @@ namespace baremetal {
 
 	class assembler_lexer {
 	public:
+		assembler_lexer(const utility::dynamic_string& text);
+		assembler_lexer() = default;
+
 		struct safepoint {
 			char current_char;
 			u64 index;
@@ -355,6 +380,7 @@ namespace baremetal {
 	};
 
 	auto token_to_data_type(token_type token) -> data_type;
+	auto token_to_string(token_type token) -> const char*;
 	auto token_to_register(token_type token) -> reg;
 
 	auto string_to_token(const utility::dynamic_string& str) -> token_type;

@@ -1,4 +1,7 @@
 #include "assembler_backend.h"
+#include "assembler/instruction/instruction.h"
+#include "assembler/instruction/operands/operands.h"
+#include "utility/types.h"
 
 #include <utility/algorithms/sort.h>
 
@@ -30,6 +33,7 @@ namespace baremetal {
 				case OP_AX:  return b == OP_AX  || b == OP_DX  || b == OP_R16; // 16 bits
 				case OP_EAX: return b == OP_EAX || b == OP_ECX || b == OP_R32; // 32 bits
 				case OP_RAX: return b == OP_RAX || b == OP_RCX || b == OP_R64; // 64 bits
+				case OP_REL_UNKNOWN: return is_operand_rip_rel(b);
 				default: return a == b; // regular compares
 			}
 		}
@@ -147,12 +151,62 @@ namespace baremetal {
 		return m_module;
 	}
 
+	auto assembler_backend::find_direct(u32 index, const operand* operands) -> const instruction* {
+		const instruction& first = instruction_db[index];
+		u8 operand_count = 0;
+
+		for(operand_count = 0; operand_count< 4; ++operand_count) {
+			// utility::console::print("is {}\n", operand_type_to_string(operands[operand_count].type));
+			if(operands[operand_count].type == OP_NONE) {
+				break;
+			}
+		}
+
+		// utility::console::print("enter\n");
+
+		while(utility::compare_strings(first.name, instruction_db[index].name) == 0) {
+			// utility::console::print("iter\n");
+			const instruction& other = instruction_db[index++];
+
+			if(operand_count != other.operand_count) {
+				// utility::console::print("{}\n", operand_count);
+				continue;
+			}
+
+			for(u8 i = 0; i < operand_count; ++i) {
+				if(other.operands[i] != operands[i].type) {
+					// utility::console::print("{} vs {}\n", operand_type_to_string(other.operands[i]), operand_type_to_string(operands[i].type));
+					goto end;
+				}
+			}
+
+			return &other;
+
+	end:
+			continue;
+		}
+
+
+		ASSERT(false, "invalid instruction match");
+		return nullptr;
+	}
+
+	auto is_symbollic(const operand* operands) -> bool {
+		for(u8 i = 0; i < 4; ++i) {
+			if(operands[i].type == OP_REL_UNKNOWN) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	auto assembler_backend::find_optimized_instruction(u32 index, const operand* operands)  -> const instruction* {
 		u8 imm_index = utility::limits<u8>::max();
 
 		// locate the first immediate operand
 		for(u8 i = 0; i < 4; ++i) {
-			if(is_operand_imm(operands[i].type)) {
+			if(is_operand_imm(operands[i].type) || operands[i].type == OP_REL_UNKNOWN) {
 				imm_index = i;
 				break;
 			}
@@ -223,8 +277,10 @@ namespace baremetal {
 			legal_variants.push_back(&instruction_db[current_index++]);
 		}
 
+
 		// one legal variant
 		if(legal_variants.get_size() == 1) {
+			current_variants.push_back(legal_variants[0]->operands[imm_index]);
 			return legal_variants[0];
 		}
 
@@ -238,6 +294,15 @@ namespace baremetal {
 
 			return a_width < b_width;
 		});
+
+		for(const auto& inst : legal_variants) {
+			current_variants.push_back(inst->operands[imm_index]);
+		}
+
+		if(is_symbollic(operands)) {
+			// largest legal variant - pessimistic 
+			return legal_variants[legal_variants.get_size() - 1];
+		}
 
 		// multiple legal variants, determine the best one (since our data is sorted from smallest
 		// source operands to largest, we can exit as soon as we get a valid match)
@@ -268,13 +333,17 @@ namespace baremetal {
 	auto assembler_backend::is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool {
 		const u8 operand_count = instruction_db[a].operand_count - 1;
 
+		if(utility::compare_strings(instruction_db[a].name, instruction_db[b].name) != 0) {
+			return false;
+		}
+
 		for(u8 i = 0; i < operand_count; ++i) {
 			if(!detail::is_operand_of_same_kind(instruction_db[a].operands[i], instruction_db[b].operands[i])) {
 				return false;
 			}
 		}
 
-		return is_operand_imm(instruction_db[b].operands[imm_index]);
+		return is_operand_imm(instruction_db[b].operands[imm_index]) || is_operand_rel(instruction_db[b].operands[imm_index]);
 	}
 
 	void assembler_backend::emit_instruction_prefix(const instruction* inst) {
@@ -1682,8 +1751,8 @@ namespace baremetal {
 					emit_data_operand(0, operand_size);
 				}
 				else {
-					const i32 new_displacement = operands[i].relocation.value - (get_current_inst_size() + operand_size / 8);
-					emit_data_operand(new_displacement, operand_size);
+					// const i32 new_displacement = operands[i].relocation.value - (get_current_inst_size() + operand_size / 8);
+					emit_data_operand(operands[i].immediate.value, operand_size);
 				}
 			}
 			else if(is_operand_mem(current)) {

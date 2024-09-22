@@ -41,16 +41,20 @@ namespace baremetal {
 		void clear();
 		[[nodiscard]] auto get_bytes() const -> utility::dynamic_array<u8>;
 
+		static auto find_direct(u32 index, const operand* operands) -> const instruction*;
+
 		void emit_instruction(u32 index, const operand* operands);
 		void emit_instruction_direct(const instruction* inst, const operand* operands);
 
 		void push_byte(u8 value);
 		void push_data(u64 value, u8 count);
 		auto get_module() -> module&;
+
+		utility::dynamic_array<operand_type> current_variants;
 	private:
 		// instruction emission
 		auto find_optimized_instruction(u32 index, const operand* operands) -> const instruction*;
-		auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
+		static auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
 		void emit_instruction_prefix(const instruction* inst);
 		void instruction_begin(const operand* operands);
 
