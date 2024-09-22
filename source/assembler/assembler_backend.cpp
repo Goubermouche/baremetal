@@ -128,6 +128,14 @@ namespace baremetal {
 		return m_module.emit_binary();
 	}
 
+	auto assembler_backend::get_instruction_size(u32 index, const operand* operands) -> u8 {
+		assembler_context temp;
+		assembler_backend backend(&temp);
+
+		backend.emit_instruction_direct(assembler_backend::find_direct(index, operands), operands);
+
+		return backend.get_module().get_size_current_section();
+	}
 	void assembler_backend::emit_instruction(u32 index, const operand* operands) {
 		// locate the actual instruction we want to assemble (this doesn't have to match the specified
 		// index, since we can apply optimizations which focus on stuff like shorter encodings)

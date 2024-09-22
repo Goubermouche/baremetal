@@ -1,5 +1,5 @@
 #pragma once
-#include "assembler/assembler_backend.h"
+#include "assembler/instruction/operands/operands.h"
 #include "assembler/assembler_lexer.h"
 #include "assembler/context.h"
 
@@ -7,68 +7,53 @@
 #include <utility/result.h>
 
 namespace baremetal {
-	struct unresolved {
-		unresolved() = default;
-		unresolved(utility::dynamic_array<operand_type> v, u8 vari, u8 s, u32 pos, u32 i, operand* ops, u8 opc) {
-			variants = v;
-			variant_index = vari;
-			size = s;
-			position = pos;
-			index = i;
-			operand_count = opc;
-			
-			for(u8 i = 0; i < 4; i++) {
-				operands[i] = ops[i];
-			}
-		}
-
-		u8 size;
-		u32 position;
-
-		utility::dynamic_array<operand_type> variants;
-		u8 variant_index;
-
+	struct unresolved_subsection {
 		// instruction
-		u32 index;
-		operand operands[4];
+		u32 index;           // refers to the fist valid instruction variant in the instruction database
+		operand operands[4]; // operands extracted by the parser
 		u8 operand_count;
+
+		// updated by the resolve_symbols() function, on creation it should contain the pessimistic
+		// (worst case) values, ie. the longest possbile encoding
+		u64 position; // current position of the instruction
+		u8 size;      // current size of the instruction
+
+		utility::dynamic_array<operand_type> variants; // valid variants of the provided instruction;
+		u8 unresolved_operand;                         // index of the unresolved operand
 	};
 
-	enum patch_type : u8 {
-		PATCH_NORMAL,
-		PATCH_FIXUP
+	enum subsection_type : u8 {
+		SS_NONE = 0,
+		SS_NORMAL,
+		SS_FIXUP
 	};
 
-	struct unresolved_patch {
-		u64 index;
-	};
-
-	struct resolved_patch {
-		u8* data;
-		u64 size;
-	};
-
-	struct patch {
-		patch(patch_type t) : type(t) {}
-
-
-		
-		patch_type type;
+	struct subsection {
+		subsection_type type;
 
 		union {
-			resolved_patch   res;
-			unresolved_patch unres;
+			struct {
+				u8* data;
+				u64 size;	
+			} resolved;     // regular section, with assembled code
+			u64 unresolved; // index into m_unresolved, references an instrucion with unresolved operands
 		};
 	};
 
 	class assembler {
 	public:
-		auto assemble(const utility::dynamic_string& source) -> utility::result<void>;
+		struct module {
+			utility::dynamic_array<u8> bytes;	
+		};
+
+		auto assemble(const utility::dynamic_string& source) -> utility::result<assembler::module>;
 	private:
 		auto tokenize(const utility::dynamic_string& source) -> utility::result<void>;
-		auto parse_first_pass() -> utility::result<void>;
-		auto parse_second_pass() -> utility::result<void>;
+		auto emit_module() -> utility::result<assembler::module>;
+		auto resolve_symbols() -> utility::result<void>;
+		auto parse() -> utility::result<void>;
 
+		// parsing
 		auto parse_instruction() -> utility::result<void>;
 		auto parse_identifier() -> utility::result<void>;
 		auto parse_label() -> utility::result<void>;
@@ -76,28 +61,37 @@ namespace baremetal {
 		auto parse_bits() -> utility::result<void>;
 		
 		auto parse_identifier_operand() -> utility::result<void>;
-
 		auto get_next_token() -> token;
+	private:
+		void recalculate_symbol_positions(u64 position, i32 diff);
+		void create_normal_subsection();
 	private:
 		assembler_context m_context;
 
+		// parsing
+		utility::string_view* m_current_identifier;
 		token_buffer m_tokens;
 		token m_current_token;
 		u64 m_token_index;
 
-		utility::string_view* m_current_identifier;
-
+		// instruction parsing
 		operand m_operands[4];
-		bool m_symbollic_operand;
+		bool m_symbolic_operand;
 		u8 m_operand_i;
 
-		u64 m_instruction_offset = 0;
-
+		// symbol table
 		utility::map<utility::string_view*, u64> m_symbols;
-		utility::dynamic_array<unresolved> m_unresolved;
 
+		// list of instructions with unresolved operands
+		utility::dynamic_array<unresolved_subsection> m_unresolved; 
+
+		// temporary array with bytes representing resolved instructions
 		utility::dynamic_array<u8> m_current_resolved;
-		utility::dynamic_array<patch> m_patches;
+
+		// list of subsections which is concatenated during emission
+		utility::dynamic_array<subsection> m_subsections; 
+
+		u64 m_instruction_offset = 0;
 	};
 } // namespace baremetal
 

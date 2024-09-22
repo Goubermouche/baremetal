@@ -117,6 +117,9 @@ namespace detail {
 			if(result.has_error()) {
 				utility::console::print_err("error: {}\n", result.get_error());
 			}
+			else {
+				utility::console::print("{}\n", bytes_to_string(result.get_value().bytes));
+			}
 
 		// 	// locate the 'expect' directive
 		// 	u64 expected_pos = test_text.find("expect:");

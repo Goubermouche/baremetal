@@ -1,7 +1,6 @@
 #include "assembler.h"
 #include "assembler/assembler_lexer.h"
 #include "assembler/assembler_parser.h"
-#include "utility/system/console.h"
 
 #include <utility/containers/dynamic_array.h>
 
@@ -14,24 +13,6 @@
   while(false)
 
 namespace baremetal {
-	auto get_symbol(const operand* operands) -> utility::string_view* {
-		for(u8 i = 0; i < 4; ++i) {
-			if(operands[i].type == OP_REL_UNKNOWN) {
-				return operands[i].symbol;
-			}
-		}
-
-		return nullptr;
-	}
-
-	auto get_inst_size(u32 index, operand* operands) -> std::pair<u8, utility::dynamic_array<operand_type>> {
-		assembler_context context;
-		assembler_backend backend(&context);
-		backend.emit_instruction_direct(assembler_backend::find_direct(index, operands), operands);
-
-		return { backend.get_module().get_size_current_section(), backend.current_variants };
-	}
-
 	auto fits_into_type(i64 value, operand_type type) -> bool {
 		switch(type) {
 			case OP_REL8:
@@ -44,153 +25,128 @@ namespace baremetal {
 		return false;
 	}
 
-	auto bytes_to_string(const utility::dynamic_array<u8>& bytes) -> utility::dynamic_string {
-		utility::dynamic_string result;
-		result.reserve(bytes.get_size() * 2);
+	auto assembler::assemble(const utility::dynamic_string& source) -> utility::result<assembler::module> {
+		TRY(tokenize(source));  // generate the token stream
+		TRY(parse());           // generate the symbol table and unresolved list
+		TRY(resolve_symbols()); // resolve symbols locations
 
-		constexpr char digits[] = "0123456789abcdef";
-
-		for(u64 i = 0; i < bytes.get_size(); ++i) {
-			const u8 value = bytes[i];
-			result += (digits[(value >> 4) & 0x0F]);
-			result += (digits[value & 0x0F]);
-		}
-
-		return result;
+		return emit_module();
 	}
 
-	auto bytes_to_string(const u8* bytes, u64 size) -> utility::dynamic_string {
-		utility::dynamic_string result;
-		result.reserve(size * 2);
+	auto assembler::emit_module() -> utility::result<assembler::module> {
+		utility::dynamic_array<u8> bytes;
+		u64 total_size = 0;
 
-		constexpr char digits[] = "0123456789abcdef";
-
-		for(u64 i = 0; i < size; ++i) {
-			const u8 value = bytes[i];
-			result += (digits[(value >> 4) & 0x0F]);
-			result += (digits[value & 0x0F]);
-		}
-
-		return result;
-	}
-
-	auto assembler::assemble(const utility::dynamic_string& source) -> utility::result<void> {
-		TRY(tokenize(source));    // generate the token stream
-		
-		m_tokens.print();
-
-		TRY(parse_first_pass());  // generate the symbol table and unresolved list
-
-		bool change = true;
-
-		utility::console::print("AVAILABLE VARIANTS:\n");
-
-		for(const auto& resolved : m_unresolved) {
-			utility::console::print("\{ ");
- 
-			for(const auto t : resolved.variants) {
-				utility::console::print("{}, ", operand_type_to_string(t));
+		// calculate the total section size
+		for(const subsection& subsection : m_subsections) {
+			if(subsection.type == SS_NORMAL) {
+				total_size += subsection.resolved.size;
 			}
-
-			utility::console::print("}\n");
+			else {
+				total_size += m_unresolved[subsection.unresolved].size;
+			}
 		}
+
+		bytes.reserve(total_size);
+
+		// emit our subsections
+		for(const subsection& subsection : m_subsections) {
+			if(subsection.type == SS_NORMAL) {
+				const u8* data = subsection.resolved.data;
+				bytes.insert(bytes.end(), data, data + subsection.resolved.size);
+			}
+			else {
+				unresolved_subsection unresolved = m_unresolved[subsection.unresolved];
+				assembler_backend backend(&m_context);
+
+				// calculate the offset operand
+				const operand unresolved_operand = unresolved.operands[unresolved.unresolved_operand];
+				const i64 value = m_symbols[unresolved_operand.symbol] - (unresolved.position + unresolved.size);
+				operand* operands = unresolved.operands;
+
+				operands[unresolved.unresolved_operand].immediate = imm(value);
+
+				// emit the instruction with our exact operands
+				backend.emit_instruction_direct(assembler_backend::find_direct(unresolved.index, operands), operands);
+
+				// TODO: directly emit bytes
+				auto temp = backend.get_bytes();
+				bytes.insert(bytes.end(), temp.begin(), temp.end());
+			}
+		}
+
+		return assembler::module{ .bytes = bytes };
+	}
+
+	auto assembler::resolve_symbols() -> utility::result<void> {
+		// TODO: verify whether a symbol actually exists
+		bool change = true;
 
 		while(change) {
 			change = false;
 
-			utility::console::print("----------------------------------------------\n");
-			utility::console::print("SYMBOL TABLE:\n");
-			for(const auto& [name, position] : m_symbols) {
-				utility::console::print("SYMBOL: '{}' {}\n", *name, position);
-			}
-
-			// resolve symbollic dependencies
-			for(auto& current : m_unresolved) {
-				if(current.variants.get_size() == 1) {
+			// optimize symbol references, try to use the smallest possible operand
+			for(unresolved_subsection& current : m_unresolved) {
+				if(current.variants.is_empty()) {
+					// this element is already as optimized as it can be 
 					continue;
 				}
 
-				utility::string_view* symbol = get_symbol(current.operands);
-				const auto it = m_symbols.find(symbol);
+				const u64 symbol_position = m_symbols.at(current.operands[current.unresolved_operand].symbol);
+				const i64 distance = symbol_position - current.position + current.size;
+				const operand_type new_type = current.variants.get_last();
 
-				u64 symbol_position = it->second;
-				i64 distance = symbol_position - current.position + current.size;
-				auto next_closest = current.variants[current.variants.get_size() - 2];
+				if(!fits_into_type(distance, new_type)) {
+					// we can't use a smaller operand, no optimization possible in this iteration
+					continue;
+				}
 
-				utility::console::print("TEST {}\n", operand_type_to_string(next_closest));
+				// use the next smallest operand instead
+				current.operands[current.unresolved_operand].type = new_type;
+				u8 new_size = assembler_backend::get_instruction_size(current.index, current.operands);
 
-				if(fits_into_type(distance, next_closest)) {
-					current.variants.pop_back();
-				
-					operand operands[4] = {};
+				// update our symbol table to account for the difference in code length
+				recalculate_symbol_positions(current.position, current.size - new_size);
 
-					for(u8 i = 0; i < current.operand_count; ++i) {
-						operands[i] = current.operands[i];
-					}
+				current.variants.pop_back();
+				current.size = new_size;
 
-					operands[current.variant_index].type = next_closest;
-					auto res = get_inst_size(current.index, operands);
+				change = true;
 
-					i32 diff = current.size - res.first;
-					utility::console::print("GO SMALLER {} -> {} ({}, dist: {})\n", current.size, res.first, diff, distance);
-
-					// update symbols which have been defined after this instruction
-					for(auto& [name, position] : m_symbols) {
-						if(position > current.position) {
-							position -= diff;
-							// utility::console::print("  MOVE UP {}\n", *name);
-						}	
-					}
-
-					// same with unresolved instructions, move them up
-					for(auto& u : m_unresolved) {
-						if(u.position > current.position) {
-							u.position -= diff;
-							utility::console::print("  MOVE UP\n");
-						}
-					}
-
-					current.size = res.first;
-					change = true;
-					break;
-				}	
-				
-				utility::console::print("UNRESOLVED: '{}' dist: {}\n", *symbol, distance);
+				// TODO: investigate whether it's better to break immediately or continue
+				break;
 			}
 		}
-
-		// final printout
-		for(const auto& resolved : m_unresolved) {
-			utility::console::print("using {}\n", operand_type_to_string(resolved.variants.get_last()));
-		}
-
-		utility::console::print("----------------------------------------------\n");
-		utility::console::print("final: {} patches\n", m_patches.get_size());
-
-		for(const patch& patch : m_patches) {
-			if(patch.type == PATCH_NORMAL) {
-				utility::console::print(bytes_to_string(patch.res.data, patch.res.size));
-			}
-			else {
-				unresolved unres = m_unresolved[patch.unres.index];
-
-				assembler_context context;
-				assembler_backend backend(&context);
-
-				auto operand = unres.operands[unres.variant_index];
-				i64 value = m_symbols[operand.symbol] - (unres.position + unres.size);
-				
-				unres.operands[unres.variant_index] = imm(value);
-				unres.operands[unres.variant_index].type = unres.variants.get_last();
-				backend.emit_instruction_direct(assembler_backend::find_direct(unres.index, unres.operands), unres.operands);
-
-				utility::console::print(bytes_to_string(backend.get_bytes()));
-			}
-		}
-
-		utility::console::print("\n");
 
 		return SUCCESS;
+	}
+
+	void assembler::recalculate_symbol_positions(u64 position, i32 diff) {
+		// move all symbols and unresolved instructions which are located past the specified position by diff bytes
+		for(auto& [name, pos] : m_symbols) {
+			if(pos > position) {
+				pos -= diff;
+			}	
+		}
+
+		for(auto& u : m_unresolved) {
+			if(u.position > position) {
+				u.position -= diff;
+			}
+		}	
+	}
+
+	void assembler::create_normal_subsection() {
+		if(!m_current_resolved.is_empty()) {
+			subsection p;
+			p.type = SS_NORMAL;
+			p.resolved.size = m_current_resolved.get_size();
+			p.resolved.data = static_cast<u8*>(m_context.allocator.allocate(m_current_resolved.get_size()));
+			utility::memcpy(p.resolved.data, m_current_resolved.get_data(), m_current_resolved.get_size());
+
+			m_subsections.push_back(p);
+			m_current_resolved.clear();
+		}
 	}
 
 	auto assembler::tokenize(const utility::dynamic_string& source) -> utility::result<void> {
@@ -213,7 +169,7 @@ namespace baremetal {
 		return SUCCESS;
 	}
 
-	auto assembler::parse_first_pass() -> utility::result<void> {
+	auto assembler::parse() -> utility::result<void> {
 		m_token_index = 0;
 
 		while(get_next_token() != TOK_EOF) {
@@ -226,22 +182,8 @@ namespace baremetal {
 			}	
 		}
 
-		if(!m_current_resolved.is_empty()) {
-			patch p(PATCH_NORMAL);
-
-			p.res.size = m_current_resolved.get_size();
-			p.res.data = static_cast<u8*>(m_context.allocator.allocate(m_current_resolved.get_size()));
-			utility::memcpy(p.res.data, m_current_resolved.get_data(), m_current_resolved.get_size());
-
-			m_patches.push_back(p);
-			m_current_resolved.clear();
-		}
-
-		return SUCCESS;	
-	}
-
-	auto assembler::parse_second_pass() -> utility::result<void> {
-		return SUCCESS;	
+		create_normal_subsection(); // capture any trailing instructions
+		return SUCCESS;
 	}
 
 	auto assembler::parse_instruction() -> utility::result<void> {
@@ -255,7 +197,7 @@ namespace baremetal {
 
 		// ensure our destination is clean
 		utility::memset(m_operands, 0, sizeof(operand) * 4);
-		m_symbollic_operand = false;
+		m_symbolic_operand = false;
 		m_operand_i = 0;
 
 		while(m_current_token != TOK_EOF && m_current_token != TOK_NEWLINE) {
@@ -302,35 +244,41 @@ namespace baremetal {
 				}
 
 				// HACK: assemble the instruction and use that as the length
+				// TODO: cleanup
+				assembler_backend backend(&m_context);
 
-				assembler_context context;
-				assembler_backend backend(&context);
 				backend.emit_instruction(index, m_operands);
 
 				u8 size = backend.get_module().get_size_current_section();
-				utility::console::print("[PASS 1]: parsing instruction '{}'  {}\n", *m_current_identifier, m_instruction_offset);
 
-				if(m_symbollic_operand) {
-					if(!m_current_resolved.is_empty()) {
-						utility::console::print("here\n");
-						patch p(PATCH_NORMAL);
+				if(m_symbolic_operand) {
+					// append all of our relative instructions which we've encountered before this one
+					create_normal_subsection();
 
-						p.res.size = m_current_resolved.get_size();
-						p.res.data = static_cast<u8*>(m_context.allocator.allocate(m_current_resolved.get_size()));
-						utility::memcpy(p.res.data, m_current_resolved.get_data(), m_current_resolved.get_size());
+					// create the fixup subsection for the current instruction
+					subsection fixup {
+						.type = SS_FIXUP,
+						.unresolved = m_unresolved.get_size()
+					};
 
-						utility::console::print("here\n");
-						m_patches.push_back(p);
-						utility::console::print("here\n");
-						m_current_resolved.clear();
-						utility::console::print("here\n");
-					}
+					// remove the last potential variant (the largest one), and use it as our operand, this will
+					// most likely be optimized out by the resolve_symbols() function
+					m_operands[variant_index].type = backend.current_variants.pop_back();
 
-					patch p(PATCH_FIXUP);
-					p.unres.index = m_unresolved.get_size();
-					m_patches.push_back(p);
+					// create the actual subsection the fixup points to
+					unresolved_subsection unresolved = {
+						.index = index,
+						.operand_count = m_operand_i,
+						.position = m_instruction_offset,
+						.size = size,
+						.variants = backend.current_variants,
+						.unresolved_operand = variant_index
+					};
 
-					m_unresolved.emplace_back(backend.current_variants, variant_index, size, m_instruction_offset, index, m_operands, m_operand_i);
+					utility::memcpy(unresolved.operands, m_operands, 4 * sizeof(operand));
+					
+					m_unresolved.push_back(unresolved);
+					m_subsections.push_back(fixup);
 				}
 				else {
 					auto binary = backend.get_module().emit_binary();
@@ -349,11 +297,11 @@ namespace baremetal {
 	}
 
 	auto assembler::parse_identifier_operand() -> utility::result<void> {
-		// utility::console::print("[PASS 1]: symbollic operand '{}'\n", *m_current_token.identifier);
+		// utility::console::print("[PASS 1]: symbolic operand '{}'\n", *m_current_token.identifier);
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
 		m_operands[m_operand_i++] = operand(m_current_token.identifier); 
-		m_symbollic_operand = true;
+		m_symbolic_operand = true;
 		return SUCCESS;
 	}
 
@@ -373,7 +321,6 @@ namespace baremetal {
 		
 	auto assembler::parse_label() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_COLON);
-		utility::console::print("[PASS 1]: parsing label   '{}'  {}\n", *m_current_identifier, m_instruction_offset);
 		m_symbols.insert({ m_current_identifier, m_instruction_offset });
 		return SUCCESS;
 	}
