@@ -100,7 +100,7 @@ namespace detail {
 		info.begin_test();
 
 		for(const auto& test : tests) {
-			if(test.get_string().find("labels_2") == utility::dynamic_string::invalid_pos) {
+			if(test.get_string().find("labels_4") == utility::dynamic_string::invalid_pos) {
 				continue;
 			}
 

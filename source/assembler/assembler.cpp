@@ -25,6 +25,14 @@ namespace baremetal {
 		return false;
 	}
 
+	assembler::assembler() : m_section_index(0) {
+		section text {
+			.name = m_context.strings.add("text"),
+		};
+
+		m_sections.push_back(text);
+	}
+
 	auto assembler::assemble(const utility::dynamic_string& source) -> utility::result<assembler::module> {
 		TRY(tokenize(source));  // generate the token stream
 		TRY(parse());           // generate the symbol table and unresolved list
@@ -34,44 +42,72 @@ namespace baremetal {
 	}
 
 	auto assembler::emit_module() -> utility::result<assembler::module> {
+		utility::dynamic_array<relocation> relocations;
 		utility::dynamic_array<u8> bytes;
 		u64 total_size = 0;
 
 		// calculate the total section size
-		for(const subsection& subsection : m_subsections) {
-			if(subsection.type == SS_NORMAL) {
-				total_size += subsection.resolved.size;
-			}
-			else {
-				total_size += m_unresolved[subsection.unresolved].size;
+		for(section& section : m_sections) {
+			// alignment
+			total_size += utility::align(total_size, 4) - total_size;
+			section.position = total_size;
+
+			for(const subsection& subsection : section.subsections) {
+				if(subsection.type == SS_NORMAL) {
+					total_size += subsection.resolved.size;
+				}
+				else {
+					total_size += section.unresolved[subsection.unresolved].size;
+				}
 			}
 		}
 
 		bytes.reserve(total_size);
 
-		// emit our subsections
-		for(const subsection& subsection : m_subsections) {
-			if(subsection.type == SS_NORMAL) {
-				const u8* data = subsection.resolved.data;
-				bytes.insert(bytes.end(), data, data + subsection.resolved.size);
+		for(const section& section : m_sections) {
+			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size(); 
+
+			for(u64 i = 0; i < alignment_offset; ++i) {
+				bytes.push_back(0);
 			}
-			else {
-				unresolved_subsection unresolved = m_unresolved[subsection.unresolved];
-				assembler_backend backend(&m_context);
 
-				// calculate the offset operand
-				const operand unresolved_operand = unresolved.operands[unresolved.unresolved_operand];
-				const i64 value = m_symbols[unresolved_operand.symbol] - (unresolved.position + unresolved.size);
-				operand* operands = unresolved.operands;
+			for(const subsection& subsection : section.subsections) {
+				if(subsection.type == SS_NORMAL) {
+					const u8* data = subsection.resolved.data;
+					bytes.insert(bytes.end(), data, data + subsection.resolved.size);
+				}
+				else {
+					unresolved_subsection unresolved = section.unresolved[subsection.unresolved];
+					assembler_backend backend(&m_context);
 
-				operands[unresolved.unresolved_operand].immediate = imm(value);
+					// calculate the offset operand
+					const operand unresolved_operand = unresolved.operands[unresolved.unresolved_operand];
+					const symbol symbol = m_symbols[unresolved_operand.symbol];
 
-				// emit the instruction with our exact operands
-				backend.emit_instruction_direct(assembler_backend::find_direct(unresolved.index, operands), operands);
+					i64 value;
 
-				// TODO: directly emit bytes
-				auto temp = backend.get_bytes();
-				bytes.insert(bytes.end(), temp.begin(), temp.end());
+					if(symbol.section != section.name) {
+						// references a symbol in a different section
+						struct section* other_section = find_section(symbol.section);
+						ASSERT(other_section, "invalid or corrupted sections\n");
+
+						value = (symbol.position + other_section->position) - (section.position + unresolved.position + unresolved.size);
+					}
+					else {
+						// references a symbol in the same section
+						value = symbol.position - (unresolved.position + unresolved.size);
+					}
+
+					operand* operands = unresolved.operands;
+					operands[unresolved.unresolved_operand].immediate = imm(value);
+
+					// emit the instruction with our exact operands
+					backend.emit_instruction_direct(assembler_backend::find_direct(unresolved.index, operands), operands);
+
+					// TODO: directly emit bytes
+					auto temp = backend.get_bytes();
+					bytes.insert(bytes.end(), temp.begin(), temp.end());
+				}
 			}
 		}
 
@@ -82,54 +118,70 @@ namespace baremetal {
 		// TODO: verify whether a symbol actually exists
 		bool change = true;
 
+		// for(const auto& [name, symbol] : m_symbols) {
+		// 	utility::console::print("{} ({}): {}\n", *name, *symbol.section, symbol.position);
+		// }
+
 		while(change) {
 			change = false;
 
-			// optimize symbol references, try to use the smallest possible operand
-			for(unresolved_subsection& current : m_unresolved) {
-				if(current.variants.is_empty()) {
-					// this element is already as optimized as it can be 
-					continue;
+			for(section& section : m_sections) {
+				// optimize symbol references, try to use the smallest possible operand
+				for(unresolved_subsection& current : section.unresolved) {
+					if(current.variants.is_empty()) {
+						// this element is already as optimized as it can be 
+						continue;
+					}
+
+					const symbol symbol = m_symbols.at(current.operands[current.unresolved_operand].symbol);
+					const i64 distance = symbol.position - current.position + current.size;
+					const operand_type new_type = current.variants.get_last();
+
+					if(symbol.section != section.name) {
+						// skip symbols which aren't in this section, since we can't optimize them
+						continue;
+					}
+
+
+					if(!fits_into_type(distance, new_type)) {
+						// we can't use a smaller operand, no optimization possible in this iteration
+						continue;
+					}
+
+					// use the next smallest operand instead
+					current.operands[current.unresolved_operand].type = new_type;
+					u8 new_size = assembler_backend::get_instruction_size(current.index, current.operands);
+
+					// update our symbol table to account for the difference in code length
+					section.recalculate_symbol_positions(current.position, current.size - new_size, m_symbols);
+
+					current.variants.pop_back();
+					current.size = new_size;
+
+					change = true;
+
+					// TODO: investigate whether it's better to break immediately or continue
+					break;
 				}
-
-				const u64 symbol_position = m_symbols.at(current.operands[current.unresolved_operand].symbol);
-				const i64 distance = symbol_position - current.position + current.size;
-				const operand_type new_type = current.variants.get_last();
-
-				if(!fits_into_type(distance, new_type)) {
-					// we can't use a smaller operand, no optimization possible in this iteration
-					continue;
-				}
-
-				// use the next smallest operand instead
-				current.operands[current.unresolved_operand].type = new_type;
-				u8 new_size = assembler_backend::get_instruction_size(current.index, current.operands);
-
-				// update our symbol table to account for the difference in code length
-				recalculate_symbol_positions(current.position, current.size - new_size);
-
-				current.variants.pop_back();
-				current.size = new_size;
-
-				change = true;
-
-				// TODO: investigate whether it's better to break immediately or continue
-				break;
 			}
 		}
+
+		//for(const auto& [name, symbol] : m_symbols) {
+		//	utility::console::print("{} ({}): {}\n", *name, *symbol.section, symbol.position);
+		//}
 
 		return SUCCESS;
 	}
 
-	void assembler::recalculate_symbol_positions(u64 position, i32 diff) {
+	void section::recalculate_symbol_positions(u64 position, i32 diff, utility::map<utility::string_view*, symbol>& symbols) {
 		// move all symbols and unresolved instructions which are located past the specified position by diff bytes
-		for(auto& [name, pos] : m_symbols) {
-			if(pos > position) {
-				pos -= diff;
+		for(auto& [sym_name, sym] : symbols) {
+			if(sym.section == name && sym.position > position) {
+				sym.position -= diff;
 			}	
 		}
 
-		for(auto& u : m_unresolved) {
+		for(auto& u : unresolved) {
 			if(u.position > position) {
 				u.position -= diff;
 			}
@@ -144,9 +196,33 @@ namespace baremetal {
 			p.resolved.data = static_cast<u8*>(m_context.allocator.allocate(m_current_resolved.get_size()));
 			utility::memcpy(p.resolved.data, m_current_resolved.get_data(), m_current_resolved.get_size());
 
-			m_subsections.push_back(p);
+			m_sections[m_section_index].subsections.push_back(p);
 			m_current_resolved.clear();
 		}
+	}
+
+	auto assembler::find_section(utility::string_view* name) -> section* {
+		for(section& sec : m_sections) {
+			if(sec.name == name) {
+				return &sec;
+			}
+		}
+
+		return nullptr;
+	}
+
+	void assembler::set_section(utility::string_view* name) {
+		for(u64 i = 0; i < m_sections.get_size(); ++i) {
+			if(m_sections[i].name == name) {
+				m_section_index = i;
+				return;
+			}
+		}
+
+		m_section_index = m_sections.get_size();
+		m_sections.push_back(section{
+			.name = name,
+		});
 	}
 
 	auto assembler::tokenize(const utility::dynamic_string& source) -> utility::result<void> {
@@ -175,6 +251,7 @@ namespace baremetal {
 		while(get_next_token() != TOK_EOF) {
 			switch(m_current_token.type) {
 				case TOK_IDENTIFIER: TRY(parse_identifier()); break;
+				case TOK_SECTION:    TRY(parse_section()); break;
 				case TOK_TIMES:      TRY(parse_times()); break;
 				case TOK_BITS:       TRY(parse_bits()); break;
 				case TOK_NEWLINE:    break;
@@ -251,14 +328,16 @@ namespace baremetal {
 
 				u8 size = backend.get_module().get_size_current_section();
 
+				section& parent = m_sections[m_section_index];
 				if(m_symbolic_operand) {
 					// append all of our relative instructions which we've encountered before this one
 					create_normal_subsection();
 
+
 					// create the fixup subsection for the current instruction
 					subsection fixup {
 						.type = SS_FIXUP,
-						.unresolved = m_unresolved.get_size()
+						.unresolved = parent.unresolved.get_size()
 					};
 
 					// remove the last potential variant (the largest one), and use it as our operand, this will
@@ -269,7 +348,7 @@ namespace baremetal {
 					unresolved_subsection unresolved = {
 						.index = index,
 						.operand_count = m_operand_i,
-						.position = m_instruction_offset,
+						.position = parent.offset,
 						.size = size,
 						.variants = backend.current_variants,
 						.unresolved_operand = variant_index
@@ -277,15 +356,15 @@ namespace baremetal {
 
 					utility::memcpy(unresolved.operands, m_operands, 4 * sizeof(operand));
 					
-					m_unresolved.push_back(unresolved);
-					m_subsections.push_back(fixup);
+					parent.unresolved.push_back(unresolved);
+					parent.subsections.push_back(fixup);
 				}
 				else {
 					auto binary = backend.get_module().emit_binary();
 					m_current_resolved.insert(m_current_resolved.end(), binary.begin(), binary.end());
 				}
 
-				m_instruction_offset += size;
+				parent.offset += size;
 				return SUCCESS;
 			}
 
@@ -319,9 +398,28 @@ namespace baremetal {
 		return SUCCESS;
 	}
 		
+	auto assembler::parse_section() -> utility::result<void> {
+		EXPECT_TOKEN(TOK_SECTION);
+
+		get_next_token();
+		EXPECT_TOKEN(TOK_DOT);
+
+		get_next_token();
+		EXPECT_TOKEN(TOK_IDENTIFIER);
+
+		set_section(m_current_token.identifier);
+
+		return SUCCESS;
+	}
+
 	auto assembler::parse_label() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_COLON);
-		m_symbols.insert({ m_current_identifier, m_instruction_offset });
+
+		m_symbols.insert({ m_current_identifier, symbol{
+			.position = m_sections[m_section_index].offset,
+			.section = m_sections[m_section_index].name
+		}});
+
 		return SUCCESS;
 	}
 	

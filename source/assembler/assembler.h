@@ -7,6 +7,17 @@
 #include <utility/result.h>
 
 namespace baremetal {
+	struct symbol {
+		u64 position;
+		utility::string_view* section;
+	};
+
+	struct relocation {
+		utility::string_view* symbol;
+		u64 position;
+		u8 size;
+	};
+
 	struct unresolved_subsection {
 		// instruction
 		u32 index;           // refers to the fist valid instruction variant in the instruction database
@@ -40,11 +51,26 @@ namespace baremetal {
 		};
 	};
 
+	struct section {
+		void recalculate_symbol_positions(u64 position, i32 diff, utility::map<utility::string_view*, symbol>& symbols);
+
+		utility::string_view* name;
+		u64 position = 0; // position of the entire section within the binary
+		u64 offset = 0;
+
+		// list of subsections which is concatenated during emission
+		utility::dynamic_array<subsection> subsections; 
+		// list of instructions with unresolved operands
+		utility::dynamic_array<unresolved_subsection> unresolved; 
+	};
+
 	class assembler {
 	public:
 		struct module {
 			utility::dynamic_array<u8> bytes;	
 		};
+
+		assembler();
 
 		auto assemble(const utility::dynamic_string& source) -> utility::result<assembler::module>;
 	private:
@@ -56,6 +82,7 @@ namespace baremetal {
 		// parsing
 		auto parse_instruction() -> utility::result<void>;
 		auto parse_identifier() -> utility::result<void>;
+		auto parse_section() -> utility::result<void>;
 		auto parse_label() -> utility::result<void>;
 		auto parse_times() -> utility::result<void>;
 		auto parse_bits() -> utility::result<void>;
@@ -63,8 +90,9 @@ namespace baremetal {
 		auto parse_identifier_operand() -> utility::result<void>;
 		auto get_next_token() -> token;
 	private:
-		void recalculate_symbol_positions(u64 position, i32 diff);
+		void set_section(utility::string_view* name);
 		void create_normal_subsection();
+		auto find_section(utility::string_view* name) -> section*;
 	private:
 		assembler_context m_context;
 
@@ -80,18 +108,14 @@ namespace baremetal {
 		u8 m_operand_i;
 
 		// symbol table
-		utility::map<utility::string_view*, u64> m_symbols;
-
-		// list of instructions with unresolved operands
-		utility::dynamic_array<unresolved_subsection> m_unresolved; 
+		utility::map<utility::string_view*, symbol> m_symbols;
 
 		// temporary array with bytes representing resolved instructions
 		utility::dynamic_array<u8> m_current_resolved;
 
-		// list of subsections which is concatenated during emission
-		utility::dynamic_array<subsection> m_subsections; 
-
-		u64 m_instruction_offset = 0;
+		// sections
+		utility::dynamic_array<section> m_sections;
+		u64 m_section_index;
 	};
 } // namespace baremetal
 
