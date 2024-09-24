@@ -95,55 +95,63 @@ namespace detail {
 		utility::dynamic_string hex_result;
 		utility::dynamic_string expected;
 
-		test_info info("binary", tests.get_size(), g_quiet);
+		test_info info("binary", 4, g_quiet);
 
 		info.begin_test();
 
 		for(const auto& test : tests) {
-			if(test.get_string().find("labels_4") == utility::dynamic_string::invalid_pos) {
+			hex_result.clear();
+			expected.clear();
+			test_text.clear();
+
+			if(test.get_string().find("labels") == utility::dynamic_string::invalid_pos) {
+				continue;
+			}
+			
+			test_text = utility::file::read(test);
+
+			// locate the 'expect' directive
+			u64 expected_pos = test_text.find("expect:");
+
+			if(expected_pos == utility::dynamic_string::invalid_pos) {
+				utility::console::print_err("cannot find the 'expect:' directive in test '{}'\n", test);
+				info.add_failure();
 				continue;
 			}
 
-			// test_text.clear();
-			// assembler.clear();
-			// expected.clear();
-			// assembler.clear();
+			expected_pos += 7; // move past the 'expect' directive
+			
+			// read to the end of the current line
+			while(expected_pos < test_text.get_size() && test_text[expected_pos] != '\n') {
+				expected += test_text[expected_pos++];	
+			}
 
-			test_text = utility::file::read(test);
+			expected = expected.trim();
 
 			baremetal::assembler assembler;
 			const auto result = assembler.assemble(test_text);
 
 			if(result.has_error()) {
 				utility::console::print_err("error: {}\n", result.get_error());
+				info.add_failure();
 			}
 			else {
-				utility::console::print("{}\n", bytes_to_string(result.get_value().bytes));
+				hex_result = bytes_to_string(result.get_value().bytes);
+
+				if(hex_result != expected) {
+					info.add_failure();
+					utility::console::print_err("mismatch: {} - expected '{}', but got '{}'\n", test, expected, hex_result); 
+				}
+				else {
+					info.add_success();
+				}
+				// utility::console::print("{}\n", bytes_to_string(result.get_value().bytes));
 			}
 
-		// 	// locate the 'expect' directive
-		// 	u64 expected_pos = test_text.find("expect:");
-		//
-			
 
-		//	if(expected_pos == utility::dynamic_string::invalid_pos) {
-		//		utility::console::print_err("cannot find the 'expect:' directive in test '{}'\n", test);
-		//		info.add_failure();
-		//		continue;
-		//	}
-
-		//	expected_pos += 7; // move past the 'expect' directive
-		//	
-		//	// read to the end of the current line
-		//	while(expected_pos < test_text.get_size() && test_text[expected_pos] != '\n') {
-		//		expected += test_text[expected_pos++];	
-		//	}
-
-		//	expected = expected.trim();
 
 		//	if(const auto result = assembler.parse(test_text); result.has_error()) {
 		//		utility::console::print_err("error: '{}'\n", result.get_error());
-		//		info.add_failure();
 		//	}
 		//	else {
 		//		hex_result = bytes_to_string(assembler.get_bytes()); 
@@ -158,7 +166,7 @@ namespace detail {
 		//	}
 		}
 		
-		// info.end_test();
+		info.end_test();
 	}
 } // namespace detail
 

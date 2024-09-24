@@ -64,13 +64,16 @@ namespace baremetal {
 
 		bytes.reserve(total_size);
 
+		// generate the final binary
 		for(const section& section : m_sections) {
+			// append alignment bytes for the previous section
 			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size(); 
 
 			for(u64 i = 0; i < alignment_offset; ++i) {
 				bytes.push_back(0);
 			}
 
+			// emit subsections
 			for(const subsection& subsection : section.subsections) {
 				if(subsection.type == SS_NORMAL) {
 					const u8* data = subsection.resolved.data;
@@ -82,20 +85,17 @@ namespace baremetal {
 
 					// calculate the offset operand
 					const operand unresolved_operand = unresolved.operands[unresolved.unresolved_operand];
-					const symbol symbol = m_symbols[unresolved_operand.symbol];
-
+					const auto symbol_it = section.symbols.find(unresolved_operand.symbol);
 					i64 value;
 
-					if(symbol.section != section.name) {
-						// references a symbol in a different section
-						struct section* other_section = find_section(symbol.section);
-						ASSERT(other_section, "invalid or corrupted sections\n");
-
-						value = (symbol.position + other_section->position) - (section.position + unresolved.position + unresolved.size);
+					if(symbol_it == section.symbols.end()) {
+						// references a symbol in a different section, or the symbol does not exist
+						u64 symbol_pos = get_symbol_position_global(unresolved_operand.symbol);
+						value = (symbol_pos) - (section.position + unresolved.position + unresolved.size);
 					}
 					else {
 						// references a symbol in the same section
-						value = symbol.position - (unresolved.position + unresolved.size);
+						value = symbol_it->second - (unresolved.position + unresolved.size);
 					}
 
 					operand* operands = unresolved.operands;
@@ -115,17 +115,16 @@ namespace baremetal {
 	}
 
 	auto assembler::resolve_symbols() -> utility::result<void> {
-		// TODO: verify whether a symbol actually exists
-		bool change = true;
+		for(section& section : m_sections) {
+			// TODO: verify whether a symbol actually exists
+			// TODO: investigate the speed improvements of removing completed subsections
+			bool change = true;
 
-		// for(const auto& [name, symbol] : m_symbols) {
-		// 	utility::console::print("{} ({}): {}\n", *name, *symbol.section, symbol.position);
-		// }
+			// resolve and optimize symbol references within each section (we can ignore references to other sections
+			// since we'll resolve them during emission)
+			while(change) {
+				change = false;
 
-		while(change) {
-			change = false;
-
-			for(section& section : m_sections) {
 				// optimize symbol references, try to use the smallest possible operand
 				for(unresolved_subsection& current : section.unresolved) {
 					if(current.variants.is_empty()) {
@@ -133,15 +132,16 @@ namespace baremetal {
 						continue;
 					}
 
-					const symbol symbol = m_symbols.at(current.operands[current.unresolved_operand].symbol);
-					const i64 distance = symbol.position - current.position + current.size;
-					const operand_type new_type = current.variants.get_last();
+					operand& unresolved = current.operands[current.unresolved_operand];
+					const auto symbol_it = section.symbols.find(unresolved.symbol);
 
-					if(symbol.section != section.name) {
+					if(symbol_it == section.symbols.end()) {
 						// skip symbols which aren't in this section, since we can't optimize them
 						continue;
 					}
 
+					const i64 distance = symbol_it->second - current.position + current.size;
+					const operand_type new_type = current.variants.get_last();
 
 					if(!fits_into_type(distance, new_type)) {
 						// we can't use a smaller operand, no optimization possible in this iteration
@@ -149,15 +149,14 @@ namespace baremetal {
 					}
 
 					// use the next smallest operand instead
-					current.operands[current.unresolved_operand].type = new_type;
+					unresolved.type = new_type;
 					u8 new_size = assembler_backend::get_instruction_size(current.index, current.operands);
 
 					// update our symbol table to account for the difference in code length
-					section.recalculate_symbol_positions(current.position, current.size - new_size, m_symbols);
+					section.update_positions(current.position, current.size - new_size);
 
 					current.variants.pop_back();
 					current.size = new_size;
-
 					change = true;
 
 					// TODO: investigate whether it's better to break immediately or continue
@@ -166,21 +165,19 @@ namespace baremetal {
 			}
 		}
 
-		//for(const auto& [name, symbol] : m_symbols) {
-		//	utility::console::print("{} ({}): {}\n", *name, *symbol.section, symbol.position);
-		//}
-
 		return SUCCESS;
 	}
 
-	void section::recalculate_symbol_positions(u64 position, i32 diff, utility::map<utility::string_view*, symbol>& symbols) {
+	void section::update_positions(u64 position, i32 diff) {
 		// move all symbols and unresolved instructions which are located past the specified position by diff bytes
-		for(auto& [sym_name, sym] : symbols) {
-			if(sym.section == name && sym.position > position) {
-				sym.position -= diff;
+		for(auto& [sym_name, sym_position] : symbols) {
+			if(sym_position > position) {
+				sym_position -= diff;
 			}	
 		}
 
+		// we end up moving references which point to symbols which are not within this sections, this is fine
+		// since we don't use their position in that case anyways
 		for(auto& u : unresolved) {
 			if(u.position > position) {
 				u.position -= diff;
@@ -201,14 +198,18 @@ namespace baremetal {
 		}
 	}
 
-	auto assembler::find_section(utility::string_view* name) -> section* {
-		for(section& sec : m_sections) {
-			if(sec.name == name) {
-				return &sec;
+	auto assembler::get_symbol_position_global(utility::string_view* name) -> u64 {
+		for(const section& section : m_sections) {
+			const auto it = section.symbols.find(name);
+
+			if(it != section.symbols.end()) {
+				// section position + symbol position (relative to the parent section)
+				return section.position + it->second;
 			}
 		}
 
-		return nullptr;
+		ASSERT(false, "unknown symbol '{}' specified\n", *name);
+		return 0;
 	}
 
 	void assembler::set_section(utility::string_view* name) {
@@ -323,16 +324,13 @@ namespace baremetal {
 				// HACK: assemble the instruction and use that as the length
 				// TODO: cleanup
 				assembler_backend backend(&m_context);
-
 				backend.emit_instruction(index, m_operands);
-
 				u8 size = backend.get_module().get_size_current_section();
 
 				section& parent = m_sections[m_section_index];
 				if(m_symbolic_operand) {
 					// append all of our relative instructions which we've encountered before this one
 					create_normal_subsection();
-
 
 					// create the fixup subsection for the current instruction
 					subsection fixup {
@@ -415,10 +413,10 @@ namespace baremetal {
 	auto assembler::parse_label() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_COLON);
 
-		m_symbols.insert({ m_current_identifier, symbol{
-			.position = m_sections[m_section_index].offset,
-			.section = m_sections[m_section_index].name
-		}});
+		m_sections[m_section_index].symbols.insert({ 
+			m_current_identifier,
+			m_sections[m_section_index].offset
+		});
 
 		return SUCCESS;
 	}

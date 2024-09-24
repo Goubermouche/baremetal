@@ -1,5 +1,5 @@
-;
-;
+; 
+; expect: e9030000000000007402eb02eb067502eb02eb000f84e6ffffff
 
 bits 64
 

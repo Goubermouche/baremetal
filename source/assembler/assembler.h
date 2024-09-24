@@ -2,16 +2,12 @@
 #include "assembler/instruction/operands/operands.h"
 #include "assembler/assembler_lexer.h"
 #include "assembler/context.h"
+#include "utility/containers/string_view.h"
 
 #include <utility/containers/dynamic_string.h>
 #include <utility/result.h>
 
 namespace baremetal {
-	struct symbol {
-		u64 position;
-		utility::string_view* section;
-	};
-
 	struct relocation {
 		utility::string_view* symbol;
 		u64 position;
@@ -52,16 +48,18 @@ namespace baremetal {
 	};
 
 	struct section {
-		void recalculate_symbol_positions(u64 position, i32 diff, utility::map<utility::string_view*, symbol>& symbols);
+		void update_positions(u64 position, i32 diff);
 
 		utility::string_view* name;
 		u64 position = 0; // position of the entire section within the binary
-		u64 offset = 0;
+		u64 offset = 0;   // local instruction offset
 
 		// list of subsections which is concatenated during emission
 		utility::dynamic_array<subsection> subsections; 
-		// list of instructions with unresolved operands
+		// list of instructions with unresolved operands, subset of 'subsections'
 		utility::dynamic_array<unresolved_subsection> unresolved; 
+		// symbol table, location of every symbol is relative to the respective section
+		utility::map<utility::string_view*, u64> symbols;
 	};
 
 	class assembler {
@@ -92,7 +90,7 @@ namespace baremetal {
 	private:
 		void set_section(utility::string_view* name);
 		void create_normal_subsection();
-		auto find_section(utility::string_view* name) -> section*;
+		auto get_symbol_position_global(utility::string_view* name) -> u64;
 	private:
 		assembler_context m_context;
 
@@ -106,9 +104,6 @@ namespace baremetal {
 		operand m_operands[4];
 		bool m_symbolic_operand;
 		u8 m_operand_i;
-
-		// symbol table
-		utility::map<utility::string_view*, symbol> m_symbols;
 
 		// temporary array with bytes representing resolved instructions
 		utility::dynamic_array<u8> m_current_resolved;
