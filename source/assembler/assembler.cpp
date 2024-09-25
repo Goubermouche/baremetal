@@ -2,8 +2,6 @@
 #include "assembler/assembler_lexer.h"
 #include "assembler/assembler_parser.h"
 
-#include <utility/containers/dynamic_array.h>
-
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
     if(m_current_token != expected) {                             \
@@ -67,7 +65,7 @@ namespace baremetal {
 		// generate the final binary
 		for(const section& section : m_sections) {
 			// append alignment bytes for the previous section
-			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size(); 
+			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size();
 
 			for(u64 i = 0; i < alignment_offset; ++i) {
 				bytes.push_back(0);
@@ -86,16 +84,31 @@ namespace baremetal {
 					// calculate the offset operand
 					const operand unresolved_operand = unresolved.operands[unresolved.unresolved_operand];
 					const auto symbol_it = section.symbols.find(unresolved_operand.symbol);
-					i64 value;
+					i64 value = 0;
 
 					if(symbol_it == section.symbols.end()) {
 						// references a symbol in a different section, or the symbol does not exist
-						u64 symbol_pos = get_symbol_position_global(unresolved_operand.symbol);
-						value = (symbol_pos) - (section.position + unresolved.position + unresolved.size);
+						symbol sym = get_symbol_global(unresolved_operand.symbol);
+
+						switch(unresolved_operand.type) {
+							case OP_I32:
+							case OP_I64:   value = sym.position; break;
+							case OP_REL8_RIP: 
+							case OP_REL32: value = (sym.position) - (section.position + unresolved.position + unresolved.size); break;
+							default: ASSERT(false, "unhandled operand type '{}' detected\n", operand_type_to_string(unresolved_operand.type));
+						}
 					}
 					else {
 						// references a symbol in the same section
-						value = symbol_it->second - (unresolved.position + unresolved.size);
+						switch(unresolved_operand.type) {
+							case OP_I32:
+							case OP_I64:   value = get_symbol_global(unresolved_operand.symbol).position; break;
+							case OP_REL8_RIP: 
+							case OP_REL32: value = symbol_it->second.position - (unresolved.position + unresolved.size); break;
+							default: ASSERT(false, "unhandled operand type '{}' detected\n", operand_type_to_string(unresolved_operand.type));
+						}
+
+						// utility::console::print("local symbol {}: {}\n", *unresolved_operand.symbol, value);
 					}
 
 					operand* operands = unresolved.operands;
@@ -140,7 +153,7 @@ namespace baremetal {
 						continue;
 					}
 
-					const i64 distance = symbol_it->second - current.position + current.size;
+					const i64 distance = symbol_it->second.position - current.position + current.size;
 					const operand_type new_type = current.variants.get_last();
 
 					if(!fits_into_type(distance, new_type)) {
@@ -171,8 +184,8 @@ namespace baremetal {
 	void section::update_positions(u64 position, i32 diff) {
 		// move all symbols and unresolved instructions which are located past the specified position by diff bytes
 		for(auto& [sym_name, sym_position] : symbols) {
-			if(sym_position > position) {
-				sym_position -= diff;
+			if(sym_position.position > position) {
+				sym_position.position -= diff;
 			}	
 		}
 
@@ -198,18 +211,18 @@ namespace baremetal {
 		}
 	}
 
-	auto assembler::get_symbol_position_global(utility::string_view* name) -> u64 {
+	auto assembler::get_symbol_global(utility::string_view* name) -> symbol {
 		for(const section& section : m_sections) {
 			const auto it = section.symbols.find(name);
 
 			if(it != section.symbols.end()) {
 				// section position + symbol position (relative to the parent section)
-				return section.position + it->second;
+				return { section.position + it->second.position, it->second.type };
 			}
 		}
 
 		ASSERT(false, "unknown symbol '{}' specified\n", *name);
-		return 0;
+		return {};
 	}
 
 	void assembler::set_section(utility::string_view* name) {
@@ -250,6 +263,8 @@ namespace baremetal {
 		m_token_index = 0;
 
 		while(get_next_token() != TOK_EOF) {
+			m_current_identifier = nullptr;
+
 			switch(m_current_token.type) {
 				case TOK_IDENTIFIER: TRY(parse_identifier()); break;
 				case TOK_SECTION:    TRY(parse_section()); break;
@@ -264,6 +279,79 @@ namespace baremetal {
 		return SUCCESS;
 	}
 
+	auto assembler::parse_define_memory() -> utility::result<void> {
+		if(m_current_identifier) {
+			m_sections[m_section_index].symbols.insert({ m_current_identifier, {
+				m_sections[m_section_index].offset,
+				SYM_GLOBAL
+			}});
+		}
+
+		u8 bytes = 0;
+
+		switch(m_current_token.type) {
+			case TOK_DB: bytes = 1; break;
+			case TOK_DW: bytes = 2; break;
+			case TOK_DD: bytes = 4; break;
+			case TOK_DQ: bytes = 8; break;
+			default: ASSERT(false, "unreachable\n");
+		}
+
+		get_next_token();
+
+		while(m_current_token != TOK_EOF) {
+			switch(m_current_token.type) {
+				case TOK_CHAR: 
+				case TOK_STRING: {
+					for(const char c : *m_current_token.identifier) {
+						m_current_resolved.push_back(c);
+						m_sections[m_section_index].offset++;
+					}
+
+					// apend missing bytes, so that we're aligned with our data type
+					const u64 offset = m_current_token.identifier->get_size();
+					const u64 alignment_offset = utility::align(offset, bytes) - offset; 
+
+					for(u64 i = 0; i < alignment_offset; ++i) {
+						m_current_resolved.push_back(0);
+						m_sections[m_section_index].offset++;
+					}
+
+					break;
+				}
+				case TOK_MINUS: ASSERT(false, "TODO\n"); break;
+				case TOK_NUMBER: {
+					if(m_current_token.immediate.min_bits / 8 > bytes) {
+						utility::console::print("warning: byte data exceeds bounds\n");
+					}
+
+					u64 value = m_current_token.immediate.value;
+
+					for(u8 i = 0; i < bytes; ++i) {
+			      u8 byte = static_cast<u8>(value & 0xFF);
+						m_current_resolved.push_back(byte);
+						m_sections[m_section_index].offset++;
+			      value >>= 8;
+			    }
+
+					break;
+				}
+				default: return utility::error("unexpected token following memory definition");
+			}
+			
+			get_next_token();
+
+			// memory define operands should be comma separated
+			if(m_current_token != TOK_COMMA) {
+				break;
+			}
+		
+			get_next_token();
+		}
+
+		return SUCCESS;
+	}
+	
 	auto assembler::parse_instruction() -> utility::result<void> {
 		u32 start;
 		u32 index = start = find_instruction_by_name(m_current_identifier->get_data());
@@ -280,7 +368,9 @@ namespace baremetal {
 
 		while(m_current_token != TOK_EOF && m_current_token != TOK_NEWLINE) {
 			switch(m_current_token.type) {
-				case TOK_IDENTIFIER: TRY(parse_identifier_operand()); break;
+				case TOK_IDENTIFIER:       TRY(parse_identifier_operand()); break;
+				case TOK_NUMBER:           TRY(parse_immediate_operand()); break;
+				case TOK_CR0 ... TOK_R15B: TRY(parse_register_operand()); break;
 				default: ASSERT(false, "unexpected operand token: {}\n", token_to_string(m_current_token.type)); 
 			}
 
@@ -342,6 +432,10 @@ namespace baremetal {
 					// most likely be optimized out by the resolve_symbols() function
 					m_operands[variant_index].type = backend.current_variants.pop_back();
 
+					if(!is_operand_rel(m_operands[variant_index].type)) {
+						backend.current_variants.clear(); // no potential for optimizations
+					}
+
 					// create the actual subsection the fixup points to
 					unresolved_subsection unresolved = {
 						.index = index,
@@ -369,16 +463,24 @@ namespace baremetal {
 			index++;
 		}
 
-		ASSERT(false, "invalid instruction\n");
+ASSERT(false, "invalid instruction\n");
 		return SUCCESS;
 	}
 
 	auto assembler::parse_identifier_operand() -> utility::result<void> {
-		// utility::console::print("[PASS 1]: symbolic operand '{}'\n", *m_current_token.identifier);
-		EXPECT_TOKEN(TOK_IDENTIFIER);
-
 		m_operands[m_operand_i++] = operand(m_current_token.identifier); 
 		m_symbolic_operand = true;
+		return SUCCESS;
+	}
+
+	auto assembler::parse_immediate_operand() -> utility::result<void> {
+		m_operands[m_operand_i++] = operand(m_current_token.immediate); 
+		return SUCCESS;
+	}
+
+	auto assembler::parse_register_operand() -> utility::result<void> {
+		operand op = operand(token_to_register(m_current_token.type));
+		m_operands[m_operand_i++] = op;
 		return SUCCESS;
 	}
 
@@ -389,8 +491,9 @@ namespace baremetal {
 		get_next_token();
 
 		switch(m_current_token.type) {
-			case TOK_COLON: return parse_label();
-			default: return parse_instruction();
+			case TOK_DB ... TOK_DQ: return parse_define_memory();
+			case TOK_COLON:         return parse_label();
+			default:                return parse_instruction();
 		}
 
 		return SUCCESS;
@@ -405,6 +508,7 @@ namespace baremetal {
 		get_next_token();
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
+		create_normal_subsection(); // capture any trailing instructions
 		set_section(m_current_token.identifier);
 
 		return SUCCESS;
@@ -415,7 +519,7 @@ namespace baremetal {
 
 		m_sections[m_section_index].symbols.insert({ 
 			m_current_identifier,
-			m_sections[m_section_index].offset
+			{ m_sections[m_section_index].offset, SYM_RIP_RELATIVE }
 		});
 
 		return SUCCESS;
@@ -439,11 +543,11 @@ namespace baremetal {
 					TRY(parse_instruction()); 
 					break; 
 				}
+				case TOK_DB ... TOK_DQ: TRY(parse_define_memory()); break;
 				default: ASSERT(false, "unexpected times token: {}\n", token_to_string(m_current_token.type)); 
 			}
 		}
 
-		get_next_token();
 		return SUCCESS;
 	}
 

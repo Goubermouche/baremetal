@@ -95,7 +95,7 @@ namespace detail {
 		utility::dynamic_string hex_result;
 		utility::dynamic_string expected;
 
-		test_info info("binary", 4, g_quiet);
+		test_info info("binary", tests.get_size(), g_quiet);
 
 		info.begin_test();
 
@@ -104,9 +104,9 @@ namespace detail {
 			expected.clear();
 			test_text.clear();
 
-			if(test.get_string().find("labels") == utility::dynamic_string::invalid_pos) {
-				continue;
-			}
+			// if(test.get_string().find("sections_1") == utility::dynamic_string::invalid_pos) {
+			// 	continue;
+			// }
 			
 			test_text = utility::file::read(test);
 
