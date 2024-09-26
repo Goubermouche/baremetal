@@ -119,15 +119,15 @@ namespace baremetal {
 		// parsing
 		utility::string_view* m_current_identifier;
 		token_buffer m_tokens;
-		token m_current_token;
-		u64 m_token_index;
+		token m_current_token = {};
+		u64 m_token_index = 0;
 
 		// instruction parsing
-		u32 m_instruction_i;
-		operand m_operands[4];
-		bool m_symbolic_operand;
-		u8 m_broadcast_n;
-		u8 m_operand_i;
+		u32 m_instruction_i = 0;
+		operand m_operands[4] = {};
+		bool m_symbolic_operand = false;
+		u8 m_broadcast_n = 0;
+		u8 m_operand_i = 0;
 
 		// temporary array with bytes representing resolved instructions
 		utility::dynamic_array<u8> m_current_resolved;

@@ -27,6 +27,9 @@ namespace baremetal {
 	assembler::assembler() : m_section_index(0) {
 		section text {
 			.name = m_context.strings.add("text"),
+			.subsections = {},
+			.unresolved = {},
+			.symbols = {}
 		};
 
 		m_sections.push_back(text);
@@ -250,6 +253,9 @@ namespace baremetal {
 		m_section_index = m_sections.get_size();
 		m_sections.push_back(section{
 			.name = name,
+			.subsections = {},
+			.unresolved = {},
+			.symbols = {}
 		});
 	}
 
@@ -458,11 +464,12 @@ namespace baremetal {
 					// create the actual subsection the fixup points to
 					unresolved_subsection unresolved = {
 						.index = m_instruction_i,
+						.operands = {},
 						.operand_count = m_operand_i,
 						.position = parent.offset,
 						.size = size,
 						.variants = backend.current_variants,
-						.unresolved_operand = variant_index
+						.unresolved_operand = variant_index,
 					};
 
 					utility::memcpy(unresolved.operands, m_operands, 4 * sizeof(operand));

@@ -232,7 +232,7 @@ namespace baremetal {
 		// some instructions have a special optimization index, check if we have it
 		// if we have a valid context index, the original index, provided as a parameter, will
 		// be replaced by this index
-		if(instruction_db[index].has_special_index()) {
+		if(instruction_db[index].has_special_index() && operands[imm_index].type != OP_REL_UNKNOWN) {
 			const u16 context_index = instruction_db[index].get_special_index();
 
 			// switch on the context kind
@@ -284,7 +284,6 @@ namespace baremetal {
 		while(is_legal_variant(index, current_index, imm_index)) {
 			legal_variants.push_back(&instruction_db[current_index++]);
 		}
-
 
 		// one legal variant
 		if(legal_variants.get_size() == 1) {
