@@ -65,9 +65,8 @@ namespace baremetal {
 
 		// special characters
 		switch(m_current_char) {
-			case '0' ... '9': if(force_keyword == false) { return get_next_token_number(); }
-			[[fallthrough]]; // fallthrough, check for identifiers
 			case '_':
+			case '0' ... '9': 
 			case 'a' ... 'z':
 			case 'A' ... 'Z': return get_next_token_identifier();
 
@@ -134,55 +133,19 @@ namespace baremetal {
 		return current = TOK_CHAR;
 	}
 
-	auto assembler_lexer::get_next_token_number() -> utility::result<token_type> {
+	auto assembler_lexer::current_string_to_number() -> utility::result<token_type> {
 		i32 base = 10;
 
-		if(m_current_char == '0') {
-			switch(get_next_char()) {
-				// hex literals
-				case 'x': {
-					base = 16;
-					get_next_char();
-
-					while(utility::is_digit_hex(m_current_char)) {
-						current_string += m_current_char;
-						get_next_char();
-					}
-
-					goto parse_number;
-				}
-				// octal literals
-				case '0' ... '7': {
-					base = 8;
-					get_next_char();
-
-					while(utility::is_digit_oct(m_current_char)) {
-						current_string += m_current_char;
-						get_next_char();
-					}
-
-					goto parse_number;
-				}
-				// binary literals
-				case 'b': {
-					base = 2;
-					get_next_char();
-
-					while(utility::is_digit_hex(m_current_char)) {
-						current_string += m_current_char;
-						get_next_char();
-					}
-
-					goto parse_number;
-				}
+		// TODO: add error checking
+		if(current_string[0] == '0' && current_string.get_size() > 1) {
+			switch(current_string[1]) {
+				case 'x':         base = 16; break; // hex
+				case '0' ... '7': base = 8;  break; // oct
+				case 'b':         base = 2;  break; // bin
+				default: ASSERT(false, "unknown literal type\n");
 			}
 		}
 
-		while(utility::is_digit(m_current_char)) {
-			current_string += m_current_char;
-			get_next_char();
-		}
-parse_number:
 		char* end;
 		u64 num = strtoull(current_string.get_data(), &end, base);
 		current_immediate = imm(num);
@@ -201,6 +164,11 @@ parse_number:
 		
 		if(token != TOK_NONE) {
 			return current = token;
+		}
+
+		// numerical literal
+		if(utility::is_digit(current_string[0])) {
+			return current_string_to_number();
 		}
 
 		return current = TOK_IDENTIFIER;

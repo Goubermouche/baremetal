@@ -95,12 +95,18 @@ namespace baremetal {
 		auto parse_label() -> utility::result<void>;
 		auto parse_times() -> utility::result<void>;
 		auto parse_bits() -> utility::result<void>;
-		
+	
+		auto parse_broadcast_operand(mask_type mask) -> utility::result<void>;
+		auto parse_memory_operand(data_type type) -> utility::result<void>;
+		auto parse_moff_operand(data_type type) -> utility::result<void>;
 		auto parse_identifier_operand() -> utility::result<void>;
 		auto parse_immediate_operand() -> utility::result<void>;
 		auto parse_register_operand() -> utility::result<void>;
+		auto parse_rip_rel_operand() -> utility::result<void>;
+		auto parse_type_operand() -> utility::result<void>;
 
 		auto parse_mask_or_broadcast() -> utility::result<mask_type>; 
+		auto parse_memory(operand& op) -> utility::result<void>;
 		auto get_next_token() -> token;
 	private:
 		void set_section(utility::string_view* name);
@@ -117,8 +123,10 @@ namespace baremetal {
 		u64 m_token_index;
 
 		// instruction parsing
+		u32 m_instruction_i;
 		operand m_operands[4];
 		bool m_symbolic_operand;
+		u8 m_broadcast_n;
 		u8 m_operand_i;
 
 		// temporary array with bytes representing resolved instructions

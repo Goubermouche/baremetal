@@ -366,7 +366,7 @@ namespace baremetal {
 
 		auto get_next_token_identifier() -> utility::result<token_type>;
 		auto get_next_token_comment() -> utility::result<token_type>;
-		auto get_next_token_number() -> utility::result<token_type>;
+		auto current_string_to_number() -> utility::result<token_type>;
 		auto get_next_token_string() -> utility::result<token_type>;
 		auto get_next_token_char() -> utility::result<token_type>;
 	private:

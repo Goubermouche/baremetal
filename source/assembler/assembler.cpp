@@ -369,23 +369,28 @@ namespace baremetal {
 	
 	auto assembler::parse_instruction() -> utility::result<void> {
 		u32 start;
-		u32 index = start = find_instruction_by_name(m_current_identifier->get_data());
+		m_instruction_i = start = find_instruction_by_name(m_current_identifier->get_data());
 		utility::string_view* instruction_name = m_current_identifier;
 
-		if(index == utility::limits<u32>::max()) {
+		if(m_instruction_i == utility::limits<u32>::max()) {
 			ASSERT(false, "[PASS 1]: unknown instruction '{}' specified\n", *m_current_identifier);
 		}
 
 		// ensure our destination is clean
 		utility::memset(m_operands, 0, sizeof(operand) * 4);
 		m_symbolic_operand = false;
+		m_broadcast_n = 0;
 		m_operand_i = 0;
 
 		while(m_current_token != TOK_EOF && m_current_token != TOK_NEWLINE) {
 			switch(m_current_token.type) {
-				case TOK_IDENTIFIER:       TRY(parse_identifier_operand()); break;
-				case TOK_NUMBER:           TRY(parse_immediate_operand()); break;
-				case TOK_CR0 ... TOK_R15B: TRY(parse_register_operand()); break;
+				case TOK_LBRACKET:           TRY(parse_memory_operand(DT_NONE)); break; 
+				case TOK_IDENTIFIER:         TRY(parse_identifier_operand()); break;
+				case TOK_MINUS:              TRY(parse_immediate_operand()); break;
+				case TOK_NUMBER:             TRY(parse_immediate_operand()); break;
+				case TOK_CR0 ... TOK_R15B:   TRY(parse_register_operand()); break;
+				case TOK_DOLLARSIGN:         TRY(parse_rip_rel_operand()); break;
+				case TOK_BYTE ... TOK_TWORD: TRY(parse_type_operand()); break;
 				default: ASSERT(false, "unexpected operand token: {}\n", token_to_string(m_current_token.type)); 
 			}
 
@@ -397,8 +402,8 @@ namespace baremetal {
 		}
 
 		// locate the specific variant (dumb linear search in our specific group)
-		while(index < instruction_db_size) {
-			const instruction& current = instruction_db[index]; 
+		while(m_instruction_i < instruction_db_size) {
+			const instruction& current = instruction_db[m_instruction_i]; 
 
 			// verify that the instruction names are the same and that we've not left our instruction group
 			if(utility::compare_strings(instruction_name->get_data(), current.name) != 0) {
@@ -406,7 +411,7 @@ namespace baremetal {
 			}
 
 			// verify that the current instruction matches the provided operands
-			if(detail::is_operand_match(current, m_operands, 0, m_operand_i)) {
+			if(detail::is_operand_match(current, m_operands, m_broadcast_n, m_operand_i)) {
 				u8 variant_index = 0;
 				// operands match, but, in some cases we need to retype some of them to the actual type, ie. 
 				// immediates can actually be relocations
@@ -427,7 +432,7 @@ namespace baremetal {
 				// HACK: assemble the instruction and use that as the length
 				// TODO: cleanup
 				assembler_backend backend(&m_context);
-				backend.emit_instruction(index, m_operands);
+				backend.emit_instruction(m_instruction_i, m_operands);
 				u8 size = backend.get_module().get_size_current_section();
 
 				section& parent = m_sections[m_section_index];
@@ -451,7 +456,7 @@ namespace baremetal {
 
 					// create the actual subsection the fixup points to
 					unresolved_subsection unresolved = {
-						.index = index,
+						.index = m_instruction_i,
 						.operand_count = m_operand_i,
 						.position = parent.offset,
 						.size = size,
@@ -473,10 +478,121 @@ namespace baremetal {
 				return SUCCESS;
 			}
 
-			index++;
+			m_instruction_i++;
 		}
 
 		ASSERT(false, "invalid instruction\n");
+		return SUCCESS;
+	}
+
+	auto assembler::parse_moff_operand(data_type type) -> utility::result<void> {
+		if(type != DT_NONE) {
+			return utility::error("duplicate data type specified in memory/moff operand");
+		}
+
+		get_next_token();
+		EXPECT_TOKEN(TOK_NUMBER);
+
+		m_operands[m_operand_i++] = operand(moff(m_current_token.immediate.value));
+
+		get_next_token();
+		EXPECT_TOKEN(TOK_RBRACKET);
+
+		get_next_token();
+		return SUCCESS;
+	}
+
+	auto assembler::parse_broadcast_operand(mask_type mask) -> utility::result<void> {
+		m_broadcast_n = mask_to_broadcast_n(mask);
+		
+		get_next_token();
+		EXPECT_TOKEN(TOK_RBRACE);
+		get_next_token();
+
+		u32 index = m_instruction_i;
+		bool met_broadcast = false;
+
+		// find the bn from the current instruction
+		while(index < instruction_db_size) {
+			const instruction& current = instruction_db[index];
+
+			if(utility::compare_strings(instruction_db[m_instruction_i].name, current.name) != 0) {
+				break;
+			}
+
+			if(detail::is_operand_match(current, m_operands, m_broadcast_n, m_operand_i)) {
+				operand_type ty = current.operands[current.get_broadcast_operand()];
+				met_broadcast = true;
+
+				if(broadcast_to_bits(ty) * m_broadcast_n == inst_size_to_int(current.op_size)) {
+					operand op;
+					op.type = ty;
+					m_operands[m_operand_i++] = op;
+
+					return SUCCESS;
+				}
+			}
+
+			index++;
+		}
+
+		if(met_broadcast) {
+			return utility::error("mismatch in the number of broadcasting elements");
+		}
+
+		return utility::error("invalid broadcast operand specified");
+
+	}
+
+	auto assembler::parse_memory_operand(data_type type) -> utility::result<void> {
+		EXPECT_TOKEN(TOK_LBRACKET);
+		operand op;
+
+		switch(type) {
+			case DT_NONE:  op.type = OP_M128; break; // M128 currently works as an infer keyword
+			case DT_BYTE:  op.type = OP_M8;   break;
+			case DT_WORD : op.type = OP_M16;  break;
+			case DT_DWORD: op.type = OP_M32;  break;
+			case DT_QWORD: op.type = OP_M64;  break;
+			case DT_TWORD: op.type = OP_M80;  break;
+		}
+		
+		get_next_token();
+
+		// we can potentially have types in here, which means we're handling a moff
+		switch(m_current_token.type) {
+			case TOK_BYTE ... TOK_TWORD: return parse_moff_operand(type);
+			default: break;
+		}
+
+		TRY(parse_memory(op));
+
+		EXPECT_TOKEN(TOK_RBRACKET);
+
+		// trailing mask or broadcast
+		TRY(mask_type mask, parse_mask_or_broadcast());
+
+		if(mask == MASK_NONE) {
+			m_operands[m_operand_i++] = op;
+			return SUCCESS; // no mask or broadcast
+		}
+
+		if(is_mask_broadcast(mask)) {
+			// broadcast
+			return parse_broadcast_operand(mask);
+		}
+		else {
+			// mask
+			if(mask > 8) {
+				return utility::error("cannot encode memory operand with zeroing mask");
+			}
+
+			op.mm.k = mask_to_k(mask);
+			TRY(op.type, detail::mask_operand(op.type, mask));
+
+			m_operands[m_operand_i++] = op;
+		}
+
 		return SUCCESS;
 	}
 
@@ -488,7 +604,16 @@ namespace baremetal {
 	}
 
 	auto assembler::parse_immediate_operand() -> utility::result<void> {
-		m_operands[m_operand_i++] = operand(m_current_token.immediate); 
+		if(m_current_token == TOK_MINUS) {
+			get_next_token();
+			EXPECT_TOKEN(TOK_NUMBER);
+			m_operands[m_operand_i++] = operand(imm(-static_cast<i64>(m_current_token.immediate.value))); 
+		}
+		else {
+			EXPECT_TOKEN(TOK_NUMBER);
+			m_operands[m_operand_i++] = operand(m_current_token.immediate); 
+		}
+
 		get_next_token();
 		return SUCCESS;
 	}
@@ -510,6 +635,60 @@ namespace baremetal {
 		TRY(op.type, detail::mask_operand(op.type, mask));
 
 		m_operands[m_operand_i++] = op;
+		return SUCCESS;
+	}
+
+	auto assembler::parse_type_operand() -> utility::result<void> {
+		// parse an operand which begins with a type keyword 
+		data_type type = token_to_data_type(m_current_token.type);
+
+		get_next_token();
+
+		switch(m_current_token.type) {
+			case TOK_LBRACKET: parse_memory_operand(type); break;
+			default: return utility::error("unexpected token following type");
+		}
+
+		return SUCCESS;
+	}
+
+	auto assembler::parse_rip_rel_operand() -> utility::result<void> {
+		get_next_token();
+
+		if(m_current_token != TOK_PLUS) {
+			return utility::error("unexpected token received in rip-relative address");
+		}
+
+		operand rip_rel; 
+
+		get_next_token();
+
+		if(m_current_token == TOK_MINUS) {
+			// negative relocations are always rel32 (without being rip-relative)
+			rip_rel.type = OP_REL32;
+
+			get_next_token();
+			EXPECT_TOKEN(TOK_NUMBER);
+
+			rip_rel.immediate = imm(-1 * static_cast<i64>(m_current_token.immediate.value));
+		} 
+		else {
+			EXPECT_TOKEN(TOK_NUMBER);
+
+			// select the actual data type
+			switch(m_current_token.immediate.min_bits) {
+				case 8:  rip_rel.type = OP_REL8_RIP;  break;
+				case 16: rip_rel.type = OP_REL16_RIP; break;
+				case 32: rip_rel.type = OP_REL32_RIP; break;
+				default: return utility::error("invalid rip-relative address width");
+			}
+
+			rip_rel.immediate = m_current_token.immediate;
+		}
+
+		m_operands[m_operand_i++] = rip_rel;
+
+		get_next_token();
 		return SUCCESS;
 	}
 
@@ -591,6 +770,178 @@ namespace baremetal {
 		EXPECT_TOKEN(TOK_NUMBER);
 		get_next_token();
 		return SUCCESS;
+	}
+
+	auto assembler::parse_memory(operand& op) -> utility::result<void> {
+		reg current_reg = reg::create_invalid();
+		mem& memory = op.memory;
+		imm current_imm;
+
+
+		bool displacement_set = false;
+		bool scale_mode = false;
+		bool imm_set = false;
+
+		// TODO: this still doesn't work with negative operands
+
+		// entry
+		while(true) {
+			switch(m_current_token.type) {
+				// register
+				case TOK_CR0 ... TOK_R15B: {
+					if(scale_mode && imm_set) {
+						// scale * reg
+						if(memory.has_index) {
+							return utility::error("memory index cannot be specified twice");
+						}
+
+						memory.index = token_to_register(m_current_token.type);
+						memory.has_index = true;
+
+						TRY(memory.s, detail::imm_to_scale(current_imm));
+
+						scale_mode = false;
+						imm_set = false;
+					}
+					else {
+						current_reg = token_to_register(m_current_token.type);
+					}
+
+					break;
+				}
+				// rel $
+				case TOK_REL: {
+					get_next_token();
+					EXPECT_TOKEN(TOK_DOLLARSIGN);
+					current_reg = rip;
+					break;
+				}
+				case TOK_ASTERISK: {
+					scale_mode = true;
+					break;
+				}
+				case TOK_PLUS: {
+					if(current_reg.is_valid()) {
+						if(memory.has_base) {
+							// index * 1
+							if(memory.has_index) {
+								return utility::error("memory index cannot be specified twice");
+							}
+
+							memory.index = current_reg;
+							memory.has_index = true;
+							memory.s = SCALE_1;
+						}
+						else {
+							// base
+							memory.base = current_reg;
+							memory.has_base = true;
+						}
+
+						current_reg = reg::create_invalid();
+					}
+					else if(imm_set) {
+						// displacement
+						if(displacement_set) {
+							return utility::error("memory displacement cannot be specified twice");
+						}
+
+						memory.displacement = current_imm;
+						displacement_set = true;
+						imm_set = false;
+					}
+
+					break;
+				}
+				case TOK_MINUS: {
+					ASSERT(false, "not implemented\n");
+					break;
+				}
+				case TOK_NUMBER: {
+					if(scale_mode && current_reg.is_valid()) {
+						// reg * scale
+						if(memory.has_index) {
+							return utility::error("memory index cannot be specified twice");
+						}
+
+						memory.index = current_reg;
+						memory.has_index = true;
+
+						TRY(memory.s, detail::imm_to_scale(m_current_token.immediate));
+
+						scale_mode = false;
+						current_reg = reg::create_invalid();
+					}
+					else{
+						current_imm = m_current_token.immediate;
+						imm_set = true;
+					}
+
+					break;
+				}
+				case TOK_RBRACKET: {
+					if(current_reg.is_valid()) {
+						if(memory.has_base) {
+							// index * 1
+							if(memory.has_index) {
+								return utility::error("memory index cannot be specified twice (implicit index)");
+							}
+
+							memory.index = current_reg;
+							memory.has_index = true;
+							memory.s = SCALE_1;
+						}
+						else {
+							// base
+							memory.base = current_reg;
+							memory.has_base = true;
+						}
+					}
+					else if(imm_set) {
+						// displacement
+						if(displacement_set) {
+							return utility::error("memory displacement cannot be specified twice");
+						}
+						
+						memory.displacement = current_imm;
+						displacement_set = true;
+					}
+
+					if(memory.has_base) {
+						switch(memory.base.type) {
+							case REG_XMM: op.type = OP_VM32X; break;
+							case REG_YMM: op.type = OP_VM32Y; break;
+							case REG_ZMM: op.type = OP_VM32Z; break;
+							default: break;
+						}
+					}
+					
+					if(memory.has_index) {
+						switch(memory.index.type) {
+							case REG_XMM: op.type = OP_VM32X; break;
+							case REG_YMM: op.type = OP_VM32Y; break;
+							case REG_ZMM: op.type = OP_VM32Z; break;
+							default: break;
+						}
+					}
+				
+					if(memory.has_index && memory.has_base) {
+						if(memory.index.type != memory.base.type) {
+							if(!is_gp_reg(memory.index) && !is_gp_reg(memory.base)) {
+								return utility::error("invalid combination of register types in memory");
+							}
+						}
+					}
+
+					return SUCCESS;
+				}
+				default: {
+					return utility::error("unexpected token received in memory operand");
+				}
+			}
+
+			get_next_token();
+		}
 	}
 
 	auto assembler::parse_mask_or_broadcast() -> utility::result<mask_type> {
