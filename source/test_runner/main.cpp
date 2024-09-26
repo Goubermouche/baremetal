@@ -10,12 +10,11 @@ bool g_quiet = false;
 
 namespace detail {
 	void run_test_encoding() {
-		return;
 		const utility::filepath test_path = g_test_path / "encoding/test.txt"; 
 		const utility::dynamic_string test_file = utility::file::read(test_path);
 
 		baremetal::assembler_context context;
-		baremetal::assembler_parser assembler(&context);
+		// baremetal::assembler_parser assembler(&context);
 
 		utility::dynamic_string instruction;
 		utility::dynamic_string hex_result;
@@ -32,7 +31,7 @@ namespace detail {
 			instruction.clear();
 			expected.clear();
 			hex_result.clear();
-			assembler.clear();
+			// assembler.clear();
 	
 			// locate the expected encoding part
 			while(i + 1 < test_file.get_size() && test_file[i] != '\n') {
@@ -58,13 +57,16 @@ namespace detail {
 			if(instruction.get_size() == 0) {
 				break;
 			}
+
+			baremetal::assembler assembler;
+			const auto result = assembler.assemble(instruction);
 	
-			if(const auto result = assembler.parse(instruction); result.has_error()) {
+			if(result.has_error()) {
 				utility::console::print_err("error: '{}'\n", result.get_error());
 				info.add_failure();
 			}
 			else {
-				hex_result = bytes_to_string(assembler.get_bytes());
+				hex_result = bytes_to_string(result.get_value().bytes);
 	
 				if(hex_result != expected) {
 					info.add_failure();
@@ -147,23 +149,6 @@ namespace detail {
 				}
 				// utility::console::print("{}\n", bytes_to_string(result.get_value().bytes));
 			}
-
-
-
-		//	if(const auto result = assembler.parse(test_text); result.has_error()) {
-		//		utility::console::print_err("error: '{}'\n", result.get_error());
-		//	}
-		//	else {
-		//		hex_result = bytes_to_string(assembler.get_bytes()); 
-
-		//		if(hex_result != expected) {
-		//			info.add_failure();
-		//			utility::console::print_err("mismatch: {} - expected '{}', but got '{}'\n", test, expected, hex_result); 
-		//		}
-		//		else {
-		//			info.add_success();
-		//		}
-		//	}
 		}
 		
 		info.end_test();

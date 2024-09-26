@@ -1,6 +1,7 @@
 #include "assembler.h"
 #include "assembler/assembler_lexer.h"
 #include "assembler/assembler_parser.h"
+#include "assembler/instruction/operands/operands.h"
 
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
@@ -424,8 +425,8 @@ namespace baremetal {
 					m_operands[j].type = current.operands[j];
 
 					if(is_operand_rel(current.operands[j])) {
-						rel r = rel(static_cast<i32>(m_operands[j].immediate.value));
-						m_operands[j].relocation = r; 
+						u8 size = assembler_backend::get_instruction_size(m_instruction_i, m_operands);
+						m_operands[j].immediate = static_cast<i32>(m_operands[j].immediate.value) - size;
 					}
 				}
 
@@ -434,8 +435,8 @@ namespace baremetal {
 				assembler_backend backend(&m_context);
 				backend.emit_instruction(m_instruction_i, m_operands);
 				u8 size = backend.get_module().get_size_current_section();
-
 				section& parent = m_sections[m_section_index];
+
 				if(m_symbolic_operand) {
 					// append all of our relative instructions which we've encountered before this one
 					create_normal_subsection();
