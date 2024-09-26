@@ -562,6 +562,7 @@ parse_number:
 			{ "k5",    TOK_K5,    },
 			{ "k6",    TOK_K6,    },
 			{ "k7",    TOK_K7,    },
+			{ "z",     TOK_Z,     },
 			{ "es",    TOK_ES,    },
 			{ "cs",    TOK_CS,    },
 			{ "ss",    TOK_SS,    },

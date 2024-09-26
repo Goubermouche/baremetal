@@ -8,15 +8,15 @@
 #include <utility/result.h>
 
 namespace baremetal {
-	enum symbol_type : u8 {
-		SYM_RIP_RELATIVE,
-		SYM_GLOBAL
-	};
+	// enum symbol_type : u8 {
+	// 	SYM_RIP_RELATIVE,
+	// 	SYM_GLOBAL
+	// };
 
-	struct symbol {
-		u64 position;
-		symbol_type type;
-	};
+	// struct symbol {
+	// 	u64 position;
+	// 	symbol_type type;
+	// };
 
 	struct relocation {
 		utility::string_view* symbol;
@@ -69,7 +69,7 @@ namespace baremetal {
 		// list of instructions with unresolved operands, subset of 'subsections'
 		utility::dynamic_array<unresolved_subsection> unresolved; 
 		// symbol table, location of every symbol is relative to the respective section
-		utility::map<utility::string_view*, symbol> symbols;
+		utility::map<utility::string_view*, u64> symbols;
 	};
 
 	class assembler {
@@ -99,11 +99,14 @@ namespace baremetal {
 		auto parse_identifier_operand() -> utility::result<void>;
 		auto parse_immediate_operand() -> utility::result<void>;
 		auto parse_register_operand() -> utility::result<void>;
+
+		auto parse_mask_or_broadcast() -> utility::result<mask_type>; 
 		auto get_next_token() -> token;
 	private:
 		void set_section(utility::string_view* name);
 		void create_normal_subsection();
-		auto get_symbol_global(utility::string_view* name) -> symbol;
+		auto get_symbol_global(utility::string_view* name) -> u64;
+		auto get_symbol_local(utility::string_view* name) -> u64;
 	private:
 		assembler_context m_context;
 

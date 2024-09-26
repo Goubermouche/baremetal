@@ -33,6 +33,7 @@ namespace baremetal {
 		TOK_K5,
 		TOK_K6,
 		TOK_K7,
+		TOK_Z,
 		TOK_ES,
 		TOK_CS,
 		TOK_SS,
