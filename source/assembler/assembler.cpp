@@ -130,6 +130,7 @@ namespace baremetal {
 						} 
 						// relocations are relative
 						case OP_REL32:
+						case OP_REL8:
 						case OP_REL8_RIP: {
 							u64 inst_pos = unresolved.position;
 							u64 inst_size = unresolved.size;
@@ -191,7 +192,6 @@ namespace baremetal {
 
 					const i64 distance = symbol_it->second - current.position + current.size;
 					const operand_type new_type = current.variants.get_last();
-
 
 					if(!fits_into_type(distance, new_type)) {
 						// we can't use a smaller operand, no optimization possible in this iteration
@@ -513,6 +513,7 @@ namespace baremetal {
 				// TODO: cleanup
 				assembler_backend backend(&m_context);
 				backend.emit_instruction(m_instruction_i, m_operands);
+				// utility::console::print("{}\n", m_instruction_i);
 				u8 size = backend.get_module().get_size_current_section();
 				section& parent = m_sections[m_section_index];
 
@@ -563,8 +564,12 @@ namespace baremetal {
 			m_instruction_i++;
 		}
 
-		ASSERT(false, "invalid operand combination for instruction '{}'\n", instruction_db[m_instruction_i - 1].name);
-		return SUCCESS;
+		utility::console::print_err("'{}': ", instruction_db[start].name);
+		for(u8 i = 0; i < m_operand_i; ++i) {
+			utility::console::print_err("{} ", operand_type_to_string(m_operands[i].type));
+		}
+		utility::console::print_err("\n");
+		return utility::error("invalid operand combination for instruction");
 	}
 
 	auto assembler::parse_moff_operand(data_type type) -> utility::result<void> {

@@ -1,3 +1,4 @@
+; source: https://rosettacode.org/wiki/Generate_lower_case_ASCII_alphabet
 ; expect: 4831c040b7614000c74088b84800000048ffc04883f81a7ceac680480000000ab801000000bf0100000048be4800000000000000ba1b0000000f05b83c0000004831ff0f05
 bits 64
 
@@ -23,5 +24,5 @@ _start:
 	xor rdi, rdi
 	syscall
 section .bss
-	alphabet: resb 27
+alphabet: resb 27
 

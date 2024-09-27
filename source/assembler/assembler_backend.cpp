@@ -148,7 +148,7 @@ namespace baremetal {
 		instruction_begin(operands); 
 
 		// emit individual instruction parts
-		emit_instruction_prefix(inst);
+		emit_instruction_prefix(inst, operands);
 		emit_instruction_opcode(inst, operands);
 		emit_instruction_mod_rm(inst, operands);
 		emit_instruction_sib(operands);
@@ -388,7 +388,7 @@ namespace baremetal {
 			is_operand_mem(instruction_db[b].operands[imm_index]); 
 	}
 
-	void assembler_backend::emit_instruction_prefix(const instruction* inst) {
+	void assembler_backend::emit_instruction_prefix(const instruction* inst, const operand* operands) {
 		if(inst->enc == ENC_NORMALD) {
 			// instruction composed of two instructions, emit the first one here
 			push_byte((inst->opcode & 0x0000FF00) >> 8);
@@ -398,13 +398,25 @@ namespace baremetal {
 			return;
 		}
 
-		if(inst->prefix == PREFIX_NONE) {
-			return; // no prefix
-		}
-
 		// group 4
 		if(inst->prefix & ADDRESS_SIZE_OVERRIDE) {
 			push_byte(0x67);
+		}
+		else if(inst->has_mem_operand()) {
+			u8 mem_index = inst->get_mem_operand();
+			const mem& m = operands[mem_index].memory;
+
+			if(
+				(inst->operands[mem_index] == OP_M32 || inst->operands[mem_index] == OP_M8) && 
+				((m.has_base && m.base.type == REG_R32) || (m.has_index && m.index.type == REG_R32))
+			) {
+				// utility::console::print("{} {} {} {} {}\n", m.has_base, m.has_index, (int)m.s, m.displacement.value, inst->is_rexw());
+				//if(m.has_base && m.has_index == false && m.s == SCALE_1 && m.displacement.value == 0) {}
+				//// else if(m.has_base == false && m.has_index && m.s == SCALE_1 && m.displacement.value == 0) {}
+				//else {
+					push_byte(0x67);
+				//}
+			}
 		}
 
 		// group 3

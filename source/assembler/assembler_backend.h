@@ -57,7 +57,7 @@ namespace baremetal {
 		auto find_optimized_instruction(u32 index, const operand* operands) -> const instruction*;
 		static auto is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool;
 		static auto is_legal_variant_unknown(u32 a, u32 b, u8 imm_index) -> bool;
-		void emit_instruction_prefix(const instruction* inst);
+		void emit_instruction_prefix(const instruction* inst, const operand* operands);
 		void instruction_begin(const operand* operands);
 
 		// instruction opcodes

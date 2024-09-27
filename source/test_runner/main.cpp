@@ -106,7 +106,7 @@ namespace detail {
 			expected.clear();
 			test_text.clear();
 
-			// if(test.get_string().find("alphabet") == utility::dynamic_string::invalid_pos) {
+			// if(test.get_string().find("example.asm") == utility::dynamic_string::invalid_pos) {
 			// 	continue;
 			// }
 			
@@ -130,7 +130,7 @@ namespace detail {
 
 			expected = expected.trim();
 
-			utility::console::print("running {}\n", test);
+			// utility::console::print("running {}\n", test);
 			baremetal::assembler assembler;
 			const auto result = assembler.assemble(test_text);
 
