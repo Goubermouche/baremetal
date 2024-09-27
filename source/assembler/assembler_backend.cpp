@@ -199,29 +199,27 @@ namespace baremetal {
 		return nullptr;
 	}
 
-	auto is_symbollic(const operand* operands) -> bool {
-		for(u8 i = 0; i < 4; ++i) {
-			if(operands[i].type == OP_REL_UNKNOWN) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	auto assembler_backend::find_optimized_instruction(u32 index, const operand* operands)  -> const instruction* {
 		u8 imm_index = utility::limits<u8>::max();
+		u8 unknown_index = utility::limits<u8>::max();
 
 		// locate the first immediate operand
 		for(u8 i = 0; i < 4; ++i) {
-			if(is_operand_imm(operands[i].type) || operands[i].type == OP_REL_UNKNOWN) {
+			if(is_operand_imm(operands[i].type)) {
 				imm_index = i;
 				break;
 			}
 		}
 
+		for(u8 i = 0; i < 4; ++i) {
+			if(operands[i].unknown) {
+				unknown_index = i;
+				break;
+			}
+		}
+
 		// no immediate operand, return the original variant
-		if(imm_index == utility::limits<u8>::max()) {
+		if(imm_index == utility::limits<u8>::max() && unknown_index == utility::limits<u8>::max()) {
 			return &instruction_db[index];
 		}
 
@@ -232,7 +230,7 @@ namespace baremetal {
 		// some instructions have a special optimization index, check if we have it
 		// if we have a valid context index, the original index, provided as a parameter, will
 		// be replaced by this index
-		if(instruction_db[index].has_special_index() && operands[imm_index].type != OP_REL_UNKNOWN) {
+		if(instruction_db[index].has_special_index() && unknown_index == utility::limits<u8>::max()) {
 			const u16 context_index = instruction_db[index].get_special_index();
 
 			// switch on the context kind
@@ -281,13 +279,15 @@ namespace baremetal {
 		// locate all legal variants of our instruction, since our instructions are sorted
 		// by their operands we can just increment the index as long as the two variants
 		// are legal
-		while(is_legal_variant(index, current_index, imm_index)) {
+		u8 imm_or_unresolved = imm_index == utility::limits<u8>::max() ? unknown_index : imm_index;
+
+		while(is_legal_variant(index, current_index, imm_or_unresolved)) {
 			legal_variants.push_back(&instruction_db[current_index++]);
 		}
 
 		// one legal variant
 		if(legal_variants.get_size() == 1) {
-			current_variants.push_back(legal_variants[0]->operands[imm_index]);
+			current_variants.push_back(legal_variants[0]->operands[unknown_index]);
 			return legal_variants[0];
 		}
 
@@ -296,19 +296,20 @@ namespace baremetal {
 		// one (ie. an ax register). In these cases we lose the guarantee of them being sorted
 		// from smallest to biggest immediate operands, hence we have to sort them.
 		utility::stable_sort(legal_variants.begin(), legal_variants.end(), [=](auto a, auto b) {
-			const u16 a_width = get_operand_bit_width(a->operands[imm_index]);
-			const u16 b_width = get_operand_bit_width(b->operands[imm_index]);
+			const u16 a_width = get_operand_bit_width(a->operands[imm_or_unresolved]);
+			const u16 b_width = get_operand_bit_width(b->operands[imm_or_unresolved]);
 
 			return a_width < b_width;
 		});
 
 		for(const auto& inst : legal_variants) {
-			current_variants.push_back(inst->operands[imm_index]);
+			current_variants.push_back(inst->operands[unknown_index]);
 		}
 
-		if(is_symbollic(operands)) {
+		if(unknown_index != utility::limits<u8>::max()) {
+			ASSERT(!legal_variants.is_empty(), "no variants found\n");
 			// largest legal variant - pessimistic 
-			return legal_variants[legal_variants.get_size() - 1];
+			return legal_variants.get_last();
 		}
 
 		// multiple legal variants, determine the best one (since our data is sorted from smallest

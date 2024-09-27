@@ -2,6 +2,7 @@
 #include "assembler/assembler_lexer.h"
 #include "assembler/assembler_parser.h"
 #include "assembler/instruction/operands/operands.h"
+#include "instruction/instruction.h"
 
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
@@ -26,7 +27,7 @@ namespace baremetal {
 
 	assembler::assembler() : m_section_index(0) {
 		section text {
-			.name = m_context.strings.add("text"),
+			.name = m_context.strings.add(".text"),
 			.subsections = {},
 			.unresolved = {},
 			.symbols = {}
@@ -88,18 +89,47 @@ namespace baremetal {
 					// calculate the offset operand
 					const operand unresolved_operand = unresolved.operands[unresolved.unresolved_operand];
 					const auto symbol_it = section.symbols.find(unresolved_operand.symbol);
-					i64 value = 0;
+					operand* operands = unresolved.operands;
 
 					// resolve the symbol position
 					switch(unresolved_operand.type) {
 						// immediates are absolute
+						// case OP_I8:
+						// case OP_I16:
 						case OP_I32:
-						case OP_I64: value = get_symbol_global(unresolved_operand.symbol); break;
+						case OP_I64: operands[unresolved.unresolved_operand].immediate = imm(get_symbol_global(unresolved_operand.symbol)); break;
+						case OP_M8: 
+						case OP_M16: 
+						case OP_M32: 
+						case OP_M64: 
+						case OP_M80: {
+							switch(unresolved.fixup) {
+								case FIXUP_DISPLACEMENT: {
+									i64 value;
+
+									if(symbol_it == section.symbols.end()) {
+										value = get_symbol_global(unresolved_operand.symbol);	
+									}
+									else {
+										value = symbol_it->second;	
+									}
+
+									operands[unresolved.unresolved_operand].memory.displacement = value;
+									// use the biggest possible displacement (MOD/RM hack)
+									operands[unresolved.unresolved_operand].memory.displacement.min_bits = 32;
+									break;
+								}
+								default: ASSERT(false, "unexpected fixup type\n");
+							}
+
+							break; // TODO	
+						} 
 						// relocations are relative
 						case OP_REL32:
 						case OP_REL8_RIP: {
 							u64 inst_pos = unresolved.position;
 							u64 inst_size = unresolved.size;
+							i64 value;
 
 							if(symbol_it == section.symbols.end()) {
 								// global symbol position - (section position + instruction position + instruction size)
@@ -110,13 +140,11 @@ namespace baremetal {
 								value = symbol_it->second - (inst_pos + inst_size);	
 							}
 
+							operands[unresolved.unresolved_operand].immediate = imm(value);
 							break;
 						}
-						default: ASSERT(false, "unhandled unresolved operand type\n");
+						default: ASSERT(false, "unhandled unresolved operand type '{}'\n", operand_type_to_string(unresolved_operand.type));
 					}
-
-					operand* operands = unresolved.operands;
-					operands[unresolved.unresolved_operand].immediate = imm(value);
 
 					// emit the instruction with our exact operands
 					backend.emit_instruction_direct(assembler_backend::find_direct(unresolved.index, operands), operands);
@@ -159,6 +187,7 @@ namespace baremetal {
 
 					const i64 distance = symbol_it->second - current.position + current.size;
 					const operand_type new_type = current.variants.get_last();
+
 
 					if(!fits_into_type(distance, new_type)) {
 						// we can't use a smaller operand, no optimization possible in this iteration
@@ -288,16 +317,45 @@ namespace baremetal {
 			m_current_identifier = nullptr;
 
 			switch(m_current_token.type) {
-				case TOK_IDENTIFIER: TRY(parse_identifier()); break;
-				case TOK_SECTION:    TRY(parse_section()); break;
-				case TOK_TIMES:      TRY(parse_times()); break;
-				case TOK_BITS:       TRY(parse_bits()); break;
-				case TOK_NEWLINE:    get_next_token(); break;
+				case TOK_RESB ... TOK_RESQ: TRY(parse_reserve_memory()); break;
+				case TOK_IDENTIFIER:        TRY(parse_identifier()); break;
+				case TOK_SECTION:           TRY(parse_section()); break;
+				case TOK_TIMES:             TRY(parse_times()); break;
+				case TOK_BITS:              TRY(parse_bits()); break;
+				case TOK_NEWLINE:           get_next_token(); break;
 				default: ASSERT(false, "unexpected top level token: {}\n", token_to_string(m_current_token.type)); 
 			}	
 		}
 
 		create_normal_subsection(); // capture any trailing instructions
+		return SUCCESS;
+	}
+
+	auto assembler::parse_reserve_memory() -> utility::result<void> {
+		u8 bytes = 0;
+
+		switch(m_current_token.type) {
+			case TOK_RESB: bytes = 1; break;
+			case TOK_RESW: bytes = 2; break;
+			case TOK_RESD: bytes = 4; break;
+			case TOK_RESQ: bytes = 8; break;
+			default: ASSERT(false, "unreachable\n");
+		}
+
+		SUPPRESS_C4100(bytes);
+
+		// ignored for now, this only appears in object formats
+		get_next_token();
+		EXPECT_TOKEN(TOK_NUMBER);
+		get_next_token();
+
+		if(*m_sections[m_section_index].name != ".bss") {
+			for(u64 i = 0; i < m_current_token.immediate.value; ++i) {
+				m_current_resolved.push_back(0);
+			}
+		}
+
+
 		return SUCCESS;
 	}
 
@@ -385,6 +443,7 @@ namespace baremetal {
 
 		// ensure our destination is clean
 		utility::memset(m_operands, 0, sizeof(operand) * 4);
+		m_unresolved_index = utility::limits<u8>::max();
 		m_symbolic_operand = false;
 		m_broadcast_n = 0;
 		m_operand_i = 0;
@@ -398,6 +457,7 @@ namespace baremetal {
 				case TOK_CR0 ... TOK_R15B:   TRY(parse_register_operand()); break;
 				case TOK_DOLLARSIGN:         TRY(parse_rip_rel_operand()); break;
 				case TOK_BYTE ... TOK_TWORD: TRY(parse_type_operand()); break;
+				case TOK_CHAR:               TRY(parse_operand_char()); break;
 				default: ASSERT(false, "unexpected operand token: {}\n", token_to_string(m_current_token.type)); 
 			}
 
@@ -419,12 +479,10 @@ namespace baremetal {
 
 			// verify that the current instruction matches the provided operands
 			if(detail::is_operand_match(current, m_operands, m_broadcast_n, m_operand_i)) {
-				u8 variant_index = 0;
 				// operands match, but, in some cases we need to retype some of them to the actual type, ie. 
 				// immediates can actually be relocations
 				for(u8 j = 0; j < m_operand_i; ++j) {
-					if(m_operands[j].type == OP_REL_UNKNOWN) {
-						variant_index = j;
+					if(j == m_unresolved_index) {
 						continue;
 					}
 
@@ -433,6 +491,16 @@ namespace baremetal {
 					if(is_operand_rel(current.operands[j])) {
 						u8 size = assembler_backend::get_instruction_size(m_instruction_i, m_operands);
 						m_operands[j].immediate = static_cast<i32>(m_operands[j].immediate.value) - size;
+					}
+				}
+
+				if(m_symbolic_operand) {
+					m_operands[m_unresolved_index].unknown = true;
+
+					if(is_operand_mem(m_operands[m_unresolved_index].type) && m_fixup == FIXUP_DISPLACEMENT) {
+						// force the longest possible encoding
+						m_operands[m_unresolved_index].memory.displacement = 1;
+						m_operands[m_unresolved_index].memory.displacement.min_bits = 32;
 					}
 				}
 
@@ -455,9 +523,9 @@ namespace baremetal {
 
 					// remove the last potential variant (the largest one), and use it as our operand, this will
 					// most likely be optimized out by the resolve_symbols() function
-					m_operands[variant_index].type = backend.current_variants.pop_back();
+					m_operands[m_unresolved_index].type = backend.current_variants.pop_back();
 
-					if(!is_operand_rel(m_operands[variant_index].type)) {
+					if(!is_operand_rel(m_operands[m_unresolved_index].type)) {
 						backend.current_variants.clear(); // no potential for optimizations
 					}
 
@@ -469,7 +537,8 @@ namespace baremetal {
 						.position = parent.offset,
 						.size = size,
 						.variants = backend.current_variants,
-						.unresolved_operand = variant_index,
+						.unresolved_operand = m_unresolved_index,
+						.fixup = m_fixup
 					};
 
 					utility::memcpy(unresolved.operands, m_operands, 4 * sizeof(operand));
@@ -489,7 +558,7 @@ namespace baremetal {
 			m_instruction_i++;
 		}
 
-		ASSERT(false, "invalid instruction\n");
+		ASSERT(false, "invalid operand combination for instruction '{}'\n", instruction_db[m_instruction_i - 1].name);
 		return SUCCESS;
 	}
 
@@ -605,6 +674,7 @@ namespace baremetal {
 	}
 
 	auto assembler::parse_identifier_operand() -> utility::result<void> {
+		m_unresolved_index = m_operand_i;
 		m_operands[m_operand_i++] = operand(m_current_token.identifier); 
 		m_symbolic_operand = true;
 		get_next_token();
@@ -660,6 +730,12 @@ namespace baremetal {
 		return SUCCESS;
 	}
 
+	auto assembler::parse_operand_char() -> utility::result<void> {
+		m_operands[m_operand_i++] = imm(static_cast<i32>(m_current_token.identifier->get_data()[0]));
+		get_next_token();
+		return SUCCESS;
+	}
+
 	auto assembler::parse_rip_rel_operand() -> utility::result<void> {
 		get_next_token();
 
@@ -706,6 +782,7 @@ namespace baremetal {
 
 		get_next_token();
 
+		// utility::console::print("{}  {}\n", *m_current_identifier, token_to_string(m_current_token.type));
 		switch(m_current_token.type) {
 			case TOK_DB ... TOK_DQ: return parse_define_memory();
 			case TOK_COLON:         return parse_label();
@@ -718,13 +795,15 @@ namespace baremetal {
 	auto assembler::parse_section() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_SECTION);
 
-		get_next_token();
-		EXPECT_TOKEN(TOK_DOT);
+		// get_next_token();
+		// EXPECT_TOKEN(TOK_DOT);
 
 		get_next_token();
 		EXPECT_TOKEN(TOK_IDENTIFIER);
+		ASSERT(m_current_token.identifier->get_data()[0] == '.', "first char of a section should be a '.'\n");
 
 		create_normal_subsection(); // capture any trailing instructions
+
 		set_section(m_current_token.identifier);
 
 		get_next_token();
@@ -785,6 +864,7 @@ namespace baremetal {
 		mem& memory = op.memory;
 		imm current_imm;
 
+		memory.displacement = 0;
 
 		bool displacement_set = false;
 		bool scale_mode = false;
@@ -942,6 +1022,14 @@ namespace baremetal {
 					}
 
 					return SUCCESS;
+				}
+				case TOK_IDENTIFIER: {
+					m_unresolved_index = m_operand_i;
+					m_symbolic_operand = true;
+					m_fixup = FIXUP_DISPLACEMENT;
+					op.symbol = m_current_token.identifier;
+					memory.displacement.min_bits = 32;
+					break;
 				}
 				default: {
 					return utility::error("unexpected token received in memory operand");

@@ -1,4 +1,3 @@
-; tests custom, and predefined sections, together with basic relocation
 ; expect: 78ff0f48b8180000000000000048b800000000000000000078ff0f0078ff0f48b81c00000000000000
 bits 64
 

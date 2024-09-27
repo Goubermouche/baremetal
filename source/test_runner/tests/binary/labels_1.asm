@@ -1,4 +1,3 @@
-; tests basic rip-relative label jumps
 ; expect: eb02eb02ebfc
 bits 64
 

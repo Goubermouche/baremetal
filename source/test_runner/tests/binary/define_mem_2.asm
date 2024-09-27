@@ -12,4 +12,3 @@ section .text
 	mov rsi, msg1
 	mov rsi, msg2
 	mov rsi, msg3
-

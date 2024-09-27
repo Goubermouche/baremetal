@@ -124,10 +124,10 @@ namespace baremetal {
 		constexpr operand(utility::string_view* symbol) : type(OP_REL_UNKNOWN), symbol(symbol) {}
 
 		operand_type type;
+		bool unknown = false;
+		utility::string_view* symbol;
 
 		union {
-			utility::string_view* symbol;
-
 			masked_mem mm; // masked memory location
 			masked_reg mr; // masked register
 

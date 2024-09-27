@@ -28,7 +28,7 @@ namespace baremetal {
 	}
 
 	auto assembler_lexer::is_at_end() -> bool {
-		return m_index + 1 >= m_text.get_size();
+		return m_index >= m_text.get_size();
 	}
 
 	auto assembler_lexer::get_next_char_escaped() -> char {
@@ -66,6 +66,7 @@ namespace baremetal {
 		// special characters
 		switch(m_current_char) {
 			case '_':
+			case '.':
 			case '0' ... '9': 
 			case 'a' ... 'z':
 			case 'A' ... 'Z': return get_next_token_identifier();
@@ -83,12 +84,13 @@ namespace baremetal {
 			case '-':  get_next_char();  return current = TOK_MINUS;
 			case '*':  get_next_char();  return current = TOK_ASTERISK;
 			case '$':  get_next_char();  return current = TOK_DOLLARSIGN;
-			case '.':  get_next_char();  return current = TOK_DOT;
+			// case '.':  get_next_char();  return current = TOK_DOT;
 			case ':':  get_next_char();  return current = TOK_COLON;
 			case '\n': get_next_char();  return current = TOK_NEWLINE;
 			case -1:                     return current = TOK_EOF;
 		}
 
+		ASSERT(false, "unknown character '{}' received\n", m_current_char);
 		return utility::error("unknown character received");
 	}
 
@@ -154,7 +156,7 @@ namespace baremetal {
 	}
 
 	auto assembler_lexer::get_next_token_identifier() -> utility::result<token_type> {
-		while(utility::is_alphanum(m_current_char) || m_current_char == '_') {
+		while(utility::is_alphanum(m_current_char) || m_current_char == '_' || m_current_char == '.') {
 			current_string += m_current_char;
 			get_next_char();
 		}
@@ -180,8 +182,6 @@ namespace baremetal {
 			get_next_char();
 		} while(!is_at_end() && m_current_char != '\n');
 
-		get_next_char(); // NOTE:
-		
 		// return the next token
 		return get_next_token();
 	}

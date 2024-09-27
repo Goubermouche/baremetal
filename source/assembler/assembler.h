@@ -24,6 +24,10 @@ namespace baremetal {
 		u8 size;
 	};
 
+	enum fixup_type : u8 {
+		FIXUP_DISPLACEMENT // memory base fixup
+	};
+
 	struct unresolved_subsection {
 		// instruction
 		u32 index;           // refers to the fist valid instruction variant in the instruction database
@@ -37,6 +41,7 @@ namespace baremetal {
 
 		utility::dynamic_array<operand_type> variants; // valid variants of the provided instruction;
 		u8 unresolved_operand;                         // index of the unresolved operand
+		fixup_type fixup;
 	};
 
 	enum subsection_type : u8 {
@@ -88,6 +93,7 @@ namespace baremetal {
 		auto parse() -> utility::result<void>;
 
 		// parsing
+		auto parse_reserve_memory() -> utility::result<void>;
 		auto parse_define_memory() -> utility::result<void>;
 		auto parse_instruction() -> utility::result<void>;
 		auto parse_identifier() -> utility::result<void>;
@@ -104,6 +110,7 @@ namespace baremetal {
 		auto parse_register_operand() -> utility::result<void>;
 		auto parse_rip_rel_operand() -> utility::result<void>;
 		auto parse_type_operand() -> utility::result<void>;
+		auto parse_operand_char() -> utility::result<void>;
 
 		auto parse_mask_or_broadcast() -> utility::result<mask_type>; 
 		auto parse_memory(operand& op) -> utility::result<void>;
@@ -119,15 +126,17 @@ namespace baremetal {
 		// parsing
 		utility::string_view* m_current_identifier;
 		token_buffer m_tokens;
-		token m_current_token = {};
-		u64 m_token_index = 0;
+		token m_current_token;
+		u64 m_token_index;
 
 		// instruction parsing
-		u32 m_instruction_i = 0;
-		operand m_operands[4] = {};
-		bool m_symbolic_operand = false;
-		u8 m_broadcast_n = 0;
-		u8 m_operand_i = 0;
+		u32 m_instruction_i;
+		operand m_operands[4];
+		bool m_symbolic_operand;
+		u8 m_broadcast_n;
+		u8 m_operand_i;
+		u8 m_unresolved_index;
+		fixup_type m_fixup;
 
 		// temporary array with bytes representing resolved instructions
 		utility::dynamic_array<u8> m_current_resolved;
