@@ -116,7 +116,7 @@ namespace baremetal {
 	};
 
 	struct operand {
-		constexpr operand() : type(OP_NONE), r(0) {}
+		constexpr operand() : type(OP_NONE), mm({}) {}
 		constexpr operand(imm i) : type(OP_I64), immediate(i) {}
 		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
 		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
@@ -409,6 +409,19 @@ namespace baremetal {
 
 		return false;
 	}
+
+	inline auto is_low_gpr(const operand& op) -> bool {
+		if(is_operand_reg(op.type) && op.type == OP_R8) {
+			return 
+				op.r == spl ||
+				op.r == bpl ||
+				op.r == sil ||
+				op.r == dil;
+		}
+
+		return false;
+	}
+
 
 	inline auto get_operand_bit_width(operand_type op) -> u16 {
     switch(op) {

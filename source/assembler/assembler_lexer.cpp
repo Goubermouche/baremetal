@@ -123,7 +123,7 @@ namespace baremetal {
 
 	auto assembler_lexer::get_next_token_char() -> utility::result<token_type> {
 		get_next_char();
-		current_string += get_next_char_escaped();
+		current_string = m_current_char;
 		get_next_char();
 
 		if(m_current_char != '\'') {
@@ -192,9 +192,10 @@ namespace baremetal {
 
 			switch(tok.type) {
 				case TOK_IDENTIFIER: 
-				case TOK_STRING:     utility::console::print(" {}\n", *tok.identifier);     break;
+				case TOK_STRING:     
+				case TOK_CHAR  :     utility::console::print(" {}\n", *tok.identifier);     break;
 				case TOK_NUMBER:     utility::console::print(" {}\n", tok.immediate.value); break;
-				default:             utility::console::print("\n");                        break;
+				default:             utility::console::print("\n");                         break;
 			}
 		}
 	}
@@ -482,10 +483,10 @@ namespace baremetal {
 			case TOK_DL: return reg8(2);
 			case TOK_BL: return reg8(3);
 
-			case TOK_SPL: return reg8(0);
-			case TOK_BPL: return reg8(1);
-			case TOK_SIL: return reg8(2);
-			case TOK_DIL: return reg8(3);
+			case TOK_SPL: return reg8(4);
+			case TOK_BPL: return reg8(5);
+			case TOK_SIL: return reg8(6);
+			case TOK_DIL: return reg8(7);
 
 			case TOK_AH:   return reg16(4);
 			case TOK_CH:   return reg16(5);

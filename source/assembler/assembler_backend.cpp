@@ -281,8 +281,15 @@ namespace baremetal {
 		// are legal
 		u8 imm_or_unresolved = imm_index == utility::limits<u8>::max() ? unknown_index : imm_index;
 
-		while(is_legal_variant(index, current_index, imm_or_unresolved)) {
-			legal_variants.push_back(&instruction_db[current_index++]);
+		if(imm_index != utility::limits<u8>::max()) {
+			while(is_legal_variant(index, current_index, imm_index)) {
+				legal_variants.push_back(&instruction_db[current_index++]);
+			}
+		}
+		else {
+			while(is_legal_variant_unknown(index, current_index, unknown_index)) {
+				legal_variants.push_back(&instruction_db[current_index++]);
+			}
 		}
 
 		// one legal variant
@@ -339,19 +346,46 @@ namespace baremetal {
 	}
 
 	auto assembler_backend::is_legal_variant(u32 a, u32 b, u8 imm_index) -> bool {
-		const u8 operand_count = instruction_db[a].operand_count - 1;
+		const u8 operand_count = instruction_db[a].operand_count;
 
 		if(utility::compare_strings(instruction_db[a].name, instruction_db[b].name) != 0) {
 			return false;
 		}
 
 		for(u8 i = 0; i < operand_count; ++i) {
+			if(i == imm_index) {
+				continue;
+			}
+
 			if(!detail::is_operand_of_same_kind(instruction_db[a].operands[i], instruction_db[b].operands[i])) {
 				return false;
 			}
 		}
 
 		return is_operand_imm(instruction_db[b].operands[imm_index]) || is_operand_rel(instruction_db[b].operands[imm_index]);
+	}
+
+	auto assembler_backend::is_legal_variant_unknown(u32 a, u32 b, u8 imm_index) -> bool {
+		const u8 operand_count = instruction_db[a].operand_count;
+
+		if(utility::compare_strings(instruction_db[a].name, instruction_db[b].name) != 0) {
+			return false;
+		}
+
+		for(u8 i = 0; i < operand_count; ++i) {
+			if(i == imm_index) {
+				continue;
+			}
+
+			if(!detail::is_operand_of_same_kind(instruction_db[a].operands[i], instruction_db[b].operands[i])) {
+				return false;
+			}
+		}
+
+		return 
+			is_operand_imm(instruction_db[b].operands[imm_index]) || 
+			is_operand_rel(instruction_db[b].operands[imm_index]) || 
+			is_operand_mem(instruction_db[b].operands[imm_index]); 
 	}
 
 	void assembler_backend::emit_instruction_prefix(const instruction* inst) {
@@ -476,7 +510,7 @@ namespace baremetal {
 	}
 
 	void assembler_backend::emit_opcode_prefix_rex(const instruction* inst, const operand* operands) {
-		if(inst->is_rexw() || is_extended_reg(operands[0]) || is_extended_reg(operands[1])) {
+		if(inst->is_rexw() || is_extended_reg(operands[0]) || is_extended_reg(operands[1]) || is_low_gpr(operands[0]) || is_low_gpr(operands[1])) {
 			push_byte(get_instruction_rex_rex(inst, operands));
 		}
 		else if(is_operand_mem(operands[0].type)) {

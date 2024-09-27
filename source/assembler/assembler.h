@@ -66,8 +66,9 @@ namespace baremetal {
 		void update_positions(u64 position, i32 diff);
 
 		utility::string_view* name;
-		u64 position = 0; // position of the entire section within the binary
-		u64 offset = 0;   // local instruction offset
+		bool is_empty = false; // whether the section contains any data
+		u64 position = 0;      // position of the entire section within the binary
+		u64 offset = 0;        // local instruction offset
 
 		// list of subsections which is concatenated during emission
 		utility::dynamic_array<subsection> subsections; 
@@ -75,6 +76,7 @@ namespace baremetal {
 		utility::dynamic_array<unresolved_subsection> unresolved; 
 		// symbol table, location of every symbol is relative to the respective section
 		utility::map<utility::string_view*, u64> symbols;
+
 	};
 
 	class assembler {

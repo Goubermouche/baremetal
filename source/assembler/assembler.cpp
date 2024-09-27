@@ -69,6 +69,10 @@ namespace baremetal {
 
 		// generate the final binary
 		for(const section& section : m_sections) {
+			if(section.subsections.is_empty()) {
+				continue;
+			}
+
 			// append alignment bytes for the previous section
 			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size();
 
@@ -119,7 +123,7 @@ namespace baremetal {
 									operands[unresolved.unresolved_operand].memory.displacement.min_bits = 32;
 									break;
 								}
-								default: ASSERT(false, "unexpected fixup type\n");
+								default: ASSERT(false, "unexpected fixup type {}\n", (i32)unresolved.fixup);
 							}
 
 							break; // TODO	
@@ -297,6 +301,7 @@ namespace baremetal {
 
 			switch(current.type) {
 				case TOK_IDENTIFIER:
+				case TOK_CHAR:
 				case TOK_STRING:     current.identifier = m_context.strings.add(lexer.current_string); break;
 				case TOK_NUMBER:     current.immediate  = lexer.current_immediate;                     break;
 				default:                                                                               break;
@@ -623,7 +628,7 @@ namespace baremetal {
 
 	auto assembler::parse_memory_operand(data_type type) -> utility::result<void> {
 		EXPECT_TOKEN(TOK_LBRACKET);
-		operand op;
+		operand op = {};
 
 		switch(type) {
 			case DT_NONE:  op.type = OP_M128; break; // M128 currently works as an infer keyword
@@ -633,7 +638,7 @@ namespace baremetal {
 			case DT_QWORD: op.type = OP_M64;  break;
 			case DT_TWORD: op.type = OP_M80;  break;
 		}
-		
+	
 		get_next_token();
 
 		// we can potentially have types in here, which means we're handling a moff
@@ -731,6 +736,7 @@ namespace baremetal {
 	}
 
 	auto assembler::parse_operand_char() -> utility::result<void> {
+		EXPECT_TOKEN(TOK_CHAR);
 		m_operands[m_operand_i++] = imm(static_cast<i32>(m_current_token.identifier->get_data()[0]));
 		get_next_token();
 		return SUCCESS;
@@ -1029,6 +1035,7 @@ namespace baremetal {
 					m_fixup = FIXUP_DISPLACEMENT;
 					op.symbol = m_current_token.identifier;
 					memory.displacement.min_bits = 32;
+					displacement_set = true;
 					break;
 				}
 				default: {
