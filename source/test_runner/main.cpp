@@ -10,7 +10,7 @@ bool g_quiet = false;
 
 namespace detail {
 	void run_test_encoding() {
-		const utility::filepath test_path = g_test_path / "encoding/test.txt"; 
+		const utility::filepath test_path = g_test_path / "encoding/test.asm"; 
 		const utility::dynamic_string test_file = utility::file::read(test_path);
 
 		baremetal::assembler_context context;

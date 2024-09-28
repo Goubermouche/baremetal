@@ -407,7 +407,7 @@ namespace baremetal {
 			const mem& m = operands[mem_index].memory;
 
 			if(
-				(inst->operands[mem_index] == OP_M32 || inst->operands[mem_index] == OP_M8) && 
+				(inst->operands[mem_index] == OP_M32 || inst->operands[mem_index] == OP_M8 || inst->operands[mem_index] == OP_MEM) &&  
 				((m.has_base && m.base.type == REG_R32) || (m.has_index && m.index.type == REG_R32))
 			) {
 				// utility::console::print("{} {} {} {} {}\n", m.has_base, m.has_index, (int)m.s, m.displacement.value, inst->is_rexw());

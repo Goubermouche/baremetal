@@ -880,6 +880,7 @@ namespace baremetal {
 		bool displacement_set = false;
 		bool scale_mode = false;
 		bool imm_set = false;
+		bool negate = false;
 
 		// TODO: this still doesn't work with negative operands
 
@@ -953,14 +954,19 @@ namespace baremetal {
 					break;
 				}
 				case TOK_MINUS: {
-					ASSERT(false, "not implemented\n");
-					break;
+					negate = true;
+					get_next_token();
+					EXPECT_TOKEN(TOK_NUMBER);
 				}
 				case TOK_NUMBER: {
 					if(scale_mode && current_reg.is_valid()) {
 						// reg * scale
 						if(memory.has_index) {
 							return utility::error("memory index cannot be specified twice");
+						}
+
+						if(negate) {
+							return utility::error("memory index cannot be negative");
 						}
 
 						memory.index = current_reg;
@@ -972,7 +978,14 @@ namespace baremetal {
 						current_reg = reg::create_invalid();
 					}
 					else{
-						current_imm = m_current_token.immediate;
+						// immediate
+						if(negate) {
+							current_imm = imm(-1 * static_cast<i64>(m_current_token.immediate.value));
+						}
+						else {
+							current_imm = m_current_token.immediate;
+						}
+
 						imm_set = true;
 					}
 
@@ -996,7 +1009,8 @@ namespace baremetal {
 							memory.has_base = true;
 						}
 					}
-					else if(imm_set) {
+					
+					if(imm_set) {
 						// displacement
 						if(displacement_set) {
 							return utility::error("memory displacement cannot be specified twice");
