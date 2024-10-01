@@ -538,24 +538,19 @@ namespace baremetal {
 		}
 	}
 
-	// TODO: 
-	auto assembler_backend::get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8 {
-		const bool is_rexw = inst->is_rexw();
-
-		u8 rx = 0;
-		u8 base = 0;
-		u8 index = 0;
-		u8 index_byte = 0;
-
-		// figure out the index bit first
+	auto extract_sib_index_reg(const instruction* inst, const operand* operands) -> u8 {
 		if(inst->has_mem_operand()) {
 			const mem mem = operands[inst->get_mem_operand()].memory;
 
 			if(mem.has_index) {
-				index = mem.index.index;
+				return mem.index.index;
 			}
 		}
 
+		return 0;
+	}
+
+	auto extract_modrm_reg(const instruction* inst, const operand* operands) -> u8 {
 		const u8 registers[4] = {
 			detail::extract_operand_reg(operands[0]),
 			detail::extract_operand_reg(operands[1]),
@@ -563,192 +558,65 @@ namespace baremetal {
 			detail::extract_operand_reg(operands[3]),
 		};
 
-		// op[0] is extended? [____X___]
-		// op[1] is extended? [_____X__]
-		// op[2] is extended? [______X_]
-		// op[3] is extended? [_______X]
-		index_byte |= (registers[0] >= 8) << 3;
-		index_byte |= (registers[1] >= 8) << 2;
-		index_byte |= (registers[2] >= 8) << 1;
-		index_byte |= (registers[3] >= 8) << 0;
-
-		if(inst->operand_count == 1) {
-			base = registers[0];
+		switch(inst->enc) {
+			case ENC_VEX_RVMS: return registers[0];
+			case ENC_VEX_RVMN: return registers[0];
+			case ENC_EVEX_RVM: return registers[0];
+			case ENC_VEX_RVM:  return registers[0];
+			case ENC_VEX:      return registers[1];
+			case ENC_VEX_MVRR: return registers[2];
+			case ENC_VEX_MVR:  return registers[1];
+			case ENC_VEX_MR:   return registers[1];
+			case ENC_VEX_RM:   return registers[0];
+			case ENC_VEX_VM:   return 0;
+			case ENC_XOP_VM:   return 0;
+			case ENC_XOP:      return 0;
+			case ENC_VEX_RMV:  return registers[0];
+			default: break;
 		}
-		else {
-			switch(inst->enc) {
-				case ENC_VEX_RVMN: {
-					switch(index_byte) {
-						case 0b1110: rx = 8; base = 8; break;
-						case 0b1010: rx = 8; base = 8; break;
-						case 0b1100: rx = 8; base = 8; break;
-						case 0b0110: base = 8; break;
-						case 0b0100: base = 8; break;
-						case 0b1000: rx = 8; break;
-						default: break;
-					}
 
-					break;
-				}
-				case ENC_EVEX_RVM:
-				case ENC_VEX_RVM: {
-					switch(index_byte) {
-						case 0b1110: rx = 8; base = 8; break;
-						case 0b1010: rx = 8; base = 8; break;
-						case 0b0010: base = 8; break;
-						case 0b0110: base = 8; break;
-						case 0b1000: rx = 8; break;
-						case 0b1100: rx = 8; break;	
-						default: break;
-					}
+		return 0;
+	}
 
-					break;
-				}
-				case ENC_VEX_MR: {
-					switch(index_byte) {
-						case 0b1100: rx = 8; base = 8; break;
-						case 0b1000: base = 8; break;
-						case 0b0100: rx = 8; break;
-						default: break;
-					}
+	auto extract_modrm_rm(const instruction* inst, const operand* operands) -> u8 {
+		const u8 registers[4] = {
+			detail::extract_operand_reg(operands[0]),
+			detail::extract_operand_reg(operands[1]),
+			detail::extract_operand_reg(operands[2]),
+			detail::extract_operand_reg(operands[3]),
+		};
 
-					break;
-				}
-				case ENC_VEX_VM: {
-					switch(index_byte) {
-						case 0b0100: base = 8; break;
-						case 0b1100: base = 8; break;
-						default: break;
-					}
+		switch(inst->enc) {
+			case ENC_VEX_RVMS: return registers[2];
+			case ENC_VEX_RVMN: return registers[1];
+			case ENC_EVEX_RVM: return registers[2];
+			case ENC_VEX_RVM:  return registers[2];
+			case ENC_VEX:      return registers[0];
+			case ENC_VEX_MVRR: return registers[0];
+			case ENC_VEX_MVR:  return registers[0];
+			case ENC_VEX_MR:   return registers[0];
+			case ENC_VEX_RM:   return registers[1];
+			case ENC_VEX_VM:   return registers[1];
+			case ENC_XOP_VM:   return registers[1];
+			case ENC_XOP:      return registers[0];
+			case ENC_VEX_RMV:  return registers[1];
+			default: break;
+		}
 
-					break;
-				}
-				case ENC_VEX_RM: {
-					switch(index_byte) {
-						case 0b1100: rx = 8; base = 8; break;
-						case 0b0100: base = 8; break;
-						case 0b1000: rx = 8; break;
-						default: break;
-					}
+		return 0;
+	}
 
-					break;
-				}
-				case ENC_VEX_MVRR: {
-					switch(index_byte) {
-						case 0b1110: rx = 8; base = 8; break; 
-						case 0b1010: rx = 8; base = 8; break;
-						case 0b1000: base = 8; break;
-						case 0b1100: base = 8; break;
-						case 0b0010: rx = 8; break;
-						case 0b0110: rx = 8; break;
-						default: break;
-					}
-					break;
-				}
-				case ENC_VEX_MVR: {
-					switch(index_byte) {
-						case 0b1110: rx = 8; base = 8; break; 
-						case 0b1100: rx = 8; base = 8; break;
-						case 0b1000: base = 8; break;
-						case 0b1010: base = 8; break;
-						case 0b0110: rx = 8; break;
-						case 0b0100: rx = 8; break;
-						default: break;
-					}
-					break;
-				}
-				case ENC_XOP_VM: {
-					switch(index_byte) {
-						case 0b0100: base = 8; break;
-						case 0b1100: base = 8; break;
-						default: break;
-					}
+	// TODO: 
+	auto assembler_backend::get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8 {
+		const bool is_rexw = inst->is_rexw();
 
-					break;
-				}
-				case ENC_VEX_RVMS: {
-					switch(index_byte) {
-    				case 0b1111: rx = 8; base = 8; break;
-    				case 0b1010: rx = 8; base = 8; break;
-    				case 0b1110: rx = 8; base = 8; break;
-    				case 0b1011: rx = 8; base = 8; break;
-    				case 0b0010: base = 8; break;
-    				case 0b0011: base = 8; break;
-    				case 0b0110: base = 8; break;
-    				case 0b0111: base = 8; break;
-    				case 0b1000: rx = 8; break;
-    				case 0b1001: rx = 8; break;
-    				case 0b1100: rx = 8; break;
-    				case 0b1101: rx = 8; break;
-						default: break;
-					}
+		u8 rx = extract_modrm_reg(inst, operands);
+		u8 base = extract_modrm_rm(inst, operands);
+		u8 index = extract_sib_index_reg(inst, operands);
 
-					break;
-				}
-				case ENC_VEX: {
-					switch(index_byte) {
-						case 0b1110: rx = 8; base = 8; break;
-						case 0b1100: rx = 8; base = 8; break;
-						case 0b1010: base = 8; break;
-						case 0b1000: base = 8; break;
-						case 0b0100: rx = 8; break;
-						case 0b0110: rx = 8; break;
-						default: break;
-					}
-
-					break;
-				}
-				case ENC_XOP: {
-					switch(index_byte) {
-						case 0b1000: base = 8;
-						default: break;
-					}
-
-					break;
-				}
-				case ENC_VEX_RMV: {
-					switch(index_byte) {
-						case 0b1000: rx = 8; break;
-						case 0b1010: rx = 8; break;
-						case 0b1100:
-						case 0b1110: {
-							rx = 8;
-							base = 8;
-
-							// VSIB operand
-							if(index > 15) {
-								index = 0;
-							}
-
-							break;
-						}
-						case 0b0110: {
-							base = 8;
-
-							// VSIB operand
-							if(index > 15) {
-								index = 0;
-							}
-
-							break;
-						}
-						case 0b0100: {
-							base = 8;
-
-							// VSIB operand
-							if(index > 15) {
-								index = 0;
-							}
-
-							break;
-						}
-						default: break;
-					}
-
-					break;
-				}
-				default: ASSERT(false, "unhandled rex case 6");
-			}
+		// special case for VSIB
+		if(inst->enc == ENC_VEX_RMV && index > 15 && detail::extract_operand_reg(operands[1]) > 7) {
+			index = 0;
 		}
 		
 		return detail::rex(is_rexw, rx, base, index);
