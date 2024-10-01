@@ -539,6 +539,8 @@ namespace baremetal {
 	}
 
 	auto extract_sib_index_reg(const instruction* inst, const operand* operands) -> u8 {
+		u8 index = 0;
+
 		const u8 registers[4] = {
 			detail::extract_operand_reg(operands[0]),
 			detail::extract_operand_reg(operands[1]),
@@ -553,6 +555,10 @@ namespace baremetal {
 			case ENC_VEX_VM:   if(registers[1] > 15) { return registers[1]; } break;
 			case ENC_VEX_RVM:  if(registers[2] > 15) { return registers[2]; } break;
 			case ENC_VEX_RVMN: if(registers[2] > 15) { return registers[2]; } break;
+			case ENC_EVEX_MR:  if(registers[2] > 15) { return registers[2]; } break;
+			case ENC_EVEX_RVM: if(registers[2] > 15) { return registers[2]; } break;
+			case ENC_EVEX_RMZ: if(registers[2] > 15) { return registers[2]; } break;
+			case ENC_EVEX_RM:  if(registers[2] > 15) { return registers[2]; } break;
 			default: break;
 		}
 
@@ -560,11 +566,58 @@ namespace baremetal {
 			const mem mem = operands[inst->get_mem_operand()].memory;
 
 			if(mem.has_index) {
-				return mem.index.index;
+				index = mem.index.index;
 			}
 		}
 
-		return 0;
+		switch(inst->enc) {
+			case ENC_EVEX_RVM: {
+				if(inst->operand_count == 2) {
+					if(
+						is_operand_reg(inst->operands[0]) && 
+						is_operand_reg(inst->operands[1]) &&
+						inst->has_masked_operand() == false &&
+						registers[0] > 15
+					) {
+						index = registers[0];
+					}
+					else if(
+						is_operand_reg(inst->operands[0]) && 
+						is_operand_reg(inst->operands[1]) &&
+						inst->has_masked_operand() == true &&
+						registers[1] > 15
+					) {
+						index = registers[1];
+					}
+				}
+
+				break;
+			}
+			case ENC_EVEX_MR: {
+				if(
+					is_operand_reg(inst->operands[0]) &&
+					is_operand_reg(inst->operands[1]) &&
+					registers[0] > 15
+				) {
+					return registers[0]; 
+				}
+
+				break;
+			}
+			// special case for VSIB
+			case ENC_EVEX_RMZ:
+			case ENC_EVEX_RM:
+			case ENC_VEX_RMV: {
+				if(index > 15 && detail::extract_operand_reg(operands[1]) > 7) {
+					index = 0;
+				}
+
+				break;
+			}
+			default: break;
+		}
+
+		return index;
 	}
 
 	auto extract_modrm_reg(const instruction* inst, const operand* operands) -> u8 {
@@ -575,27 +628,63 @@ namespace baremetal {
 			detail::extract_operand_reg(operands[3]),
 		};
 
+		u8 reg = 0;
+
 		switch(inst->enc) {
-			case ENC_VEX_RVMS: return registers[0];
-			case ENC_VEX_RVMN: return registers[0];
-			case ENC_EVEX_RVM: return registers[0];
-			case ENC_VEX_RVM:  return registers[0];
-			case ENC_VEX:      return registers[1];
-			case ENC_VEX_MVRR: return registers[2];
-			case ENC_VEX_MVR:  return registers[1];
-			case ENC_VEX_MR:   return registers[1];
-			case ENC_VEX_RM:   return registers[0];
-			case ENC_VEX_VM:   return 0;
-			case ENC_XOP_VM:   return 0;
-			case ENC_XOP:      return 0;
-			case ENC_VEX_RMV:  return registers[0];
-			case ENC_EVEX_MVR: return registers[1]; 
-			case ENC_EVEX_VM:  return registers[2]; 
-			case ENC_EVEX_M:   return 0; 
+			case ENC_VEX_RVMS: reg = registers[0]; break;
+			case ENC_VEX_RVMN: reg = registers[0]; break;
+			case ENC_EVEX_RVM: reg = registers[0]; break;
+			case ENC_VEX_RVM:  reg = registers[0]; break;
+			case ENC_VEX:      reg = registers[1]; break;
+			case ENC_VEX_MVRR: reg = registers[2]; break;
+			case ENC_VEX_MVR:  reg = registers[1]; break;
+			case ENC_VEX_MR:   reg = registers[1]; break;
+			case ENC_VEX_RM:   reg = registers[0]; break;
+			case ENC_VEX_RMV:  reg = registers[0]; break;
+			case ENC_EVEX_MVR: reg = registers[1]; break; 
+			case ENC_EVEX_VM:  reg = registers[2]; break; 
+			case ENC_EVEX_MR:  reg = registers[1]; break;
+			case ENC_EVEX_RMZ: reg = registers[0]; break;
+			case ENC_EVEX_RM:  reg = registers[0]; break;
 			default: break;
 		}
 
-		return 0;
+		switch(inst->enc) {
+			case ENC_EVEX_RVM: {
+				if(inst->operand_count == 2) {
+					if(
+						is_operand_reg(inst->operands[0]) && 
+						is_operand_reg(inst->operands[1]) &&
+						inst->has_masked_operand() == false
+					) {
+						reg = registers[1];
+					}
+					else if(
+						inst->has_masked_operand() && 
+						is_operand_mem(inst->operands[inst->get_masked_operand()]) &&
+						operands[inst->get_masked_operand()].memory.has_base == false
+					) {
+						reg = registers[1];
+					}
+				}
+
+				break;
+			}
+			case ENC_EVEX_MR: {
+				if(is_operand_mem(inst->operands[1])) {
+					reg = registers[0];
+				}
+				
+				if(is_operand_reg(inst->operands[0]) && inst->has_masked_operand()) {
+					reg = registers[0];
+				}
+
+				break;
+			}
+			default: break;
+		}
+
+		return reg;
 	}
 
 	auto extract_modrm_rm(const instruction* inst, const operand* operands) -> u8 {
@@ -606,27 +695,81 @@ namespace baremetal {
 			detail::extract_operand_reg(operands[3]),
 		};
 
+		u8 rm = 0;
+
 		switch(inst->enc) {
-			case ENC_VEX_RVMS: return registers[2];
-			case ENC_VEX_RVMN: return registers[1];
-			case ENC_EVEX_RVM: return registers[2];
-			case ENC_VEX_RVM:  return registers[2];
-			case ENC_VEX:      return registers[0];
-			case ENC_VEX_MVRR: return registers[0];
-			case ENC_VEX_MVR:  return registers[0];
-			case ENC_VEX_MR:   return registers[0];
-			case ENC_VEX_RM:   return registers[1];
-			case ENC_VEX_VM:   return registers[1];
-			case ENC_XOP_VM:   return registers[1];
-			case ENC_XOP:      return registers[0];
-			case ENC_VEX_RMV:  return registers[1];
-			case ENC_EVEX_MVR: return registers[0]; 
-			case ENC_EVEX_VM:  return registers[1]; 
-			case ENC_EVEX_M:   return 0; 
+			case ENC_VEX_RVMS: rm = registers[2]; break;
+			case ENC_VEX_RVMN: rm = registers[1]; break;
+			case ENC_EVEX_RVM: rm = registers[2]; break;
+			case ENC_VEX_RVM:  rm = registers[2]; break;
+			case ENC_VEX:      rm = registers[0]; break;
+			case ENC_VEX_MVRR: rm = registers[0]; break;
+			case ENC_VEX_MVR:  rm = registers[0]; break;
+			case ENC_VEX_MR:   rm = registers[0]; break;
+			case ENC_VEX_RM:   rm = registers[1]; break;
+			case ENC_VEX_VM:   rm = registers[1]; break;
+			case ENC_XOP_VM:   rm = registers[1]; break;
+			case ENC_XOP:      rm = registers[0]; break;
+			case ENC_VEX_RMV:  rm = registers[1]; break;
+			case ENC_EVEX_MVR: rm = registers[0]; break; 
+			case ENC_EVEX_VM:  rm = registers[1]; break; 
+			case ENC_EVEX_MR:  rm = registers[0]; break; 
+			case ENC_EVEX_RMZ: rm = registers[2]; break;
+			case ENC_EVEX_RM:  rm = registers[2]; break;
 			default: break;
 		}
 
-		return 0;
+		switch(inst->enc) {
+			case ENC_EVEX_RVM: {
+				if(inst->operand_count == 2) {
+					if(
+						is_operand_reg(inst->operands[0]) && 
+						is_operand_reg(inst->operands[1]) &&
+						inst->has_masked_operand() == false
+					) {
+						rm = registers[0];
+					}
+					else if(
+						inst->has_masked_operand() && 
+						is_operand_mem(inst->operands[inst->get_masked_operand()]) &&
+						operands[inst->get_masked_operand()].memory.has_base == false
+					) {
+						rm = registers[0];
+					}
+					else {
+						rm = registers[1];
+					}
+				}
+
+				break;
+			}
+			case ENC_EVEX_RMZ: 
+			case ENC_EVEX_RM: {
+				if(inst->operand_count == 2) {
+					rm = registers[1];
+				}
+
+				if(inst->operand_count == 3 && is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false) {
+					rm = 0;
+				}
+
+				break;
+			}
+			case ENC_EVEX_MR: {
+				if(is_operand_mem(inst->operands[1])) {
+					rm = registers[1];
+				}
+				
+				if(is_operand_reg(inst->operands[0]) && inst->has_masked_operand()) {
+					rm = registers[1];
+				}
+
+				break;
+			}
+			default: break;
+		}
+
+		return rm;
 	}
 
 	auto assembler_backend::get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8 {
@@ -636,11 +779,6 @@ namespace baremetal {
 		u8 base = extract_modrm_rm(inst, operands);
 		u8 index = extract_sib_index_reg(inst, operands);
 
-		// special case for VSIB
-		if(inst->enc == ENC_VEX_RMV && index > 15 && detail::extract_operand_reg(operands[1]) > 7) {
-			index = 0;
-		}
-		
 		return detail::rex(is_rexw, rx, base, index);
 	}
 
@@ -673,325 +811,57 @@ namespace baremetal {
 		index_byte |= (registers[3] > 15) << 0;
 
 		switch(inst->enc) {
-			case ENC_EVEX_RVM: {
-				rx = 0;
-				base = 0;
-				switch(index_byte) {
-					case 0b11001100: rx = 8; base = 8; index = 8; break; 
-					case 0b11111100: rx = 8; base = 8; index = 8; break;	
-					case 0b10001100: rx = 8; base = 8; index = 8; break; 
-					case 0b10101100: rx = 8; base = 8; index = 8; break;   
-					case 0b10111100: rx = 8; base = 8; index = 8; break; 
-					case 0b11101100: rx = 8; base = 8; index = 8; break;
-					case 0b00001100: base = 8; index = 8; break;    
-					case 0b00111100: base = 8; index = 8; break;  
-					case 0b00101100: base = 8; index = 8; break;  
-					case 0b11101000: rx = 8; base = 8; break;  
-					case 0b11001000: rx = 8; base = 8; break;  
-					case 0b10101000: rx = 8; base = 8; break;
-					case 0b10001000: rx = 8; base = 8; break; 
-					case 0b10111000: rx = 8; base = 8; break;  
-					case 0b11111000: rx = 8; base = 8; break;  
-					case 0b00001000: base = 8; break;
-					case 0b00111000: base = 8; break;  
-					case 0b00101000: base = 8; break;   
-					case 0b00100000: {
-						if(inst->operand_count == 2 && is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
-							base = 8;
-						}
-						else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
-							rx = 8;
-						}
-						else if(is_operand_mem(inst->operands[1]) && inst->operand_count == 2) {
-							base = registers[1];
-						}
-						else if(is_operand_mem(inst->operands[1]) || inst->operand_count == 2) {
-							if(is_operand_masked(inst->operands[0])) {
-								rx = 8;
-								base = 0;
-								index = 0;
-							}
-							else {
-								base = registers[1];
-							}
-						}
-
-						break;
-					}
-					case 0b10000000: {
-						if(is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
-							rx = 8;
-						}
-						else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
-							base = 8;
-						}
-						else {
-							rx = registers[0]; 
-						}
-
-						break;
-					}
-					case 0b10100000: {
-						rx = registers[0];
-
-						if(inst->operand_count == 2) {
-							base = registers[1];
-						}
-
-						break; 
-					}
-					case 0b00110000: {
-						if(inst->operand_count == 2) {
-							if(is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0])) {
-								base = index = 8;
-							}
-							else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
-								rx = 8;
-							}
-							else if(is_operand_masked(inst->operands[0])) {
-								rx = 8;
-								base = 0;
-								index = 0;
-							}
-							else {
-								rx = registers[0]; 
-								base = registers[1];
-								index = 8;
-							}
-						}
-
-						break;  
-					}
-					case 0b10110000: {
-						if(inst->operand_count == 2) {
-							if(is_operand_masked(inst->operands[0])) {
-								rx = base = index = 8;
-							}
-							else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
-								base = rx = 8;
-							}
-							else {
-								rx = registers[0];
-								base = registers[1];
-								index = 8;
-							}
-						}
-						else {
-							rx = registers[0]; 
-							base = registers[2]; 
-						}
-
-						break;  
-					}
-					case 0b11000000: {
-						if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
-							base = index = 8;
-						}
-						else {
-							rx = registers[0];
-						}
-
-						break;  
-					}
-					case 0b11100000: 
-					case 0b11110000: { 
-						if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1]) && inst->operand_count == 2) {
-							rx = base = index = 8;
-						}
-						else {
-							rx = registers[1]; 
-						}
-						break; 
-					}
-	
-					default: break;
-				}
-
-				break;
-			}
 			case ENC_EVEX_RMZ:
 			case ENC_EVEX_RM: {
 				switch(index_byte) {
-					case 0b10101100: rx = 8; base = 8; index = 8; break;   
-					case 0b10001100: rx = 8; base = 8; index = 8; break; 
-					case 0b10111100: rx = 8; base = 8; index = 8; break; 
-					case 0b11101100: rx = 8; base = 8; index = 8; break;
-					case 0b11001100: rx = 8; base = 8; index = 8; break;
-					case 0b11111100: rx = 8; base = 8; index = 8; break; 	
-					case 0b11110000: rx = 8; base = 8; index = 8; break; 
-					case 0b00001100: base = 8; index = 8; break;    
-					case 0b00111100: base = 8; index = 8; break;  
-					case 0b00101100: base = 8; index = 8; break;  
-					case 0b10001000: rx = 8; base = 8; break; 
-					case 0b10111000: rx = 8; base = 8; break;  
-					case 0b11001000: rx = 8; base = 8; break;  
-					case 0b11101000: rx = 8; base = 8; break;  
-					case 0b11111000: rx = 8; base = 8; break;  
-					case 0b00001000: base = 8; break;
-					case 0b00111000: base = 8; break;  
-					case 0b00101000: base = 8; break;   
-					case 0b10000000: rx = 8; break; 
-					case 0b11000000: rx = 8; break;  
 					case 0b00100000: {
+						rx = 0;
 						if(m_reg_count == 3 || is_operand_mem(inst->operands[2])) {
-							base = registers[2];
 						}
 						else {
 							base = registers[1];
-						}
-
-						if(
-							is_operand_mem(inst->operands[1]) && 
-							operands[1].memory.has_index && 
-							operands[1].memory.index.index > 15
-						) {
-							index = 0;
 						}
 
 						break;
 					} 
+					case 0b11110000: {
+						index = 8;
+						base = registers[0];
+						break;
+					} 
 					case 0b10100000: {
 						if(m_reg_count == 3 || is_operand_mem(inst->operands[2])) {
-							rx = registers[0]; 
-							base = registers[2];
 						}
 						else {
-							rx = registers[0]; 
 							base = registers[1];
-						}
-
-						if(
-							is_operand_mem(inst->operands[1]) && 
-							operands[1].memory.has_index && 
-							operands[1].memory.index.index > 15
-						) {
-							index = 0;
 						}
 
 						break;
 					} 
 					case 0b10101000: {
-						rx = registers[0];
 						base = registers[1];
 						break;
 					}
 					case 0b00110000: {
 						if(inst->operand_count == 2 || (m_reg_count == 2 && is_operand_mem(inst->operands[2]) == false)) {
-							rx = registers[0]; 
 							base = registers[1]; 
 							index = 8;
-						}
-						else {
-							rx = registers[0];
-							base = registers[2];
 						}
 						break;
 					}
 					case 0b10110000: {
 						if(m_reg_count == 2) {
 							if(is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false) {
+								// base  = 0;
 								rx = 8;
 							}
 							else {
-								rx = registers[0];
 								base = registers[1];
 								index = 8;
 							}
 						}
-						else {
-							rx = registers[0]; 
-							base = registers[2]; 
-						}
 
 						break;
-					}
-					case 0b11100000: {
-						if(inst->operand_count == 2) {
-							rx = registers[0]; 
-							base = registers[1]; 
-						}
-						else {
-							rx = registers[1]; 
-						}
-						break; 
-					}
-					default: break;
-				}
-
-				break;
-			}
-			case ENC_EVEX_MR: {
-				switch(index_byte) {
-					case 0b11111100: rx = registers[0]; base = 8; index = 8; break; 				
-					case 0b10101100: rx = 8; base = 8; index = 8; break;   
-					case 0b10001100: rx = 8; base = 8; index = 8; break; 
-					case 0b10111100: rx = 8; base = 8; index = 8; break; 
-					case 0b11001100: rx = 8; base = 8; index = 8; break;
-					case 0b11101100: rx = 8; base = 8; index = 8; break;
-					case 0b00101100: base = 8; index = 8; break;  
-					case 0b00001100: base = 8; index = 8; break;    
-					case 0b00111100: base = 8; index = 8; break;  
-					case 0b10001000: rx = 8; base = 8; break; 
-					case 0b10100000: rx = 8; base = 8; break; 
-					case 0b10101000: rx = 8; base = 8; break;
-					case 0b10110000: rx = 8; base = 8; break;  
-					case 0b10111000: rx = 8; base = 8; break;  
-					case 0b11001000: rx = 8; base = 8; break;  
-					case 0b11101000: rx = 8; base = 8; break;  
-					case 0b11111000: rx = 8; base = 8; break;  
-					case 0b00101000: base = 8; break;  
-					case 0b00111000: base = 8; break;  
-					case 0b00001000: base = 8; break;
-					case 0b00110000: rx = 8; break;
-					case 0b00100000: {
-						if(is_operand_mem(inst->operands[1])) {
-							base = registers[1];
-						}
-						else {
-							rx = registers[1];
-						}
-
-						break;
-					} 
-					case 0b10000000: {
-						if(inst->has_masked_operand()) {
-							rx = registers[0];
-						}
-						else {
-							base = registers[0]; 
-						}
-
-						break;
-					}
-					case 0b11000000: {
-						if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
-							base = index = 8;
-						}
-						else {
-							rx = registers[0]; 
-						}
-
-						break;  
-					}
-					case 0b11100000: {
-						if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
-							rx = base = index = 8;
-						}
-						else {
-							rx = registers[1]; 
-						}
-
-						break;
-					}
-					case 0b11110000: {
-						if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
-							rx = base = index = 8;
-						}
-						else {
-							rx = registers[1];
-						}
-
-						break; 
 					}
 					default: break;
 				}
