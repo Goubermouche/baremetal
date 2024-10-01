@@ -407,8 +407,7 @@ namespace baremetal {
 			const mem& m = operands[mem_index].memory;
 
 			if(
-				(inst->operands[mem_index] == OP_M32 || inst->operands[mem_index] == OP_M8 || inst->operands[mem_index] == OP_MEM) &&  
-				((m.has_base && m.base.type == REG_R32) || (m.has_index && m.index.type == REG_R32))
+				((m.base.type == REG_R32) || (m.index.type == REG_R32))
 			) {
 				// utility::console::print("{} {} {} {} {}\n", m.has_base, m.has_index, (int)m.s, m.displacement.value, inst->is_rexw());
 				//if(m.has_base && m.has_index == false && m.s == SCALE_1 && m.displacement.value == 0) {}
@@ -466,15 +465,14 @@ namespace baremetal {
 		
 		// emit the instruction opcode
 		u64 opcode = inst->opcode;
-		u8 opcode_end = 1;
 
 		if(inst->is_rex() == false) {
 			// VEX instructions have the leading opcode encoded in themselves, so we have to skip it here
-			opcode_end = 3;
+			opcode &= 0xff;
 		}
 		else if(inst->enc == ENC_NORMALD) {
 			// skip the first byte, since we've already pushed it (double instruction)
-			opcode_end = 2;
+			opcode &= 0xff;
 		}
 
 		// opcode extensions (add a specific register to the opcode itself)
@@ -494,7 +492,7 @@ namespace baremetal {
 		}
 
 		// append opcode bytes
-		for(u8 i = 4; i-- > opcode_end;) {
+		for(u8 i = 4; i-- > 1;) {
 			const u8 byte = (opcode >> (i * 8)) & 0xFF;
 
 			if(byte != 0) {
@@ -579,38 +577,15 @@ namespace baremetal {
 		}
 		else {
 			switch(inst->enc) {
-				case ENC_VEX_MR: {
-					switch(index_byte) {
-						case 0b1000: rx = registers[1]; base = registers[0]; break;
-						case 0b1100: rx = registers[1]; base = registers[0];  break;
-						case 0b0100: {
-							if(m_reg_count == 1) {
-								rx = registers[1];
-							}
-							else {
-								rx = registers[1];
-								base = registers[0];
-							}
-
-							break;
-						} 
-						case 0b0000: rx = registers[1]; base = registers[0]; break;
-						default: ASSERT(false, "unhandled rex case 4");
-					}
-
-					break;
-				}
 				case ENC_VEX_RVMN: {
 					switch(index_byte) {
-						case 0b1110: 
-						case 0b1000:
-						case 0b0000: rx = registers[0]; base = registers[1]; break;
-						case 0b1100: 		
-						case 0b0010: rx = registers[0]; base = registers[1]; break;
-						case 0b1010:
-						case 0b0110: rx = registers[0]; base = registers[2]; break;
-						case 0b0100: rx = registers[2]; base = registers[1]; break;
-						default: ASSERT(false, "unhandled rex case 1");
+						case 0b1110: rx = 8; base = 8; break;
+						case 0b1010: rx = 8; base = 8; break;
+						case 0b1100: rx = 8; base = 8; break;
+						case 0b0110: base = 8; break;
+						case 0b0100: base = 8; break;
+						case 0b1000: rx = 8; break;
+						default: break;
 					}
 
 					break;
@@ -618,178 +593,156 @@ namespace baremetal {
 				case ENC_EVEX_RVM:
 				case ENC_VEX_RVM: {
 					switch(index_byte) {
-						case 0b1110: 
-						case 0b1000:
-						case 0b0000: rx = registers[0]; base = registers[1]; break;
-						case 0b1100: 		
-						case 0b0010: rx = registers[1]; base = registers[2]; break;
-						case 0b1010:
-						case 0b0110: rx = registers[0]; base = registers[2]; break;
-						case 0b0100: rx = registers[2]; base = registers[0]; break;
-						default: ASSERT(false, "unhandled rex case 1");
+						case 0b1110: rx = 8; base = 8; break;
+						case 0b1010: rx = 8; base = 8; break;
+						case 0b0010: base = 8; break;
+						case 0b0110: base = 8; break;
+						case 0b1000: rx = 8; break;
+						case 0b1100: rx = 8; break;	
+						default: break;
 					}
 
 					break;
 				}
-				case ENC_VEX_RMV: {
+				case ENC_VEX_MR: {
 					switch(index_byte) {
-						case 0b00001000:
-						case 0b00001010:
-						case 0b00000000:
-						case 0b00000010: rx = registers[0]; base = registers[1]; break;
-						case 0b00001100:
-						case 0b00001110: {
-							rx = registers[0]; 
-							base = registers[1];
-
-							if(
-								is_operand_mem(inst->operands[1]) && 
-								operands[1].memory.has_index && 
-								operands[1].memory.index.index > 15
-							) {
-								base = 8;
-								index = 0;
-							}
-
-							break;
-						}
-						case 0b00000110: {
-							rx = registers[0]; 
-							base = registers[2];
-
-							if(
-								is_operand_mem(inst->operands[1]) && 
-								operands[1].memory.has_index && 
-								operands[1].memory.index.index > 15
-							) {
-								rx = 0;
-								base = 8;
-								index = 0;
-							}
-
-							break;
-						}
-						case 0b00000100: {
-							rx = registers[2];
-							base = registers[1]; 
-
-							if(
-								is_operand_mem(inst->operands[1]) && 
-								operands[1].memory.has_index && 
-								operands[1].memory.index.index > 15
-							) {
-								rx = 0;
-								base = 8;
-								index = 0;
-							}
-
-							break;
-						}
-						default: ASSERT(false, "unhandled rex case 2");
+						case 0b1100: rx = 8; base = 8; break;
+						case 0b1000: base = 8; break;
+						case 0b0100: rx = 8; break;
+						default: break;
 					}
 
 					break;
 				}
 				case ENC_VEX_VM: {
 					switch(index_byte) {
-						case 0b00000000:
-						case 0b00000100: rx = registers[0]; base = registers[1]; break;
-						case 0b00001000: rx = registers[1]; base = registers[1]; break;
-						case 0b00001100: rx = 0;            base = registers[1]; break;
-						default: ASSERT(false, "unhandled rex case 3");
+						case 0b0100: base = 8; break;
+						case 0b1100: base = 8; break;
+						default: break;
 					}
 
 					break;
 				}
 				case ENC_VEX_RM: {
 					switch(index_byte) {
-						case 0b00001000:
-						case 0b00001100:
-						case 0b00000100: rx = registers[0]; base = registers[1]; break;
-						case 0b00000000: rx = registers[1]; base = registers[0]; break;
-						default: ASSERT(false, "unhandled rex case 4");
+						case 0b1100: rx = 8; base = 8; break;
+						case 0b0100: base = 8; break;
+						case 0b1000: rx = 8; break;
+						default: break;
 					}
 
 					break;
 				}
 				case ENC_VEX_MVRR: {
 					switch(index_byte) {
-						case 0b1110: rx = registers[0]; base = registers[1]; break; 
-						case 0b1000: rx = registers[1]; base = registers[0]; break;
-						case 0b0000: rx = registers[0]; break;
-						case 0b1100: base = registers[0]; break;
-						case 0b0010: rx = 8; base = 0; break;
+						case 0b1110: rx = 8; base = 8; break; 
 						case 0b1010: rx = 8; base = 8; break;
-						case 0b0110: rx = registers[1]; base = 0; break;
-						case 0b0100: break;
-						default: ASSERT(false, "unhandled rex case 5");
+						case 0b1000: base = 8; break;
+						case 0b1100: base = 8; break;
+						case 0b0010: rx = 8; break;
+						case 0b0110: rx = 8; break;
+						default: break;
 					}
 					break;
 				}
 				case ENC_VEX_MVR: {
 					switch(index_byte) {
-						case 0b1110: rx = registers[0]; base = registers[1]; break; 
-						case 0b1000: rx = registers[1]; base = registers[0]; break;
-						case 0b0000: rx = registers[0]; base = registers[1]; break;
-						case 0b1100: rx = registers[1]; base = registers[0]; break;
-						case 0b0010: rx = registers[0]; base = registers[1]; break;
-						case 0b1010: rx = registers[1]; base = registers[2]; break;
-						case 0b0110: rx = registers[1]; base = 0; break;
-						case 0b0100: rx = registers[1]; base = 0; break;
-						default: ASSERT(false, "unhandled rex case 5");
+						case 0b1110: rx = 8; base = 8; break; 
+						case 0b1100: rx = 8; base = 8; break;
+						case 0b1000: base = 8; break;
+						case 0b1010: base = 8; break;
+						case 0b0110: rx = 8; break;
+						case 0b0100: rx = 8; break;
+						default: break;
 					}
-					break;
-				}
-				case ENC_VEX: {
-					if(m_reg_count == 2) {
-						rx = m_regs[0];
-					}
-					else if(m_reg_count == 3) {
-						rx = m_regs[1];
-						base = m_regs[0];
-					}
-					break;
-				}
-				case ENC_XOP: {
-					if(m_regs[0] > 7) {
-						base = m_regs[0];
-					} 
-					else {
-						rx = m_regs[0];
-					}
-
 					break;
 				}
 				case ENC_XOP_VM: {
 					switch(index_byte) {
-						case 0b00000000:
-						case 0b00000100: rx = registers[0]; base = registers[1]; break;
-						case 0b00001000: rx = registers[1]; base = registers[1]; break;
-						case 0b00001100: rx = 0;            base = registers[1]; break;
-						default: ASSERT(false, "unhandled rex case xop");
+						case 0b0100: base = 8; break;
+						case 0b1100: base = 8; break;
+						default: break;
 					}
 
 					break;
 				}
 				case ENC_VEX_RVMS: {
 					switch(index_byte) {
-						case 0b0000: break;
-    				case 0b0001: break;
-    				case 0b0010: base = registers[2]; break;
-    				case 0b0011: base = registers[2]; break;
-    				case 0b0100: break;
-    				case 0b0101: break;
-    				case 0b0110: base = registers[1]; break;
-    				case 0b0111: base = registers[1]; break;
-    				case 0b1000: rx = registers[0]; break;
-    				case 0b1001: rx = registers[0]; break;
-    				case 0b1010: rx = registers[0]; base = registers[2]; break;
-    				case 0b1011: rx = registers[0]; base = registers[2]; break;
-    				case 0b1100: rx = registers[0]; break;
-    				case 0b1101: rx = registers[0]; break;
-    				case 0b1110: rx = registers[0]; base = registers[1]; break;
-    				case 0b1111: rx = registers[0]; base = registers[1]; break;
-    				default: ASSERT(false, "unhandled index vex rvms: {}\n", index_byte);
+    				case 0b1111: rx = 8; base = 8; break;
+    				case 0b1010: rx = 8; base = 8; break;
+    				case 0b1110: rx = 8; base = 8; break;
+    				case 0b1011: rx = 8; base = 8; break;
+    				case 0b0010: base = 8; break;
+    				case 0b0011: base = 8; break;
+    				case 0b0110: base = 8; break;
+    				case 0b0111: base = 8; break;
+    				case 0b1000: rx = 8; break;
+    				case 0b1001: rx = 8; break;
+    				case 0b1100: rx = 8; break;
+    				case 0b1101: rx = 8; break;
+						default: break;
+					}
+
+					break;
+				}
+				case ENC_VEX: {
+					switch(index_byte) {
+						case 0b1110: rx = 8; base = 8; break;
+						case 0b1100: rx = 8; base = 8; break;
+						case 0b1010: base = 8; break;
+						case 0b1000: base = 8; break;
+						case 0b0100: rx = 8; break;
+						case 0b0110: rx = 8; break;
+						default: break;
+					}
+
+					break;
+				}
+				case ENC_XOP: {
+					switch(index_byte) {
+						case 0b1000: base = 8;
+						default: break;
+					}
+
+					break;
+				}
+				case ENC_VEX_RMV: {
+					switch(index_byte) {
+						case 0b1000: rx = 8; break;
+						case 0b1010: rx = 8; break;
+						case 0b1100:
+						case 0b1110: {
+							rx = 8;
+							base = 8;
+
+							// VSIB operand
+							if(index > 15) {
+								index = 0;
+							}
+
+							break;
+						}
+						case 0b0110: {
+							base = 8;
+
+							// VSIB operand
+							if(index > 15) {
+								index = 0;
+							}
+
+							break;
+						}
+						case 0b0100: {
+							base = 8;
+
+							// VSIB operand
+							if(index > 15) {
+								index = 0;
+							}
+
+							break;
+						}
+						default: break;
 					}
 
 					break;
@@ -797,7 +750,6 @@ namespace baremetal {
 				default: ASSERT(false, "unhandled rex case 6");
 			}
 		}
-
 		
 		return detail::rex(is_rexw, rx, base, index);
 	}

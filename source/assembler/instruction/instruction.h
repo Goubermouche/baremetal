@@ -341,34 +341,5 @@ namespace baremetal {
 
 	constexpr u32 instruction_db_size = sizeof(instruction_db) / sizeof(instruction);
 	static_assert(instruction_db_size < 16384, "magic number limit reached");
-
-	// locates the first instruction in the instruction database with the specified name
-	inline auto find_instruction_by_name(const char* name) -> u32 {
-    i32 left = 0;
-    i32 right = instruction_db_size - 1;
-
-		// since our instructions are sorted alphabetically, we can just do a quick binary search
-    while(left <= right) {
-      u32 mid = (static_cast<u32>(left) + static_cast<u32>(right)) >> 1;
-      i32 cmp = utility::compare_strings(name, instruction_db[mid].name);
-
-      if(cmp == 0) {
-				// found an element with the specified name, loccate the first one
-        while(mid > 0 && utility::compare_strings(name, instruction_db[mid - 1].name) == 0) {
-          --mid;
-        }
-
-        return mid;
-      }
-      else if(cmp < 0) {
-        right = static_cast<i32>(mid) - 1;
-      }
-      else {
-				left = static_cast<i32>(mid) + 1;
-      }
-    }
-
-    return utility::limits<u32>::max();
-	}
 } // namespace baremetal
 

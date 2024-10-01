@@ -149,7 +149,7 @@ namespace baremetal {
 	auto assembler_parser::parse_identifier() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
-		m_instruction_i = find_instruction_by_name(m_lexer.current_string.get_data());
+		// m_instruction_i = find_instruction_by_name(m_lexer.current_string.get_data());
 
 		if(m_instruction_i != utility::limits<u32>::max()) {
 			return parse_instruction();
@@ -323,7 +323,7 @@ namespace baremetal {
 				case TOK_RESB ... TOK_RESQ: TRY(parse_reserve_memory(nullptr)); break;
 				case TOK_DB ... TOK_DQ:     TRY(parse_define_memory(nullptr)); break;
 				case TOK_IDENTIFIER: {
-					m_instruction_i = find_instruction_by_name(m_lexer.current_string.get_data());
+					// m_instruction_i = find_instruction_by_name(m_lexer.current_string.get_data());
 
 					if(m_instruction_i == utility::limits<u32>::max()) {
 						return utility::error("expected instruction");

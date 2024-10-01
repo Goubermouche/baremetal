@@ -2,7 +2,7 @@
 #include "assembler/assembler_lexer.h"
 #include "assembler/assembler_parser.h"
 #include "assembler/instruction/operands/operands.h"
-#include "instruction/instruction.h"
+#include "assembler/backend.h"
 
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
@@ -439,7 +439,7 @@ namespace baremetal {
 	
 	auto assembler::parse_instruction() -> utility::result<void> {
 		u32 start;
-		m_instruction_i = start = find_instruction_by_name(m_current_identifier->get_data());
+		m_instruction_i = start = backend::get_instruction_by_name(m_current_identifier->get_data());
 		utility::string_view* instruction_name = m_current_identifier;
 
 		if(m_instruction_i == utility::limits<u32>::max()) {
