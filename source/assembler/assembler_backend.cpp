@@ -655,6 +655,7 @@ namespace baremetal {
 			case ENC_EVEX_RVM: reg = registers[0]; break;
 			case ENC_VEX_RVM:  reg = registers[0]; break;
 			case ENC_VEX:      reg = registers[1]; break;
+			case ENC_VEX_R:    reg = registers[0]; break;
 			case ENC_VEX_MVRR: reg = registers[2]; break;
 			case ENC_VEX_MVR:  reg = registers[1]; break;
 			case ENC_VEX_MR:   reg = registers[1]; break;
@@ -876,7 +877,7 @@ namespace baremetal {
 
 	void assembler_backend::emit_opcode_prefix_evex(const instruction* inst, const operand* operands) {
 		const u8 rex = get_instruction_rex(inst, operands);
-		const u8 modrm = get_mod_rm_reg(inst, operands);
+		const u8 modrm = extract_modrm_reg(inst, operands);
 		u8 prefix[3] = {};
 
 		push_byte(0x62); // EVEX prefix
@@ -903,107 +904,9 @@ namespace baremetal {
 		push_byte(prefix[2]);
 	}
 
-	// TODO:
 	void assembler_backend::emit_instruction_mod_rm(const instruction* inst, const operand* operands) {
-		u8 rx = m_regs[0];
-		u8 destination = m_regs[1];
-
-		switch(inst->enc) {
-			case ENC_VEX: {
-				if(m_reg_count == 3) {
-					rx = m_regs[1];
-					destination = m_regs[0];
-				}
-
-				break;
-			}
-			case ENC_VEX_R: destination = m_regs[0]; break;
-			case ENC_VEX_MR: rx = m_regs[m_reg_count - 1]; destination = m_regs[0]; break;
-			case ENC_VEX_RVM: destination = m_regs[2]; break;
-			case ENC_EVEX_RVM: {
-				if(inst->operand_count == 2) {
-					if(!is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
-						rx = m_regs[1];
-						destination = m_regs[0];
-					}
-					else {
-						destination = m_regs[1];
-					}
-				}
-				else {
-					destination = m_regs[2];
-				}
-				break;
-			}
-			case ENC_EVEX_RMZ: 
-			case ENC_EVEX_RM: {
-				if(m_reg_count == 1) {
-					destination = 0;
-				}
-				else {
-					destination = m_regs[m_reg_count - 1]; 
-				}
-
-				break;
-			}
-			case ENC_EVEX_MR: {
-				if(is_operand_mem(inst->operands[0])) {
-					rx = m_regs[m_reg_count - 1];
-				}
-				else if(inst->operand_count == 2 && inst->has_mem_operand()) {
-					
-				}
-				else {
-					destination = m_regs[0];
-					rx = m_regs[m_reg_count - 1];
-				}
-
-				break;
-			}
-			case ENC_VEX_MVRR: {
-				rx = operands[2].r;
-				break;
-			}
-			case ENC_VEX_MVR: {
-				if(m_reg_count == 3) {
-					rx = m_regs[1]; 
-					destination = m_regs[2]; 
-				}
-				else if(m_reg_count == 2) {
-					rx = m_regs[0]; 
-					destination = m_regs[1];
-				}
-
-				break;
-			}
-			case ENC_RMR:
-			case ENC_RM: {
-				if(m_reg_count == 2 && is_operand_mem(inst->operands[0]) && operands[0].memory.has_base) {
-					rx = m_regs[1];
-				}
-
-				break;
-			}
-			case ENC_MR: {
-				if(inst->operands[2] == OP_CL) {
-					if(m_reg_count == 3) {
-						rx = m_regs[1];
-						destination = m_regs[0];
-					}
-				}
-				else if(m_reg_count > 1){
-					rx = m_regs[1];
-					destination = m_regs[0];
-				}
-
-				break;
-			}
-			default: break;
-		}
-
-		if(inst->operand_count == 1) {
-			rx = 0;
-		}
+		u8 rx = extract_modrm_reg(inst, operands);
+		u8 destination = extract_modrm_rm(inst, operands);
 
 		if(inst->is_rm() && !inst->is_is4()) {
 			rx = inst->get_rm();
@@ -1051,98 +954,11 @@ namespace baremetal {
 
 		// forced mod/rm
 		if(inst->is_r()) {
-			if(inst->enc == ENC_VEX_R) {
-				push_byte(detail::direct(m_regs[0], 0));
-			}
-			else if(inst->operand_count == 1) {
-				push_byte(detail::direct(0, m_regs[0]));
-			}
-			else {
-				push_byte(detail::direct(rx, destination));
-			}
+			push_byte(detail::direct(rx, destination));
 		}
 		else if(inst->is_rm()) {
-			switch(inst->enc) {
-				case ENC_VEX_VM:
-				case ENC_XOP_VM: 
-				case ENC_EVEX_VM:  push_byte(detail::direct(rx, m_regs[1])); break;
-				case ENC_VEX_RVMS: push_byte(detail::direct(rx, m_regs[2])); break;
-				default:           push_byte(detail::direct(rx, m_regs[0])); break; 
-			}
+			push_byte(detail::direct(rx, destination));
 		}
-	}
-
-	// TODO
-	auto assembler_backend::get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8 {
-		u8 rx = m_regs[0];
-
-		switch(inst->enc) {
-			case ENC_VEX_MR: rx = m_regs[m_reg_count - 1]; break;
-			case ENC_EVEX_MR: rx = m_regs[m_reg_count - 1]; break;
-			case ENC_EVEX_RVM: {
-				if(inst->operand_count == 2) {
-					if(is_operand_masked(inst->operands[0]) && is_operand_reg(inst->operands[0])) {
-						rx = 0;
-					}
-					else if(is_operand_reg(inst->operands[0]) && is_operand_reg(inst->operands[1])) {
-						rx = m_regs[1];
-					}
-				}
-
-				break;
-			}
-			case ENC_VEX_MVR: {
-				if(m_reg_count == 3) {
-					rx = m_regs[1]; 
-				}
-				else if(m_reg_count == 2) {
-					rx = m_regs[0]; 
-				}
-
-				break;
-			}
-			case ENC_RMR:
-			case ENC_RM: {
-				if(m_reg_count == 2 && is_operand_mem(inst->operands[0]) && operands[0].memory.has_base) {
-					rx = m_regs[1];
-				}
-
-				break;
-			}
-			default: break;
-		}
-
-		if(inst->operand_count == 1) {
-			rx = 0;
-		}
-
-		if(inst->is_rm()) {
-			rx = inst->get_rm();
-		}
-
-		// memory operands
-		for(u8 i = 0; i < inst->operand_count; ++i) {
-			if(!is_operand_mem(operands[i].type)) {
-				continue;
-			}
-
-			return rx;
-		}
-
-		// forced mod/rm
-		if(inst->is_r()) {
-			if(inst->operand_count == 1 ) {
-				return 0;
-			}
-			else {
-				return rx;
-			}
-		}
-		else if(inst->is_rm()) {
-			return rx;
-		}	
-
-		return 0;
 	}
 
 	void assembler_backend::emit_instruction_sib(const operand* operands) {

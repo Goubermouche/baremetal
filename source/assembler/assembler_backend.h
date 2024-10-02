@@ -81,9 +81,7 @@ namespace baremetal {
 		void emit_opcode_prefix_evex(const instruction* inst, const operand* operands);
 
 		// instruction MOD/RM
-		// TODO: these are a mess, we need to fix them after we implement support for enough instructions
 		void emit_instruction_mod_rm(const instruction* inst, const operand* operands);
-		auto get_mod_rm_reg(const instruction* inst, const operand* operands) -> u8;
 
 		// instruction SIB
 		void emit_instruction_sib(const operand* operands);
