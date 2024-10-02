@@ -538,6 +538,68 @@ namespace baremetal {
 		}
 	}
 
+	auto extract_extending_reg(const instruction* inst, const operand* operands) -> u8 {
+		u8 ext = 0;
+
+		const u8 registers[4] = {
+			detail::extract_operand_reg(operands[0]),
+			detail::extract_operand_reg(operands[1]),
+			detail::extract_operand_reg(operands[2]),
+			detail::extract_operand_reg(operands[3]),
+		};
+
+		switch(inst->enc) {
+			case ENC_VEX_VM:   return registers[0];
+			case ENC_EVEX_RMZ: return registers[0];
+			case ENC_XOP_VM:   return registers[0];
+			case ENC_VEX_RVM:  return registers[1];
+			case ENC_VEX_RVMS: return registers[1];
+			case ENC_VEX_MVRR: return registers[1];
+			case ENC_EVEX_MVR: return registers[1];
+			case ENC_VEX:      return registers[2];
+			case ENC_VEX_RMV:  return registers[2];
+			case ENC_VEX_MVR:  return registers[2];
+			case ENC_XOP:      return 0;
+			case ENC_VEX_R:    return 0;
+			case ENC_VEX_MR:   return 0;
+			case ENC_EVEX_M:   return 0;
+			case ENC_EVEX_MR:  return 0;
+			case ENC_VEX_RVMN: return 0;
+			case ENC_EVEX_RVM: ext = registers[1]; break;
+			case ENC_EVEX_VM:  ext = registers[0]; break;
+			case ENC_EVEX_RM:  ext = 0; break;
+			default: break;
+		}
+
+		switch(inst->enc) {
+			case ENC_EVEX_RVM: {
+				if(inst->operand_count == 2) {
+					ext = 0;
+				}
+
+				break;
+			}
+			case ENC_EVEX_RM: {
+				if(
+					inst->operand_count == 3 && 
+					is_operand_imm(inst->operands[2]) == false
+				) {
+					ext = registers[1];
+				}
+				else if(
+					inst->operand_count == 4 && 
+					is_operand_imm(inst->operands[3])
+				) {
+					ext = registers[1];
+				}
+				
+				break;
+			}
+			default: break;
+		}
+
+		return ext;
+	}
 	auto extract_sib_index_reg(const instruction* inst, const operand* operands) -> u8 {
 		u8 index = 0;
 
@@ -1120,105 +1182,21 @@ namespace baremetal {
 	}
 
 	auto assembler_backend::get_instruction_vvvv(const instruction* inst, const operand* operands) -> u8 {
-		switch(inst->enc) {
-			case ENC_VEX_VM:
-			case ENC_EVEX_RMZ:
-			case ENC_XOP_VM:   return static_cast<u8>((~operands[0].r & 0b00001111));
-			case ENC_VEX_RVM:  
-			case ENC_VEX_RVMS: 
-			case ENC_VEX_MVRR: 
-			case ENC_EVEX_MVR: return static_cast<u8>((~operands[1].r & 0b00001111));
-			case ENC_VEX:      
-			case ENC_VEX_RMV:  
-			case ENC_VEX_MVR:  return static_cast<u8>((~operands[2].r & 0b00001111));
-			case ENC_XOP:      
-			case ENC_VEX_R:    
-			case ENC_VEX_MR:   
-			case ENC_VEX_RM:    
-			case ENC_EVEX_M:
-			case ENC_EVEX_MR:  
-			case ENC_VEX_RVMN: return 0b1111; 
-			case ENC_EVEX_RVM: {
-				if(inst->operand_count == 2) {
-					return 0b1111; 
-				}
-
-				return static_cast<u8>((~operands[1].r & 0b00001111));
-			}
-			case ENC_EVEX_VM: {
-				if(is_operand_mem(inst->operands[0])) {
-					return 0;
-				}
-
-				if(is_operand_mem(inst->operands[1])) {
-					return static_cast<u8>((~m_regs[0] & 0b00001111));
-				}
-
-				if(inst->operand_count == 3) {
-					return static_cast<u8>((~m_regs[0] & 0b00001111));
-				}
-
-				return static_cast<u8>((~m_regs[m_reg_count - 1] & 0b00001111));
-			}
-			case ENC_EVEX_RM: {
-				if(m_reg_count == 3 || (is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false)) {
-					return static_cast<u8>((~operands[1].r & 0b00001111));
-				}
-
-				return 0b1111 ;
-			} 
-			default: ASSERT(false, "unhandled vvvv encoding {}\n", (i32)inst->enc);
-		}
-
-		return 0; // unreachable
+		return static_cast<u8>((~extract_extending_reg(inst, operands) & 0b00001111));
 	}
 
 	auto assembler_backend::get_instruction_v(const instruction* inst, const operand* operands) -> u8 {
-		switch(inst->enc) {
-			case ENC_VEX_VM:
-			case ENC_EVEX_M:
-			case ENC_EVEX_VM:  return static_cast<bool>((operands[0].r & 0b00010000));
-			case ENC_VEX_RVM:   
-			case ENC_EVEX_MVR: return static_cast<bool>((operands[1].r & 0b00010000));
-			case ENC_VEX_RM:  
-			case ENC_EVEX_RMZ:
-			case ENC_VEX_MR:   return 0;
-			case ENC_EVEX_RVM: {
-				if(inst->operand_count == 2) {
-					return 0; 
-				}
+		u8 rx =  extract_extending_reg(inst, operands);
 
-				return static_cast<bool>((operands[1].r & 0b00010000));
-			}
-			case ENC_EVEX_RM:{
-				if(
-					is_operand_mem(inst->operands[1]) &&
-					operands[1].memory.has_index && 
-					is_sse_reg(operands[1].memory.index)
-				) {
-					return static_cast<bool>((operands[1].memory.index.index & 0b00010000));
-				}
-
-				if(inst->operand_count == 2 || (m_reg_count == 2 && !is_operand_mem(inst->operands[2]))) {
-					return 0;
-				}
-
-				return static_cast<bool>((operands[1].r & 0b00010000));
-			}
-			case ENC_EVEX_MR: {
-				if(
-					inst->operand_count == 2 || 
-					(inst->operand_count == 3 && is_operand_imm(inst->operands[inst->operand_count - 1]))
-				) {
-					return 0; 
-				}
-
-				return static_cast<bool>((operands[1].r & 0b00010000));
-			} 
-			default: ASSERT(false, "unhandled evex prefix\n");
+		if(
+			is_operand_mem(inst->operands[1]) &&
+			operands[1].memory.has_sse_operands() &&
+			operands[1].memory.index.index > 15
+		) {
+			rx = operands[1].memory.index.index;
 		}
 
-		return 0; // unreachable
+		return rx & 0b00010000;
 	}
 
 	auto assembler_backend::get_mask_register(const instruction* inst, const operand* operands) -> u8 {
