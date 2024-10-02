@@ -70,10 +70,7 @@ namespace baremetal {
 
 		// pretty much all other prefixes also need a REX prefix in some shape or form, these utility
 		// functions are used for generating them
-		// TODO: these are a mess, we need to fix them after we implement support for enough instructions
-		auto get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8;
-		auto get_instruction_rex_evex(const instruction* inst, const operand* operands) -> u8;
-		auto get_instruction_rex_rex(const instruction* inst, const operand* operands) -> u8;
+		auto get_instruction_rex(const instruction* inst, const operand* operands) -> u8;
 
 		// VEX opcode prefix
 		void emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands);

@@ -521,7 +521,7 @@ namespace baremetal {
 
 	void assembler_backend::emit_opcode_prefix_rex(const instruction* inst, const operand* operands) {
 		if(inst->is_rexw() || is_extended_reg(operands[0]) || is_extended_reg(operands[1]) || is_low_gpr(operands[0]) || is_low_gpr(operands[1])) {
-			push_byte(get_instruction_rex_rex(inst, operands));
+			push_byte(get_instruction_rex(inst, operands));
 		}
 		else if(is_operand_mem(operands[0].type)) {
 			emit_opcode_prefix_rex_mem(operands[0].memory);
@@ -606,7 +606,26 @@ namespace baremetal {
 			}
 			// special case for VSIB
 			case ENC_EVEX_RMZ:
-			case ENC_EVEX_RM:
+			case ENC_EVEX_RM: {
+				if(index > 15 && detail::extract_operand_reg(operands[1]) > 7) {
+					index = 0;
+				}
+
+				if(inst->operand_count == 2 && is_operand_reg(inst->operands[1]) && registers[1] > 15) {
+					index = registers[1];
+				}
+				else if(
+					inst->operand_count == 3 &&
+					is_operand_reg(inst->operands[1]) && 
+					registers[1] > 15 &&
+					!(is_operand_mem(inst->operands[2]) || is_operand_reg(inst->operands[2]))
+				) {
+					index = registers[1];
+				}
+
+				break;
+				break;
+			}
 			case ENC_VEX_RMV: {
 				if(index > 15 && detail::extract_operand_reg(operands[1]) > 7) {
 					index = 0;
@@ -646,6 +665,9 @@ namespace baremetal {
 			case ENC_EVEX_MR:  reg = registers[1]; break;
 			case ENC_EVEX_RMZ: reg = registers[0]; break;
 			case ENC_EVEX_RM:  reg = registers[0]; break;
+			case ENC_MR:       reg = registers[1]; break;
+			case ENC_RM:       reg = registers[0]; break;
+			case ENC_RMR:      reg = registers[1]; break;
 			default: break;
 		}
 
@@ -716,10 +738,23 @@ namespace baremetal {
 			case ENC_EVEX_MR:  rm = registers[0]; break; 
 			case ENC_EVEX_RMZ: rm = registers[2]; break;
 			case ENC_EVEX_RM:  rm = registers[2]; break;
+			case ENC_NORMAL:   rm = registers[0]; break;
+			case ENC_NORMALD:  rm = registers[0]; break;
+			case ENC_MR:       rm = registers[0]; break;
+			case ENC_M:        rm = registers[0]; break;
+			case ENC_RM:       rm = registers[1]; break;
+			case ENC_RMR:      rm = registers[0]; break;
+			case ENC_R:        rm = registers[0]; break;
 			default: break;
 		}
 
 		switch(inst->enc) {
+			case ENC_NORMAL: {
+				if(inst->operands[0] == OP_EAX || inst->operands[0] == OP_RAX || inst->operands[0] == OP_AX) {
+					rm = registers[1];
+				}
+				break;
+			}
 			case ENC_EVEX_RVM: {
 				if(inst->operand_count == 2) {
 					if(
@@ -745,12 +780,14 @@ namespace baremetal {
 			}
 			case ENC_EVEX_RMZ: 
 			case ENC_EVEX_RM: {
-				if(inst->operand_count == 2) {
+				if(
+					inst->operand_count == 3 &&
+					!(is_operand_mem(inst->operands[2]) || is_operand_reg(inst->operands[2]))
+				) {
 					rm = registers[1];
 				}
-
-				if(inst->operand_count == 3 && is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false) {
-					rm = 0;
+				else if(inst->operand_count == 2) {
+					rm = registers[1];
 				}
 
 				break;
@@ -772,172 +809,18 @@ namespace baremetal {
 		return rm;
 	}
 
-	auto assembler_backend::get_instruction_rex_vex_xop(const instruction* inst, const operand* operands) -> u8 {
+	auto assembler_backend::get_instruction_rex(const instruction* inst, const operand* operands) -> u8 {
 		const bool is_rexw = inst->is_rexw();
 
 		u8 rx = extract_modrm_reg(inst, operands);
 		u8 base = extract_modrm_rm(inst, operands);
 		u8 index = extract_sib_index_reg(inst, operands);
 
-		return detail::rex(is_rexw, rx, base, index);
-	}
-
-	// TODO
-	auto assembler_backend::get_instruction_rex_evex(const instruction* inst, const operand* operands) -> u8 {
-		const bool is_rexw = inst->is_rexw();
-
-		u8 rx = extract_modrm_reg(inst, operands);
-		u8 base = extract_modrm_rm(inst, operands);
-		u8 index = extract_sib_index_reg(inst, operands);
-		u8 index_byte = 0;
-
-		const u8 registers[4] = {
-			detail::extract_operand_reg(operands[0]),
-			detail::extract_operand_reg(operands[1]),
-			detail::extract_operand_reg(operands[2]),
-			detail::extract_operand_reg(operands[3]),
-		};
-
-		index_byte |= (registers[0] > 7) << 7;
-		index_byte |= (registers[0] > 15) << 6;
-
-		index_byte |= (registers[1] > 7) << 5;
-		index_byte |= (registers[1] > 15) << 4;
-
-		index_byte |= (registers[2] > 7) << 3;
-		index_byte |= (registers[2] > 15) << 2;
-
-		index_byte |= (registers[3] > 7) << 1;
-		index_byte |= (registers[3] > 15) << 0;
-
-		switch(inst->enc) {
-			case ENC_EVEX_RMZ:
-			case ENC_EVEX_RM: {
-				switch(index_byte) {
-					case 0b00100000: {
-						rx = 0;
-						if(m_reg_count == 3 || is_operand_mem(inst->operands[2])) {
-						}
-						else {
-							base = registers[1];
-						}
-
-						break;
-					} 
-					case 0b11110000: {
-						index = 8;
-						base = registers[0];
-						break;
-					} 
-					case 0b10100000: {
-						if(m_reg_count == 3 || is_operand_mem(inst->operands[2])) {
-						}
-						else {
-							base = registers[1];
-						}
-
-						break;
-					} 
-					case 0b10101000: {
-						base = registers[1];
-						break;
-					}
-					case 0b00110000: {
-						if(inst->operand_count == 2 || (m_reg_count == 2 && is_operand_mem(inst->operands[2]) == false)) {
-							base = registers[1]; 
-							index = 8;
-						}
-						break;
-					}
-					case 0b10110000: {
-						if(m_reg_count == 2) {
-							if(is_operand_mem(inst->operands[2]) && operands[2].memory.has_base == false) {
-								// base  = 0;
-								rx = 8;
-							}
-							else {
-								base = registers[1];
-								index = 8;
-							}
-						}
-
-						break;
-					}
-					default: break;
-				}
-
-				break;
-			}
-			default: break;
-		}
-
-		return detail::rex(is_rexw, rx, base, index);
-	}
-
-	// TODO
-	auto assembler_backend::get_instruction_rex_rex(const instruction* inst, const operand* operands) -> u8 {
-		const bool is_rexw = inst->is_rexw();
-		const u8 operand_count = inst->operand_count;
-
-		u8 rx = 0;
-		u8 base = 0;
-		u8 index = extract_sib_index_reg(inst, operands);
-
-		if(m_reg_count == 1) {
-			switch(inst->enc) {
-				case ENC_NORMAL: 
-				case ENC_NORMALD:  
-				case ENC_M:
-				case ENC_R: base = m_regs[0]; break;
-				default: rx = m_regs[0]; break;
-			}
-		}
-		else if(m_reg_count == 2) {
-			if(inst->enc == ENC_MR) {
-				if(inst->operands[2] == OP_CL) {
-					base = m_regs[1];
-					rx = m_regs[0];
-				}
-				else if(m_reg_count > 1) {
-					rx = m_regs[1];
-					base = m_regs[0];
-				}
-			}
-			else if(inst->enc == ENC_RMR) {
-				rx = m_regs[1];
-				base = m_regs[0];
-			}
-			// mem, x, x
-			else if(is_operand_mem(operands[0].type) && operands[0].memory.has_base == false && operand_count == 3) {
-				rx = m_regs[1];
-			}
-			else if(inst->operands[1] == OP_CL) {
-				base = m_regs[0];
-			}
-			else if(inst->is_ri() && m_regs[0] > 7) {
-				base = m_regs[0];
-			}
-			else {
-				rx = m_regs[0];
-				base = m_regs[1];
-			}
-		}
-		else if(m_reg_count == 3) {
-			if(inst->enc == ENC_MR && inst->operands[2] == OP_CL) {
-				rx = m_regs[1];
-				base = m_regs[0];
-			}
-			else {
-				rx = m_regs[0];
-				base = m_regs[1];
-			}
-		}
-		
 		return detail::rex(is_rexw, rx, base, index);
 	}
 
 	void assembler_backend::emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands) {
-		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
+		const u8 rex = get_instruction_rex(inst, operands);
 		u8 prefix[2] = {};
 
 		// VEX/XOP prefix
@@ -962,7 +845,7 @@ namespace baremetal {
 	}
 
 	void assembler_backend::emit_opcode_prefix_vex_two(const instruction* inst, const operand* operands) {
-		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
+		const u8 rex = get_instruction_rex(inst, operands);
 		u8 prefix = 0;
 
 		push_byte(0xc5); // two byte VEX prefix
@@ -976,7 +859,7 @@ namespace baremetal {
 	}
 
 	void assembler_backend::emit_opcode_prefix_vex(const instruction* inst, const operand* operands) {
-		const u8 rex = get_instruction_rex_vex_xop(inst, operands);
+		const u8 rex = get_instruction_rex(inst, operands);
 
 		const bool x = rex & 0b00000010;
 		const bool b = rex & 0b00000001;
@@ -992,7 +875,7 @@ namespace baremetal {
 	}
 
 	void assembler_backend::emit_opcode_prefix_evex(const instruction* inst, const operand* operands) {
-		const u8 rex = get_instruction_rex_evex(inst, operands);
+		const u8 rex = get_instruction_rex(inst, operands);
 		const u8 modrm = get_mod_rm_reg(inst, operands);
 		u8 prefix[3] = {};
 
