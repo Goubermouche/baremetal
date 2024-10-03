@@ -217,6 +217,86 @@ namespace baremetal {
 			return false;
 		}
 
+		constexpr auto get_map_select() const -> u8 {
+			if(is_evex()) {
+				if(is_map6()) {
+					return 0b110; 
+				}
+	
+				if(is_map5()) {
+					return 0b101; 
+				}
+			}
+			
+			if(is_xop()) {
+				switch(enc) {
+					case ENC_XOP:    return 0b01001;
+					case ENC_XOP_VM: return 0b01010;
+					default: ASSERT(false, "unknown xop encoding");
+				}
+			}
+	
+			switch((opcode & 0xffff00)) {
+				case 0x000000: return 0b000; 
+				case 0x000f00: return 0b001; 
+				case 0x0f3800: return 0b010;
+				case 0x0f3a00: return 0b011;
+				default: ASSERT(false, "unknown leading opcode 1 {}", opcode & 0xffff00);
+			}
+	
+			return 0;
+		}
+
+		constexpr auto get_imp() const -> u8 {
+			if(prefix == OPERAND_SIZE_OVERRIDE) {
+				return 0b01;
+			}
+
+			if(prefix == REP) {
+				return 0b10;
+			}
+
+			if(prefix == REPNE) {
+				return 0b11;
+			}
+
+			return 0;
+		}
+
+		constexpr auto get_l() const -> u8 {
+			if(is_l1()) {
+				return true;
+			}
+
+			if(is_l0()) {
+				return false;
+			}
+
+			// vector length (0 = 128b, 1 = 256b)
+			return op_size == OPS_256;
+		}
+
+		constexpr auto get_evex_zero() const -> u8 {
+			switch (operands[0]) {
+				case OP_XMM_KZ:	
+				case OP_YMM_KZ:	
+				case OP_ZMM_KZ: return true; 
+				default:        return false;
+			}
+		}
+
+		constexpr auto get_evex_operand_type() const -> u8 {
+			if(op_size == OPS_256) {
+				return 0b00100000;
+			}
+	
+			if(op_size == OPS_512) {
+				return  0b01000000;
+			}
+	
+			return 0;
+		}
+
 		auto get_mem_operand() const -> u8 {
 			if(is_operand_mem(operands[0])) { return 0; }
 			if(is_operand_mem(operands[1])) { return 1; }
