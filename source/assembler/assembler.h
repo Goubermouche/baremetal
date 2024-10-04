@@ -1,22 +1,113 @@
 #pragma once
-#include "assembler/instruction/operands/operands.h"
+#include "assembler/instruction/instruction.h"
 #include "assembler/assembler_lexer.h"
 #include "assembler/context.h"
-#include "utility/containers/string_view.h"
-
-#include <utility/containers/dynamic_string.h>
-#include <utility/result.h>
 
 namespace baremetal {
-	// enum symbol_type : u8 {
-	// 	SYM_RIP_RELATIVE,
-	// 	SYM_GLOBAL
-	// };
+	namespace detail {
+		// TODO:
+		inline auto inst_match(operand_type a, operand b) -> bool{
+			switch(a) {
+				case OP_FS:      return b.type == OP_SREG && b.r == fs;
+				case OP_GS:      return b.type == OP_SREG && b.r == gs;
+				case OP_AL:      return b.type == OP_R8 && b.r == al;
+				case OP_AX:      return b.type == OP_R16 && b.r == ax;
+				case OP_EAX:     return b.type == OP_R32 && b.r == eax;
+				case OP_RAX:     return b.type == OP_R64 && b.r == rax;
+				case OP_CL:      return b.type == OP_R8 && b.r == cl;
+				case OP_DX:      return b.type == OP_R16 && b.r == dx;
+				case OP_ECX:     return b.type == OP_R32 && b.r == ecx;
+				case OP_RCX:     return b.type == OP_R64 && b.r == rcx;
+				case OP_ST0:     return b.type == OP_ST && b.r == st0;
+				case OP_MEM:     return b.type == OP_M128;
+				case OP_VM64X:   return b.type == OP_VM32X || a == b.type;
+				case OP_VM64Y:   return b.type == OP_VM32Y || a == b.type;
+				case OP_VM64Z:   return b.type == OP_VM32Z || a == b.type;
+				case OP_VM64X_K: return b.type == OP_VM32X_K || a == b.type;
+				case OP_VM64Y_K: return b.type == OP_VM32Y_K || a == b.type;
+				case OP_VM64Z_K: return b.type == OP_VM32Z_K || a == b.type;
+				case OP_M256:    return b.type == OP_M128;
+				case OP_M512:    return b.type == OP_M128;
+				case OP_TMEM:    return b.type == OP_M128;
+				default:         return a == b.type;
+			}
+		}
 
-	// struct symbol {
-	// 	u64 position;
-	// 	symbol_type type;
-	// };
+		inline auto mask_operand(operand_type op, mask_type mask) -> utility::result<operand_type> {
+			ASSERT(is_mask_broadcast(mask) == false, "cannot mask operand using a broadcast\n");
+
+			if(mask > 8) {
+				// {k} {z}
+				switch(op) {
+					case OP_XMM: return OP_XMM_KZ;
+					case OP_YMM: return OP_YMM_KZ;
+					case OP_ZMM: return OP_ZMM_KZ;
+					default:     return utility::error("operand cannot have a zeroing mask");
+				}
+			}
+			else {
+				// {k}
+				switch(op) {
+					case OP_VM32X: return OP_VM32X_K;
+					case OP_VM32Y: return OP_VM32Y_K;
+					case OP_VM32Z: return OP_VM32Z_K;
+					case OP_M16:   return OP_M16_K;
+					case OP_M32:   return OP_M32_K;
+					case OP_M64:   return OP_M64_K;
+					case OP_M128:  return OP_M128_K; 
+					case OP_M256:  return OP_M256_K; 
+					case OP_M512:  return OP_M512_K;
+					case OP_XMM:   return OP_XMM_K;
+					case OP_YMM:   return OP_YMM_K;
+					case OP_ZMM:   return OP_ZMM_K;
+					case OP_K:     return OP_K_K;  
+					default:       return utility::error("operand cannot have a mask");
+				}	
+			}
+
+			return OP_NONE; // unreachable
+		}
+
+		inline auto imm_to_scale(const imm& i) -> utility::result<scale> {
+			switch(i.value) {
+				case 1: return SCALE_1;
+				case 2: return SCALE_2;
+				case 4: return SCALE_4;
+				case 8: return SCALE_8;
+				default: return utility::error("invalid memory scale");
+			}
+		}
+
+		inline auto is_operand_match(const instruction& inst, operand* operands, u8 broadcast_n, u8 count) -> bool {
+		// TODO: this entire thing needs to go
+			for(u8 i = 0; i < count; ++i) {
+				if(
+					!(inst_match(inst.operands[i], operands[i])) &&
+					!(is_operand_imm(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
+					!(is_operand_moff(inst.operands[i]) && is_operand_moff(operands[i].type)) &&
+					!(is_operand_masked_mem(inst.operands[i]) && is_operand_masked_mem(operands[i].type)) &&
+					!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
+					!(is_operand_imm(inst.operands[i]) && operands[i].type == OP_REL_UNKNOWN) &&
+					!(is_operand_rel(inst.operands[i]) && operands[i].type == OP_REL_UNKNOWN)
+				) {
+					return false;
+				}
+
+				if(is_operand_reg(operands[i].type) && operands[i].r > 15 && !inst.is_evex()) {
+					return false;
+				}
+
+				if(
+					inst.has_broadcast_operand() &&
+					broadcast_to_bits(inst.operands[inst.get_broadcast_operand()]) * broadcast_n != inst_size_to_int(inst.op_size)
+				) {
+					return false;
+				}
+			}
+	
+			return true;
+		}
+	}
 
 	struct relocation {
 		utility::string_view* symbol;
@@ -76,7 +167,6 @@ namespace baremetal {
 		utility::dynamic_array<unresolved_subsection> unresolved; 
 		// symbol table, location of every symbol is relative to the respective section
 		utility::map<utility::string_view*, u64> symbols;
-
 	};
 
 	class assembler {

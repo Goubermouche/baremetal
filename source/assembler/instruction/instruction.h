@@ -335,20 +335,11 @@ namespace baremetal {
 
 		auto has_masked_operand() const -> bool {
 			if(is_operand_masked(operands[0])) { return true; }
-			if(is_operand_masked(operands[1])) { return true; }
-			if(is_operand_masked(operands[2])) { return true; }
-			if(is_operand_masked(operands[3])) { return true; }
+			//if(is_operand_masked(operands[1])) { return true; }
+			//if(is_operand_masked(operands[2])) { return true; }
+			//if(is_operand_masked(operands[3])) { return true; }
 
 			return false;
-		}
-
-		auto get_masked_operand() const -> u8 {
-			if(is_operand_masked(operands[0])) { return 0; }
-			if(is_operand_masked(operands[1])) { return 1; }
-			if(is_operand_masked(operands[2])) { return 2; }
-			if(is_operand_masked(operands[3])) { return 3; }
-
-			return 0;
 		}
 
 		const char* name;         // instruction mnemonic
@@ -419,7 +410,9 @@ namespace baremetal {
 		#include "assembler/instruction/databases/database.inc"
 	};
 
-	constexpr u32 instruction_db_size = sizeof(instruction_db) / sizeof(instruction);
-	static_assert(instruction_db_size < 16384, "magic number limit reached");
+	constexpr u32 INSTRUCTION_DB_SIZE = sizeof(instruction_db) / sizeof(instruction);
+	constexpr u8 MAX_INSTRUCTION_SIZE = 15;
+
+	static_assert(INSTRUCTION_DB_SIZE < 16384, "magic number limit reached");
 } // namespace baremetal
 

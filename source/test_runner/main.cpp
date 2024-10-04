@@ -91,7 +91,7 @@ namespace detail {
 		const auto tests = utility::directory::read(g_test_path / "binary");
 
 		baremetal::assembler_context context;
-		baremetal::assembler_parser assembler(&context);
+		// baremetal::assembler_parser assembler(&context);
 
 		utility::dynamic_string test_text;
 		utility::dynamic_string hex_result;

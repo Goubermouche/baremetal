@@ -1,6 +1,8 @@
 #pragma once
 #include "assembler/instruction/instruction.h"
 
+#include <utility/containers/dynamic_array.h>
+
 namespace baremetal {
 	namespace detail {
 		enum mod_mode : u8 {
@@ -20,6 +22,15 @@ namespace baremetal {
 		auto indirect_disp_32(u8 rx, u8 base) -> u8;
 		
 		auto extract_operand_reg(const operand& op) -> u8;
+
+		/**
+		 * \brief Checks if \b value can be represented by \b src sign-extended bits in \b dst bits.
+		 * \param value Immediate value to check
+		 * \param src Source bit width
+		 * \return True if the value is sign-representable in the specified environment, false otherwise.
+		 */
+		auto sign_extend_representable(u64 value, u8 src) -> bool;
+		auto sign_extend(u64 x, u8 x_bits) -> u64;
 	} // namespace detail
 
 	using namespace utility::types;
@@ -31,42 +42,50 @@ namespace baremetal {
 		};
 
 		static auto get_instruction_by_name(const char* name) -> u32;
+		static auto get_instruction(u32 index, const operand* operands) -> const instruction*;
+		static auto get_variants(u32 index, const operand* operands) -> utility::dynamic_array<operand_type>;
 
-		static auto emit_instruction(const instruction* inst, const operand* operands, bool optimize) -> code;
+		static auto emit_instruction(const instruction* inst, const operand* operands) -> code;
+		static auto emit_instruction_direct(u32 index, const operand* operands) -> code;
+		static auto emit_instruction(u32 index, const operand* operands) -> code;
 	private:
 		// instruction parts
-		static void emit_instruction_operands(const instruction* inst, const operand* operands);
-		static void emit_instruction_prefix(const instruction* inst, const operand* operands);
-		static void emit_instruction_opcode(const instruction* inst, const operand* operands);
-		static void emit_instruction_mod_rm(const instruction* inst, const operand* operands);
-		static void emit_instruction_sib(const operand* operands);
+		static void emit_instruction_prefix();
+		static void emit_instruction_opcode();
+		static void emit_instruction_mod_rm();
+		static void emit_instruction_sib();
+		static void emit_instruction_operands();
 
 		// instruction prefixes
-		static void emit_opcode_prefix_evex(const instruction* inst, const operand* operands);
-		static void emit_opcode_prefix_vex(const instruction* inst, const operand* operands);
-		static void emit_opcode_prefix_rex(const instruction* inst, const operand* operands);
+		static void emit_opcode_prefix_evex();
+		static void emit_opcode_prefix_vex();
+		static void emit_opcode_prefix_rex();
+
+		static void emit_opcode_prefix_vex_two();
+		static void emit_opcode_prefix_vex_three();
 
 		static void emit_opcode_prefix_rex_mem(const mem& memory);
-		static void emit_opcode_prefix_vex_two(const instruction* inst, const operand* operands);
-		static void emit_opcode_prefix_vex_three(const instruction* inst, const operand* operands);
 		static void emit_data_operand(u64 data, u16 bit_width);
 		
-		static auto get_instruction_rex(const instruction* inst, const operand* operands) -> u8;
-		static auto get_instruction_vvvv(const instruction* inst, const operand* operands) -> u8;
-		static auto get_instruction_v(const instruction* inst, const operand* operands) -> u8;
+		static auto get_instruction_rex() -> u8;
+		static auto get_instruction_vvvv() -> u8;
+		static auto get_instruction_v() -> u8;
 
 		// registers
-		static auto get_extending_reg(const instruction* inst, const operand* operands) -> u8;
-		static auto get_modrm_reg(const instruction* inst, const operand* operands) -> u8;
-		static auto get_modrm_rm(const instruction* inst, const operand* operands) -> u8;
-		static auto get_sib_index(const instruction* inst, const operand* operands) -> u8;
-		static auto get_mask_reg(const instruction* inst, const operand* operands) -> u8;
+		static auto get_extending_reg() -> u8;
+		static auto get_modrm_reg() -> u8;
+		static auto get_modrm_rm() -> u8;
+		static auto get_sib_index() -> u8;
+		static auto get_mask_reg() -> u8;
 
-		static auto has_sib(const operand* operands) -> bool;
+		static auto has_sib() -> bool;
 		static void push_byte(u8 value);
 	private:
+		static const instruction* m_inst;
+		static const operand* m_operands;
+
 		static u8 m_data_size;
-		static u8 m_data[15];
+		static u8 m_data[MAX_INSTRUCTION_SIZE];
 	};
 } // baremetal
 

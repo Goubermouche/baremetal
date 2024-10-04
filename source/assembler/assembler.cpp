@@ -1,7 +1,4 @@
 #include "assembler.h"
-#include "assembler/assembler_lexer.h"
-#include "assembler/assembler_parser.h"
-#include "assembler/instruction/operands/operands.h"
 #include "assembler/backend.h"
 
 #define EXPECT_TOKEN(expected)                                    \
@@ -88,7 +85,6 @@ namespace baremetal {
 				}
 				else {
 					unresolved_subsection unresolved = section.unresolved[subsection.unresolved];
-					assembler_backend backend(&m_context);
 
 					// calculate the offset operand
 					const operand unresolved_operand = unresolved.operands[unresolved.unresolved_operand];
@@ -152,11 +148,8 @@ namespace baremetal {
 					}
 
 					// emit the instruction with our exact operands
-					backend.emit_instruction_direct(assembler_backend::find_direct(unresolved.index, operands), operands);
-
-					// TODO: directly emit bytes
-					auto temp = backend.get_bytes();
-					bytes.insert(bytes.end(), temp.begin(), temp.end());
+					auto code = backend::emit_instruction_direct(unresolved.index, operands);
+					bytes.insert(bytes.end(), code.data, code.data + code.size);
 				}
 			}
 		}
@@ -200,7 +193,8 @@ namespace baremetal {
 
 					// use the next smallest operand instead
 					unresolved.type = new_type;
-					u8 new_size = assembler_backend::get_instruction_size(current.index, current.operands);
+
+					u8 new_size = backend::emit_instruction_direct(current.index, current.operands).size;
 
 					// update our symbol table to account for the difference in code length
 					section.update_positions(current.position, current.size - new_size);
@@ -474,7 +468,7 @@ namespace baremetal {
 		}
 
 		// locate the specific variant (dumb linear search in our specific group)
-		while(m_instruction_i < instruction_db_size) {
+		while(m_instruction_i < INSTRUCTION_DB_SIZE) {
 			const instruction& current = instruction_db[m_instruction_i]; 
 
 			// verify that the instruction names are the same and that we've not left our instruction group
@@ -494,7 +488,7 @@ namespace baremetal {
 					m_operands[j].type = current.operands[j];
 
 					if(is_operand_rel(current.operands[j])) {
-						u8 size = assembler_backend::get_instruction_size(m_instruction_i, m_operands);
+						u8 size = backend::emit_instruction_direct(m_instruction_i, m_operands).size;
 						m_operands[j].immediate = static_cast<i32>(m_operands[j].immediate.value) - size;
 					}
 				}
@@ -511,10 +505,9 @@ namespace baremetal {
 
 				// HACK: assemble the instruction and use that as the length
 				// TODO: cleanup
-				assembler_backend backend(&m_context);
-				backend.emit_instruction(m_instruction_i, m_operands);
-				// utility::console::print("{}\n", m_instruction_i);
-				u8 size = backend.get_module().get_size_current_section();
+				auto code = backend::emit_instruction(m_instruction_i, m_operands);
+
+				u8 size = code.size;
 				section& parent = m_sections[m_section_index];
 
 				if(m_symbolic_operand) {
@@ -529,10 +522,11 @@ namespace baremetal {
 
 					// remove the last potential variant (the largest one), and use it as our operand, this will
 					// most likely be optimized out by the resolve_symbols() function
-					m_operands[m_unresolved_index].type = backend.current_variants.pop_back();
+					auto variants = backend::get_variants(m_instruction_i, m_operands);
+					m_operands[m_unresolved_index].type = variants.pop_back();
 
 					if(!is_operand_rel(m_operands[m_unresolved_index].type)) {
-						backend.current_variants.clear(); // no potential for optimizations
+						variants.clear(); // no potential for optimizations
 					}
 
 					// create the actual subsection the fixup points to
@@ -542,7 +536,7 @@ namespace baremetal {
 						.operand_count = m_operand_i,
 						.position = parent.offset,
 						.size = size,
-						.variants = backend.current_variants,
+						.variants = variants,
 						.unresolved_operand = m_unresolved_index,
 						.fixup = m_fixup
 					};
@@ -553,8 +547,7 @@ namespace baremetal {
 					parent.subsections.push_back(fixup);
 				}
 				else {
-					auto binary = backend.get_module().emit_binary();
-					m_current_resolved.insert(m_current_resolved.end(), binary.begin(), binary.end());
+					m_current_resolved.insert(m_current_resolved.end(), code.data, code.data + code.size);
 				}
 
 				parent.offset += size;
@@ -600,7 +593,7 @@ namespace baremetal {
 		bool met_broadcast = false;
 
 		// find the bn from the current instruction
-		while(index < instruction_db_size) {
+		while(index < INSTRUCTION_DB_SIZE) {
 			const instruction& current = instruction_db[index];
 
 			if(utility::compare_strings(instruction_db[m_instruction_i].name, current.name) != 0) {
@@ -957,6 +950,7 @@ namespace baremetal {
 					negate = true;
 					get_next_token();
 					EXPECT_TOKEN(TOK_NUMBER);
+					[[fallthrough]];
 				}
 				case TOK_NUMBER: {
 					if(scale_mode && current_reg.is_valid()) {
