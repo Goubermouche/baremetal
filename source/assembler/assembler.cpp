@@ -404,7 +404,6 @@ namespace baremetal {
 					}
 
 					u64 value = m_current_token.immediate.value;
-					utility::console::print("parsed as '{}'\n", value);
 
 					for(u8 i = 0; i < bytes; ++i) {
 			      u8 byte = static_cast<u8>(value & 0xFF);

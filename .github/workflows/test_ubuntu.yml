@@ -1,4 +1,4 @@
-name: CI
+name: Tests (ubuntu-latest)
 
 on:
   push:
@@ -8,12 +8,20 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Harden Runner
+      uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7
+      with:
+        egress-policy: audit
+
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744
       with:
         fetch-depth: 0
         submodules: true
@@ -32,7 +40,8 @@ jobs:
       run: premake5 gmake
 
     - name: Build the project
-      run: make config=debug
+      run: make config=release
 
     - name: Run tests
-      run: ./output/bin/test_runner/test_runner
+      # redirect everything to stdout
+      run: ./output/bin/test_runner/test_runner 2>&1 

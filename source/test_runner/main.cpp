@@ -125,7 +125,7 @@ namespace detail {
 
 			expected = expected.trim();
 
-			utility::console::print("running {}\n", test);
+			// utility::console::print("running {}\n", test);
 			baremetal::assembler assembler;
 			const auto result = assembler.assemble(test_text);
 
@@ -138,7 +138,6 @@ namespace detail {
 
 				if(hex_result != expected) {
 					info.add_failure();
-					utility::console::print("mismatch: {} - expected '{}', but got '{}'\n", test, expected, hex_result); 
 					utility::console::print_err("mismatch: {} - expected '{}', but got '{}'\n", test, expected, hex_result); 
 				}
 				else {
