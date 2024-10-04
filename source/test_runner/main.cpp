@@ -91,7 +91,6 @@ namespace detail {
 		const auto tests = utility::directory::read(g_test_path / "binary");
 
 		baremetal::assembler_context context;
-		// baremetal::assembler_parser assembler(&context);
 
 		utility::dynamic_string test_text;
 		utility::dynamic_string hex_result;
@@ -106,10 +105,6 @@ namespace detail {
 			expected.clear();
 			test_text.clear();
 
-			// if(test.get_string().find("example.asm") == utility::dynamic_string::invalid_pos) {
-			// 	continue;
-			// }
-			
 			test_text = utility::file::read(test);
 
 			// locate the 'expect' directive
@@ -130,7 +125,7 @@ namespace detail {
 
 			expected = expected.trim();
 
-			// utility::console::print("running {}\n", test);
+			utility::console::print("running {}\n", test);
 			baremetal::assembler assembler;
 			const auto result = assembler.assemble(test_text);
 
@@ -143,6 +138,7 @@ namespace detail {
 
 				if(hex_result != expected) {
 					info.add_failure();
+					utility::console::print("mismatch: {} - expected '{}', but got '{}'\n", test, expected, hex_result); 
 					utility::console::print_err("mismatch: {} - expected '{}', but got '{}'\n", test, expected, hex_result); 
 				}
 				else {
