@@ -137,19 +137,20 @@ namespace baremetal {
 
 	auto assembler_lexer::current_string_to_number() -> utility::result<token_type> {
 		i32 base = 10;
+		char* data = current_string.get_data();
 
 		// TODO: add error checking
 		if(current_string[0] == '0' && current_string.get_size() > 1) {
 			switch(current_string[1]) {
-				case 'x':         base = 16; break; // hex
-				case '0' ... '7': base = 8;  break; // oct
-				case 'b':         base = 2;  break; // bin
+				case 'x':         base = 16; data += 2; break; // hex
+				case '0' ... '7': base = 8;  data += 1; break; // oct
+				case 'b':         base = 2;  data += 2; break; // bin
 				default: ASSERT(false, "unknown literal type\n");
 			}
 		}
 
 		char* end;
-		u64 num = strtoull(current_string.get_data(), &end, base);
+		u64 num = strtoull(data, &end, base);
 		current_immediate = imm(num);
 
 		return current = TOK_NUMBER;
