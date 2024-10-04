@@ -175,7 +175,7 @@
       {"inst": "[bnd] jae|jnb|jnc rel16_rip"                                    , "op": "66 0F 83"                    , "io": "CF=R"},
       {"inst": "[bnd] jae|jnb|jnc rel32"                                    , "op": "0F 83"                       , "io": "CF=R"},
       {"inst": "[bnd] je|jz rel8_rip"                                           , "op": "74"                          , "io": "ZF=R"},
-      {"inst": "[bnd] je|jz rel16_rip"                                          , "op": "66 0F 84"                    , "io": "ZF=R"},
+      {"inst": "[bnd] je|jz rel16_rip"                                          , "op": "66 0F 84"                    , "io": "ZF=R", "arch": "X86"},
       {"inst": "[bnd] je|jz rel32"                                          , "op": "0F 84"                       , "io": "ZF=R"},
       {"inst": "[bnd] jne|jnz rel8_rip"                                         , "op": "75"                          , "io": "ZF=R"},
       {"inst": "[bnd] jne|jnz rel16_rip"                                        , "op": "66 0F 85"                    , "io": "ZF=R"},

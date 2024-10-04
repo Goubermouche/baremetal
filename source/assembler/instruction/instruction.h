@@ -217,6 +217,86 @@ namespace baremetal {
 			return false;
 		}
 
+		constexpr auto get_map_select() const -> u8 {
+			if(is_evex()) {
+				if(is_map6()) {
+					return 0b110; 
+				}
+	
+				if(is_map5()) {
+					return 0b101; 
+				}
+			}
+			
+			if(is_xop()) {
+				switch(enc) {
+					case ENC_XOP:    return 0b01001;
+					case ENC_XOP_VM: return 0b01010;
+					default: ASSERT(false, "unknown xop encoding");
+				}
+			}
+	
+			switch((opcode & 0xffff00)) {
+				case 0x000000: return 0b000; 
+				case 0x000f00: return 0b001; 
+				case 0x0f3800: return 0b010;
+				case 0x0f3a00: return 0b011;
+				default: ASSERT(false, "unknown leading opcode 1 {}", opcode & 0xffff00);
+			}
+	
+			return 0;
+		}
+
+		constexpr auto get_imp() const -> u8 {
+			if(prefix == OPERAND_SIZE_OVERRIDE) {
+				return 0b01;
+			}
+
+			if(prefix == REP) {
+				return 0b10;
+			}
+
+			if(prefix == REPNE) {
+				return 0b11;
+			}
+
+			return 0;
+		}
+
+		constexpr auto get_l() const -> u8 {
+			if(is_l1()) {
+				return true;
+			}
+
+			if(is_l0()) {
+				return false;
+			}
+
+			// vector length (0 = 128b, 1 = 256b)
+			return op_size == OPS_256;
+		}
+
+		constexpr auto get_evex_zero() const -> u8 {
+			switch (operands[0]) {
+				case OP_XMM_KZ:	
+				case OP_YMM_KZ:	
+				case OP_ZMM_KZ: return true; 
+				default:        return false;
+			}
+		}
+
+		constexpr auto get_evex_operand_type() const -> u8 {
+			if(op_size == OPS_256) {
+				return 0b00100000;
+			}
+	
+			if(op_size == OPS_512) {
+				return  0b01000000;
+			}
+	
+			return 0;
+		}
+
 		auto get_mem_operand() const -> u8 {
 			if(is_operand_mem(operands[0])) { return 0; }
 			if(is_operand_mem(operands[1])) { return 1; }
@@ -255,20 +335,11 @@ namespace baremetal {
 
 		auto has_masked_operand() const -> bool {
 			if(is_operand_masked(operands[0])) { return true; }
-			if(is_operand_masked(operands[1])) { return true; }
-			if(is_operand_masked(operands[2])) { return true; }
-			if(is_operand_masked(operands[3])) { return true; }
+			//if(is_operand_masked(operands[1])) { return true; }
+			//if(is_operand_masked(operands[2])) { return true; }
+			//if(is_operand_masked(operands[3])) { return true; }
 
 			return false;
-		}
-
-		auto get_masked_operand() const -> u8 {
-			if(is_operand_masked(operands[0])) { return 0; }
-			if(is_operand_masked(operands[1])) { return 1; }
-			if(is_operand_masked(operands[2])) { return 2; }
-			if(is_operand_masked(operands[3])) { return 3; }
-
-			return 0;
 		}
 
 		const char* name;         // instruction mnemonic
@@ -339,36 +410,9 @@ namespace baremetal {
 		#include "assembler/instruction/databases/database.inc"
 	};
 
-	constexpr u32 instruction_db_size = sizeof(instruction_db) / sizeof(instruction);
-	static_assert(instruction_db_size < 16384, "magic number limit reached");
+	constexpr u32 INSTRUCTION_DB_SIZE = sizeof(instruction_db) / sizeof(instruction);
+	constexpr u8 MAX_INSTRUCTION_SIZE = 15;
 
-	// locates the first instruction in the instruction database with the specified name
-	inline auto find_instruction_by_name(const char* name) -> u32 {
-    i32 left = 0;
-    i32 right = instruction_db_size - 1;
-
-		// since our instructions are sorted alphabetically, we can just do a quick binary search
-    while(left <= right) {
-      u32 mid = (static_cast<u32>(left) + static_cast<u32>(right)) >> 1;
-      i32 cmp = utility::compare_strings(name, instruction_db[mid].name);
-
-      if(cmp == 0) {
-				// found an element with the specified name, loccate the first one
-        while(mid > 0 && utility::compare_strings(name, instruction_db[mid - 1].name) == 0) {
-          --mid;
-        }
-
-        return mid;
-      }
-      else if(cmp < 0) {
-        right = static_cast<i32>(mid) - 1;
-      }
-      else {
-				left = static_cast<i32>(mid) + 1;
-      }
-    }
-
-    return utility::limits<u32>::max();
-	}
+	static_assert(INSTRUCTION_DB_SIZE < 16384, "magic number limit reached");
 } // namespace baremetal
 

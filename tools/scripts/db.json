@@ -287,8 +287,6 @@
 	{ "name": "jnc"              , "operands": ["rel32"]                      , "enc": "NORMAL"  , "opcode": "0f83"  , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
 	{ "name": "je"               , "operands": ["rel8_rip"]                   , "enc": "NORMAL"  , "opcode": "74"    , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
 	{ "name": "jz"               , "operands": ["rel8_rip"]                   , "enc": "NORMAL"  , "opcode": "74"    , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
-	{ "name": "je"               , "operands": ["rel16_rip"]                  , "enc": "NORMAL"  , "opcode": "0f84"  , "prefix": ["66"]      , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
-	{ "name": "jz"               , "operands": ["rel16_rip"]                  , "enc": "NORMAL"  , "opcode": "0f84"  , "prefix": ["66"]      , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
 	{ "name": "je"               , "operands": ["rel32"]                      , "enc": "NORMAL"  , "opcode": "0f84"  , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
 	{ "name": "jz"               , "operands": ["rel32"]                      , "enc": "NORMAL"  , "opcode": "0f84"  , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },
 	{ "name": "jne"              , "operands": ["rel8_rip"]                   , "enc": "NORMAL"  , "opcode": "75"    , "prefix": []          , "rexw": false, "rm": ""   , "ri": "" , "size": 64 , "map": "" , "l": ""  },

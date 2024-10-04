@@ -128,6 +128,11 @@ namespace baremetal {
 	constexpr u8 rcx = 1;
 	
 	constexpr u8 dx = 2;
+
+	constexpr u8 spl = 4;
+	constexpr u8 bpl = 5;
+	constexpr u8 sil = 6;
+	constexpr u8 dil = 7;
 	
 	constexpr u8 rsp = 4;
 	constexpr u8 fs = 4;

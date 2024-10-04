@@ -1,0 +1,14 @@
+; expect: 48656c6c6f20776f726c64210a48656c6c6f20776f726c64210a0048656c6c6f20776f726c64210a00000048656c6c6f20776f726c6421000000000a0000000000000048be000000000000000048be0d0000000000000048be1b0000000000000048be2b00000000000000
+
+bits 64
+
+section .text
+	msg0 db "Hello world!", 0x0a
+	msg1 dw "Hello world!", 0x0a
+	msg2 dd "Hello world!", 0x0a
+	msg3 dq "Hello world!", 0x0a
+
+	mov rsi, msg0
+	mov rsi, msg1
+	mov rsi, msg2
+	mov rsi, msg3

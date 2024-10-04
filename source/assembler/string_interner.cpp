@@ -21,8 +21,8 @@ namespace baremetal {
 		// temporarily allocate a block
 		auto safepoint = m_allocator.create_safepoint();
 
-		char* memory = static_cast<char*>(m_allocator.allocate(string.get_size()));
-		utility::memcpy(memory, string.get_data(), string.get_size());
+		char* memory = static_cast<char*>(m_allocator.allocate(string.get_size() + 1));
+		utility::memcpy(memory, string.get_data(), string.get_size() + 1);
 
 	  utility::string_view* view = m_allocator.emplace<utility::string_view>(memory, string.get_size());
 		auto result = m_strings.insert({ *view, view });

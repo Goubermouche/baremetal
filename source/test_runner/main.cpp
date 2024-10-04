@@ -1,4 +1,5 @@
 #include "utilities.h"
+#include "assembler/assembler.h"
 
 #include <utility/system/file.h> 
 
@@ -9,11 +10,11 @@ bool g_quiet = false;
 
 namespace detail {
 	void run_test_encoding() {
-		const utility::filepath test_path = g_test_path / "encoding/test.txt"; 
+		const utility::filepath test_path = g_test_path / "encoding/test.asm"; 
 		const utility::dynamic_string test_file = utility::file::read(test_path);
 
 		baremetal::assembler_context context;
-		baremetal::assembler_parser assembler(&context);
+		// baremetal::assembler_parser assembler(&context);
 
 		utility::dynamic_string instruction;
 		utility::dynamic_string hex_result;
@@ -30,7 +31,7 @@ namespace detail {
 			instruction.clear();
 			expected.clear();
 			hex_result.clear();
-			assembler.clear();
+			// assembler.clear();
 	
 			// locate the expected encoding part
 			while(i + 1 < test_file.get_size() && test_file[i] != '\n') {
@@ -56,13 +57,16 @@ namespace detail {
 			if(instruction.get_size() == 0) {
 				break;
 			}
+
+			baremetal::assembler assembler;
+			const auto result = assembler.assemble(instruction);
 	
-			if(const auto result = assembler.parse(instruction); result.has_error()) {
+			if(result.has_error()) {
 				utility::console::print_err("error: '{}'\n", result.get_error());
 				info.add_failure();
 			}
 			else {
-				hex_result = bytes_to_string(assembler.get_bytes());
+				hex_result = bytes_to_string(result.get_value().bytes);
 	
 				if(hex_result != expected) {
 					info.add_failure();
@@ -87,7 +91,7 @@ namespace detail {
 		const auto tests = utility::directory::read(g_test_path / "binary");
 
 		baremetal::assembler_context context;
-		baremetal::assembler_parser assembler(&context);
+		// baremetal::assembler_parser assembler(&context);
 
 		utility::dynamic_string test_text;
 		utility::dynamic_string hex_result;
@@ -98,15 +102,14 @@ namespace detail {
 		info.begin_test();
 
 		for(const auto& test : tests) {
-			if(test.get_string().find("3") == utility::dynamic_string::invalid_pos) {
-				continue;
-			}
-
-			test_text.clear();
-			assembler.clear();
+			hex_result.clear();
 			expected.clear();
-			assembler.clear();
+			test_text.clear();
 
+			// if(test.get_string().find("example.asm") == utility::dynamic_string::invalid_pos) {
+			// 	continue;
+			// }
+			
 			test_text = utility::file::read(test);
 
 			// locate the 'expect' directive
@@ -127,12 +130,16 @@ namespace detail {
 
 			expected = expected.trim();
 
-			if(const auto result = assembler.parse(test_text); result.has_error()) {
-				utility::console::print_err("error: '{}'\n", result.get_error());
+			// utility::console::print("running {}\n", test);
+			baremetal::assembler assembler;
+			const auto result = assembler.assemble(test_text);
+
+			if(result.has_error()) {
+				utility::console::print_err("error: {}\n", result.get_error());
 				info.add_failure();
 			}
 			else {
-				hex_result = bytes_to_string(assembler.get_bytes()); 
+				hex_result = bytes_to_string(result.get_value().bytes);
 
 				if(hex_result != expected) {
 					info.add_failure();
@@ -141,6 +148,7 @@ namespace detail {
 				else {
 					info.add_success();
 				}
+				// utility::console::print("{}\n", bytes_to_string(result.get_value().bytes));
 			}
 		}
 		

@@ -7,9 +7,9 @@ workspace "assembler"
     startproject "tests"
     warnings "Extra"
 
-    -- buildoptions { "-fsanitize=address" }
-    -- linkoptions { "-fsanitize=address" }
-    -- debugformat "C7"
+		-- buildoptions { "-fsanitize=address,undefined" }
+   	-- linkoptions { "-fsanitize=address,undefined" }
+   	-- debugformat "C7"
 
     buildoptions("-std=gnu++20", "-g")
 
@@ -18,7 +18,7 @@ workspace "assembler"
     }
 
     filter "toolset:gcc or clang"
-        buildoptions { "-Wno-comment", "-Wno-missing-field-initializers" }
+        -- buildoptions { "-Wno-comment", "-Wno-missing-field-initializers" }
 
     filter "configurations:Release"
         defines { "NDEBUG" }
