@@ -18,8 +18,10 @@ jobs:
         fetch-depth: 0
         submodules: true
 
-    - name: Download dependencies
+    - name: Download GCC
       run: sudo apt-get install -y gcc make
+
+    - name: Download Premake5
       if: steps.cache-premake.outputs.cache-hit != 'true'
       run: |
         wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha16/premake-5.0.0-alpha16-linux.tar.gz
