@@ -1,4 +1,6 @@
-## baremetal
+## baremetal [![Tests (ubuntu-latest)](https://github.com/Goubermouche/baremetal/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/Goubermouche/baremetal/actions/workflows/test_ubuntu.yml)
+
+
 Basic x64 assembler which currently supports the majority of x64 instructions, including pretty much all extensions as specified by the [Intel® 64 and IA-32 Architectures Software Developer’s Manual](https://cdrdv2.intel.com/v1/dl/getContent/671200). Additionally, it also supports out-of-order definition with optimal instruction selection (pretty much 1-to-1 with [Nasm](https://www.nasm.us/)), as well as labels, and memory defines. 
 
 ## Getting up and running
