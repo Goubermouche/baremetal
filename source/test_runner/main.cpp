@@ -9,7 +9,7 @@ const utility::filepath g_test_path = "source/test_runner/tests";
 bool g_quiet = false;
 
 namespace detail {
-	void run_test_encoding() {
+	auto run_test_encoding() -> bool {
 		const utility::filepath test_path = g_test_path / "encoding/test.asm"; 
 		const utility::dynamic_string test_file = utility::file::read(test_path);
 
@@ -78,10 +78,10 @@ namespace detail {
 			}
 		}
 	
-		info.end_test();
+		return info.end_test();
 	}
 
-	void run_test_binary() {
+	auto run_test_binary() -> bool {
 		// various tests related to binary layout
 		// test format:
 		//   ; description
@@ -152,7 +152,7 @@ namespace detail {
 			}
 		}
 		
-		info.end_test();
+		return info.end_test();
 	}
 } // namespace detail
 
@@ -192,12 +192,14 @@ auto compare_commands(const char* shortform, const char* longform, const char* i
 }
 
 auto run_tests(const utility::dynamic_array<utility::dynamic_string>& groups) -> i32 {
+	bool result = false;
+
 	for(u64 i = 0; i < groups.get_size(); ++i) {
 		if(groups[i] == "encoding") {
-			detail::run_test_encoding();
+			result |= detail::run_test_encoding();
 		}
 		else if(groups[i] == "binary") {
-			detail::run_test_binary();
+			result |= detail::run_test_binary();
 		}
 		else {
 			utility::console::print_err("error: unknown instruction group '{}', exiting (type '--help' for help)\n", groups[i]);
@@ -205,7 +207,7 @@ auto run_tests(const utility::dynamic_array<utility::dynamic_string>& groups) ->
 		}
 	}
 
-	return 0;
+	return result;
 }
 
 auto check_invalid_option(i32 argc, i32 argi) -> i32 {

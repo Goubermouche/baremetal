@@ -40,9 +40,9 @@ namespace baremetal::tests {
 			m_timer.start();
 		}
 	
-		void end_test() {
+		auto end_test() -> bool {
 			if(m_quiet) {
-				return;
+				return m_total_tests != m_success_count;
 			}
 
 			m_timer.stop();
@@ -55,6 +55,8 @@ namespace baremetal::tests {
 				m_total_tests,
 				m_timer.get_elapsed_s()
 			);
+
+			return m_total_tests != m_success_count;
 		}
 	private:
 		void update(bool force = false) {
