@@ -887,7 +887,6 @@ namespace baremetal::assembler {
 		}
 
 		return reg;
-
 	}
 
 	auto backend::get_modrm_rm() -> u8 {

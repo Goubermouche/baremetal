@@ -338,9 +338,11 @@ namespace baremetal::assembler {
 	void frontend::create_normal_subsection() {
 		if(!m_current_resolved.is_empty()) {
 			subsection p;
+
 			p.type = SS_NORMAL;
 			p.resolved.size = m_current_resolved.get_size();
 			p.resolved.data = static_cast<u8*>(m_context.allocator.allocate(m_current_resolved.get_size()));
+
 			utility::memcpy(p.resolved.data, m_current_resolved.get_data(), m_current_resolved.get_size());
 
 			m_sections[m_section_index].subsections.push_back(p);
@@ -717,12 +719,12 @@ namespace baremetal::assembler {
 		operand op = {};
 
 		switch(type) {
-			case DT_NONE:  op.type = OP_M128; break; // M128 currently works as an infer keyword
 			case DT_BYTE:  op.type = OP_M8;   break;
 			case DT_WORD : op.type = OP_M16;  break;
 			case DT_DWORD: op.type = OP_M32;  break;
 			case DT_QWORD: op.type = OP_M64;  break;
 			case DT_TWORD: op.type = OP_M80;  break;
+			case DT_NONE:  op.type = OP_M128; break; // M128 currently works as an infer keyword
 		}
 	
 		TRY(m_lexer.get_next_token());
