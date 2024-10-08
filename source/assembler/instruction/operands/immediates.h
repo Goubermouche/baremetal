@@ -1,7 +1,7 @@
 #pragma once
 #include <utility/types.h>
 
-namespace baremetal {
+namespace baremetal::assembler {
 	using namespace utility::types;
 
 	struct imm {
@@ -68,4 +68,4 @@ namespace baremetal {
 
 		u64 value;
 	};
-} // namespace baremetal
+} // namespace baremetal::assembler

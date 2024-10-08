@@ -1,7 +1,7 @@
 #pragma once
 #include <utility/types.h>
 
-namespace baremetal {
+namespace baremetal::assembler {
 	using namespace utility::types;
 
 	enum reg_type : u8 {
@@ -162,4 +162,4 @@ namespace baremetal {
 	inline auto is_stack_pointer(reg r) -> bool {
 		return r.index == rsp && is_gp_reg(r);
 	}
-} // namespace baremetal
+} // namespace baremetal::assembler

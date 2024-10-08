@@ -7,7 +7,7 @@
 #include <utility/containers/string_view.h> 
 #include <utility/result.h> 
 
-namespace baremetal {
+namespace baremetal::assembler {
 	enum token_type : u16 {
 		TOK_NONE = 0,
 
@@ -256,7 +256,6 @@ namespace baremetal {
 		TOK_ASTERISK,    // *
 		TOK_COMMA,       // ,
 		TOK_DOLLARSIGN,  // $
-		TOK_DOT,         // .
 		TOK_COLON,       // :
 		TOK_NEWLINE,     // :
 
@@ -342,10 +341,10 @@ namespace baremetal {
 	auto mask_to_k(mask_type mask) -> u8;
 	auto mask_to_broadcast_n(mask_type mask) -> u8;
 
-	class assembler_lexer {
+	class lexer {
 	public:
-		assembler_lexer(const utility::dynamic_string& text);
-		assembler_lexer() = default;
+		lexer(const utility::dynamic_string& text);
+		lexer() = default;
 
 		struct safepoint {
 			char current_char;
@@ -377,7 +376,6 @@ namespace baremetal {
 		token_type current;
 		imm current_immediate;
 		utility::dynamic_string current_string;
-		bool force_keyword = false; // consider the next number as a keyword instead of a numerical literal
 	};
 
 	auto token_to_data_type(token_type token) -> data_type;
@@ -388,5 +386,5 @@ namespace baremetal {
 
 	auto is_token_broadcast(token_type token) -> bool;
 	auto is_token_k(token_type token) -> bool;
-} // namespace baremetal
+} // namespace baremetal::assembler
 

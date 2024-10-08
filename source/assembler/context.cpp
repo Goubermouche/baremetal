@@ -1,10 +1,11 @@
 #include "context.h"
 
-namespace baremetal {
-	assembler_context::assembler_context() : allocator(1024), strings() {}
+namespace baremetal::assembler {
+	context::context() : allocator(1024), strings() {}
 
-	void assembler_context::clear() {
+	void context::clear() {
 		allocator.clear();
 		strings.clear();
 	}
-}
+} // namespace baremetal::assembler
+

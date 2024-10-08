@@ -3,7 +3,7 @@
 
 #include <utility/containers/dynamic_array.h>
 
-namespace baremetal {
+namespace baremetal::assembler {
 	namespace detail {
 		enum mod_mode : u8 {
 			INDIRECT        = 0b00,
@@ -91,5 +91,5 @@ namespace baremetal {
 		static u8 m_data_size;
 		static u8 m_data[MAX_INSTRUCTION_SIZE];
 	};
-} // baremetal
+} // baremetal::assembler
 

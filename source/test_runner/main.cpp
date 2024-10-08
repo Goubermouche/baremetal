@@ -1,7 +1,4 @@
 #include "utilities.h"
-#include "assembler/assembler.h"
-
-#include <utility/system/file.h> 
 
 using namespace baremetal::tests;
 
@@ -13,7 +10,7 @@ namespace detail {
 		const utility::filepath test_path = g_test_path / "encoding/test.asm"; 
 		const utility::dynamic_string test_file = utility::file::read(test_path);
 
-		baremetal::assembler_context context;
+		baremetal::assembler::context context;
 		// baremetal::assembler_parser assembler(&context);
 
 		utility::dynamic_string instruction;
@@ -58,7 +55,7 @@ namespace detail {
 				break;
 			}
 
-			baremetal::assembler assembler;
+			baremetal::assembler::frontend assembler;
 			const auto result = assembler.assemble(instruction);
 	
 			if(result.has_error()) {
@@ -90,7 +87,7 @@ namespace detail {
 	
 		const auto tests = utility::directory::read(g_test_path / "binary");
 
-		baremetal::assembler_context context;
+		baremetal::assembler::context context;
 
 		utility::dynamic_string test_text;
 		utility::dynamic_string hex_result;
@@ -126,7 +123,7 @@ namespace detail {
 			expected = expected.trim();
 
 			// utility::console::print("running {}\n", test);
-			baremetal::assembler assembler;
+			baremetal::assembler::frontend assembler;
 			const auto result = assembler.assemble(test_text);
 
 			if(result.has_error()) {

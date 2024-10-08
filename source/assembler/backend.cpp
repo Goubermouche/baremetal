@@ -1,7 +1,7 @@
 #include "./backend.h"
 #include <utility/algorithms/sort.h>
 
-namespace baremetal {
+namespace baremetal::assembler {
 	namespace detail {
 		auto mod_rm(mod_mode mod, u8 rx, u8 rm) -> u8 {
 			ASSERT(mod < 4, "invalid modR/M mod specified\n");
@@ -1147,4 +1147,4 @@ namespace baremetal {
 	void backend::push_byte(u8 value) {
 		m_data[m_data_size++] = value;
 	}
-} // namespace baremetal
+} // namespace baremetal::assembler

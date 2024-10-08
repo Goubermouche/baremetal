@@ -2,7 +2,7 @@
 #include "assembler/instruction/operands/immediates.h"
 #include "assembler/instruction/operands/registers.h"
 
-namespace baremetal {
+namespace baremetal::assembler {
 	enum scale : u8 {
 		SCALE_1 = 0b00,
 		SCALE_2 = 0b01,
@@ -39,5 +39,5 @@ namespace baremetal {
 		mem memory;
 		u8 k;
 	};
-} // namespace baremetal
+} // namespace baremetal::assembler
 

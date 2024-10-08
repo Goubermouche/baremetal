@@ -3,7 +3,7 @@
 
 #include <utility/assert.h>
 
-namespace baremetal {
+namespace baremetal::assembler {
 	enum extension : u8 {
 		EXT_NONE = 0b00000000,
 		EXT_0    = 0b00000001, // /0
@@ -414,5 +414,5 @@ namespace baremetal {
 	constexpr u8 MAX_INSTRUCTION_SIZE = 15;
 
 	static_assert(INSTRUCTION_DB_SIZE < 16384, "magic number limit reached");
-} // namespace baremetal
+} // namespace baremetal::assembler
 

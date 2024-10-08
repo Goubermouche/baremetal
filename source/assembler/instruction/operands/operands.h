@@ -4,7 +4,7 @@
 #include <utility/containers/string_view.h>
 #include <utility/assert.h>
 
-namespace baremetal {
+namespace baremetal::assembler {
 	enum operand_type : u8 {
 		OP_NONE = 0,
 
@@ -536,5 +536,5 @@ namespace baremetal {
 			default: return false;
 		}
 	}
-} // namespace baremetal
+} // namespace baremetal::assembler
 
