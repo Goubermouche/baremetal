@@ -110,7 +110,6 @@ namespace baremetal {
 		OP_REL8_RIP,  // rel8  + rip
 		OP_REL16_RIP, // rel16 + rip
 		OP_REL32_RIP, // rel32 + rip
-		OP_REL_UNKNOWN,
 
 		OP_HIDDEN, // usually an operand which refers to an implicit value, ie a '1'
 	};
@@ -120,8 +119,7 @@ namespace baremetal {
 		constexpr operand(imm i) : type(OP_I64), immediate(i) {}
 		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
 		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
-		constexpr operand(rel r) : type(OP_REL32), relocation(r) {}
-		constexpr operand(utility::string_view* symbol) : type(OP_REL_UNKNOWN), symbol(symbol) {}
+		constexpr operand(utility::string_view* symbol) : type(OP_HIDDEN), unknown(true), symbol(symbol) {}
 
 		operand_type type;
 		bool unknown = false;
@@ -134,7 +132,6 @@ namespace baremetal {
 			moff memory_offset;
 			mem memory;
 
-			rel relocation;
 			imm immediate;
 			u8 r; // register
 		};
@@ -227,7 +224,6 @@ namespace baremetal {
 			case OP_REL8_RIP:    return "REL8_RIP"; 
 			case OP_REL16_RIP:   return "REL16_RIP"; 
 			case OP_REL32_RIP:   return "REL32_RIP"; 
-			case OP_REL_UNKNOWN: return "REL_UNKNOWN"; 
 			case OP_HIDDEN:      return "HIDDEN"; 
 		}
 
@@ -427,7 +423,6 @@ namespace baremetal {
     switch(op) {
       case OP_NONE:
       case OP_MEM:
-			case OP_REL_UNKNOWN:
       case OP_HIDDEN: return 0;
       case OP_I8:
       case OP_R8:

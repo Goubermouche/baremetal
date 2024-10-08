@@ -47,7 +47,6 @@ The following commands are intended to be used to aid the developer when manipul
 ## Planned
 - Executable/binary emission 
 - Optional type prefixes
-- CI & GH LFS for test storage?
 - Better support for memory operands with SSE registers
 - Better error checking
 

@@ -148,7 +148,7 @@ namespace baremetal {
 					}
 
 					// emit the instruction with our exact operands
-					auto code = backend::emit_instruction_direct(unresolved.index, operands);
+					auto code = backend::emit_instruction(unresolved.index, operands, false);
 					bytes.insert(bytes.end(), code.data, code.data + code.size);
 				}
 			}
@@ -194,7 +194,7 @@ namespace baremetal {
 					// use the next smallest operand instead
 					unresolved.type = new_type;
 
-					u8 new_size = backend::emit_instruction_direct(current.index, current.operands).size;
+					u8 new_size = backend::emit_instruction(current.index, current.operands, false).size;
 
 					// update our symbol table to account for the difference in code length
 					section.update_positions(current.position, current.size - new_size);
@@ -488,7 +488,7 @@ namespace baremetal {
 					m_operands[j].type = current.operands[j];
 
 					if(is_operand_rel(current.operands[j])) {
-						u8 size = backend::emit_instruction_direct(m_instruction_i, m_operands).size;
+						u8 size = backend::emit_instruction(m_instruction_i, m_operands, false).size;
 						m_operands[j].immediate = static_cast<i32>(m_operands[j].immediate.value) - size;
 					}
 				}
@@ -505,7 +505,7 @@ namespace baremetal {
 
 				// HACK: assemble the instruction and use that as the length
 				// TODO: cleanup
-				auto code = backend::emit_instruction(m_instruction_i, m_operands);
+				auto code = backend::emit_instruction(m_instruction_i, m_operands, true);
 
 				u8 size = code.size;
 				section& parent = m_sections[m_section_index];

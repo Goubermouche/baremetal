@@ -42,13 +42,16 @@ namespace baremetal {
 		};
 
 		static auto get_instruction_by_name(const char* name) -> u32;
-		static auto get_instruction(u32 index, const operand* operands) -> const instruction*;
 		static auto get_variants(u32 index, const operand* operands) -> utility::dynamic_array<operand_type>;
 
+		static auto emit_instruction(u32 index, const operand* operands, bool optimize) -> code;
 		static auto emit_instruction(const instruction* inst, const operand* operands) -> code;
-		static auto emit_instruction_direct(u32 index, const operand* operands) -> code;
-		static auto emit_instruction(u32 index, const operand* operands) -> code;
 	private:
+		// instruction selection
+		static auto get_instruction_using_magic(u32 index, const operand* operands, const imm& imm_op) -> const instruction*;	
+		static auto get_instruction_direct(u32 index, const operand* operands) -> const instruction*;
+		static auto get_instruction(u32 index, const operand* operands) -> const instruction*;
+
 		// instruction parts
 		static void emit_instruction_prefix();
 		static void emit_instruction_opcode();
@@ -61,21 +64,22 @@ namespace baremetal {
 		static void emit_opcode_prefix_vex();
 		static void emit_opcode_prefix_rex();
 
+		// misc
 		static void emit_opcode_prefix_vex_two();
 		static void emit_opcode_prefix_vex_three();
 
 		static void emit_opcode_prefix_rex_mem(const mem& memory);
 		static void emit_data_operand(u64 data, u16 bit_width);
 		
-		static auto get_instruction_rex() -> u8;
 		static auto get_instruction_vvvv() -> u8;
+		static auto get_instruction_rex() -> u8;
 		static auto get_instruction_v() -> u8;
 
 		// registers
 		static auto get_extending_reg() -> u8;
+		static auto get_sib_index() -> u8;
 		static auto get_modrm_reg() -> u8;
 		static auto get_modrm_rm() -> u8;
-		static auto get_sib_index() -> u8;
 		static auto get_mask_reg() -> u8;
 
 		static auto has_sib() -> bool;

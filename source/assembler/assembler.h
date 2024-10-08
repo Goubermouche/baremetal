@@ -87,8 +87,8 @@ namespace baremetal {
 					!(is_operand_moff(inst.operands[i]) && is_operand_moff(operands[i].type)) &&
 					!(is_operand_masked_mem(inst.operands[i]) && is_operand_masked_mem(operands[i].type)) &&
 					!(is_operand_rel(inst.operands[i]) && is_operand_imm(operands[i].type)) &&
-					!(is_operand_imm(inst.operands[i]) && operands[i].type == OP_REL_UNKNOWN) &&
-					!(is_operand_rel(inst.operands[i]) && operands[i].type == OP_REL_UNKNOWN)
+					!(is_operand_imm(inst.operands[i]) && operands[i].unknown) &&
+					!(is_operand_rel(inst.operands[i]) && operands[i].unknown)
 				) {
 					return false;
 				}
