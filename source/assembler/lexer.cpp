@@ -20,8 +20,7 @@ namespace baremetal::assembler {
 
 	auto lexer::get_next_char() -> char {
 		if(is_at_end()) {
-			m_current_char = utility::g_eof;
-			return utility::g_eof;
+			return m_current_char = utility::g_eof;
 		}
 
 		return m_current_char = m_text[m_index++];

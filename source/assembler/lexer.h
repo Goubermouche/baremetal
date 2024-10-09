@@ -369,13 +369,13 @@ namespace baremetal::assembler {
 		auto get_next_token_string() -> utility::result<token_type>;
 		auto get_next_token_char() -> utility::result<token_type>;
 	private:
-		u64 m_index;
 		utility::dynamic_string m_text;
 		char m_current_char;
+		u64 m_index;
 	public:
-		token_type current;
-		imm current_immediate;
 		utility::dynamic_string current_string;
+		imm current_immediate;
+		token_type current;
 	};
 
 	auto token_to_data_type(token_type token) -> data_type;

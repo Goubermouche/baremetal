@@ -214,7 +214,7 @@ namespace baremetal::assembler {
 		u8 legal_variants_index = 0;
 
 		// some instructions have a special optimization index, check if we have it
-		if(instruction_db[index].has_special_index() && has_unresolved == false) {
+		if(instruction_db[index].has_magic() && has_unresolved == false) {
 			if(const instruction* inst = get_instruction_using_magic(index, operands, imm_op)) {
 				return inst;
 			}
@@ -326,11 +326,11 @@ namespace baremetal::assembler {
 	}
 
 	auto backend::get_instruction_using_magic(u32 index, const operand* operands, const imm& imm_op) -> const instruction* {
-		ASSERT(instruction_db[index].has_special_index(), "instruction does not have a magic number\n");
-		const u16 context_index = instruction_db[index].get_special_index();
+		ASSERT(instruction_db[index].has_magic(), "instruction does not have a magic number\n");
+		const u16 context_index = instruction_db[index].get_magic_index();
 
 		// switch on the context kind
-		switch(instruction_db[index].get_special_kind()) {
+		switch(instruction_db[index].get_magic_kind()) {
 			case 0: {
 				// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
 				// less we can look for a smaller destination

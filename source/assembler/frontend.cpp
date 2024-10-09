@@ -200,8 +200,8 @@ namespace baremetal::assembler {
 					// resolve the symbol position
 					switch(unresolved_operand.type) {
 						// immediates are absolute
-						// case OP_I8:
-						// case OP_I16:
+						case OP_I8:
+						case OP_I16:
 						case OP_I32:
 						case OP_I64: operands[unresolved.unresolved_operand].immediate = imm(get_symbol_global(unresolved_operand.symbol)); break;
 						case OP_M8: 
@@ -438,7 +438,6 @@ namespace baremetal::assembler {
 				m_current_resolved.push_back(0);
 			}
 		}
-
 
 		return SUCCESS;
 	}
@@ -711,7 +710,6 @@ namespace baremetal::assembler {
 		}
 
 		return utility::error("invalid broadcast operand specified");
-
 	}
 
 	auto frontend::parse_memory_operand(data_type type) -> utility::result<void> {
@@ -963,8 +961,6 @@ namespace baremetal::assembler {
 		bool scale_mode = false;
 		bool imm_set = false;
 		bool negate = false;
-
-		// TODO: this still doesn't work with negative operands
 
 		// entry
 		while(true) {

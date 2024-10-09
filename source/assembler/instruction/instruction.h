@@ -195,15 +195,15 @@ namespace baremetal::assembler {
 			return ((flags & 0b00011110) >> 1) - 1;
 		}
 
-		constexpr auto get_special_kind() const -> u8 {
+		constexpr auto get_magic_kind() const -> u8 {
 			return magic >> 14;
 		}
 
-		constexpr auto get_special_index() const -> u16 {
+		constexpr auto get_magic_index() const -> u16 {
 			return magic & 0b0011111111111111;
 		};
 
-		constexpr auto has_special_index() const -> bool {
+		constexpr auto has_magic() const -> bool {
 			return magic != utility::limits<u16>::max();
 		}
 
