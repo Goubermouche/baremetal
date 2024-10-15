@@ -102,6 +102,10 @@ namespace detail {
 			expected.clear();
 			test_text.clear();
 
+			if(test.get_string().find("fibo") == utility::dynamic_string::invalid_pos) {
+				continue;
+			}
+
 			test_text = utility::file::read(test);
 
 			// locate the 'expect' directive

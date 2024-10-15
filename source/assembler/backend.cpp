@@ -1146,4 +1146,11 @@ namespace baremetal::assembler {
 	void backend::push_byte(u8 value) {
 		m_data[m_data_size++] = value;
 	}
+
+	auto is_jump_or_branch_inst(u32 index) -> bool {
+		static u32 ja_index = backend::get_instruction_by_name("ja");     // first jump instruction
+		static u32 jz_index = backend::get_instruction_by_name("jz") + 1; // last jump instruction
+
+		return index >= ja_index && index <= jz_index;
+	}
 } // namespace baremetal::assembler

@@ -39,14 +39,14 @@ _start:
 .done:
 	mov dword [esp], ecx
 	push rax
-	call print_num
+	call .print_num
 	add esp, 4
 	pop rcx 
 	loop .loop
 	mov eax, 0x01
 	xor ebx, ebx
 	int 0x80 
-print_num:
+.print_num:
 	push rbp
 	mov ebp, esp
 	sub esp, 11

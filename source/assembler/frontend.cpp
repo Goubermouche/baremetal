@@ -1,6 +1,8 @@
 #include "frontend.h"
 #include "assembler/backend.h"
 
+#include <utility/system/file.h>
+
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
     if(m_lexer.current != expected) {                             \
@@ -128,7 +130,7 @@ namespace baremetal::assembler {
 		return false;
 	}
 
-	frontend::frontend() : m_section_index(0) {
+	frontend::frontend() : m_section_index(0), m_module(&m_context) {
 		section text {
 			.name = m_context.strings.add(".text"),
 			.subsections = {},
@@ -143,6 +145,10 @@ namespace baremetal::assembler {
 		m_lexer.set_text(source);
 		TRY(parse());           // generate the symbol table and unresolved list
 		TRY(resolve_symbols()); // resolve symbols locations
+
+		auto graph = m_module.emit_graph();
+
+		utility::file::write("./cfg.dot", graph);
 
 		return emit_module();
 	}
@@ -411,6 +417,7 @@ namespace baremetal::assembler {
 			}	
 		}
 
+		m_module.begin_block(nullptr);
 		create_normal_subsection(); // capture any trailing instructions
 		return SUCCESS;
 	}
@@ -650,6 +657,16 @@ namespace baremetal::assembler {
 		else {
 			m_current_resolved.insert(m_current_resolved.end(), code.data, code.data + code.size);
 		}
+
+		// NOTE: unoptimized instruction handle, fix this
+
+		instruction_t::operand operands[4] = { };
+
+		if(is_jump_or_branch_inst(m_instruction_i)) {
+			operands[0].branch_to = m_operands[0].symbol;
+		}
+		
+		m_module.add_instruction(operands, m_instruction_i);
 
 		parent.offset += size;
 	}
@@ -910,6 +927,8 @@ namespace baremetal::assembler {
 		});
 
 		TRY(m_lexer.get_next_token());
+
+		m_module.begin_block(m_current_identifier);
 		return SUCCESS;
 	}
 	

@@ -1,6 +1,6 @@
 #pragma once
 #include "assembler/instruction/instruction.h"
-#include "assembler/context.h"
+#include "assembler/ir/module.h"
 #include "assembler/lexer.h"
 
 namespace baremetal::assembler {
@@ -136,6 +136,8 @@ namespace baremetal::assembler {
 		// sections
 		utility::dynamic_array<section> m_sections;
 		u64 m_section_index;
+
+		module_t m_module;
 	};
 } // namespace baremetal::assembler
 

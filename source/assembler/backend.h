@@ -91,5 +91,7 @@ namespace baremetal::assembler {
 		static u8 m_data_size;
 		static u8 m_data[MAX_INSTRUCTION_SIZE];
 	};
-} // baremetal::assembler
+
+	auto is_jump_or_branch_inst(u32 index) -> bool;
+} // baremetal::assembler 
 
