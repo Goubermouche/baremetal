@@ -618,6 +618,13 @@ namespace baremetal::assembler {
 		u8 size = code.size;
 		section& parent = m_sections[m_section_index];
 
+		// NOTE: unoptimized instruction handle, fix this	
+		m_module.add_instruction(m_operands, m_instruction_i, size);
+	
+		if(is_jump_or_branch_inst(m_instruction_i)) {
+			m_module.begin_block(nullptr);
+		}
+
 		if(m_symbolic_operand) {
 			// append all of our relative instructions which we've encountered before this one
 			create_normal_subsection();
@@ -631,6 +638,7 @@ namespace baremetal::assembler {
 			// remove the last potential variant (the largest one), and use it as our operand, this will
 			// most likely be optimized out by the resolve_symbols() function
 			auto variants = backend::get_variants(m_instruction_i, m_operands);
+
 			m_operands[m_unresolved_index].type = variants.pop_back();
 
 			if(!is_operand_rel(m_operands[m_unresolved_index].type)) {
@@ -658,15 +666,7 @@ namespace baremetal::assembler {
 			m_current_resolved.insert(m_current_resolved.end(), code.data, code.data + code.size);
 		}
 
-		// NOTE: unoptimized instruction handle, fix this
 
-		instruction_t::operand operands[4] = { };
-
-		if(is_jump_or_branch_inst(m_instruction_i)) {
-			operands[0].branch_to = m_operands[0].symbol;
-		}
-		
-		m_module.add_instruction(operands, m_instruction_i);
 
 		parent.offset += size;
 	}
@@ -926,9 +926,11 @@ namespace baremetal::assembler {
 			m_sections[m_section_index].offset
 		});
 
+		utility::console::print("parsing label: '{}'\n", *m_current_identifier);
+		m_module.begin_block(m_current_identifier);
+		m_module.add_symbol(m_current_identifier);
 		TRY(m_lexer.get_next_token());
 
-		m_module.begin_block(m_current_identifier);
 		return SUCCESS;
 	}
 	
