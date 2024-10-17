@@ -926,7 +926,6 @@ namespace baremetal::assembler {
 			m_sections[m_section_index].offset
 		});
 
-		utility::console::print("parsing label: '{}'\n", *m_current_identifier);
 		m_module.begin_block(m_current_identifier);
 		m_module.add_symbol(m_current_identifier);
 		TRY(m_lexer.get_next_token());

@@ -1,6 +1,8 @@
 #include "module.h"
 #include "assembler/backend.h"
+#include "assembler/instruction/instruction.h"
 #include "assembler/instruction/operands/memory.h"
+#include "utility/containers/dynamic_string.h"
 
 namespace baremetal::assembler {
   module_t::module_t(context* ctx) : m_ctx(ctx) {}
@@ -86,7 +88,7 @@ namespace baremetal::assembler {
 		constexpr const char* r64_names[] = { "rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15" };
 
 		switch(op.type) {
-			case OP_EAX: result += "eax";
+			case OP_EAX: result += "eax"; break;
 			case OP_R8:  result += r8_names[op.r]; break;
 			case OP_R32: result += r32_names[op.r]; break;
 			case OP_R64: result += r64_names[op.r]; break;
@@ -150,10 +152,11 @@ namespace baremetal::assembler {
 	}
 
 	auto module_t::emit_graph() -> utility::dynamic_string {
+		recompute_cfg();
 		utility::dynamic_string result;
 
 		result += "digraph cfg {\n";
-		result += "\tconcentrate=true\n";
+		// result += "\tconcentrate=true\n";
 		result += "\tgraph [splines=ortho]\n";
 		result += "\tnode [shape=plaintext fontname=\"monospace\"]\n";
 
@@ -168,15 +171,15 @@ namespace baremetal::assembler {
 			result += "\"[";
 			result += "label=<<table border=\"1\" cellborder=\"0\" cellspacing=\"0\">";
 
-			if(block->name) {
-				utility::console::print("block: '{}':'{}'\n", i, *block->name);
-				result += "<tr><td align=\"left\">";
-				result += *block->name;
-				result += "</td></tr>";
-				result += "<tr><td></td></tr>";
-				result += "<tr><td></td></tr>";
-				result += "<tr><td></td></tr>";
-			}
+			// if(block->name) {
+			// 	utility::console::print("block: '{}':'{}'\n", i, *block->name);
+			// 	result += "<tr><td align=\"left\">";
+			// 	result += *block->name;
+			// 	result += "</td></tr>";
+			// 	result += "<tr><td></td></tr>";
+			// 	result += "<tr><td></td></tr>";
+			// 	result += "<tr><td></td></tr>";
+			// }
 
 			for(u64 j = 0; j < block->size; ++j) {
 				const instruction_t* inst = block->instructions[j];
@@ -211,10 +214,10 @@ namespace baremetal::assembler {
 			const instruction_block* block = m_blocks[i];
 			const instruction_t* inst = block->instructions[block->size - 1];
 
-			bool is_conditional = false;
-
 			// branch edges
 			if(is_jump_or_branch_inst(inst->index)) {
+				bool to_same_block = i == m_symbols.at(inst->operands[0].symbol).block_index;
+
 				result += "\t\"";
 				result += utility::int_to_string(i);
 				result += "\":p";
@@ -223,10 +226,10 @@ namespace baremetal::assembler {
 				result += "\"";
 				result += utility::int_to_string(m_symbols.at(inst->operands[0].symbol).block_index);
 				result += "\":p0";
-				result += ":n [color=\"darkgreen\"]";
+				result += ":n [color=\"darkgreen\"";
+				result += to_same_block ? "dir=back" : "";
+				result += "]";
 				result += "\n";
-
-				is_conditional = true;
 			}
 	
 			// edges to following blocks 
@@ -239,7 +242,7 @@ namespace baremetal::assembler {
 				result += "\"";
 				result += utility::int_to_string(i + 1);
 				result += "\":n [color=\"";
-				result += is_conditional ? "red" : "blue";
+				result += is_jump_or_branch_inst(inst->index) ? "red" : "blue";
 				result += "\"]\n";
 			}
 		}
@@ -247,5 +250,106 @@ namespace baremetal::assembler {
 		result += "}\n";
 
 		return result;
+	}
+
+	void module_t::recompute_cfg() {
+		struct edge {
+			bool in;
+			bool out;
+		};
+
+		// blocks which have an edge leading into them
+		utility::dynamic_array<edge> visited(m_blocks.get_size(), { false, false });
+
+		for(u64 i = 0; i < m_blocks.get_size(); ++i) {
+			const instruction_block* block = m_blocks[i];
+			const instruction_t* last_inst = block->instructions[block->size - 1];
+
+			if(is_jump_or_branch_inst(last_inst->index)) {
+				// TODO: check if its an actual symbol
+				// BRANCH_IN always has a priority
+				visited[m_symbols.at(last_inst->operands[0].symbol).block_index].in = true;
+
+				if(i < m_blocks.get_size() - 1) {
+					visited[i + 1].in = true;
+				}
+
+				visited[i].out = true;
+			}
+		}
+
+		utility::dynamic_array<instruction_block*> blocks;
+		m_current_start_position = 0;
+		m_current_segment_length = 0;
+		m_current_block.clear();
+
+		for(u64 i = 0; i < visited.get_size(); ++i) {
+			const instruction_block* block = m_blocks[i];
+
+			if(block->name) {
+				utility::console::print("{}", *block->name);
+			}
+			else {
+				utility::console::print("    ");
+			}
+
+			utility::console::print("  : in: {} out: {}\n", visited[i].in, visited[i].out);
+
+			// if there is an block with inputs leading into it we first have to push the block data we've gathered so far, and then
+			// push the data in the block with the edge leading into it
+
+			if(visited[i].in && m_current_block.is_empty() == false) {
+				// push the last block first, if there is anything in it
+				instruction_block* new_block = m_ctx->allocator.emplace<instruction_block>();
+				u64 instruction_memory = sizeof(instruction_t*) * m_current_block.get_size();
+				instruction_t** instructions = static_cast<instruction_t**>(m_ctx->allocator.allocate(instruction_memory));
+
+				new_block->instructions = instructions;
+				new_block->size = m_current_block.get_size();
+				new_block->lenght = m_current_segment_length;
+				new_block->start_position = m_current_start_position;
+				
+				utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
+
+				m_current_start_position += m_current_segment_length;
+				m_current_segment_length = 0;
+
+				blocks.push_back(new_block);
+				m_current_block.clear();
+			}
+		
+			// append the instructions from the current block
+			m_current_block.insert(m_current_block.end(), block->instructions, block->instructions + block->size);
+			m_current_segment_length += block->lenght;
+
+			// recalculate symbol positions (this has to be done before pushing the next block, otherwise we desync) 
+			for(auto& [symbol, location] : m_symbols) {
+				if(location.block_index == i) {
+					location.block_index = blocks.get_size();
+				}
+			}
+
+			if((visited[i].out && visited[i].in) || i == visited.get_size() - 1) {
+				// push the current block
+				instruction_block* new_block = m_ctx->allocator.emplace<instruction_block>();
+				u64 instruction_memory = sizeof(instruction_t*) * m_current_block.get_size();
+				instruction_t** instructions = static_cast<instruction_t**>(m_ctx->allocator.allocate(instruction_memory));
+
+				new_block->instructions = instructions;
+				new_block->size = m_current_block.get_size();
+				new_block->lenght = m_current_segment_length;
+				new_block->start_position = m_current_start_position;
+				
+				utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
+
+				m_current_start_position += m_current_segment_length;
+				m_current_segment_length = 0;
+				
+				blocks.push_back(new_block);
+				m_current_block.clear();
+			}
+		}
+
+		m_blocks = blocks;
 	}
 } // namespace baremetal::assembler

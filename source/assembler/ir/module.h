@@ -39,6 +39,8 @@ namespace baremetal::assembler {
 		auto register_to_string(reg r) -> const char*;
 		auto immediate_to_string(imm i) -> utility::dynamic_string;
 		auto operand_to_string(const operand& op) -> utility::dynamic_string;
+
+		void recompute_cfg();
   private:
     context* m_ctx;
 
