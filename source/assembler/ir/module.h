@@ -40,7 +40,9 @@ namespace baremetal::assembler {
 		auto immediate_to_string(imm i) -> utility::dynamic_string;
 		auto operand_to_string(const operand& op) -> utility::dynamic_string;
 
-		void recompute_cfg();
+		// CFG stuff
+		void simplify_cfg();
+		auto create_new_block() -> instruction_block*;
   private:
     context* m_ctx;
 

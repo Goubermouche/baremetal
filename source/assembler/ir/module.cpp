@@ -30,26 +30,10 @@ namespace baremetal::assembler {
 
 	void module_t::begin_block(utility::string_view* name) {
 		if(m_current_block.is_empty() == false) {
-			instruction_block* block = m_ctx->allocator.emplace<instruction_block>();
-			u64 instruction_memory = sizeof(instruction_t*) * m_current_block.get_size();
-			instruction_t** instructions = static_cast<instruction_t**>(m_ctx->allocator.allocate(instruction_memory));
-
-	    block->instructions = instructions;
-	    block->size = m_current_block.get_size();
-			block->lenght = m_current_segment_length;
-			block->start_position = m_current_start_position;
-			block->name = m_current_block_name;
-
-			utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
-
-			m_current_start_position += m_current_segment_length;
-			m_current_segment_length = 0;
-	
-	    m_blocks.push_back(block);
+			m_blocks.push_back(create_new_block());
 		}	
 
 		m_current_block_name = name;
-    m_current_block.clear();
 	}
 
 	auto module_t::register_to_string(reg r) -> const char* {
@@ -152,7 +136,7 @@ namespace baremetal::assembler {
 	}
 
 	auto module_t::emit_graph() -> utility::dynamic_string {
-		recompute_cfg();
+		simplify_cfg();
 		utility::dynamic_string result;
 
 		result += "digraph cfg {\n";
@@ -252,15 +236,21 @@ namespace baremetal::assembler {
 		return result;
 	}
 
-	void module_t::recompute_cfg() {
+	void module_t::simplify_cfg() {
 		struct edge {
 			bool in;
 			bool out;
 		};
 
 		// blocks which have an edge leading into them
-		utility::dynamic_array<edge> visited(m_blocks.get_size(), { false, false });
+		utility::dynamic_array<edge> edge_connections(m_blocks.get_size(), { false, false });
+		utility::dynamic_array<instruction_block*> blocks;
 
+		m_current_start_position = 0;
+		m_current_segment_length = 0;
+		m_current_block.clear();
+
+		// calculate edge connections
 		for(u64 i = 0; i < m_blocks.get_size(); ++i) {
 			const instruction_block* block = m_blocks[i];
 			const instruction_t* last_inst = block->instructions[block->size - 1];
@@ -268,54 +258,25 @@ namespace baremetal::assembler {
 			if(is_jump_or_branch_inst(last_inst->index)) {
 				// TODO: check if its an actual symbol
 				// BRANCH_IN always has a priority
-				visited[m_symbols.at(last_inst->operands[0].symbol).block_index].in = true;
+				edge_connections[m_symbols.at(last_inst->operands[0].symbol).block_index].in = true; // branch - pass case - incoming edge
 
 				if(i < m_blocks.get_size() - 1) {
-					visited[i + 1].in = true;
+					edge_connections[i + 1].in = true; // branch - fail case - incoming edge (next block)
 				}
 
-				visited[i].out = true;
+				edge_connections[i].out = true; // a branch instruction always outputs somewhere - mark us as having an outgoing edge
 			}
 		}
 
-		utility::dynamic_array<instruction_block*> blocks;
-		m_current_start_position = 0;
-		m_current_segment_length = 0;
-		m_current_block.clear();
-
-		for(u64 i = 0; i < visited.get_size(); ++i) {
+		// generate new blocks 
+		for(u64 i = 0; i < edge_connections.get_size(); ++i) {
 			const instruction_block* block = m_blocks[i];
-
-			if(block->name) {
-				utility::console::print("{}", *block->name);
-			}
-			else {
-				utility::console::print("    ");
-			}
-
-			utility::console::print("  : in: {} out: {}\n", visited[i].in, visited[i].out);
-
 			// if there is an block with inputs leading into it we first have to push the block data we've gathered so far, and then
 			// push the data in the block with the edge leading into it
 
-			if(visited[i].in && m_current_block.is_empty() == false) {
+			if(edge_connections[i].in && m_current_block.is_empty() == false) {
 				// push the last block first, if there is anything in it
-				instruction_block* new_block = m_ctx->allocator.emplace<instruction_block>();
-				u64 instruction_memory = sizeof(instruction_t*) * m_current_block.get_size();
-				instruction_t** instructions = static_cast<instruction_t**>(m_ctx->allocator.allocate(instruction_memory));
-
-				new_block->instructions = instructions;
-				new_block->size = m_current_block.get_size();
-				new_block->lenght = m_current_segment_length;
-				new_block->start_position = m_current_start_position;
-				
-				utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
-
-				m_current_start_position += m_current_segment_length;
-				m_current_segment_length = 0;
-
-				blocks.push_back(new_block);
-				m_current_block.clear();
+				blocks.push_back(create_new_block());
 			}
 		
 			// append the instructions from the current block
@@ -329,27 +290,31 @@ namespace baremetal::assembler {
 				}
 			}
 
-			if((visited[i].out && visited[i].in) || i == visited.get_size() - 1) {
+			if((edge_connections[i].out && edge_connections[i].in) || i == edge_connections.get_size() - 1) {
 				// push the current block
-				instruction_block* new_block = m_ctx->allocator.emplace<instruction_block>();
-				u64 instruction_memory = sizeof(instruction_t*) * m_current_block.get_size();
-				instruction_t** instructions = static_cast<instruction_t**>(m_ctx->allocator.allocate(instruction_memory));
-
-				new_block->instructions = instructions;
-				new_block->size = m_current_block.get_size();
-				new_block->lenght = m_current_segment_length;
-				new_block->start_position = m_current_start_position;
-				
-				utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
-
-				m_current_start_position += m_current_segment_length;
-				m_current_segment_length = 0;
-				
-				blocks.push_back(new_block);
-				m_current_block.clear();
+				blocks.push_back(create_new_block());
 			}
 		}
 
 		m_blocks = blocks;
+	}
+
+	auto module_t::create_new_block() -> instruction_block* {
+		instruction_block* new_block = m_ctx->allocator.emplace<instruction_block>();
+		u64 instruction_memory = sizeof(instruction_t*) * m_current_block.get_size();
+		instruction_t** instructions = static_cast<instruction_t**>(m_ctx->allocator.allocate(instruction_memory));
+
+		new_block->instructions = instructions;
+		new_block->size = m_current_block.get_size();
+		new_block->lenght = m_current_segment_length;
+		new_block->start_position = m_current_start_position;
+		
+		utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
+
+		m_current_start_position += m_current_segment_length;
+		m_current_segment_length = 0;
+
+		m_current_block.clear();
+		return new_block;
 	}
 } // namespace baremetal::assembler
