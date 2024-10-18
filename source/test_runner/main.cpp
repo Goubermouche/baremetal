@@ -102,7 +102,7 @@ namespace detail {
 			expected.clear();
 			test_text.clear();
 
-			if(test.get_string().find("fibo") == utility::dynamic_string::invalid_pos) {
+			if(test.get_string().find("fib") == utility::dynamic_string::invalid_pos) {
 				continue;
 			}
 

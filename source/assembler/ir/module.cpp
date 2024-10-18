@@ -29,7 +29,7 @@ namespace baremetal::assembler {
 	}
 
 	void module_t::begin_block(utility::string_view* name) {
-		if(m_current_block.is_empty() == false) {
+		if(m_current_block.is_empty() == false || m_current_block_name) {
 			m_blocks.push_back(create_new_block());
 		}	
 
@@ -72,6 +72,7 @@ namespace baremetal::assembler {
 		constexpr const char* r64_names[] = { "rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15" };
 
 		switch(op.type) {
+			case OP_RAX: result += "rax"; break;
 			case OP_EAX: result += "eax"; break;
 			case OP_R8:  result += r8_names[op.r]; break;
 			case OP_R32: result += r32_names[op.r]; break;
@@ -155,15 +156,12 @@ namespace baremetal::assembler {
 			result += "\"[";
 			result += "label=<<table border=\"1\" cellborder=\"0\" cellspacing=\"0\">";
 
-			// if(block->name) {
-			// 	utility::console::print("block: '{}':'{}'\n", i, *block->name);
-			// 	result += "<tr><td align=\"left\">";
-			// 	result += *block->name;
-			// 	result += "</td></tr>";
-			// 	result += "<tr><td></td></tr>";
-			// 	result += "<tr><td></td></tr>";
-			// 	result += "<tr><td></td></tr>";
-			// }
+			if(block->size == 0 && block->name) {
+				// just a label with incoming edges, no instructions
+				result += "<tr><td align=\"left\"><font color=\"blue\">";
+				result += *block->name;
+				result += "</font></td></tr>";
+			}
 
 			for(u64 j = 0; j < block->size; ++j) {
 				const instruction_t* inst = block->instructions[j];
@@ -196,6 +194,11 @@ namespace baremetal::assembler {
 		// generate edges
 		for(u64 i = 0; i < m_blocks.get_size(); ++i) {
 			const instruction_block* block = m_blocks[i];
+
+			if(block->size == 0) {
+				continue;
+			}
+
 			const instruction_t* inst = block->instructions[block->size - 1];
 
 			// branch edges
@@ -238,14 +241,15 @@ namespace baremetal::assembler {
 
 	void module_t::simplify_cfg() {
 		struct edge {
-			bool in;
-			bool out;
+			u32 in;
+			u32 out;
 		};
 
 		// blocks which have an edge leading into them
-		utility::dynamic_array<edge> edge_connections(m_blocks.get_size(), { false, false });
+		utility::dynamic_array<edge> edge_connections(m_blocks.get_size(), { 0, 0 });
 		utility::dynamic_array<instruction_block*> blocks;
 
+		m_current_block_name = nullptr;
 		m_current_start_position = 0;
 		m_current_segment_length = 0;
 		m_current_block.clear();
@@ -253,24 +257,32 @@ namespace baremetal::assembler {
 		// calculate edge connections
 		for(u64 i = 0; i < m_blocks.get_size(); ++i) {
 			const instruction_block* block = m_blocks[i];
+
+			if(block->size == 0) {
+				continue; 
+			}
+
 			const instruction_t* last_inst = block->instructions[block->size - 1];
 
 			if(is_jump_or_branch_inst(last_inst->index)) {
 				// TODO: check if its an actual symbol
 				// BRANCH_IN always has a priority
-				edge_connections[m_symbols.at(last_inst->operands[0].symbol).block_index].in = true; // branch - pass case - incoming edge
+				edge_connections[m_symbols.at(last_inst->operands[0].symbol).block_index].in++; // branch - pass case - incoming edge
 
 				if(i < m_blocks.get_size() - 1) {
-					edge_connections[i + 1].in = true; // branch - fail case - incoming edge (next block)
+					edge_connections[i + 1].in++; // branch - fail case - incoming edge (next block)
 				}
 
-				edge_connections[i].out = true; // a branch instruction always outputs somewhere - mark us as having an outgoing edge
+				edge_connections[i].out++; // a branch instruction always outputs somewhere - mark us as having an outgoing edge
 			}
 		}
 
 		// generate new blocks 
 		for(u64 i = 0; i < edge_connections.get_size(); ++i) {
 			const instruction_block* block = m_blocks[i];
+			utility::console::print("block {}: {} inputs, {} outputs\n", i, edge_connections[i].in, edge_connections[i].out);
+			m_current_block_name = block->name;
+
 			// if there is an block with inputs leading into it we first have to push the block data we've gathered so far, and then
 			// push the data in the block with the edge leading into it
 
@@ -308,6 +320,7 @@ namespace baremetal::assembler {
 		new_block->size = m_current_block.get_size();
 		new_block->lenght = m_current_segment_length;
 		new_block->start_position = m_current_start_position;
+		new_block->name = m_current_block_name;
 		
 		utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
 
