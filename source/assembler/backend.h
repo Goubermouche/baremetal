@@ -93,5 +93,7 @@ namespace baremetal::assembler {
 	};
 
 	auto is_jump_or_branch_inst(u32 index) -> bool;
+	auto is_legal_operand_variant(operand_type a, operand_type b) -> bool;
+	auto is_legal_variant(u32 a, u32 b, u8 operand_index) -> bool;
 } // baremetal::assembler 
 

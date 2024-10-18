@@ -38,11 +38,18 @@ namespace baremetal::assembler {
 
 		auto register_to_string(reg r) -> const char*;
 		auto immediate_to_string(imm i) -> utility::dynamic_string;
+		auto memory_to_string(mem memory) -> utility::dynamic_string;
 		auto operand_to_string(const operand& op) -> utility::dynamic_string;
 
 		// CFG stuff
 		void simplify_cfg();
 		auto create_new_block() -> instruction_block*;
+
+		void recalculate_block_sizes();
+
+		// optimizations 
+		void optimize_instruction_size();
+		void optimize_instruction_size(instruction_t* inst);
   private:
     context* m_ctx;
 
