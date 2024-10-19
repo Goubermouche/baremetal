@@ -26,16 +26,19 @@ namespace baremetal::assembler {
   }
 
 	void module_t::add_symbol(utility::string_view* name) {
-		// utility::console::print("add symbol '{}' ({})\n", *name, m_blocks.get_size());
+		utility::console::print("add symbol '{}' ({})\n", *name, m_blocks.get_size());
 		m_symbols[name] = { m_current_segment_length, m_blocks.get_size() };
 	}
 
-	void module_t::begin_block(utility::string_view* name) {
-		if(m_current_block.is_empty() == false || m_current_block_name) {
-			m_blocks.push_back(create_new_block());
-		}	
+	void module_t::begin_block(instruction_block::type ty, utility::string_view* name) {
+		if(ty == instruction_block::INSTRUCTION) {
+			if(m_current_block.is_empty()) {
+				return;
+			}
+		}
 
 		m_current_block_name = name;
+		m_blocks.push_back(create_new_block(ty));
 	}
 
 	auto module_t::register_to_string(reg r) -> const char* {
@@ -138,6 +141,54 @@ namespace baremetal::assembler {
 		return result;
 	}
 
+	auto bytes_to_string(const u8* bytes, u8 count) -> utility::dynamic_string {
+		utility::dynamic_string result;
+		result.reserve(count * 3);
+
+		constexpr char digits[] = "0123456789abcdef";
+
+		for(u64 i = 0; i < count; ++i) {
+			const u8 value = bytes[i];
+			result += (digits[(value >> 4) & 0x0F]);
+			result += (digits[value & 0x0F]);
+			result += ' ';
+		}
+
+		return result;
+	}
+
+	auto module_t::instruction_block_to_string(const instruction_block* block) {
+		utility::dynamic_string result;
+		u64 local_pos = 0;
+		
+		for(u64 j = 0; j < block->size; ++j) {
+			const instruction_t* inst = block->instructions[j];
+			const instruction* inst_actual = &instruction_db[inst->index];
+			auto data = backend::emit_instruction(inst_actual, inst->operands);
+		
+			result += "<tr><td align=\"left\" width=\"50px\">";
+			result += utility::int_to_string(block->start_position + local_pos);
+			result += "</td><td align=\"left\" width=\"100px\">";
+			result += bytes_to_string(data.data, data.size);
+			result += "</td><td align=\"left\" width=\"100px\"><font COLOR=\"black\"><b>";
+			result += inst_actual->name;
+			result += "</b></font></td><td align=\"left\"><font COLOR=\"black\"> ";
+		
+			for(u8 k = 0; k < inst_actual->operand_count; ++k) {
+				result += operand_to_string(inst->operands[k]);
+		
+				if(k + 1 != inst_actual->operand_count) {
+					result += ", ";
+				}
+			}
+			
+			result += "</font></td></tr>";
+			local_pos += inst->size;
+		}
+
+		return result;
+	}
+
 	auto module_t::emit_graph() -> utility::dynamic_string {
 		simplify_cfg();
 		optimize_instruction_size();
@@ -153,96 +204,99 @@ namespace baremetal::assembler {
 
 		result += "\n";
 
-		// generate nodes
+		struct edge {
+			enum edge_type {
+				BRANCH_PASS,
+				BRANCH_FAIL,
+				FALLTHROUGH
+			};
+
+			edge_type type;
+			u64 from;
+			u64 to;
+		};
+
+		// generate node
+		utility::dynamic_array<edge> edges;
+		bool next_is_new_segment = true;
+		u64 current_id = 0;
+
 		for(u64 i = 0; i < m_blocks.get_size(); ++i) {
 			const instruction_block* block = m_blocks[i];
 
-			result += "\t\"";
-			result += utility::int_to_string(i);
-			result += "\"[";
-			result += "label=<<table border=\"1\" cellborder=\"0\" cellspacing=\"0\">";
-
-			if(block->size == 0 && block->name) {
-				// just a label with incoming edges, no instructions
-				result += "<tr><td align=\"left\"><font color=\"blue\">";
-				result += *block->name;
-				result += "</font></td></tr>";
-			}
-
-			u64 local_pos = 0;
-
-			for(u64 j = 0; j < block->size; ++j) {
-				const instruction_t* inst = block->instructions[j];
-				const instruction* inst_actual = &instruction_db[inst->index];
-
-				result += "<tr PORT=\"p";
-				result += utility::int_to_string(j);
-				result += "\"><td align=\"left\" width=\"50px\">";
-				result += utility::int_to_string(block->start_position + local_pos);
-				result += "</td><td align=\"left\" ";
-				result += " width=\"100px\">";
-				result += inst_actual->name;
-				result += "</td><td ";
-				result += "align=\"left\">";
-
-				for(u8 k = 0; k < inst_actual->operand_count; ++k) {
-					result += operand_to_string(inst->operands[k]);
-
-					if(k + 1 != inst_actual->operand_count) {
-						result += ", ";
-					}
+			if(block->new_segment || next_is_new_segment) {
+				if(i > 0) {
+					result += "<tr PORT=\"bottom\"><td></td></tr>";
+					result += "</table>>]\n";
 				}
-				
-				result += "</td></tr>";
-				local_pos += inst->size;
+
+				result += "\t\"";
+				result += utility::int_to_string(i);
+				result += "\"[";
+				result += "label=<<table border=\"1\" cellborder=\"0\" cellspacing=\"0\">";
+				result += "<tr PORT=\"top\"><td></td></tr>";
+				next_is_new_segment = false;
+				current_id = i;
 			}
 
-			result += "</table>>]\n";
-		}
-
-		result += "\n";
-
-		// generate edges
-		for(u64 i = 0; i < m_blocks.get_size(); ++i) {
-			const instruction_block* block = m_blocks[i];
+			switch(block->ty) {
+				case instruction_block::LABEL: {
+					result += "<tr><td></td><td></td><td COLSPAN=\"100%\" align=\"left\"><b><font color=\"blue\">";
+					result += *block->name;
+					result += "</font></b></td></tr>";
+					break;
+				}
+				case instruction_block::INSTRUCTION: {
+					result += instruction_block_to_string(block);
+					break;
+				}
+				case instruction_block::BRANCH: {
+					result += instruction_block_to_string(block);
+					next_is_new_segment = true;
+					break;
+				}
+			}
 
 			if(block->size == 0) {
 				continue;
 			}
 
 			const instruction_t* inst = block->instructions[block->size - 1];
+			bool is_branch = false;
 
-			// branch edges
 			if(is_jump_or_branch_inst(inst->index)) {
-				bool to_same_block = i == m_symbols.at(inst->operands[0].symbol).block_index;
+				edges.push_back({ edge::BRANCH_PASS, current_id, m_symbols.at(inst->operands[0].symbol).block_index });
+				is_branch = true;
+			}
 
-				result += "\t\"";
-				result += utility::int_to_string(i);
-				result += "\":p";
-				result += utility::int_to_string(block->size - 1);
-				result += ":s -> ";
-				result += "\"";
-				result += utility::int_to_string(m_symbols.at(inst->operands[0].symbol).block_index);
-				result += "\":p0";
-				result += ":n [color=\"darkgreen\"";
-				result += to_same_block ? "dir=back" : "";
-				result += "]";
-				result += "\n";
+			if(i != m_blocks.get_size() - 1 && (next_is_new_segment || m_blocks[i + 1]->new_segment)) {
+				edges.push_back({ is_branch ? edge::BRANCH_FAIL : edge::FALLTHROUGH, current_id, i + 1});	
 			}
-	
-			// edges to following blocks 
-			// TODO: make this smarter, currently it always draws this, but if a jmp without a condition is present 
-			//       we shouldn't create these
-			if(i != m_blocks.get_size() - 1) {
-				result += "\t\"";
-				result += utility::int_to_string(i);
-				result += "\":s -> ";
-				result += "\"";
-				result += utility::int_to_string(i + 1);
-				result += "\":n [color=\"";
-				result += is_jump_or_branch_inst(inst->index) ? "red" : "blue";
-				result += "\"]\n";
+		}
+
+		result += "</table>>]\n";
+		result += "\n";
+
+		for(auto edge : edges) {
+			result += "\t\"";
+			result += utility::int_to_string(edge.from);
+			result += "\":bottom:s -> \"";
+			result += utility::int_to_string(edge.to);
+			result += "\":top:n [color=\"";
+
+			switch(edge.type) {
+				case edge::BRANCH_PASS: result += "darkgreen"; break;
+				case edge::BRANCH_FAIL: result += "red"; break;
+				case edge::FALLTHROUGH: result += "black"; break;
 			}
+
+			result += "\"";
+
+			if(edge.from == edge.to) {
+				result += "dir=back";
+			}
+
+			result += "]\n";
 		}
 
 		result += "}\n";
@@ -294,35 +348,40 @@ namespace baremetal::assembler {
 			utility::console::print("block {}: {} inputs, {} outputs\n", i, edge_connections[i].in, edge_connections[i].out);
 			m_current_block_name = block->name;
 
-			// if there is an block with inputs leading into it we first have to push the block data we've gathered so far, and then
-			// push the data in the block with the edge leading into it
-
-			if(edge_connections[i].in && m_current_block.is_empty() == false) {
-				// push the last block first, if there is anything in it
-				blocks.push_back(create_new_block());
-			}
-		
-			// append the instructions from the current block
 			m_current_block.insert(m_current_block.end(), block->instructions, block->instructions + block->size);
-			m_current_segment_length += block->lenght;
 
-			// recalculate symbol positions (this has to be done before pushing the next block, otherwise we desync) 
-			for(auto& [symbol, location] : m_symbols) {
-				if(location.block_index == i) {
-					location.block_index = blocks.get_size();
+			switch(block->ty) {
+				case instruction_block::LABEL: {
+					auto new_block = create_new_block(block->ty);
+					new_block->new_segment = edge_connections[i].in > 0;
+					blocks.push_back(new_block);
+					break;
+				}
+				case instruction_block::INSTRUCTION: {
+					auto new_block = create_new_block(block->ty);
+					blocks.push_back(new_block);
+					break;
+				}
+				case instruction_block::BRANCH: {
+					auto new_block = create_new_block(block->ty);
+					blocks.push_back(new_block);
+					break;
 				}
 			}
+		}
 
-			if((edge_connections[i].out && edge_connections[i].in) || i == edge_connections.get_size() - 1) {
-				// push the current block
-				blocks.push_back(create_new_block());
+		for(u64 i = 0; i < m_blocks.get_size(); ++i) {
+			const instruction_block* block = m_blocks[i];
+
+			if(block->ty == instruction_block::LABEL) {
+				m_symbols[block->name].block_index = i;
 			}
 		}
 
 		m_blocks = blocks;
 	}
 
-	auto module_t::create_new_block() -> instruction_block* {
+	auto module_t::create_new_block(instruction_block::type ty) -> instruction_block* {
 		instruction_block* new_block = m_ctx->allocator.emplace<instruction_block>();
 		u64 instruction_memory = sizeof(instruction_t*) * m_current_block.get_size();
 		instruction_t** instructions = static_cast<instruction_t**>(m_ctx->allocator.allocate(instruction_memory));
@@ -332,6 +391,8 @@ namespace baremetal::assembler {
 		new_block->lenght = m_current_segment_length;
 		new_block->start_position = m_current_start_position;
 		new_block->name = m_current_block_name;
+		new_block->ty = ty;
+		new_block->new_segment = false;
 		
 		utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
 

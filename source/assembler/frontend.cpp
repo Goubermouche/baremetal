@@ -417,7 +417,7 @@ namespace baremetal::assembler {
 			}	
 		}
 
-		m_module.begin_block(nullptr);
+		m_module.begin_block(instruction_block::INSTRUCTION, nullptr);
 		create_normal_subsection(); // capture any trailing instructions
 		return SUCCESS;
 	}
@@ -622,7 +622,7 @@ namespace baremetal::assembler {
 		m_module.add_instruction(m_operands, m_instruction_i, size);
 	
 		if(is_jump_or_branch_inst(m_instruction_i)) {
-			m_module.begin_block(nullptr);
+			m_module.begin_block(instruction_block::BRANCH, nullptr);
 		}
 
 		if(m_symbolic_operand) {
@@ -926,8 +926,9 @@ namespace baremetal::assembler {
 			m_sections[m_section_index].offset
 		});
 
-		m_module.begin_block(m_current_identifier);
+		m_module.begin_block(instruction_block::INSTRUCTION, nullptr);
 		m_module.add_symbol(m_current_identifier);
+		m_module.begin_block(instruction_block::LABEL, m_current_identifier);
 		TRY(m_lexer.get_next_token());
 
 		return SUCCESS;

@@ -12,6 +12,12 @@ namespace baremetal::assembler {
   };
 
   struct instruction_block {
+		enum type {
+			INSTRUCTION,
+			BRANCH, 
+			LABEL
+		};
+
 		u64 start_position; // start position of this segment in bytes
 		u64 lenght;         // length of this segment in bytes
 
@@ -19,6 +25,9 @@ namespace baremetal::assembler {
 
     instruction_t** instructions;
     u64 size;
+		type ty;
+
+		bool new_segment = false;
   };
 
   struct module_t {
@@ -32,10 +41,10 @@ namespace baremetal::assembler {
     void add_instruction(const operand* operands, u32 index, u8 size);
 		void add_symbol(utility::string_view* name);
 
-		void begin_block(utility::string_view* name);
+		void begin_block(instruction_block::type ty, utility::string_view* name);
 
 		auto emit_graph() -> utility::dynamic_string;
-
+		auto instruction_block_to_string(const instruction_block* block);
 		auto register_to_string(reg r) -> const char*;
 		auto immediate_to_string(imm i) -> utility::dynamic_string;
 		auto memory_to_string(mem memory) -> utility::dynamic_string;
@@ -43,7 +52,7 @@ namespace baremetal::assembler {
 
 		// CFG stuff
 		void simplify_cfg();
-		auto create_new_block() -> instruction_block*;
+		auto create_new_block(instruction_block::type ty) -> instruction_block*;
 
 		void recalculate_block_sizes();
 
