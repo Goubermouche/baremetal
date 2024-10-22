@@ -2,6 +2,7 @@
 #include "assembler/backend.h"
 #include "assembler/instruction/instruction.h"
 #include "assembler/instruction/operands/memory.h"
+#include "assembler/instruction/operands/operands.h"
 #include "utility/containers/dynamic_string.h"
 
 #include <utility/algorithms/sort.h>
@@ -116,6 +117,11 @@ namespace baremetal::assembler {
 		constexpr const char* r32_names[] = { "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi", "r8d", "r9d", "r10d", "r11d", "r12d", "r13d", "r14d", "r15d" };
 		constexpr const char* r64_names[] = { "rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15" };
 
+		if(op.symbol) {
+			result += *op.symbol;
+			return result;
+		}
+
 		switch(op.type) {
 			case OP_RAX: result += "rax"; break;
 			case OP_EAX: result += "eax"; break;
@@ -127,7 +133,7 @@ namespace baremetal::assembler {
 			case OP_M16: result += "word " + memory_to_string(op.memory); break;
 			case OP_M32: result += "dword " + memory_to_string(op.memory); break;
 			case OP_M64: result += "qword " + memory_to_string(op.memory); break;
-			case OP_HIDDEN: result += *op.symbol; break; // TODO: this can break with special instructions, rename 
+			// case OP_HIDDEN: result += *op.symbol; break; // TODO: this can break with special instructions, rename 
 			case OP_I8:
 			case OP_I16:
 			case OP_I32:
@@ -164,7 +170,21 @@ namespace baremetal::assembler {
 		for(u64 j = 0; j < block->size; ++j) {
 			const instruction_t* inst = block->instructions[j];
 			const instruction* inst_actual = &instruction_db[inst->index];
-			auto data = backend::emit_instruction(inst_actual, inst->operands);
+
+			operand temp_operands[4];
+			utility::memcpy(temp_operands, inst->operands, sizeof(operand) * 4);
+
+			// resolve symbols
+			for(u8 i = 0; i < inst_actual->operand_count; ++i) {
+				if(temp_operands[i].symbol) { // TODO: get rid of the HIDDEN type
+					// resolve
+					u64 symbol_block = m_symbols.at(temp_operands[i].symbol).block_index;
+					temp_operands[i].immediate = imm(m_blocks[symbol_block]->start_position);
+					// utility::console::print("{}\n", operand_type_to_string(temp_operands[i].type));
+				}
+			}
+
+			auto data = backend::emit_instruction(inst_actual, temp_operands);
 		
 			result += "<tr><td align=\"left\" width=\"50px\">";
 			result += utility::int_to_string(block->start_position + local_pos);
@@ -186,6 +206,7 @@ namespace baremetal::assembler {
 			local_pos += inst->size;
 		}
 
+
 		return result;
 	}
 
@@ -193,6 +214,7 @@ namespace baremetal::assembler {
 		simplify_cfg();
 		optimize_instruction_size();
 		recalculate_block_sizes();
+		optimize_symbol_resolutions();
 
 		utility::dynamic_string result;
 
@@ -241,7 +263,9 @@ namespace baremetal::assembler {
 
 			switch(block->ty) {
 				case instruction_block::LABEL: {
-					result += "<tr><td></td><td></td><td COLSPAN=\"100%\" align=\"left\"><b><font color=\"blue\">";
+					result += "<tr><td align=\"left\">";
+					result += utility::int_to_string(block->start_position);
+					result += "</td><td></td><td COLSPAN=\"100%\" align=\"left\"><b><font color=\"blue\">";
 					result += *block->name;
 					result += "</font></b></td></tr>";
 					break;
@@ -556,6 +580,10 @@ namespace baremetal::assembler {
 			position += size;
 			size = 0;
 		}
+
+		for(auto& [symbol, location] : m_symbols) {
+			location.position = m_blocks[location.block_index]->start_position;
+		}
 	}
 
 	void module_t::optimize_instruction_size() {
@@ -571,6 +599,95 @@ namespace baremetal::assembler {
 					inst->size = backend::emit_instruction(&instruction_db[inst->index], inst->operands).size;
 					// utility::console::print("inst optimized {}B -> {}B\n", old_size, inst->size);
 				}
+			}
+		}
+	}
+
+	auto fits_into_type(i64 value, operand_type type) -> bool {
+		switch(type) {
+			case OP_REL8:
+			case OP_REL8_RIP:  return value >= utility::limits<i8>::min() && value <= utility::limits<i8>::max();
+			case OP_REL16_RIP: return value >= utility::limits<i16>::min() && value <= utility::limits<i16>::max();
+			case OP_REL32:     return value >= utility::limits<i32>::min() && value <= utility::limits<i32>::max();
+			default: ASSERT(false, "unexpected operand type {}\n", operand_type_to_string(type));
+		}
+
+		return false;
+	}
+
+	void module_t::optimize_symbol_resolutions() {
+		struct unresolved {
+			u64 block_index;
+			u64 instruction_index;
+			u8 unresolved_index;
+			u64 position;
+			utility::dynamic_array<operand_type> variants;
+		};
+
+		utility::dynamic_array<unresolved> indices;
+
+		// locate all references to symbols
+		for(u64 i = 0; i < m_blocks.get_size(); ++i) {
+			const instruction_block* block = m_blocks[i];
+
+			for(u64 j = 0; j < block->size; ++j) {
+				instruction_t* inst = block->instructions[j];
+				u64 local_position = 0;
+
+				for(u8 k = 0; k < 4; ++k) {
+					if(inst->operands[k].symbol) {
+						auto variants = backend::get_variants(inst->index, inst->operands);
+						inst->operands[k].type = variants.pop_back();
+						indices.push_back({i, j, k, local_position, variants });
+						break;
+					}
+				}
+
+				local_position += inst->size;
+			}
+		}
+
+		utility::console::print("indices {}\n", indices.get_size());
+		bool change = true;
+
+		// greedy optimizations
+		while(change) {
+			change = false;
+
+			for(unresolved& unres : indices) {
+				if(unres.variants.is_empty()) {
+					continue;
+				}
+
+				instruction_t* current_inst = m_blocks[unres.block_index]->instructions[unres.instruction_index];
+				operand& unresolved = current_inst->operands[unres.unresolved_index];
+				const auto symbol_it = m_symbols.find(unresolved.symbol);
+
+				// TODO: take sections into account
+				const i64 distance = symbol_it->second.position - unres.position + current_inst->size;
+				const operand_type new_type = unres.variants.get_last();
+
+				if(!fits_into_type(distance, new_type)) {
+					// we can't use a smaller operand, no optimization possible in this iteration
+					continue;
+				}
+				
+				// use the next smallest operand instead
+				unresolved.type = new_type;
+				
+				u8 new_size = backend::emit_instruction(current_inst->index, current_inst->operands, false).size;
+
+				utility::console::print("{} -> {}\n", current_inst->size, new_size);
+				
+				unres.variants.pop_back();
+				current_inst->size = new_size;
+				change = true;
+
+				// update our symbol table to account for the difference in code length
+				recalculate_block_sizes();
+
+				// TODO: investigate whether it's better to break immediately or to continue
+				break;
 			}
 		}
 	}

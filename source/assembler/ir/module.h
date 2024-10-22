@@ -30,10 +30,17 @@ namespace baremetal::assembler {
 		bool new_segment = false;
   };
 
+	auto fits_into_type(i64 value, operand_type type) -> bool;
+
   struct module_t {
 		struct symbol {
 			u64 position;
 			u64 block_index;
+		};
+
+		struct section {
+			utility::dynamic_array<instruction_block*> blocks;
+			utility::map<utility::string_view*, symbol> symbols;
 		};
 
     module_t(context* ctx);
@@ -59,6 +66,11 @@ namespace baremetal::assembler {
 		// optimizations 
 		void optimize_instruction_size();
 		void optimize_instruction_size(instruction_t* inst);
+
+		void optimize_symbol_resolutions();
+
+		// emission
+		// void emit_binary();
   private:
     context* m_ctx;
 
@@ -69,6 +81,9 @@ namespace baremetal::assembler {
 		u64 m_current_start_position = 0;
 		u64 m_current_segment_length = 0;
 		
+    utility::dynamic_array<section*> m_sections;
+		u64 m_current_section = 0;
+
 		utility::map<utility::string_view*, symbol> m_symbols;
   };
 } // namespace baremetal::assembler

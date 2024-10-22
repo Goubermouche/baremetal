@@ -12,6 +12,7 @@ namespace baremetal::assembler {
 		auto is_operand_match(const instruction& inst, operand* operands, u8 broadcast_n, u8 count) -> bool;
 	} // namespace detail
 
+
 	struct relocation {
 		utility::string_view* symbol;
 		u64 position;

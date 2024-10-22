@@ -118,18 +118,6 @@ namespace baremetal::assembler {
 		}
 	} // namespace detail
 
-	auto fits_into_type(i64 value, operand_type type) -> bool {
-		switch(type) {
-			case OP_REL8:
-			case OP_REL8_RIP:  return value >= utility::limits<i8>::min() && value <= utility::limits<i8>::max();
-			case OP_REL16_RIP: return value >= utility::limits<i16>::min() && value <= utility::limits<i16>::max();
-			case OP_REL32:     return value >= utility::limits<i32>::min() && value <= utility::limits<i32>::max();
-			default: ASSERT(false, "unexpected operand type {}\n", operand_type_to_string(type));
-		}
-
-		return false;
-	}
-
 	frontend::frontend() : m_section_index(0), m_module(&m_context) {
 		section text {
 			.name = m_context.strings.add(".text"),

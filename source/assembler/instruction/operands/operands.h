@@ -115,10 +115,10 @@ namespace baremetal::assembler {
 	};
 
 	struct operand {
-		constexpr operand() : type(OP_NONE), mm({}) {}
-		constexpr operand(imm i) : type(OP_I64), immediate(i) {}
-		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)), r(r.index) {}
-		constexpr operand(moff m) : type(OP_MOFF64), memory_offset(m) {}
+		constexpr operand() : type(OP_NONE),symbol(nullptr), mm({}) {}
+		constexpr operand(imm i) : type(OP_I64),symbol(nullptr), immediate(i) {}
+		constexpr operand(reg r) : type(static_cast<operand_type>(r.type)),symbol(nullptr), r(r.index) {}
+		constexpr operand(moff m) : type(OP_MOFF64),symbol(nullptr), memory_offset(m) {}
 		constexpr operand(utility::string_view* symbol) : type(OP_HIDDEN), unknown(true), symbol(symbol) {}
 
 		operand_type type;
