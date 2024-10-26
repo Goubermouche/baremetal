@@ -27,6 +27,7 @@ namespace baremetal::assembler {
     u64 size;
 		type ty;
 
+		u64 section_index;
 		bool new_segment = false;
   };
 
@@ -36,17 +37,14 @@ namespace baremetal::assembler {
 		struct symbol {
 			u64 position;
 			u64 block_index;
-		};
-
-		struct section {
-			utility::dynamic_array<instruction_block*> blocks;
-			utility::map<utility::string_view*, symbol> symbols;
+			u64 section_index;
 		};
 
     module_t(context* ctx);
 
     void add_instruction(const operand* operands, u32 index, u8 size);
 		void add_symbol(utility::string_view* name);
+		void set_section(utility::string_view* name);
 
 		void begin_block(instruction_block::type ty, utility::string_view* name);
 
@@ -70,7 +68,7 @@ namespace baremetal::assembler {
 		void optimize_symbol_resolutions();
 
 		// emission
-		// void emit_binary();
+		auto emit_binary() -> utility::dynamic_array<u8>;
   private:
     context* m_ctx;
 
@@ -81,7 +79,7 @@ namespace baremetal::assembler {
 		u64 m_current_start_position = 0;
 		u64 m_current_segment_length = 0;
 		
-    utility::dynamic_array<section*> m_sections;
+    utility::dynamic_array<utility::string_view*> m_sections;
 		u64 m_current_section = 0;
 
 		utility::map<utility::string_view*, symbol> m_symbols;

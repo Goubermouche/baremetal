@@ -296,6 +296,34 @@ namespace baremetal::assembler {
 		return variants;
 	}
 
+	auto backend::get_variants_i(u32 index, const operand* operands) -> utility::dynamic_array<inst_variant> {
+		utility::dynamic_array<inst_variant> variants;
+		u8 unknown_index = utility::limits<u8>::max();
+	
+		for(u8 i = 0; i < 4; ++i) {
+			if(operands[i].unknown) {
+				unknown_index = i;
+				break;
+			}
+		}
+
+		u32 current_index = index;
+
+		while(is_legal_variant(index, current_index, unknown_index)) {
+			variants.push_back({instruction_db[current_index].operands[unknown_index], current_index});
+			current_index++;
+		}
+
+		utility::stable_sort(variants.begin(), variants.end(), [=](auto a, auto b) {
+			const u16 a_width = get_operand_bit_width(a.type);
+			const u16 b_width = get_operand_bit_width(b.type);
+
+			return a_width < b_width;
+		});
+
+		return variants;
+	}
+
 	auto backend::emit_instruction(const instruction* inst, const operand* operands) -> code {
 		m_data_size = 0;
 		m_operands = operands;

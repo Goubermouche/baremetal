@@ -8,7 +8,9 @@
 #include <utility/algorithms/sort.h>
 
 namespace baremetal::assembler {
-  module_t::module_t(context* ctx) : m_ctx(ctx) {}
+  module_t::module_t(context* ctx) : m_ctx(ctx) {
+		set_section(m_ctx->strings.add(".text"));
+	}
 
   void module_t::add_instruction(const operand* operands, u32 index, u8 size) {
     instruction_t* instruction = m_ctx->allocator.emplace<instruction_t>();
@@ -27,8 +29,31 @@ namespace baremetal::assembler {
   }
 
 	void module_t::add_symbol(utility::string_view* name) {
-		utility::console::print("add symbol '{}' ({})\n", *name, m_blocks.get_size());
-		m_symbols[name] = { m_current_segment_length, m_blocks.get_size() };
+		utility::console::print("add symbol '{}' ({}, section # {})\n", *name, m_blocks.get_size(), m_current_section);
+		m_symbols[name] = { m_current_segment_length, m_blocks.get_size(), m_current_section };
+	}
+
+	void module_t::set_section(utility::string_view* name) {
+		u64 new_index;
+
+		for(u64 i = 0; i < m_sections.get_size(); ++i) {
+			if(name == m_sections[i]) {
+				new_index = i;
+				break;
+			}
+		}
+
+		new_index = m_sections.get_size();
+		m_sections.push_back(name);
+
+		// force a new block
+		if(new_index != m_current_section) {
+			if(!m_current_block.is_empty()) {
+				m_blocks.push_back(create_new_block(instruction_block::INSTRUCTION));
+			}
+
+			m_current_section = new_index;
+		}
 	}
 
 	void module_t::begin_block(instruction_block::type ty, utility::string_view* name) {
@@ -369,9 +394,9 @@ namespace baremetal::assembler {
 		// generate new blocks 
 		for(u64 i = 0; i < edge_connections.get_size(); ++i) {
 			const instruction_block* block = m_blocks[i];
-			utility::console::print("block {}: {} inputs, {} outputs\n", i, edge_connections[i].in, edge_connections[i].out);
+			utility::console::print("[CFGSIMPLIFY] block {}: {} inputs, {} outputs\n", i, edge_connections[i].in, edge_connections[i].out);
 			m_current_block_name = block->name;
-
+			m_current_section = block->section_index;
 			m_current_block.insert(m_current_block.end(), block->instructions, block->instructions + block->size);
 
 			switch(block->ty) {
@@ -417,6 +442,7 @@ namespace baremetal::assembler {
 		new_block->name = m_current_block_name;
 		new_block->ty = ty;
 		new_block->new_segment = false;
+		new_block->section_index = m_current_section;
 		
 		utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
 
@@ -621,7 +647,7 @@ namespace baremetal::assembler {
 			u64 instruction_index;
 			u8 unresolved_index;
 			u64 position;
-			utility::dynamic_array<operand_type> variants;
+			utility::dynamic_array<inst_variant> variants;
 		};
 
 		utility::dynamic_array<unresolved> indices;
@@ -636,9 +662,27 @@ namespace baremetal::assembler {
 
 				for(u8 k = 0; k < 4; ++k) {
 					if(inst->operands[k].symbol) {
-						auto variants = backend::get_variants(inst->index, inst->operands);
-						inst->operands[k].type = variants.pop_back();
-						indices.push_back({i, j, k, local_position, variants });
+						const auto symbol_it = m_symbols.find(inst->operands[k].symbol);
+
+						if(symbol_it->second.section_index == block->section_index) {
+							// we can only optimize references to symbols in the same section
+							auto variants = backend::get_variants_i(inst->index, inst->operands);
+
+							auto last = variants.pop_back();
+							inst->operands[k].type = last.type;
+							inst->index = last.index;
+							inst->size = backend::emit_instruction(&instruction_db[inst->index], inst->operands).size;
+
+							if(!is_operand_rel(inst->operands[k].type)) {
+								variants.clear(); // no potential for optimizations
+							}
+
+							indices.push_back({i, j, k, local_position, variants });
+						}
+						else {
+							utility::console::print("[SYMRES] skipping non-local symbol reference to symbol '{}'\n", *inst->operands[k].symbol);
+						}
+
 						break;
 					}
 				}
@@ -647,8 +691,16 @@ namespace baremetal::assembler {
 			}
 		}
 
-		utility::console::print("indices {}\n", indices.get_size());
+		utility::console::print("[SYMRES] found {} unresolved symbols:\n", indices.get_size());
+
+		for(const auto& unres : indices) {
+			instruction_t* current_inst = m_blocks[unres.block_index]->instructions[unres.instruction_index];
+			operand& unresolved = current_inst->operands[unres.unresolved_index];
+			utility::console::print("[SYMRES] '{}' ({} variants)\n", *unresolved.symbol, unres.variants.get_size());
+		}
+
 		bool change = true;
+		recalculate_block_sizes();
 
 		// greedy optimizations
 		while(change) {
@@ -663,9 +715,8 @@ namespace baremetal::assembler {
 				operand& unresolved = current_inst->operands[unres.unresolved_index];
 				const auto symbol_it = m_symbols.find(unresolved.symbol);
 
-				// TODO: take sections into account
 				const i64 distance = symbol_it->second.position - unres.position + current_inst->size;
-				const operand_type new_type = unres.variants.get_last();
+				const operand_type new_type = unres.variants.get_last().type;
 
 				if(!fits_into_type(distance, new_type)) {
 					// we can't use a smaller operand, no optimization possible in this iteration
@@ -675,13 +726,15 @@ namespace baremetal::assembler {
 				// use the next smallest operand instead
 				unresolved.type = new_type;
 				
-				u8 new_size = backend::emit_instruction(current_inst->index, current_inst->operands, false).size;
+				u8 new_size = backend::emit_instruction(&instruction_db[unres.variants.get_last().index], current_inst->operands).size;
 
-				utility::console::print("{} -> {}\n", current_inst->size, new_size);
+				utility::console::print("[SYMRES] reference to '{}' optimized {} -> {}\n", *unresolved.symbol, current_inst->size, new_size);
 				
-				unres.variants.pop_back();
 				current_inst->size = new_size;
+				current_inst->index = unres.variants.get_last().index;
 				change = true;
+
+				unres.variants.pop_back();
 
 				// update our symbol table to account for the difference in code length
 				recalculate_block_sizes();
@@ -690,5 +743,70 @@ namespace baremetal::assembler {
 				break;
 			}
 		}
+	}
+
+	auto module_t::emit_binary() -> utility::dynamic_array<u8> {
+		utility::dynamic_array<u8> bytes;
+
+		// TODO: dumb
+		for(u64 i = 0; i < m_sections.get_size(); ++i) {
+			// append alignment bytes for the previous section
+			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size();
+			u64 inst_pos = 0;
+
+			for(u64 i = 0; i < alignment_offset; ++i) {
+				bytes.push_back(0);
+			}
+
+			for(instruction_block* block : m_blocks) {
+				if(block->section_index != i) {
+					continue;
+				}
+
+				for(u64 j = 0; j < block->size; ++j) {
+					instruction_t* inst = block->instructions[j];
+					const instruction* inst_actual = &instruction_db[inst->index];
+
+					operand temp_operands[4];
+					utility::memcpy(temp_operands, inst->operands, sizeof(operand) * 4);
+
+					// resolve symbols
+					for(u8 i = 0; i < inst_actual->operand_count; ++i) {
+						if(temp_operands[i].symbol) { // TODO: get rid of the HIDDEN type
+							// resolve
+							symbol sym = m_symbols.at(temp_operands[i].symbol);
+							i64 value;
+
+
+							if(!is_operand_rel(temp_operands[i].type)) {
+								value = sym.position;
+							}
+							else {
+								utility::console::print("new {} @ {}\n", *temp_operands[i].symbol, inst_pos);
+								if(block->section_index == sym.section_index) {
+									// same sections
+									value = sym.position - (inst_pos + inst->size);
+								}
+								else {
+									// different sections
+									ASSERT(false, "todo\n");
+								}
+							}
+						
+							temp_operands[i].immediate = imm(value);
+							// utility::console::print("{}\n", operand_type_to_string(temp_operands[i].type));
+						}
+						
+					}
+
+					inst_pos += inst->size;
+
+					auto data = backend::emit_instruction(inst_actual, temp_operands);
+					bytes.insert(bytes.end(), data.data, data.data + data.size);
+				}
+			}
+		}
+
+		return bytes;
 	}
 } // namespace baremetal::assembler

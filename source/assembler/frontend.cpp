@@ -138,7 +138,12 @@ namespace baremetal::assembler {
 
 		utility::file::write("./cfg.dot", graph);
 
-		return emit_module();
+		auto mod = emit_module();
+		auto ref = m_module.emit_binary();
+		
+		utility::console::print("{} {}\n", mod.get_value().bytes.get_size(), ref.get_size());
+
+		return module{ .bytes = ref }; 
 	}
 
 	auto frontend::emit_module() -> utility::result<frontend::module> {
@@ -227,10 +232,13 @@ namespace baremetal::assembler {
 						// relocations are relative
 						case OP_REL32:
 						case OP_REL8:
+						case OP_REL16_RIP:
 						case OP_REL8_RIP: {
 							u64 inst_pos = unresolved.position;
 							u64 inst_size = unresolved.size;
 							i64 value;
+
+							utility::console::print("old {} @ {}\n", *unresolved_operand.symbol,  inst_pos);
 
 							if(symbol_it == section.symbols.end()) {
 								// global symbol position - (section position + instruction position + instruction size)
@@ -295,6 +303,7 @@ namespace baremetal::assembler {
 					unresolved.type = new_type;
 
 					u8 new_size = backend::emit_instruction(current.index, current.operands, false).size;
+					utility::console::print("[SYMRES OLD] reference to '{}' optimized {} -> {}\n", *unresolved.symbol, current.size, new_size);
 
 					// update our symbol table to account for the difference in code length
 					section.update_positions(current.position, current.size - new_size);
@@ -901,6 +910,7 @@ namespace baremetal::assembler {
 		create_normal_subsection(); // capture any trailing instructions
 
 		set_section(m_context.strings.add(m_lexer.current_string));
+		m_module.set_section(m_context.strings.add(m_lexer.current_string));
 
 		TRY(m_lexer.get_next_token());
 		return SUCCESS;
