@@ -158,7 +158,6 @@ namespace baremetal::assembler {
 			case OP_M16: result += "word " + memory_to_string(op.memory); break;
 			case OP_M32: result += "dword " + memory_to_string(op.memory); break;
 			case OP_M64: result += "qword " + memory_to_string(op.memory); break;
-			// case OP_HIDDEN: result += *op.symbol; break; // TODO: this can break with special instructions, rename 
 			case OP_I8:
 			case OP_I16:
 			case OP_I32:
@@ -202,6 +201,7 @@ namespace baremetal::assembler {
 			// resolve symbols
 			for(u8 i = 0; i < inst_actual->operand_count; ++i) {
 				if(temp_operands[i].symbol) { // TODO: get rid of the HIDDEN type
+						utility::console::print("{}\n", *temp_operands[i].symbol);
 					// resolve
 					u64 symbol_block = m_symbols.at(temp_operands[i].symbol).block_index;
 					temp_operands[i].immediate = imm(m_blocks[symbol_block]->start_position);
@@ -244,11 +244,9 @@ namespace baremetal::assembler {
 		utility::dynamic_string result;
 
 		result += "digraph cfg {\n";
-		// result += "\tconcentrate=true\n";
 		result += "\tgraph [splines=ortho]\n";
 		result += "\tnode [shape=plaintext fontname=\"monospace\"]\n";
 		result += "\tedge [penwidth=2.0]\n";
-
 		result += "\n";
 
 		struct edge {

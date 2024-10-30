@@ -3,6 +3,13 @@
 
 #include <utility/system/file.h>
 
+#include "assembler/passes/cfg_minimize_pass.h"
+#include "assembler/passes/inst_size_minimize_pass.h"
+#include "assembler/passes/symbolic_minimize.h"
+
+#include "assembler/passes/emit/emit_binary_pass.h"
+#include "assembler/passes/emit/emit_cfg_pass.h"
+
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
     if(m_lexer.current != expected) {                             \
@@ -134,16 +141,30 @@ namespace baremetal::assembler {
 		TRY(parse());           // generate the symbol table and unresolved list
 		TRY(resolve_symbols()); // resolve symbols locations
 
-		auto graph = m_module.emit_graph();
+		// auto graph = m_module.emit_graph();
+		// m_module.simplify_cfg();
+		// m_module.optimize_instruction_size();
+		// m_module.recalculate_block_sizes();
+		// m_module.optimize_symbol_resolutions();
 
-		utility::file::write("./cfg.dot", graph);
+
+		pass::cfg_minimize(m_module);
+		pass::inst_size_minimize(m_module);
+		pass::symbolic_minimize(m_module);
+
+		auto graph  = pass::emit_control_flow_graph(m_module);
+		auto binary = pass::emit_binary(m_module);
+
+		utility::file::write("./cfg2.dot", graph);
 
 		auto mod = emit_module();
-		auto ref = m_module.emit_binary();
 		
-		utility::console::print("{} {}\n", mod.get_value().bytes.get_size(), ref.get_size());
+		// utility::console::print("{} {}\n", mod.get_value().bytes.get_size(), ref.get_size());
 
-		return module{ .bytes = ref }; 
+
+
+		// return module{ .bytes = ref }; 
+		return mod;
 	}
 
 	auto frontend::emit_module() -> utility::result<frontend::module> {
@@ -238,8 +259,6 @@ namespace baremetal::assembler {
 							u64 inst_size = unresolved.size;
 							i64 value;
 
-							utility::console::print("old {} @ {}\n", *unresolved_operand.symbol,  inst_pos);
-
 							if(symbol_it == section.symbols.end()) {
 								// global symbol position - (section position + instruction position + instruction size)
 								value = get_symbol_global(unresolved_operand.symbol) - (section.position + inst_pos + inst_size);	
@@ -303,7 +322,6 @@ namespace baremetal::assembler {
 					unresolved.type = new_type;
 
 					u8 new_size = backend::emit_instruction(current.index, current.operands, false).size;
-					utility::console::print("[SYMRES OLD] reference to '{}' optimized {} -> {}\n", *unresolved.symbol, current.size, new_size);
 
 					// update our symbol table to account for the difference in code length
 					section.update_positions(current.position, current.size - new_size);

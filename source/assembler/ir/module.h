@@ -69,7 +69,7 @@ namespace baremetal::assembler {
 
 		// emission
 		auto emit_binary() -> utility::dynamic_array<u8>;
-  private:
+
     context* m_ctx;
 
     utility::dynamic_array<instruction_block*> m_blocks;
