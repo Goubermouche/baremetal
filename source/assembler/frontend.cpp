@@ -141,30 +141,18 @@ namespace baremetal::assembler {
 		TRY(parse());           // generate the symbol table and unresolved list
 		TRY(resolve_symbols()); // resolve symbols locations
 
-		// auto graph = m_module.emit_graph();
-		// m_module.simplify_cfg();
-		// m_module.optimize_instruction_size();
-		// m_module.recalculate_block_sizes();
-		// m_module.optimize_symbol_resolutions();
-
-
+		// apply optimizations
 		pass::cfg_minimize(m_module);
 		pass::inst_size_minimize(m_module);
 		pass::symbolic_minimize(m_module);
 
+		// emission
 		auto graph  = pass::emit_control_flow_graph(m_module);
 		auto binary = pass::emit_binary(m_module);
 
 		utility::file::write("./cfg2.dot", graph);
 
-		auto mod = emit_module();
-		
-		// utility::console::print("{} {}\n", mod.get_value().bytes.get_size(), ref.get_size());
-
-
-
-		// return module{ .bytes = ref }; 
-		return mod;
+		return module{ .bytes = binary }; 
 	}
 
 	auto frontend::emit_module() -> utility::result<frontend::module> {
@@ -313,7 +301,7 @@ namespace baremetal::assembler {
 					const i64 distance = symbol_it->second - current.position + current.size;
 					const operand_type new_type = current.variants.get_last();
 
-					if(!fits_into_type(distance, new_type)) {
+					if(!pass::detail::fits_into_type(distance, new_type)) {
 						// we can't use a smaller operand, no optimization possible in this iteration
 						continue;
 					}

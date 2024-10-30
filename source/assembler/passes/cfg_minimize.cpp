@@ -7,6 +7,8 @@ namespace baremetal::assembler::pass {
 			u32 in;
 			u32 out;
 		};
+			
+		utility::console::print("[cfg minimize]: minimizing {} blocks\n", module.m_blocks.get_size());
 
 		// blocks which have an edge leading into them
 		utility::dynamic_array<edge> edge_connections(module.m_blocks.get_size(), { 0, 0 });
@@ -43,7 +45,6 @@ namespace baremetal::assembler::pass {
 		// generate new blocks 
 		for(u64 i = 0; i < edge_connections.get_size(); ++i) {
 			const instruction_block* block = module.m_blocks[i];
-			utility::console::print("[CFGSIMPLIFY] block {}: {} inputs, {} outputs\n", i, edge_connections[i].in, edge_connections[i].out);
 			module.m_current_block_name = block->name;
 			module.m_current_section = block->section_index;
 			module.m_current_block.insert(module.m_current_block.end(), block->instructions, block->instructions + block->size);

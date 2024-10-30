@@ -31,8 +31,6 @@ namespace baremetal::assembler {
 		bool new_segment = false;
   };
 
-	auto fits_into_type(i64 value, operand_type type) -> bool;
-
   struct module_t {
 		struct symbol {
 			u64 position;
@@ -45,30 +43,10 @@ namespace baremetal::assembler {
     void add_instruction(const operand* operands, u32 index, u8 size);
 		void add_symbol(utility::string_view* name);
 		void set_section(utility::string_view* name);
-
 		void begin_block(instruction_block::type ty, utility::string_view* name);
 
-		auto emit_graph() -> utility::dynamic_string;
-		auto instruction_block_to_string(const instruction_block* block);
-		auto register_to_string(reg r) -> const char*;
-		auto immediate_to_string(imm i) -> utility::dynamic_string;
-		auto memory_to_string(mem memory) -> utility::dynamic_string;
-		auto operand_to_string(const operand& op) -> utility::dynamic_string;
-
-		// CFG stuff
-		void simplify_cfg();
 		auto create_new_block(instruction_block::type ty) -> instruction_block*;
-
 		void recalculate_block_sizes();
-
-		// optimizations 
-		void optimize_instruction_size();
-		void optimize_instruction_size(instruction_t* inst);
-
-		void optimize_symbol_resolutions();
-
-		// emission
-		auto emit_binary() -> utility::dynamic_array<u8>;
 
     context* m_ctx;
 

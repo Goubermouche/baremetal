@@ -2,6 +2,20 @@
 #include "assembler/backend.h"
 
 namespace baremetal::assembler::pass {
+	namespace detail {
+		auto fits_into_type(i64 value, operand_type type) -> bool {
+			switch(type) {
+				case OP_REL8:
+				case OP_REL8_RIP:  return value >= utility::limits<i8>::min() && value <= utility::limits<i8>::max();
+				case OP_REL16_RIP: return value >= utility::limits<i16>::min() && value <= utility::limits<i16>::max();
+				case OP_REL32:     return value >= utility::limits<i32>::min() && value <= utility::limits<i32>::max();
+				default: ASSERT(false, "unexpected operand type {}\n", operand_type_to_string(type));
+			}
+	
+			return false;
+		}
+	} // namespace detail
+
 	void symbolic_minimize(module_t& module) {
 		struct unresolved {
 			u64 block_index;
@@ -11,8 +25,8 @@ namespace baremetal::assembler::pass {
 			utility::dynamic_array<inst_variant> variants;
 		};
 
-
 		utility::dynamic_array<unresolved> indices;
+		utility::console::print("[sym minimize]: minimizing {} symbols\n", module.m_symbols.size());
 
 		// locate all references to symbols
 		for(u64 i = 0; i < module.m_blocks.get_size(); ++i) {
@@ -42,7 +56,7 @@ namespace baremetal::assembler::pass {
 							indices.push_back({i, j, k, local_position, variants });
 						}
 						else {
-							utility::console::print("[SYMRES] skipping non-local symbol reference to symbol '{}'\n", *inst->operands[k].symbol);
+							utility::console::print("[sym minimize]: skipping non-local symbol reference to symbol '{}'\n", *inst->operands[k].symbol);
 						}
 
 						break;
@@ -53,13 +67,7 @@ namespace baremetal::assembler::pass {
 			}
 		}
 
-		utility::console::print("[SYMRES] found {} unresolved symbols:\n", indices.get_size());
-
-		for(const auto& unres : indices) {
-			instruction_t* current_inst = module.m_blocks[unres.block_index]->instructions[unres.instruction_index];
-			operand& unresolved = current_inst->operands[unres.unresolved_index];
-			utility::console::print("[SYMRES] '{}' ({} variants)\n", *unresolved.symbol, unres.variants.get_size());
-		}
+		utility::console::print("[sym minimize]: found {} unresolved symbols:\n", indices.get_size());
 
 		bool change = true;
 		module.recalculate_block_sizes();
@@ -80,7 +88,7 @@ namespace baremetal::assembler::pass {
 				const i64 distance = symbol_it->second.position - unres.position + current_inst->size;
 				const operand_type new_type = unres.variants.get_last().type;
 
-				if(!fits_into_type(distance, new_type)) {
+				if(!detail::fits_into_type(distance, new_type)) {
 					// we can't use a smaller operand, no optimization possible in this iteration
 					continue;
 				}
@@ -90,7 +98,7 @@ namespace baremetal::assembler::pass {
 				
 				u8 new_size = backend::emit_instruction(&instruction_db[unres.variants.get_last().index], current_inst->operands).size;
 
-				utility::console::print("[SYMRES] reference to '{}' optimized {} -> {}\n", *unresolved.symbol, current_inst->size, new_size);
+				utility::console::print("[sym minimize]: reference to '{}' optimized {} -> {}\n", *unresolved.symbol, current_inst->size, new_size);
 				
 				current_inst->size = new_size;
 				current_inst->index = unres.variants.get_last().index;

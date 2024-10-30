@@ -23,7 +23,7 @@ namespace baremetal::assembler::pass {
 					if(operands[j].symbol) {
 						auto it = module.m_symbols.find(operands[j].symbol);
 
-						ASSERT(it != module.m_symbols.end(), "invalid operand symbol detected ('{}')\n", *operands[j].symbol);
+						ASSERT(it != module.m_symbols.end(), "[cfg emit]: invalid operand symbol detected ('{}')\n", *operands[j].symbol);
 						i64 value = 0;
 
 						if(!is_operand_rel(operands[j].type)) {
@@ -36,7 +36,7 @@ namespace baremetal::assembler::pass {
 							}
 							else {
 								// different sections
-								ASSERT(false, "todo\n");
+								ASSERT(false, "[cfg emit]: todo\n");
 								value = 0;
 							}
 						}
@@ -108,7 +108,7 @@ namespace baremetal::assembler::pass {
 				case OP_I16:
 				case OP_I32:
 				case OP_I64: string += immediate_to_string(op.immediate); break;
-				default: utility::console::print_err("unhandled operand type '{}'\n", operand_type_to_string(op.type));
+				default: utility::console::print_err("[cfg emit]: unhandled operand type '{}'\n", operand_type_to_string(op.type));
 			}
 
 			return string;
@@ -212,6 +212,8 @@ namespace baremetal::assembler::pass {
 
 		bool block_is_new_segment = true;
 		u64 current_block_id = 0;
+			
+		utility::console::print("[cfg emit]: emitting cfg\n");
 
 		graph += "digraph cfg {\n";
 		graph += "\tgraph [splines=ortho]\n";
