@@ -8,12 +8,26 @@
 #include <utility/algorithms/sort.h>
 
 namespace baremetal::assembler {
-  module_t::module_t(context* ctx) : m_ctx(ctx) {
-		set_section(m_ctx->strings.add(".text"));
+	auto basic_block::is_instruction_block() const -> bool {
+		switch(type) {
+			case BB_BRANCH:
+			case BB_INSTRUCTION: return true;
+			default:             return false;
+		}
+	}
+
+	auto basic_block::is_data_block() const -> bool {
+		switch(type) {
+			default:             return false;
+		}
+	}
+
+  module_t::module_t(context* ctx) : ctx(ctx) {
+		set_section(ctx->strings.add(".text"));
 	}
 
   void module_t::add_instruction(const operand* operands, u32 index, u8 size) {
-    instruction_t* instruction = m_ctx->allocator.emplace<instruction_t>();
+    instruction_t* instruction = ctx->allocator.emplace<instruction_t>();
 
     instruction->operands[0] = operands[0];
     instruction->operands[1] = operands[1];
@@ -24,90 +38,114 @@ namespace baremetal::assembler {
 		instruction->size = size;
 
 		m_current_segment_length += size;
-
     m_current_block.push_back(instruction);
   }
 
 	void module_t::add_symbol(utility::string_view* name) {
 		// utility::console::print("add symbol '{}' ({}, section # {})\n", *name, m_blocks.get_size(), m_current_section);
-		m_symbols[name] = { m_current_segment_length, m_blocks.get_size(), m_current_section };
+		symbols[name] = { m_current_segment_length, blocks.get_size(), m_current_section };
 	}
 
 	void module_t::set_section(utility::string_view* name) {
 		u64 new_index;
 
-		for(u64 i = 0; i < m_sections.get_size(); ++i) {
-			if(name == m_sections[i]) {
+		for(u64 i = 0; i < sections.get_size(); ++i) {
+			if(name == sections[i]) {
 				new_index = i;
 				break;
 			}
 		}
 
-		new_index = m_sections.get_size();
-		m_sections.push_back(name);
+		new_index = sections.get_size();
+		sections.push_back(name);
 
 		// force a new block
 		if(new_index != m_current_section) {
 			if(!m_current_block.is_empty()) {
-				m_blocks.push_back(create_new_block(instruction_block::INSTRUCTION));
+				auto new_block = allocate_block(BB_INSTRUCTION);
+
+				u64 memory_size = m_current_block.get_size() * sizeof(instruction_t*);
+				new_block->instructions.data = static_cast<instruction_t**>(ctx->allocator.allocate(memory_size));
+				new_block->instructions.size = m_current_block.get_size();
+				utility::memcpy(new_block->instructions.data, m_current_block.get_data(), memory_size);
+
+				new_block->size = m_current_segment_length;
+				new_block->start_position = m_current_start_position;
+				new_block->section_index = m_current_section;
+
+				blocks.push_back(new_block);
+
+				m_current_start_position += m_current_segment_length;
+				m_current_segment_length = 0;
+
+				m_current_block.clear();
 			}
 
 			m_current_section = new_index;
 		}
 	}
 
-	void module_t::begin_block(instruction_block::type ty, utility::string_view* name) {
-		if(ty == instruction_block::INSTRUCTION) {
+	void module_t::begin_block(basic_block_type ty, utility::string_view* name) {
+		if(ty == BB_INSTRUCTION) {
 			if(m_current_block.is_empty()) {
 				return;
 			}
 		}
 
 		m_current_block_name = name;
-		m_blocks.push_back(create_new_block(ty));
-	}
+		auto new_block = allocate_block(ty);
 
-	auto module_t::create_new_block(instruction_block::type ty) -> instruction_block* {
-		instruction_block* new_block = m_ctx->allocator.emplace<instruction_block>();
-		u64 instruction_memory = sizeof(instruction_t*) * m_current_block.get_size();
-		instruction_t** instructions = static_cast<instruction_t**>(m_ctx->allocator.allocate(instruction_memory));
+		if(ty == BB_LABEL) {
+			new_block->label.name = m_current_block_name;
+		}
+		else {
+			u64 memory_size = m_current_block.get_size() * sizeof(instruction_t*);
+			new_block->instructions.data = static_cast<instruction_t**>(ctx->allocator.allocate(memory_size));
+			new_block->instructions.size = m_current_block.get_size();
+			utility::memcpy(new_block->instructions.data, m_current_block.get_data(), memory_size);
+		}
 
-		new_block->instructions = instructions;
-		new_block->size = m_current_block.get_size();
-		new_block->lenght = m_current_segment_length;
+		new_block->size = m_current_segment_length;
 		new_block->start_position = m_current_start_position;
-		new_block->name = m_current_block_name;
-		new_block->ty = ty;
-		new_block->new_segment = false;
 		new_block->section_index = m_current_section;
-		
-		utility::memcpy(instructions, m_current_block.get_data(), instruction_memory);
+
+		blocks.push_back(new_block);
 
 		m_current_start_position += m_current_segment_length;
 		m_current_segment_length = 0;
 
 		m_current_block.clear();
-		return new_block;
+	}
+
+	auto module_t::allocate_block(basic_block_type type) -> basic_block* {
+		basic_block* block = ctx->allocator.emplace<basic_block>();
+
+		block->incoming_control_edge_count = 0;
+		block->type = type;
+
+		return block;
 	}
 
 	void module_t::recalculate_block_sizes() {
 		u64 position = 0;
-		u64 size = 0;
 
-		for(instruction_block* block : m_blocks) { 
-			for(u64 i = 0; i < block->size; ++i) {
-				size += block->instructions[i]->size;
+		for(basic_block* block : blocks) { 
+			u64 size = 0;
+
+			if(block->is_instruction_block()) {
+				for(u64 i = 0; i < block->instructions.size; ++i) {
+					size += block->instructions.data[i]->size;
+				}
 			}
 
 			block->start_position = position;
-			block->lenght = size; 
+			block->size = size; 
 
 			position += size;
-			size = 0;
 		}
 
-		for(auto& [symbol, location] : m_symbols) {
-			location.position = m_blocks[location.block_index]->start_position;
+		for(auto& [symbol, location] : symbols) {
+			location.position = blocks[location.block_index]->start_position;
 		}
 	}
 } // namespace baremetal::assembler

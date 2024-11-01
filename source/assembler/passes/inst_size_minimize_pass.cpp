@@ -1,6 +1,6 @@
 #include "inst_size_minimize_pass.h"
-#include "assembler/backend.h"
 
+#include "assembler/backend.h"
 #include <utility/algorithms/sort.h>
 
 namespace baremetal::assembler::pass {
@@ -145,11 +145,15 @@ namespace baremetal::assembler::pass {
 	} // namespace detail
 
 	void inst_size_minimize(module_t& module) {
-		utility::console::print("[inst minimize]: minimizing {} blocks\n", module.m_blocks.get_size());
+		utility::console::print("[inst minimize]: minimizing {} blocks\n", module.blocks.get_size());
 		
-		for(const instruction_block* block : module.m_blocks) {
-			for(u64 i = 0; i < block->size; ++i) {
-				instruction_t* inst = block->instructions[i];
+		for(const basic_block* block : module.blocks) {
+			if(!block->is_instruction_block()) {
+				continue;
+			}
+
+			for(u64 i = 0; i < block->instructions.size; ++i) {
+				instruction_t* inst = block->instructions.data[i];
 				u32 old_index = inst->index;
 				detail::optimize_instruction_size(inst);
 

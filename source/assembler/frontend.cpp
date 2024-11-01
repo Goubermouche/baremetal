@@ -3,9 +3,9 @@
 
 #include <utility/system/file.h>
 
-#include "assembler/passes/cfg_minimize_pass.h"
+#include "assembler/passes/cfg_analyze_pass.h"
 #include "assembler/passes/inst_size_minimize_pass.h"
-#include "assembler/passes/symbolic_minimize.h"
+#include "assembler/passes/symbolic_minimize_pass.h"
 
 #include "assembler/passes/emit/emit_binary_pass.h"
 #include "assembler/passes/emit/emit_cfg_pass.h"
@@ -142,7 +142,7 @@ namespace baremetal::assembler {
 		TRY(resolve_symbols()); // resolve symbols locations
 
 		// apply optimizations
-		pass::cfg_minimize(m_module);
+		pass::cfg_analyze(m_module);
 		pass::inst_size_minimize(m_module);
 		pass::symbolic_minimize(m_module);
 
@@ -420,7 +420,7 @@ namespace baremetal::assembler {
 			}	
 		}
 
-		m_module.begin_block(instruction_block::INSTRUCTION, nullptr);
+		m_module.begin_block(BB_INSTRUCTION, nullptr);
 		create_normal_subsection(); // capture any trailing instructions
 		return SUCCESS;
 	}
@@ -625,7 +625,7 @@ namespace baremetal::assembler {
 		m_module.add_instruction(m_operands, m_instruction_i, size);
 	
 		if(is_jump_or_branch_inst(m_instruction_i)) {
-			m_module.begin_block(instruction_block::BRANCH, nullptr);
+			m_module.begin_block(BB_BRANCH, nullptr);
 		}
 
 		if(m_symbolic_operand) {
@@ -930,9 +930,9 @@ namespace baremetal::assembler {
 			m_sections[m_section_index].offset
 		});
 
-		m_module.begin_block(instruction_block::INSTRUCTION, nullptr);
+		m_module.begin_block(BB_INSTRUCTION, nullptr);
 		m_module.add_symbol(m_current_identifier);
-		m_module.begin_block(instruction_block::LABEL, m_current_identifier);
+		m_module.begin_block(BB_LABEL, m_current_identifier);
 		TRY(m_lexer.get_next_token());
 
 		return SUCCESS;

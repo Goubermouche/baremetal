@@ -1,4 +1,5 @@
 #include "emit_binary_pass.h"
+
 #include "assembler/backend.h"
 
 namespace baremetal::assembler::pass {
@@ -8,7 +9,7 @@ namespace baremetal::assembler::pass {
 		utility::console::print("[binary emit]: emitting binary\n");
 
 		// TODO: dumb
-		for(u64 i = 0; i < module.m_sections.get_size(); ++i) {
+		for(u64 i = 0; i < module.sections.get_size(); ++i) {
 			// append alignment bytes for the previous section
 			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size();
 			u64 inst_pos = 0;
@@ -17,13 +18,17 @@ namespace baremetal::assembler::pass {
 				bytes.push_back(0);
 			}
 
-			for(instruction_block* block : module.m_blocks) {
+			for(basic_block* block : module.blocks) {
 				if(block->section_index != i) {
 					continue;
 				}
 
-				for(u64 j = 0; j < block->size; ++j) {
-					instruction_t* inst = block->instructions[j];
+				if(!block->is_instruction_block()) {
+					continue;
+				}
+
+				for(u64 j = 0; j < block->instructions.size; ++j) {
+					instruction_t* inst = block->instructions.data[j];
 					const instruction* inst_actual = &instruction_db[inst->index];
 
 					operand temp_operands[4];
@@ -33,8 +38,8 @@ namespace baremetal::assembler::pass {
 					for(u8 i = 0; i < inst_actual->operand_count; ++i) {
 						if(temp_operands[i].symbol) { // TODO: get rid of the HIDDEN type
 							// resolve
-							auto sym_it = module.m_symbols.find(temp_operands[i].symbol);
-							ASSERT(sym_it != module.m_symbols.end(), "[binary emit]: invalid symbol specified ('{}')\n", *temp_operands[i].symbol);
+							auto sym_it = module.symbols.find(temp_operands[i].symbol);
+							ASSERT(sym_it != module.symbols.end(), "[binary emit]: invalid symbol specified ('{}')\n", *temp_operands[i].symbol);
 							i64 value;
 
 

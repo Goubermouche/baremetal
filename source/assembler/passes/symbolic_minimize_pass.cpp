@@ -1,4 +1,5 @@
-#include "symbolic_minimize.h"
+#include "symbolic_minimize_pass.h"
+
 #include "assembler/backend.h"
 
 namespace baremetal::assembler::pass {
@@ -26,19 +27,23 @@ namespace baremetal::assembler::pass {
 		};
 
 		utility::dynamic_array<unresolved> indices;
-		utility::console::print("[sym minimize]: minimizing {} symbols\n", module.m_symbols.size());
+		utility::console::print("[sym minimize]: minimizing {} symbols\n", module.symbols.size());
 
 		// locate all references to symbols
-		for(u64 i = 0; i < module.m_blocks.get_size(); ++i) {
-			const instruction_block* block = module.m_blocks[i];
+		for(u64 i = 0; i < module.blocks.get_size(); ++i) {
+			const basic_block* block = module.blocks[i];
 
-			for(u64 j = 0; j < block->size; ++j) {
-				instruction_t* inst = block->instructions[j];
+			if(!block->is_instruction_block()) {
+				continue;
+			}
+
+			for(u64 j = 0; j < block->instructions.size; ++j) {
+				instruction_t* inst = block->instructions.data[j];
 				u64 local_position = 0;
 
 				for(u8 k = 0; k < 4; ++k) {
 					if(inst->operands[k].symbol) {
-						const auto symbol_it = module.m_symbols.find(inst->operands[k].symbol);
+						const auto symbol_it = module.symbols.find(inst->operands[k].symbol);
 
 						if(symbol_it->second.section_index == block->section_index) {
 							// we can only optimize references to symbols in the same section
@@ -81,9 +86,9 @@ namespace baremetal::assembler::pass {
 					continue;
 				}
 
-				instruction_t* current_inst = module.m_blocks[unres.block_index]->instructions[unres.instruction_index];
+				instruction_t* current_inst = module.blocks[unres.block_index]->instructions.data[unres.instruction_index];
 				operand& unresolved = current_inst->operands[unres.unresolved_index];
-				const auto symbol_it = module.m_symbols.find(unresolved.symbol);
+				const auto symbol_it = module.symbols.find(unresolved.symbol);
 
 				const i64 distance = symbol_it->second.position - unres.position + current_inst->size;
 				const operand_type new_type = unres.variants.get_last().type;

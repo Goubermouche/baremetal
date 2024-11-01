@@ -1,18 +1,16 @@
 #include "emit_cfg_pass.h"
 
-#include "assembler/ir/module.h"
 #include "assembler/backend.h"
-#include "utility/containers/dynamic_string.h"
 
 namespace baremetal::assembler::pass {
 	namespace detail {
-		auto instruction_block_to_string(const instruction_block* block, const module_t& module) -> utility::dynamic_string {
+		auto instruction_block_to_string(const basic_block* block, const module_t& module) -> utility::dynamic_string {
 			utility::dynamic_string string;
 			operand operands[4];
 			u64 position = 0;
 
-			for(u64 i = 0; i < block->size; ++i) {
-				const instruction_t* inst_ir = block->instructions[i];
+			for(u64 i = 0; i < block->instructions.size; ++i) {
+				const instruction_t* inst_ir = block->instructions.data[i];
 				const instruction*   inst    = &instruction_db[inst_ir->index];
 
 				// copy operands so that we don't modify the actual values
@@ -21,9 +19,9 @@ namespace baremetal::assembler::pass {
 				// resolve symbols
 				for(u8 j = 0; j < inst->operand_count; ++j) {
 					if(operands[j].symbol) {
-						auto it = module.m_symbols.find(operands[j].symbol);
+						auto it = module.symbols.find(operands[j].symbol);
 
-						ASSERT(it != module.m_symbols.end(), "[cfg emit]: invalid operand symbol detected ('{}')\n", *operands[j].symbol);
+						ASSERT(it != module.symbols.end(), "[cfg emit]: invalid operand symbol detected ('{}')\n", *operands[j].symbol);
 						i64 value = 0;
 
 						if(!is_operand_rel(operands[j].type)) {
@@ -46,6 +44,7 @@ namespace baremetal::assembler::pass {
 				}
 
 				auto data = backend::emit_instruction(inst, operands);
+
 				string += "<tr><td align=\"left\" width=\"50px\">";
 				string += utility::int_to_string(block->start_position + position);
 				string += "</td><td align=\"left\" width=\"100px\">";
@@ -221,11 +220,11 @@ namespace baremetal::assembler::pass {
 		graph += "\tedge [penwidth=2.0]\n\n";
 
 		// generate nodes (control flow blocks)
-		for(u64 i = 0; i < module.m_blocks.get_size(); ++i) {
-			const instruction_block* block = module.m_blocks[i];
+		for(u64 i = 0; i < module.blocks.get_size(); ++i) {
+			const basic_block* block = module.blocks[i];
 
 			// new control flow block
-			if(block->new_segment || block_is_new_segment) {
+			if(block->incoming_control_edge_count || block_is_new_segment) {
 				if(i > 0) {
 					graph += "<tr PORT=\"bottom\"><td></td></tr></table>>]\n";
 				}
@@ -239,20 +238,20 @@ namespace baremetal::assembler::pass {
 			}	
 
 			// append the current instruction block to the current control flow block
-			switch(block->ty) {
-				case instruction_block::LABEL: {
+			switch(block->type) {
+				case BB_LABEL: {
 					graph += "<tr><td align=\"left\">";
 					graph += utility::int_to_string(block->start_position);
 					graph += "</td><td></td><td COLSPAN=\"100%\" align=\"left\"><b><font color=\"blue\">";
-					graph += *block->name;
+					graph += *block->label.name;
 					graph += "</font></b></td></tr>";
 					break;
 				}
-				case instruction_block::INSTRUCTION: {
+				case BB_INSTRUCTION: {
 					graph += detail::instruction_block_to_string(block, module);
 					break;
 				}
-				case instruction_block::BRANCH: {
+				case BB_BRANCH: {
 					graph += detail::instruction_block_to_string(block, module);
 					block_is_new_segment = true;
 					break;
@@ -260,26 +259,28 @@ namespace baremetal::assembler::pass {
 			}
 
 			// instructions with no instructions cannot produce a control flow edge
-			if(block->size == 0) {
+			if(!block->is_instruction_block()) {
 				continue;
 			}
 
 			// generate edges
-			const instruction_t* inst = block->instructions[block->size - 1];
+			const instruction_t* inst = block->instructions.data[block->instructions.size - 1];
 			bool is_branch = false;
 
 			// branch edge
 			if(is_jump_or_branch_inst(inst->index)) {
-				const auto it = module.m_symbols.find(inst->operands[0].symbol);
-				ASSERT(it != module.m_symbols.end(), "branch to an invalid symbol detected ('{}')\n", *inst->operands[0].symbol);
+				const auto it = module.symbols.find(inst->operands[0].symbol);
+				ASSERT(it != module.symbols.end(), "branch to an invalid symbol detected ('{}')\n", *inst->operands[0].symbol);
 
 				edges.push_back({ edge::BRANCH_PASS, current_block_id, it->second.block_index });
 				is_branch = true;
 			}
 
 			// branch to the following control flow block (occurs when the next block has an incoming edge)
-			if(i != module.m_blocks.get_size() - 1 && (block_is_new_segment || module.m_blocks[i + 1]->new_segment)) {
-				edges.push_back({ is_branch ? edge::BRANCH_FAIL : edge::FALLTHROUGH, current_block_id, i + 1});	
+			if(i != module.blocks.get_size() - 1) {
+				if((block_is_new_segment || module.blocks[i + 1]->incoming_control_edge_count)) {
+					edges.push_back({ is_branch ? edge::BRANCH_FAIL : edge::FALLTHROUGH, current_block_id, i + 1});	
+				}
 			}
 		}
 
