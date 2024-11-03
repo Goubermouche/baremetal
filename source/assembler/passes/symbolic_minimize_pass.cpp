@@ -44,6 +44,7 @@ namespace baremetal::assembler::pass {
 				for(u8 k = 0; k < 4; ++k) {
 					if(inst->operands[k].symbol) {
 						const auto symbol_it = module.symbols.find(inst->operands[k].symbol);
+						ASSERT(symbol_it != module.symbols.end(), "invalid symbol specified ('{}')\n", *inst->operands[k].symbol);
 
 						if(symbol_it->second.section_index == block->section_index) {
 							// we can only optimize references to symbols in the same section

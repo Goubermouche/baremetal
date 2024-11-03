@@ -1,9 +1,6 @@
 #include "module.h"
+
 #include "assembler/backend.h"
-#include "assembler/instruction/instruction.h"
-#include "assembler/instruction/operands/memory.h"
-#include "assembler/instruction/operands/operands.h"
-#include "utility/containers/dynamic_string.h"
 
 #include <utility/algorithms/sort.h>
 
@@ -18,7 +15,8 @@ namespace baremetal::assembler {
 
 	auto basic_block::is_data_block() const -> bool {
 		switch(type) {
-			default:             return false;
+			case BB_DATA: return true;
+			default:      return false;
 		}
 	}
 
@@ -40,6 +38,44 @@ namespace baremetal::assembler {
 		m_current_segment_length += size;
     m_current_block.push_back(instruction);
   }
+	
+	void module_t::add_data_block(const utility::dynamic_array<u8>& data) {
+		// force a new block
+		if(!m_current_block.is_empty()) {
+			auto new_block = allocate_block(BB_INSTRUCTION);
+
+			u64 memory_size = m_current_block.get_size() * sizeof(instruction_t*);
+			new_block->instructions.data = static_cast<instruction_t**>(ctx->allocator.allocate(memory_size));
+			new_block->instructions.size = m_current_block.get_size();
+			utility::memcpy(new_block->instructions.data, m_current_block.get_data(), memory_size);
+
+			new_block->size = m_current_segment_length;
+			new_block->start_position = m_current_start_position;
+			new_block->section_index = m_current_section;
+
+			blocks.push_back(new_block);
+
+			m_current_start_position += m_current_segment_length;
+			m_current_segment_length = 0;
+
+			m_current_block.clear();
+		}
+
+		auto new_block = allocate_block(BB_DATA);
+		
+		new_block->data.data = static_cast<u8*>(ctx->allocator.allocate(data.get_size() * sizeof(u8)));
+		new_block->data.size = data.get_size();
+		utility::memcpy(new_block->data.data, data.get_data(), data.get_size() * sizeof(u8));
+
+		new_block->size = data.get_size();
+		new_block->start_position = m_current_start_position;
+		new_block->section_index = m_current_section;
+
+		m_current_start_position += data.get_size();
+		m_current_segment_length = 0;
+
+		blocks.push_back(new_block);
+	}
 
 	void module_t::add_symbol(utility::string_view* name) {
 		// utility::console::print("add symbol '{}' ({}, section # {})\n", *name, m_blocks.get_size(), m_current_section);
@@ -47,7 +83,7 @@ namespace baremetal::assembler {
 	}
 
 	void module_t::set_section(utility::string_view* name) {
-		u64 new_index;
+		u64 new_index = sections.get_size();
 
 		for(u64 i = 0; i < sections.get_size(); ++i) {
 			if(name == sections[i]) {
@@ -56,8 +92,9 @@ namespace baremetal::assembler {
 			}
 		}
 
-		new_index = sections.get_size();
-		sections.push_back(name);
+		if(new_index == sections.get_size()) {
+			sections.push_back(name);
+		}
 
 		// force a new block
 		if(new_index != m_current_section) {
@@ -136,6 +173,9 @@ namespace baremetal::assembler {
 				for(u64 i = 0; i < block->instructions.size; ++i) {
 					size += block->instructions.data[i]->size;
 				}
+			}
+			else {
+				size += block->size;
 			}
 
 			block->start_position = position;

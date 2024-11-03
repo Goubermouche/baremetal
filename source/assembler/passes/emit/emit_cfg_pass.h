@@ -16,6 +16,7 @@ namespace baremetal::assembler::pass {
 		auto register_to_string(reg r) -> const char*;
 
 		auto bytes_to_string(const u8* bytes, u8 count) -> utility::dynamic_string;
+		auto byte_to_string(u8 byte) -> utility::dynamic_string;
 	} // namespace detail
 
 	// generates a CFG representation of the program represented by the specified module, returns a 

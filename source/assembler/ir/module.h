@@ -14,7 +14,8 @@ namespace baremetal::assembler {
 	enum basic_block_type : u8 {
 		BB_INSTRUCTION, // block containing at least one instruction
 		BB_BRANCH,      // subset of BB_INSTRUCTION, contains one branch/jump instruction
-		BB_LABEL        // basic label block, contains no instructions
+		BB_LABEL,       // basic label block, contains no instructions
+		BB_DATA
 	};
 
   struct basic_block {
@@ -28,7 +29,8 @@ namespace baremetal::assembler {
 		};
 
 		struct data_block {
-
+			u8* data;
+			u64 size;
 		};
 
 		auto is_instruction_block() const -> bool;
@@ -60,6 +62,8 @@ namespace baremetal::assembler {
 
     void add_instruction(const operand* operands, u32 index, u8 size);
 		void add_symbol(utility::string_view* name);
+		void add_data_block(const utility::dynamic_array<u8>& data);
+
 		void set_section(utility::string_view* name);
 		
 		auto allocate_block(basic_block_type type) -> basic_block*;

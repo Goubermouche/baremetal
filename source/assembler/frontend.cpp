@@ -454,6 +454,7 @@ namespace baremetal::assembler {
 
 	auto frontend::parse_define_memory() -> utility::result<void> {
 		if(m_current_identifier) {
+			m_module.add_symbol(m_current_identifier);
 			m_sections[m_section_index].symbols.insert({ m_current_identifier, {
 				m_sections[m_section_index].offset
 			}});
@@ -470,12 +471,14 @@ namespace baremetal::assembler {
 		}
 
 		TRY(m_lexer.get_next_token());
+		utility::dynamic_array<u8> data;
 
 		while(m_lexer.current != TOK_EOF) {
 			switch(m_lexer.current) {
 				case TOK_CHAR: 
 				case TOK_STRING: {
 					for(const char c : m_lexer.current_string) {
+						data.push_back(c);
 						m_current_resolved.push_back(c);
 						m_sections[m_section_index].offset++;
 					}
@@ -486,6 +489,7 @@ namespace baremetal::assembler {
 
 					for(u64 i = 0; i < alignment_offset; ++i) {
 						m_current_resolved.push_back(0);
+						data.push_back(0);
 						m_sections[m_section_index].offset++;
 					}
 
@@ -502,6 +506,7 @@ namespace baremetal::assembler {
 					for(u8 i = 0; i < bytes; ++i) {
 			      u8 byte = static_cast<u8>(value & 0xFF);
 						m_current_resolved.push_back(byte);
+						data.push_back(byte);
 						m_sections[m_section_index].offset++;
 			      value >>= 8;
 			    }
@@ -521,6 +526,7 @@ namespace baremetal::assembler {
 			TRY(m_lexer.get_next_token());
 		}
 
+		m_module.add_data_block(data);
 		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}

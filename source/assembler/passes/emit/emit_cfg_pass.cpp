@@ -180,14 +180,21 @@ namespace baremetal::assembler::pass {
 			utility::dynamic_string string;
 			string.reserve(count * 3);
 
-			constexpr char digits[] = "0123456789abcdef";
-
 			for(u64 i = 0; i < count; ++i) {
-				const u8 value = bytes[i];
-				string += (digits[(value >> 4) & 0x0F]);
-				string += (digits[value & 0x0F]);
+				string += byte_to_string(bytes[i]);
 				string += ' ';
 			}
+
+			return string;
+		}
+		
+		auto byte_to_string(u8 byte) -> utility::dynamic_string {
+			utility::dynamic_string string;
+			string.reserve(2);
+
+			constexpr char digits[] = "0123456789abcdef";
+			string += (digits[(byte >> 4) & 0x0F]);
+			string += (digits[byte & 0x0F]);
 
 			return string;
 		}
@@ -254,6 +261,32 @@ namespace baremetal::assembler::pass {
 				case BB_BRANCH: {
 					graph += detail::instruction_block_to_string(block, module);
 					block_is_new_segment = true;
+					break;
+				}
+				case BB_DATA: {
+					u64 parts = ceil(static_cast<f32>(block->data.size) / 30.0f);
+
+					for(u64 j = 0; j < parts; ++j) {
+						graph += "<tr><td align=\"left\">";
+
+						if(j == 0) {
+							graph += utility::int_to_string(block->start_position);
+						}
+
+						graph += "</td><td COLSPAN=\"100%\" align=\"left\">";
+
+						u64 start = j * 30;
+						u64 end = utility::min(block->data.size, start + 30);
+
+						for(u64 k = start; k < end; ++k) {
+							graph += detail::byte_to_string(block->data.data[k]); 
+							graph += ' ';
+						}
+
+						graph += ' ';
+						graph +="</td></tr>";
+					}
+
 					break;
 				}
 			}
