@@ -52,8 +52,17 @@ namespace baremetal::assembler {
   };
 
 	struct section_t {
+		struct symbol {
+			u64 position; // offset within the local section
+		};
+
 		utility::string_view* name;
-		u64 start_position;
+
+		u64 offset = 0;
+		u64 size = 0;
+
+		utility::map<utility::string_view*, symbol> symbols;
+    utility::dynamic_array<basic_block*> blocks;
 	};
 
   struct module_t {
@@ -69,7 +78,6 @@ namespace baremetal::assembler {
 		void add_symbol(utility::string_view* name);
 		void add_label(utility::string_view* name);
 		void add_data_block(const utility::dynamic_array<u8>& data);
-
 		void set_section(utility::string_view* name);
 		
 		auto allocate_block(basic_block_type type) -> basic_block*;
@@ -77,11 +85,14 @@ namespace baremetal::assembler {
 		void begin_block(basic_block_type ty, utility::string_view* name);
 		void recalculate_block_sizes();
 
+		void print_section_info();
+
     context* ctx;
 
     utility::dynamic_array<basic_block*> blocks;
 		utility::map<utility::string_view*, symbol> symbols;
 		utility::dynamic_array<utility::string_view*> sections;
+		utility::dynamic_array<section_t> sections_n;
 	private:
 		u64 m_current_section = 0;
 		u64 m_current_start_position = 0;

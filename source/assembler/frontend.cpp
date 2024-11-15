@@ -141,16 +141,18 @@ namespace baremetal::assembler {
 		TRY(parse());           // generate the symbol table and unresolved list
 		TRY(resolve_symbols()); // resolve symbols locations
 
+		m_module.print_section_info();
+
 		// apply optimizations
-		pass::cfg_analyze(m_module);
+		//pass::cfg_analyze(m_module);
 		pass::inst_size_minimize(m_module);
 		pass::symbolic_minimize(m_module);
 
 		// emission
-		auto graph  = pass::emit_control_flow_graph(m_module);
+		// auto graph  = pass::emit_control_flow_graph(m_module);
 		auto binary = pass::emit_binary(m_module);
 
-		utility::file::write("./cfg2.dot", graph);
+		// utility::file::write("./cfg2.dot", graph);
 
 		resolve_symbols();
 		emit_module();
@@ -220,7 +222,6 @@ namespace baremetal::assembler {
 						case OP_M32: 
 						case OP_M64: 
 						case OP_M80: {
-																
 							switch(unresolved.fixup) {
 								case FIXUP_DISPLACEMENT: {
 									i64 value;
@@ -254,6 +255,8 @@ namespace baremetal::assembler {
 							if(symbol_it == section.symbols.end()) {
 								// global symbol position - (section position + instruction position + instruction size)
 								value = get_symbol_global(unresolved_operand.symbol) - (section.position + inst_pos + inst_size);	
+								utility::console::print("correct {} : {} {} {} {}\n", *unresolved_operand.symbol, value, section.position, inst_pos, inst_size);
+								// utility::console::print("correct {} : {}\n", *unresolved_operand.symbol, value);
 							}
 							else {
 								// symbol position - (instruction position + instruction size)
@@ -306,6 +309,7 @@ namespace baremetal::assembler {
 					const operand_type new_type = current.variants.get_last();
 
 					if(!pass::detail::fits_into_type(distance, new_type)) {
+						utility::console::print("correct skip reference to {} {} {}\n",* unresolved.symbol, current.position, operand_type_to_string(new_type));
 						// we can't use a smaller operand, no optimization possible in this iteration
 						continue;
 					}
@@ -315,6 +319,7 @@ namespace baremetal::assembler {
 
 					u8 new_size = backend::emit_instruction(current.index, current.operands, false).size;
 
+				utility::console::print("correct [sym minimize]: reference to '{}' optimized {} -> {} {}\n", *unresolved.symbol, current.size, new_size, current.position);
 					// update our symbol table to account for the difference in code length
 					section.update_positions(current.position, current.size - new_size);
 
@@ -369,7 +374,7 @@ namespace baremetal::assembler {
 
 			if(it != section.symbols.end()) {
 				// section position + symbol position (relative to the parent section)
-				utility::console::print("'{}' at {}\n", *name, it->second);
+				utility::console::print("correct '{}' at {}\n", *name, it->second);
 				return section.position + it->second;
 			}
 		}
@@ -680,8 +685,6 @@ namespace baremetal::assembler {
 		else {
 			m_current_resolved.insert(m_current_resolved.end(), code.data, code.data + code.size);
 		}
-
-
 
 		parent.offset += size;
 	}

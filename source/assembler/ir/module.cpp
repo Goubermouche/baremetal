@@ -1,6 +1,7 @@
 #include "module.h"
 
 #include "assembler/backend.h"
+#include "assembler/instruction/instruction.h"
 
 #include <utility/algorithms/sort.h>
 
@@ -37,6 +38,8 @@ namespace baremetal::assembler {
 
 		m_current_segment_length += size;
     m_current_block.push_back(instruction);
+		sections_n[m_current_section].offset += instruction->size;
+		sections_n[m_current_section].size += instruction->size;
   }
 	
 	void module_t::add_data_block(const utility::dynamic_array<u8>& data) {
@@ -54,6 +57,7 @@ namespace baremetal::assembler {
 			new_block->section_index = m_current_section;
 
 			blocks.push_back(new_block);
+			sections_n[m_current_section].blocks.push_back(new_block);
 
 			m_current_start_position += m_current_segment_length;
 			m_current_segment_length = 0;
@@ -75,16 +79,23 @@ namespace baremetal::assembler {
 		m_current_segment_length = 0;
 
 		blocks.push_back(new_block);
+		sections_n[m_current_section].blocks.push_back(new_block);
+		sections_n[m_current_section].offset += data.get_size();
+		sections_n[m_current_section].size += data.get_size();
 	}
 
 	void module_t::add_symbol(utility::string_view* name) {
 		utility::console::print("add symbol '{}' at {}\n", *name, m_current_segment_length);
 		symbols[name] = { m_current_segment_length, blocks.get_size(), m_current_section };
+
+		sections_n[m_current_section].symbols[name] = { sections_n[m_current_section].offset };
 	}
 
 	void module_t::add_label(utility::string_view* name) {
 		utility::console::print("add label '{}' at {}\n", *name, m_current_start_position);
 		symbols[name] = { m_current_start_position, blocks.get_size(), m_current_section };
+		
+		sections_n[m_current_section].symbols[name] = { sections_n[m_current_section].offset };
 	}
 
 	void module_t::set_section(utility::string_view* name) {
@@ -99,6 +110,7 @@ namespace baremetal::assembler {
 
 		if(new_index == sections.get_size()) {
 			sections.push_back(name);
+			sections_n.push_back({.name = name});
 		}
 
 		// force a new block
@@ -116,6 +128,7 @@ namespace baremetal::assembler {
 				new_block->section_index = m_current_section;
 
 				blocks.push_back(new_block);
+				sections_n[m_current_section].blocks.push_back(new_block);
 
 				m_current_start_position += m_current_segment_length;
 				m_current_segment_length = 0;
@@ -152,6 +165,7 @@ namespace baremetal::assembler {
 		new_block->section_index = m_current_section;
 
 		blocks.push_back(new_block);
+		sections_n[m_current_section].blocks.push_back(new_block);
 
 		m_current_start_position += m_current_segment_length;
 		m_current_segment_length = 0;
@@ -166,6 +180,13 @@ namespace baremetal::assembler {
 		block->type = type;
 
 		return block;
+	}
+
+
+	void module_t::print_section_info() {
+		for(const auto& section : sections_n) {
+			utility::console::print("'{}': offset: {}, blocks: {}\n", *section.name, section.offset, section.blocks.get_size());
+		}
 	}
 
 	void module_t::recalculate_block_sizes() {
@@ -195,6 +216,27 @@ namespace baremetal::assembler {
 		for(auto& [symbol, location] : symbols) {
 			i64 diff = blocks[location.block_index]->start_position - old_start_positions[location.block_index];
 			location.position += diff;
+		}
+
+		// new
+		for(section_t& section : sections_n) {
+			section.size = 0;
+
+			for(const basic_block* block : section.blocks) {
+				if(block->is_instruction_block()) {
+					for(u64 i = 0; i < block->instructions.size; ++i) {
+						section.size += block->instructions.data[i]->size;
+					}
+				}
+				else if(block->is_data_block()){
+					section.size += block->size;
+				}
+				else {
+					// label
+					section.symbols[block->label.name].position = section.size;
+					// utility::console::print("update sym '{}' to {}\n", *block->label.name, section.size);
+				}
+			}
 		}
 	}
 } // namespace baremetal::assembler
