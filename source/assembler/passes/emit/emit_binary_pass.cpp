@@ -6,6 +6,30 @@
 namespace baremetal::assembler::pass {
 	auto emit_binary(const module_t& module) -> utility::dynamic_array<u8> {
 		utility::dynamic_array<u8> bytes;
+		utility::dynamic_array<u64> section_sizes;
+		utility::dynamic_array<u64> section_positions;
+
+		section_sizes.reserve(module.sections.get_size());
+		section_positions.reserve(module.sections.get_size());
+
+		u64 total_size = 0;
+
+		for(u64 i = 0; i < module.sections.get_size(); ++i) {
+			section_sizes.push_back(0);
+			section_positions.push_back(0);
+		}
+
+		for(const auto& block : module.blocks) {
+			section_sizes[block->section_index] += block->size;
+		}
+		
+		for(u64 i = 0; i < module.sections.get_size(); ++i) {
+			total_size += utility::align(total_size, 4) - total_size;
+			section_positions[i] = total_size;
+			total_size += section_sizes[i];
+
+			utility::console::print("section: {} at: {}\n", *module.sections[i], section_positions[i]);
+		}
 
 		utility::console::print("[binary emit]: emitting binary ({} sections)\n", module.sections.get_size());
 
@@ -47,8 +71,7 @@ namespace baremetal::assembler::pass {
 								i64 value;
 	
 								if(!is_operand_rel(temp_operands[k].type)) {
-									utility::console::print("xd {}\n",sym_it->second.position);
-									value = sym_it->second.position;
+									value = sym_it->second.position + section_positions[sym_it->second.section_index];
 								}
 								else {
 									if(block->section_index == sym_it->second.section_index) {
@@ -57,7 +80,7 @@ namespace baremetal::assembler::pass {
 									}
 									else {
 										// different sections
-										ASSERT(false, "todo\n");
+										value = sym_it->second.position + section_positions[sym_it->second.section_index];
 									}
 								}
 							

@@ -152,6 +152,9 @@ namespace baremetal::assembler {
 
 		utility::file::write("./cfg2.dot", graph);
 
+		resolve_symbols();
+		emit_module();
+
 		return module{ .bytes = binary }; 
 	}
 
@@ -217,6 +220,7 @@ namespace baremetal::assembler {
 						case OP_M32: 
 						case OP_M64: 
 						case OP_M80: {
+																
 							switch(unresolved.fixup) {
 								case FIXUP_DISPLACEMENT: {
 									i64 value;
@@ -365,6 +369,7 @@ namespace baremetal::assembler {
 
 			if(it != section.symbols.end()) {
 				// section position + symbol position (relative to the parent section)
+				utility::console::print("'{}' at {}\n", *name, it->second);
 				return section.position + it->second;
 			}
 		}
@@ -454,6 +459,7 @@ namespace baremetal::assembler {
 
 	auto frontend::parse_define_memory() -> utility::result<void> {
 		if(m_current_identifier) {
+			utility::console::print("(correct) add symbol '{}' at {}\n", *m_current_identifier, m_sections[m_section_index].offset);
 			m_module.add_symbol(m_current_identifier);
 			m_sections[m_section_index].symbols.insert({ m_current_identifier, {
 				m_sections[m_section_index].offset
@@ -937,7 +943,7 @@ namespace baremetal::assembler {
 		});
 
 		m_module.begin_block(BB_INSTRUCTION, nullptr);
-		m_module.add_symbol(m_current_identifier);
+		m_module.add_label(m_current_identifier);
 		m_module.begin_block(BB_LABEL, m_current_identifier);
 		TRY(m_lexer.get_next_token());
 

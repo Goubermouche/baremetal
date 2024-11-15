@@ -51,6 +51,11 @@ namespace baremetal::assembler {
 		};
   };
 
+	struct section_t {
+		utility::string_view* name;
+		u64 start_position;
+	};
+
   struct module_t {
 		struct symbol {
 			u64 position;
@@ -62,6 +67,7 @@ namespace baremetal::assembler {
 
     void add_instruction(const operand* operands, u32 index, u8 size);
 		void add_symbol(utility::string_view* name);
+		void add_label(utility::string_view* name);
 		void add_data_block(const utility::dynamic_array<u8>& data);
 
 		void set_section(utility::string_view* name);

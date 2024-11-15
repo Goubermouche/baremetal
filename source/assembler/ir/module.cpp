@@ -78,8 +78,13 @@ namespace baremetal::assembler {
 	}
 
 	void module_t::add_symbol(utility::string_view* name) {
-		// utility::console::print("add symbol '{}' ({}, section # {})\n", *name, m_blocks.get_size(), m_current_section);
+		utility::console::print("add symbol '{}' at {}\n", *name, m_current_segment_length);
 		symbols[name] = { m_current_segment_length, blocks.get_size(), m_current_section };
+	}
+
+	void module_t::add_label(utility::string_view* name) {
+		utility::console::print("add label '{}' at {}\n", *name, m_current_start_position);
+		symbols[name] = { m_current_start_position, blocks.get_size(), m_current_section };
 	}
 
 	void module_t::set_section(utility::string_view* name) {
@@ -165,8 +170,11 @@ namespace baremetal::assembler {
 
 	void module_t::recalculate_block_sizes() {
 		u64 position = 0;
+		utility::dynamic_array<u64> old_start_positions;
+		old_start_positions.reserve(blocks.get_size());
 
 		for(basic_block* block : blocks) { 
+			old_start_positions.push_back(block->start_position);
 			u64 size = 0;
 
 			if(block->is_instruction_block()) {
@@ -185,7 +193,8 @@ namespace baremetal::assembler {
 		}
 
 		for(auto& [symbol, location] : symbols) {
-			location.position = blocks[location.block_index]->start_position;
+			i64 diff = blocks[location.block_index]->start_position - old_start_positions[location.block_index];
+			location.position += diff;
 		}
 	}
 } // namespace baremetal::assembler

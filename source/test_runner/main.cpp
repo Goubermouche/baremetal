@@ -102,7 +102,7 @@ namespace detail {
 			expected.clear();
 			test_text.clear();
 
-			if(test.get_string().find("sections_2") == utility::dynamic_string::invalid_pos) {
+			if(test.get_string().find("ns_2") == utility::dynamic_string::invalid_pos) {
 				continue;
 			}
 
