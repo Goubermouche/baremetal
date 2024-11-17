@@ -5,7 +5,7 @@
 
 namespace baremetal::assembler::pass {
 	namespace detail {
-		auto get_instruction_using_magic(instruction_t* inst, const imm& imm_op) -> bool {
+		auto get_instruction_using_magic(instruction_data* inst, const imm& imm_op) -> bool {
 			ASSERT(instruction_db[inst->index].has_magic(), "instruction does not have a magic number\n");
 			const u16 context_index = instruction_db[inst->index].get_magic_index();
 
@@ -53,7 +53,7 @@ namespace baremetal::assembler::pass {
 			return false;
 		}
 
-		void optimize_instruction_size(instruction_t* inst) {
+		void optimize_instruction_size(instruction_data* inst) {
 			u8 operand_index = utility::limits<u8>::max();
 			bool has_unresolved = false;
 	
@@ -144,16 +144,16 @@ namespace baremetal::assembler::pass {
 		}
 	} // namespace detail
 
-	void inst_size_minimize(module_t& module) {
+	void inst_size_minimize(module& module) {
 		// utility::console::print("[inst minimize]: minimizing {} blocks\n", module.blocks.get_size());
-		for(const section_t& section : module.sections_n) {
+		for(const section& section : module.sections) {
 			for(const basic_block* block : section.blocks) {
 				if(!block->is_instruction_block()) {
 					continue;
 				}
 
 				for(u64 i = 0; i < block->instructions.size; ++i) {
-					instruction_t* inst = block->instructions.data[i];
+					instruction_data* inst = block->instructions.data[i];
 					u32 old_index = inst->index;
 					detail::optimize_instruction_size(inst);
 

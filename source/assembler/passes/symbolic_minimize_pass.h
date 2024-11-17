@@ -12,9 +12,9 @@ namespace baremetal::assembler::pass {
 			utility::dynamic_array<inst_variant> variants;
 		};
 
-		auto collect_unresolved_in_section(const section_t& section) -> utility::dynamic_array<unresolved>;
+		auto collect_unresolved_in_section(const section& section) -> utility::dynamic_array<unresolved>;
 		auto fits_into_type(i64 value, operand_type type) -> bool;
 	} // namespace detail
 
-	void symbolic_minimize(module_t& module);
+	void symbolic_minimize(module& module);
 } // namespace baremetal::assembler::pass

@@ -4,13 +4,13 @@
 
 namespace baremetal::assembler::pass {
 	namespace detail {
-		auto instruction_block_to_string(const basic_block* block, const module_t& module) -> utility::dynamic_string {
+		auto instruction_block_to_string(const basic_block* block, const module& module) -> utility::dynamic_string {
 			utility::dynamic_string string;
 			operand operands[4];
 			u64 position = 0;
 
 			for(u64 i = 0; i < block->instructions.size; ++i) {
-				const instruction_t* inst_ir = block->instructions.data[i];
+				const instruction_data* inst_ir = block->instructions.data[i];
 				const instruction*   inst    = &instruction_db[inst_ir->index];
 
 				// copy operands so that we don't modify the actual values
@@ -192,7 +192,7 @@ namespace baremetal::assembler::pass {
 		}
 	} // namespace detail
 
-	auto emit_control_flow_graph(const module_t& module) -> utility::dynamic_string {
+	auto emit_control_flow_graph(const module& module) -> utility::dynamic_string {
 		struct edge {
 			enum edge_type {
 				BRANCH_PASS,
@@ -222,7 +222,7 @@ namespace baremetal::assembler::pass {
 
 
 		// emit individual basic blocks
-		for(const section_t& section : module.sections_n) {
+		for(const section& section : module.sections) {
 			for(u64 i = 0; i < section.blocks.get_size(); ++i) {
 				const u64 global_block_index = global_block_offset + i;
 				const basic_block* block = section.blocks[i];
@@ -294,7 +294,7 @@ namespace baremetal::assembler::pass {
 				}
 
 				// generate edges
-				const instruction_t* inst = block->instructions.data[block->instructions.size - 1];
+				const instruction_data* inst = block->instructions.data[block->instructions.size - 1];
 				bool is_branch = false;
 
 				// branch edge

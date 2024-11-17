@@ -4,23 +4,23 @@
 #include "assembler/ir/module.h"
 
 namespace baremetal::assembler::pass {
-	auto emit_binary(const module_t& module) -> utility::dynamic_array<u8> {
+	auto emit_binary(const module& module) -> utility::dynamic_array<u8> {
 		utility::dynamic_array<u8> bytes;
 		utility::dynamic_array<u64> section_positions;
 		
 		u64 total_size = 0;
 
-		section_positions.reserve(module.sections_n.get_size());
+		section_positions.reserve(module.sections.get_size());
 
-		for(u64 i = 0; i < module.sections_n.get_size(); ++i) {
+		for(u64 i = 0; i < module.sections.get_size(); ++i) {
 			total_size += utility::align(total_size, 4) - total_size;
 			section_positions.push_back(total_size);
-			total_size += module.sections_n[i].size;
+			total_size += module.sections[i].size;
 		}
 
 		auto get_symbol_global = [&](utility::string_view* name) -> u64 {
-			for(u64 i = 0; i < module.sections_n.get_size(); ++i) {
-				auto section = module.sections_n[i];
+			for(u64 i = 0; i < module.sections.get_size(); ++i) {
+				auto section = module.sections[i];
 				const auto it = section.symbols.find(name);
 	
 				if(it != section.symbols.end()) {
@@ -38,7 +38,7 @@ namespace baremetal::assembler::pass {
 
 		u64 section_index = 0;
 		// generate the final binary
-		for(const section_t& section : module.sections_n) {
+		for(const section& section : module.sections) {
 			// append alignment bytes for the previous section
 			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size();
 			u64 local_offset = 0;
@@ -50,7 +50,7 @@ namespace baremetal::assembler::pass {
 			for(const basic_block* block : section.blocks) {
 				if(block->is_instruction_block()) {
 					for(u64 i = 0; i < block->instructions.size; ++i) {
-						instruction_t* inst = block->instructions.data[i];
+						instruction_data* inst = block->instructions.data[i];
 						const instruction* inst_actual = &instruction_db[inst->index];
 	
 						operand temp_operands[4];

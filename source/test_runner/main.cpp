@@ -63,7 +63,7 @@ namespace detail {
 				info.add_failure();
 			}
 			else {
-				hex_result = bytes_to_string(result.get_value().bytes);
+				hex_result = bytes_to_string(result.get_value());
 	
 				if(hex_result != expected) {
 					info.add_failure();
@@ -143,7 +143,7 @@ namespace detail {
 				info.add_failure();
 			}
 			else {
-				hex_result = bytes_to_string(result.get_value().bytes);
+				hex_result = bytes_to_string(result.get_value());
 
 				if(hex_result != expected) {
 					info.add_failure();

@@ -3,9 +3,9 @@
 
 namespace baremetal::assembler::pass {
 	namespace detail {
-		auto get_instruction_using_magic(instruction_t* inst, const imm& imm_op) -> bool;
-		void optimize_instruction_size(instruction_t* inst);
+		auto get_instruction_using_magic(instruction_data* inst, const imm& imm_op) -> bool;
+		void optimize_instruction_size(instruction_data* inst);
 	} // namespace detail
 
-	void inst_size_minimize(module_t& module);
+	void inst_size_minimize(module& module);
 } // namespace baremetal::assembler::pass

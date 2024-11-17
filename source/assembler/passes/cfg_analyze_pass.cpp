@@ -2,23 +2,19 @@
 #include "assembler/backend.h"
 
 namespace baremetal::assembler::pass {
-	void cfg_analyze(module_t& module) {
-		// utility::console::print("[cfg analyze]: analyzing ({} blocks)\n", module.blocks.get_size());
-
+	void cfg_analyze(module& module) {
 		u64 global_block_offset = 0;
 
 		// calculate edge connections
-		for(u64 i = 0; i < module.sections_n.get_size(); ++i) {
-			const section_t& section = module.sections_n[i];
-
-			for(u64 j = 0; j < section.blocks.get_size(); ++j) {
-				const basic_block* block = section.blocks[j];
+		for(const section& section : module.sections) {
+			for(u64 i = 0; i < section.blocks.get_size(); ++i) {
+				const basic_block* block = section.blocks[i];
 
 				if(!block->is_instruction_block()) {
 					continue; 
 				}
 
-				const instruction_t* last_inst = block->instructions.data[block->instructions.size - 1];
+				const instruction_data* last_inst = block->instructions.data[block->instructions.size - 1];
 
 				if(is_jump_or_branch_inst(last_inst->index)) {
 					// HACK: TODO: some jump instructions are used without a symbol, handle this case
@@ -26,12 +22,11 @@ namespace baremetal::assembler::pass {
 						continue;
 					}
 
-					u64 block_index = module.get_symbol(last_inst->operands[0].symbol).block_index;
+					const u64 block_index = module.get_symbol(last_inst->operands[0].symbol).block_index;
+					const u64 global_block_index = global_block_offset + i;
+
 					basic_block* target = module.get_block_at_index(block_index);
-
 					target->incoming_control_edge_count++;
-
-					const u64 global_block_index = global_block_offset + j;
 
 					if(global_block_index < module.get_block_count() - 1) {
 						// branch - fail case - incoming edge next block)

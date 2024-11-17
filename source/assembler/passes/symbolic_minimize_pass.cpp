@@ -4,7 +4,7 @@
 
 namespace baremetal::assembler::pass {
 	namespace detail {
-		auto collect_unresolved_in_section(const section_t& section) -> utility::dynamic_array<unresolved> {
+		auto collect_unresolved_in_section(const section& section) -> utility::dynamic_array<unresolved> {
 			utility::dynamic_array<unresolved> indices;
 
 			u64 local_pos = 0;	
@@ -17,7 +17,7 @@ namespace baremetal::assembler::pass {
 				}
 
 				for(u64 j = 0; j < block->instructions.size; ++j) {
-					instruction_t* inst = block->instructions.data[j];
+					instruction_data* inst = block->instructions.data[j];
 
 					for(u8 k= 0; k < 4; ++k) {
 						auto variants = backend::get_variants_i(inst->index, inst->operands);
@@ -67,10 +67,10 @@ namespace baremetal::assembler::pass {
 		}
 	} // namespace detail
 
-	void symbolic_minimize(module_t& module) {
+	void symbolic_minimize(module& module) {
 		// utility::console::print("[sym minimize]: minimizing {} symbols\n", module.symbols.size());
 		
-		for(section_t& section : module.sections_n) {
+		for(section& section : module.sections) {
 			auto unresolved = detail::collect_unresolved_in_section(section);
 			bool change = true;
 
@@ -88,7 +88,7 @@ namespace baremetal::assembler::pass {
 						continue;
 					}
 
-					instruction_t* current_inst = section.blocks[current.block_index]->instructions.data[current.instruction_index];
+					instruction_data* current_inst = section.blocks[current.block_index]->instructions.data[current.instruction_index];
 					operand& operand = current_inst->operands[current.unresolved_index];
 					const auto symbol_it = section.symbols.find(operand.symbol);
 

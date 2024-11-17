@@ -5,7 +5,7 @@
 namespace baremetal::assembler {
   using namespace utility::types;
 
-  struct instruction_t {
+  struct instruction_data {
     operand operands[4];
     u32 index;
 		u8 size;
@@ -15,13 +15,13 @@ namespace baremetal::assembler {
 		BB_INSTRUCTION, // block containing at least one instruction
 		BB_BRANCH,      // subset of BB_INSTRUCTION, contains one branch/jump instruction
 		BB_LABEL,       // basic label block, contains no instructions
-		BB_DATA
+		BB_DATA         // block containing arbitrary binary data
 	};
 
   struct basic_block {
 		struct instruction_block {
-			instruction_t** data; // instructions 
-			u64 size;             // number of instructions
+			instruction_data** data; // instructions 
+			u64 size;                // number of instructions
 		};
 
 		struct label_block {
@@ -51,7 +51,7 @@ namespace baremetal::assembler {
 		};
   };
 
-	struct section_t {
+	struct section {
 		struct symbol {
 			u64 position;    // offset within the local section
 			u64 block_index; // global block index (across all sections)
@@ -59,39 +59,32 @@ namespace baremetal::assembler {
 
 		utility::string_view* name;
 
-		u64 offset = 0;
-		u64 size = 0;
+		u64 offset = 0; // current offset of the section, only used when a section is being constructed
+		u64 size = 0;   // unaligned size of this section, in bytes
 
 		utility::map<utility::string_view*, symbol> symbols;
     utility::dynamic_array<basic_block*> blocks;
 	};
 
-  struct module_t {
-		struct symbol {
-			u64 position;
-			u64 block_index;
-			u64 section_index;
-		};
+  struct module {
+    module(context* ctx);
 
-    module_t(context* ctx);
-
+		void add_data_block(const utility::dynamic_array<u8>& data);
     void add_instruction(const operand* operands, u32 index, u8 size);
 		void add_symbol(utility::string_view* name);
-		void add_data_block(const utility::dynamic_array<u8>& data);
+		
 		void set_section(utility::string_view* name);
 		
-		auto allocate_block(basic_block_type type) -> basic_block*;
-
-		void begin_block(basic_block_type ty, utility::string_view* name);
-		void recalculate_block_sizes();
-
-		void print_section_info();
-
+		auto get_symbol(utility::string_view* name) const -> section::symbol;
 		auto get_block_at_index(u64 i) const -> basic_block*;
-		auto get_symbol(utility::string_view* name) const -> section_t::symbol;
 		auto get_block_count() const -> u64;
 
-		utility::dynamic_array<section_t> sections_n;
+		void begin_block(basic_block_type ty, utility::string_view* name);
+		auto allocate_block(basic_block_type type) -> basic_block*;
+		void recalculate_block_sizes();
+		void print_section_info();
+
+		utility::dynamic_array<section> sections;
     context* ctx;
 	private:
 		u64 m_current_section = 0;
@@ -99,7 +92,7 @@ namespace baremetal::assembler {
 		u64 m_current_segment_length = 0;
 		u64 m_block_count = 0; // total block count
 
-    utility::dynamic_array<instruction_t*> m_current_block;
+    utility::dynamic_array<instruction_data*> m_current_block;
 		utility::string_view* m_current_block_name = nullptr;
   };
 } // namespace baremetal::assembler
