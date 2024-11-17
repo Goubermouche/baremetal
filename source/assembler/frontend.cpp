@@ -338,23 +338,14 @@ namespace baremetal::assembler {
 			m_operands[j].type = inst->operands[j];
 
 			if(is_operand_rel(inst->operands[j])) {
-				u8 size = backend::emit_instruction(m_instruction_i, m_operands, false).size;
+				u8 size = backend::emit_instruction(m_instruction_i, m_operands).size;
 				m_operands[j].immediate = static_cast<i32>(m_operands[j].immediate.value) - size;
 			}
 		}
 
-		//if(m_symbolic_operand) {
-		//	if(is_operand_mem(m_operands[m_unresolved_index].type) && m_fixup == FIXUP_DISPLACEMENT) {
-		//		// force the longest possible encoding
-		//		m_operands[m_unresolved_index].memory.displacement = 1;
-		//		m_operands[m_unresolved_index].memory.displacement.min_bits = 32;
-		//	}
-		//}
-
 		// HACK: assemble the instruction and use that as the length
 		// TODO: cleanup
-		auto code = backend::emit_instruction(m_instruction_i, m_operands, true);
-
+		auto code = backend::emit_instruction(m_instruction_i, m_operands);
 		u8 size = code.size;
 
 		// NOTE: unoptimized instruction handle, fix this	

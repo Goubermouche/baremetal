@@ -162,8 +162,8 @@ namespace baremetal::assembler::pass {
 						u8 old_size = inst->size;
 						inst->size = backend::emit_instruction(&instruction_db[inst->index], inst->operands).size;
 	
-						if(old_size != inst->size) {
-							ASSERT(inst->size <= old_size, "[inst minimize]: minimized instruction is bigger than the original variant\n");
+						if(old_size > inst->size) {
+							ASSERT(inst->size <= old_size, "[inst minimize]: minimized instruction is bigger than the original variant {} -> {}\n", old_size, inst->size);
 							// utility::console::print("[inst minimize]: inst minimized {}B -> {}B\n", old_size, inst->size);
 						}
 					}

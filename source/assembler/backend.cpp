@@ -161,6 +161,27 @@ namespace baremetal::assembler {
 		u8 operand_count = 0;
 	
 		for(operand_count = 0; operand_count< 4; ++operand_count) {
+			if(operands[operand_count].unknown) {
+				const instruction* legal_variants[5];
+
+				u32 current_index = index;
+				u8 legal_variants_index = 0;
+
+				while(is_legal_variant(index, current_index, operand_count)) {
+					legal_variants[legal_variants_index++] = &instruction_db[current_index++];
+				}
+
+				utility::stable_sort(legal_variants, legal_variants + legal_variants_index, [=](auto a, auto b) {
+					const u16 a_width = get_operand_bit_width(a->operands[operand_count]);
+					const u16 b_width = get_operand_bit_width(b->operands[operand_count]);
+
+					return a_width < b_width;
+				});
+				
+				// TODO: we just need the largest variant, we don't have to sort the entire array
+				return legal_variants[legal_variants_index - 1];
+			}
+
 			if(operands[operand_count].type == OP_NONE) {
 				break;
 			}
@@ -182,88 +203,6 @@ namespace baremetal::assembler {
 			return &other;
 	end:
 			continue;
-		}
-
-		return nullptr;
-	}
-
-	auto backend::get_instruction(u32 index, const operand* operands) -> const instruction* {
-		u8 operand_index = utility::limits<u8>::max();
-		bool has_unresolved = false;
-
-		// locate the first unresolved/immediate operand
-		for(u8 i = 0; i < 4; ++i) {
-			if(is_operand_imm(operands[i].type)) {
-				operand_index = i;
-				break;
-			}
-			else if(operands[i].unknown) {
-				has_unresolved = true;
-				operand_index = i;
-				break;
-			}
-		}
-
-		if(operand_index == utility::limits<u8>::max()) {
-			// no 'special' operand which we could optimize, return
-			return &instruction_db[index];
-		}
-
-		const imm& imm_op = operands[operand_index].immediate;
-		const instruction* legal_variants[5];
-		u8 legal_variants_index = 0;
-
-		// some instructions have a special optimization index, check if we have it
-		if(instruction_db[index].has_magic() && has_unresolved == false) {
-			if(const instruction* inst = get_instruction_using_magic(index, operands, imm_op)) {
-				return inst;
-			}
-		}
-
-		// locate all legal variants of our instruction
-		u32 current_index = index;
-
-		while(is_legal_variant(index, current_index, operand_index)) {
-			legal_variants[legal_variants_index++] = &instruction_db[current_index++];
-		}
-
-		// sort by the smallest source operands, we need to do this for cases where one of the
-		// variants has a destination operand which isn't a generic register, but a specific
-		// one (ie. an ax register). In these cases we lose the guarantee of them being sorted
-		// from smallest to biggest immediate operands, hence we have to sort them.
-		utility::stable_sort(legal_variants, legal_variants + legal_variants_index, [=](auto a, auto b) {
-			const u16 a_width = get_operand_bit_width(a->operands[operand_index]);
-			const u16 b_width = get_operand_bit_width(b->operands[operand_index]);
-
-			return a_width < b_width;
-		});
-
-		if(has_unresolved) {
-			// instructions with unresolved operands can just use the largest variant
-			ASSERT(legal_variants_index > 0, "no variants found\n");
-			return legal_variants[legal_variants_index - 1];
-		}
-
-		// multiple legal variants, determine the best one (since our data is sorted from smallest
-		// source operands to largest, we can exit as soon as we get a valid match)
-		for(const instruction* inst : legal_variants) {
-			const u16 src_bits = get_operand_bit_width(inst->operands[operand_index]);
-			const u16 dst_bits = get_operand_bit_width(inst->operands[0]);
-
-			// check if there is a possibility of sign extending the immediate
-			if(src_bits < dst_bits) {
-				ASSERT(src_bits <= utility::limits<u8>::max(), "invalid bit range\n");
-
-				// assume we're sign extending
-				if(detail::sign_extend_representable(imm_op.value, static_cast<u8>(src_bits))) {
-					return inst;
-				}
-			}
-
-			// check if the source operand is representable with a smaller immediate
-			if(src_bits >= imm_op.min_bits) {
-				return inst;
-			}
 		}
 
 		return nullptr;
@@ -339,63 +278,10 @@ namespace baremetal::assembler {
 		return { .data = m_data, .size = m_data_size };
 	}
 
-	auto backend::emit_instruction(u32 index, const operand* operands, bool optimize) -> code {
-		const instruction* inst = nullptr;
-
-		if(optimize) {
-			inst = get_instruction(index, operands);
-		}
-		else {
-			inst = get_instruction_direct(index, operands);
-		}
-
+	auto backend::emit_instruction(u32 index, const operand* operands) -> code {
+		const instruction* inst = get_instruction_direct(index, operands);
 		ASSERT(inst, "no instruction variant available for the provided operands\n");
 		return emit_instruction(inst, operands);
-	}
-
-	auto backend::get_instruction_using_magic(u32 index, const operand* operands, const imm& imm_op) -> const instruction* {
-		ASSERT(instruction_db[index].has_magic(), "instruction does not have a magic number\n");
-		const u16 context_index = instruction_db[index].get_magic_index();
-
-		// switch on the context kind
-		switch(instruction_db[index].get_magic_kind()) {
-			case 0: {
-				// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
-				// less we can look for a smaller destination
-				if(operands[0].type == OP_R64 && imm_op.min_bits <= 32) {
-					// verify if it's safe to zero extend the operand (since we're implicitly going from 32 to 64
-					// bits) we can't zero extend 
-					if(imm_op.sign == false) {
-						return &instruction_db[context_index];
-					}
-				}
-
-				break;
-			}
-			case 1: {
-				// if we have a source operand which is equal to 1, we can use a shorter encoding, in basically all
-				// cases we can just return, since the operand is effectively removed
-				if(operands[1].immediate.value == 1) {
-					return &instruction_db[context_index];
-				}
-
-				break; // we're not using the optimization index, continue
-			}
-			case 2: {
-				// truncate to 8 bits, this is only used with imul instructions
-				const u64 truncated = operands[2].immediate.value & 0b011111111;
-				const u64 extend = detail::sign_extend(truncated, 8);
-
-				if(extend == operands[2].immediate.value) {
-					return &instruction_db[context_index];
-				}
-
-				break;
-			}
-			default: ASSERT(false, "unknown context kind");
-		}
-
-		return nullptr;
 	}
 
 	void backend::emit_instruction_operands() {

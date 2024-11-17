@@ -50,13 +50,11 @@ namespace baremetal::assembler {
 		static auto get_variants(u32 index, const operand* operands) -> utility::dynamic_array<operand_type>;
 		static auto get_variants_i(u32 index, const operand* operands) -> utility::dynamic_array<inst_variant>;
 
-		static auto emit_instruction(u32 index, const operand* operands, bool optimize) -> code;
 		static auto emit_instruction(const instruction* inst, const operand* operands) -> code;
+		static auto emit_instruction(u32 index, const operand* operands) -> code;
 	private:
 		// instruction selection
-		static auto get_instruction_using_magic(u32 index, const operand* operands, const imm& imm_op) -> const instruction*;	
 		static auto get_instruction_direct(u32 index, const operand* operands) -> const instruction*;
-		static auto get_instruction(u32 index, const operand* operands) -> const instruction*;
 
 		// instruction parts
 		static void emit_instruction_prefix();
