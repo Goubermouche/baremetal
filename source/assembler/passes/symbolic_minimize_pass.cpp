@@ -40,7 +40,7 @@ namespace baremetal::assembler::pass {
 								indices.push_back({ i, j, k, local_pos, variants });
 							}
 							else {
-								utility::console::print("[sym minimize]: skipping non-local symbol reference to symbol '{}'\n", *inst->operands[k].symbol);
+								// utility::console::print("[sym minimize]: skipping non-local symbol reference to symbol '{}'\n", *inst->operands[k].symbol);
 							}
 	
 							break;
@@ -68,13 +68,13 @@ namespace baremetal::assembler::pass {
 	} // namespace detail
 
 	void symbolic_minimize(module_t& module) {
-		utility::console::print("[sym minimize]: minimizing {} symbols\n", module.symbols.size());
+		// utility::console::print("[sym minimize]: minimizing {} symbols\n", module.symbols.size());
 		
 		for(section_t& section : module.sections_n) {
 			auto unresolved = detail::collect_unresolved_in_section(section);
 			bool change = true;
 
-			utility::console::print("[sym minimize]: section '{}': found {} unresolved instructions:\n", *section.name, unresolved.get_size());
+			// utility::console::print("[sym minimize]: section '{}': found {} unresolved instructions:\n", *section.name, unresolved.get_size());
 
 			// resolve and optimize symbol references within each section (we can ignore references to other sections
 			// since we'll resolve them during emission)
@@ -101,7 +101,6 @@ namespace baremetal::assembler::pass {
 					const operand_type new_type = current.variants.get_last().type;
 
 					if(!pass::detail::fits_into_type(distance, new_type)) {
-						utility::console::print("skip reference to {} {} {}\n", *operand.symbol, current.position, operand_type_to_string(new_type));
 						// we can't use a smaller operand, no optimization possible in this iteration
 						continue;
 					}
@@ -111,10 +110,7 @@ namespace baremetal::assembler::pass {
 
 					u8 new_size = backend::emit_instruction(&instruction_db[current.variants.get_last().index], current_inst->operands).size;
 
-					utility::console::print("lll [sym minimize]: reference to '{}' optimized {} -> {} {}\n", *operand.symbol, current_inst->size, new_size, current.position);
-					
 					current_inst->index = current.variants.pop_back().index;
-	
 					change = true;
 
 					// update our symbol table to account for the difference in code length

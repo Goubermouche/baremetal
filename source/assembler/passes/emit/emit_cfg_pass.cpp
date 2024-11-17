@@ -19,24 +19,16 @@ namespace baremetal::assembler::pass {
 				// resolve symbols
 				for(u8 j = 0; j < inst->operand_count; ++j) {
 					if(operands[j].symbol) {
-						auto it = module.symbols.find(operands[j].symbol);
-
-						ASSERT(it != module.symbols.end(), "[cfg emit]: invalid operand symbol detected ('{}')\n", *operands[j].symbol);
+						auto symbol = module.get_symbol(operands[j].symbol);
 						i64 value = 0;
 
 						if(!is_operand_rel(operands[j].type)) {
-							value = it->second.position;
+							value = symbol.position;
 						}
 						else {
-							if(block->section_index == it->second.section_index) {
-								// same sections
-								value = it->second.position - (position + inst_ir->size);
-							}
-							else {
-								// different sections
-								ASSERT(false, "[cfg emit]: todo\n");
-								value = 0;
-							}
+							// TODO: different sections, add a unified method for resolving relocations 
+							// same sections
+							value = symbol.position - (position + inst_ir->size);
 						}
 
 						operands[j].immediate = imm(value);
@@ -217,104 +209,109 @@ namespace baremetal::assembler::pass {
 		utility::dynamic_string graph;
 
 		bool block_is_new_segment = true;
+
+		u64 global_block_offset = 0;
 		u64 current_block_id = 0;
 			
-		utility::console::print("[cfg emit]: emitting cfg\n");
+		// utility::console::print("[cfg emit]: emitting cfg\n");
 
 		graph += "digraph cfg {\n";
 		graph += "\tgraph [splines=ortho]\n";
 		graph += "\tnode [shape=plaintext fontname=\"monospace\"]\n";
 		graph += "\tedge [penwidth=2.0]\n\n";
 
-		// generate nodes (control flow blocks)
-		for(u64 i = 0; i < module.blocks.get_size(); ++i) {
-			const basic_block* block = module.blocks[i];
 
-			// new control flow block
-			if(block->incoming_control_edge_count || block_is_new_segment) {
-				if(i > 0) {
-					graph += "<tr PORT=\"bottom\"><td></td></tr></table>>]\n";
-				}
+		// emit individual basic blocks
+		for(const section_t& section : module.sections_n) {
+			for(u64 i = 0; i < section.blocks.get_size(); ++i) {
+				const u64 global_block_index = global_block_offset + i;
+				const basic_block* block = section.blocks[i];
 
-				graph += "\t\"";
-				graph += utility::int_to_string(i);
-				graph += "\"[label=<<table border=\"1\" cellborder=\"0\" cellspacing=\"0\"><tr PORT=\"top\"><td></td></tr>";
-
-				block_is_new_segment = false;
-				current_block_id = i;
-			}	
-
-			// append the current instruction block to the current control flow block
-			switch(block->type) {
-				case BB_LABEL: {
-					graph += "<tr><td align=\"left\">";
-					graph += utility::int_to_string(block->start_position);
-					graph += "</td><td></td><td COLSPAN=\"100%\" align=\"left\"><b><font color=\"blue\">";
-					graph += *block->label.name;
-					graph += "</font></b></td></tr>";
-					break;
-				}
-				case BB_INSTRUCTION: {
-					graph += detail::instruction_block_to_string(block, module);
-					break;
-				}
-				case BB_BRANCH: {
-					graph += detail::instruction_block_to_string(block, module);
-					block_is_new_segment = true;
-					break;
-				}
-				case BB_DATA: {
-					u64 parts = ceil(static_cast<f32>(block->data.size) / 30.0f);
-
-					for(u64 j = 0; j < parts; ++j) {
-						graph += "<tr><td align=\"left\">";
-
-						if(j == 0) {
-							graph += utility::int_to_string(block->start_position);
-						}
-
-						graph += "</td><td COLSPAN=\"100%\" align=\"left\">";
-
-						u64 start = j * 30;
-						u64 end = utility::min(block->data.size, start + 30);
-
-						for(u64 k = start; k < end; ++k) {
-							graph += detail::byte_to_string(block->data.data[k]); 
-							graph += ' ';
-						}
-
-						graph += ' ';
-						graph +="</td></tr>";
+				// new control flow block
+				if(block->incoming_control_edge_count || block_is_new_segment) {
+					if(global_block_index > 0) {
+						graph += "<tr PORT=\"bottom\"><td></td></tr></table>>]\n";
 					}
 
-					break;
+					graph += "\t\"";
+					graph += utility::int_to_string(global_block_index);
+					graph += "\"[label=<<table border=\"1\" cellborder=\"0\" cellspacing=\"0\"><tr PORT=\"top\"><td></td></tr>";
+
+					block_is_new_segment = false;
+					current_block_id = global_block_index;
+				}	
+
+				// append the current instruction block to the current control flow block
+				switch(block->type) {
+					case BB_LABEL: {
+						graph += "<tr><td align=\"left\">";
+						graph += utility::int_to_string(block->start_position);
+						graph += "</td><td></td><td COLSPAN=\"100%\" align=\"left\"><b><font color=\"blue\">";
+						graph += *block->label.name;
+						graph += "</font></b></td></tr>";
+						break;
+					}
+					case BB_INSTRUCTION: {
+						graph += detail::instruction_block_to_string(block, module);
+						break;
+					}
+					case BB_BRANCH: {
+						graph += detail::instruction_block_to_string(block, module);
+						block_is_new_segment = true;
+						break;
+					}
+					case BB_DATA: {
+						u64 parts = ceil(static_cast<f32>(block->data.size) / 30.0f);
+	
+						for(u64 j = 0; j < parts; ++j) {
+							graph += "<tr><td align=\"left\">";
+	
+							if(j == 0) {
+								graph += utility::int_to_string(block->start_position);
+							}
+	
+							graph += "</td><td COLSPAN=\"100%\" align=\"left\">";
+	
+							u64 start = j * 30;
+							u64 end = utility::min(block->data.size, start + 30);
+	
+							for(u64 k = start; k < end; ++k) {
+								graph += detail::byte_to_string(block->data.data[k]); 
+								graph += ' ';
+							}
+	
+							graph += ' ';
+							graph +="</td></tr>";
+						}
+	
+						break;
+					}
+				}
+
+				// instructions with no instructions cannot produce a control flow edge
+				if(!block->is_instruction_block()) {
+					continue;
+				}
+
+				// generate edges
+				const instruction_t* inst = block->instructions.data[block->instructions.size - 1];
+				bool is_branch = false;
+
+				// branch edge
+				if(is_jump_or_branch_inst(inst->index)) {
+					edges.push_back({ edge::BRANCH_PASS, current_block_id, module.get_symbol(inst->operands[0].symbol).block_index });
+					is_branch = true;
+				}
+
+				// branch to the following control flow block (occurs when the next block has an incoming edge)
+				if(global_block_index < module.get_block_count() - 1) {
+					if((block_is_new_segment || module.get_block_at_index(global_block_index + 1)->incoming_control_edge_count)) {
+						edges.push_back({ is_branch ? edge::BRANCH_FAIL : edge::FALLTHROUGH, current_block_id, global_block_index + 1});	
+					}
 				}
 			}
 
-			// instructions with no instructions cannot produce a control flow edge
-			if(!block->is_instruction_block()) {
-				continue;
-			}
-
-			// generate edges
-			const instruction_t* inst = block->instructions.data[block->instructions.size - 1];
-			bool is_branch = false;
-
-			// branch edge
-			if(is_jump_or_branch_inst(inst->index)) {
-				const auto it = module.symbols.find(inst->operands[0].symbol);
-				ASSERT(it != module.symbols.end(), "branch to an invalid symbol detected ('{}')\n", *inst->operands[0].symbol);
-
-				edges.push_back({ edge::BRANCH_PASS, current_block_id, it->second.block_index });
-				is_branch = true;
-			}
-
-			// branch to the following control flow block (occurs when the next block has an incoming edge)
-			if(i != module.blocks.get_size() - 1) {
-				if((block_is_new_segment || module.blocks[i + 1]->incoming_control_edge_count)) {
-					edges.push_back({ is_branch ? edge::BRANCH_FAIL : edge::FALLTHROUGH, current_block_id, i + 1});	
-				}
-			}
+			global_block_offset += section.blocks.get_size();
 		}
 
 		graph += "</table>>]\n\n";

@@ -145,31 +145,7 @@ namespace baremetal::assembler::pass {
 	} // namespace detail
 
 	void inst_size_minimize(module_t& module) {
-		utility::console::print("[inst minimize]: minimizing {} blocks\n", module.blocks.get_size());
-		
-		for(const basic_block* block : module.blocks) {
-			if(!block->is_instruction_block()) {
-				continue;
-			}
-
-			for(u64 i = 0; i < block->instructions.size; ++i) {
-				instruction_t* inst = block->instructions.data[i];
-				u32 old_index = inst->index;
-				detail::optimize_instruction_size(inst);
-
-				if(inst->index != old_index) {
-					// HACK: recalculate the size, this needs to be done in a different way
-					u8 old_size = inst->size;
-					inst->size = backend::emit_instruction(&instruction_db[inst->index], inst->operands).size;
-
-					if(old_size != inst->size) {
-						ASSERT(inst->size <= old_size, "[inst minimize]: minimized instruction is bigger than the original variant\n");
-						utility::console::print("[inst minimize]: inst minimized {}B -> {}B\n", old_size, inst->size);
-					}
-				}
-			}
-		}
-
+		// utility::console::print("[inst minimize]: minimizing {} blocks\n", module.blocks.get_size());
 		for(const section_t& section : module.sections_n) {
 			for(const basic_block* block : section.blocks) {
 				if(!block->is_instruction_block()) {
@@ -188,7 +164,7 @@ namespace baremetal::assembler::pass {
 	
 						if(old_size != inst->size) {
 							ASSERT(inst->size <= old_size, "[inst minimize]: minimized instruction is bigger than the original variant\n");
-							utility::console::print("[inst minimize]: inst minimized {}B -> {}B\n", old_size, inst->size);
+							// utility::console::print("[inst minimize]: inst minimized {}B -> {}B\n", old_size, inst->size);
 						}
 					}
 				}

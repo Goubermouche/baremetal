@@ -141,10 +141,10 @@ namespace baremetal::assembler {
 		TRY(parse());           // generate the symbol table and unresolved list
 		TRY(resolve_symbols()); // resolve symbols locations
 
-		m_module.print_section_info();
+		// m_module.print_section_info();
 
 		// apply optimizations
-		//pass::cfg_analyze(m_module);
+		pass::cfg_analyze(m_module);
 		pass::inst_size_minimize(m_module);
 		pass::symbolic_minimize(m_module);
 
@@ -153,9 +153,6 @@ namespace baremetal::assembler {
 		auto binary = pass::emit_binary(m_module);
 
 		// utility::file::write("./cfg2.dot", graph);
-
-		resolve_symbols();
-		emit_module();
 
 		return module{ .bytes = binary }; 
 	}
@@ -255,8 +252,6 @@ namespace baremetal::assembler {
 							if(symbol_it == section.symbols.end()) {
 								// global symbol position - (section position + instruction position + instruction size)
 								value = get_symbol_global(unresolved_operand.symbol) - (section.position + inst_pos + inst_size);	
-								utility::console::print("correct {} : {} {} {} {}\n", *unresolved_operand.symbol, value, section.position, inst_pos, inst_size);
-								// utility::console::print("correct {} : {}\n", *unresolved_operand.symbol, value);
 							}
 							else {
 								// symbol position - (instruction position + instruction size)
@@ -309,7 +304,6 @@ namespace baremetal::assembler {
 					const operand_type new_type = current.variants.get_last();
 
 					if(!pass::detail::fits_into_type(distance, new_type)) {
-						utility::console::print("correct skip reference to {} {} {}\n",* unresolved.symbol, current.position, operand_type_to_string(new_type));
 						// we can't use a smaller operand, no optimization possible in this iteration
 						continue;
 					}
@@ -319,7 +313,6 @@ namespace baremetal::assembler {
 
 					u8 new_size = backend::emit_instruction(current.index, current.operands, false).size;
 
-				utility::console::print("correct [sym minimize]: reference to '{}' optimized {} -> {} {}\n", *unresolved.symbol, current.size, new_size, current.position);
 					// update our symbol table to account for the difference in code length
 					section.update_positions(current.position, current.size - new_size);
 
@@ -374,7 +367,6 @@ namespace baremetal::assembler {
 
 			if(it != section.symbols.end()) {
 				// section position + symbol position (relative to the parent section)
-				utility::console::print("correct '{}' at {}\n", *name, it->second);
 				return section.position + it->second;
 			}
 		}
@@ -464,7 +456,6 @@ namespace baremetal::assembler {
 
 	auto frontend::parse_define_memory() -> utility::result<void> {
 		if(m_current_identifier) {
-			utility::console::print("(correct) add symbol '{}' at {}\n", *m_current_identifier, m_sections[m_section_index].offset);
 			m_module.add_symbol(m_current_identifier);
 			m_sections[m_section_index].symbols.insert({ m_current_identifier, {
 				m_sections[m_section_index].offset
@@ -946,7 +937,7 @@ namespace baremetal::assembler {
 		});
 
 		m_module.begin_block(BB_INSTRUCTION, nullptr);
-		m_module.add_label(m_current_identifier);
+		m_module.add_symbol(m_current_identifier);
 		m_module.begin_block(BB_LABEL, m_current_identifier);
 		TRY(m_lexer.get_next_token());
 

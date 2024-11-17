@@ -53,7 +53,8 @@ namespace baremetal::assembler {
 
 	struct section_t {
 		struct symbol {
-			u64 position; // offset within the local section
+			u64 position;    // offset within the local section
+			u64 block_index; // global block index (across all sections)
 		};
 
 		utility::string_view* name;
@@ -76,7 +77,6 @@ namespace baremetal::assembler {
 
     void add_instruction(const operand* operands, u32 index, u8 size);
 		void add_symbol(utility::string_view* name);
-		void add_label(utility::string_view* name);
 		void add_data_block(const utility::dynamic_array<u8>& data);
 		void set_section(utility::string_view* name);
 		
@@ -87,16 +87,17 @@ namespace baremetal::assembler {
 
 		void print_section_info();
 
-    context* ctx;
+		auto get_block_at_index(u64 i) const -> basic_block*;
+		auto get_symbol(utility::string_view* name) const -> section_t::symbol;
+		auto get_block_count() const -> u64;
 
-    utility::dynamic_array<basic_block*> blocks;
-		utility::map<utility::string_view*, symbol> symbols;
-		utility::dynamic_array<utility::string_view*> sections;
 		utility::dynamic_array<section_t> sections_n;
+    context* ctx;
 	private:
 		u64 m_current_section = 0;
 		u64 m_current_start_position = 0;
 		u64 m_current_segment_length = 0;
+		u64 m_block_count = 0; // total block count
 
     utility::dynamic_array<instruction_t*> m_current_block;
 		utility::string_view* m_current_block_name = nullptr;

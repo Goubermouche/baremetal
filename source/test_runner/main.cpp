@@ -102,7 +102,15 @@ namespace detail {
 			expected.clear();
 			test_text.clear();
 
-			if(test.get_string().find("fibo") == utility::dynamic_string::invalid_pos) {
+			//if(test.get_string().find("fibo") == utility::dynamic_string::invalid_pos) {
+			//	continue;
+			//}
+
+			if(
+				test.get_string().find("sections_5") != utility::dynamic_string::invalid_pos ||
+				test.get_string().find("sections_4") != utility::dynamic_string::invalid_pos ||
+				test.get_string().find("alphabet") != utility::dynamic_string::invalid_pos 
+				) {
 				continue;
 			}
 

@@ -25,7 +25,7 @@ namespace baremetal::assembler::pass {
 	
 				if(it != section.symbols.end()) {
 					// section position + symbol position (relative to the parent section)
-					utility::console::print("'{}' at {}\n", *name, it->second.position);
+					// utility::console::print("'{}' at {}\n", *name, it->second.position);
 					return section_positions[i] + it->second.position;
 				}
 			}
@@ -77,7 +77,6 @@ namespace baremetal::assembler::pass {
 										if(sym_it == section.symbols.end()) {
 											// global symbol position - (section position + instruction position + instruction size)
 											value = get_symbol_global(temp_operands[j].symbol) - (section_positions[section_index] + local_offset + inst->size);
-											utility::console::print("{} : {} {} {} {}\n", *temp_operands[j].symbol, value, section_positions[section_index], local_offset, inst->size);
 										}
 										else {
 											// symbol position - (instruction position + instruction size)

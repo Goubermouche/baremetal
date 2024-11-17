@@ -56,8 +56,8 @@ namespace baremetal::assembler {
 			new_block->start_position = m_current_start_position;
 			new_block->section_index = m_current_section;
 
-			blocks.push_back(new_block);
 			sections_n[m_current_section].blocks.push_back(new_block);
+			m_block_count++;
 
 			m_current_start_position += m_current_segment_length;
 			m_current_segment_length = 0;
@@ -78,38 +78,27 @@ namespace baremetal::assembler {
 		m_current_start_position += data.get_size();
 		m_current_segment_length = 0;
 
-		blocks.push_back(new_block);
+		m_block_count++;
 		sections_n[m_current_section].blocks.push_back(new_block);
 		sections_n[m_current_section].offset += data.get_size();
 		sections_n[m_current_section].size += data.get_size();
 	}
 
 	void module_t::add_symbol(utility::string_view* name) {
-		utility::console::print("add symbol '{}' at {}\n", *name, m_current_segment_length);
-		symbols[name] = { m_current_segment_length, blocks.get_size(), m_current_section };
-
-		sections_n[m_current_section].symbols[name] = { sections_n[m_current_section].offset };
-	}
-
-	void module_t::add_label(utility::string_view* name) {
-		utility::console::print("add label '{}' at {}\n", *name, m_current_start_position);
-		symbols[name] = { m_current_start_position, blocks.get_size(), m_current_section };
-		
-		sections_n[m_current_section].symbols[name] = { sections_n[m_current_section].offset };
+		sections_n[m_current_section].symbols[name] = { sections_n[m_current_section].offset,m_block_count };
 	}
 
 	void module_t::set_section(utility::string_view* name) {
-		u64 new_index = sections.get_size();
+		u64 new_index = sections_n.get_size();
 
-		for(u64 i = 0; i < sections.get_size(); ++i) {
-			if(name == sections[i]) {
+		for(u64 i = 0; i < sections_n.get_size(); ++i) {
+			if(name == sections_n[i].name) {
 				new_index = i;
 				break;
 			}
 		}
 
-		if(new_index == sections.get_size()) {
-			sections.push_back(name);
+		if(new_index == sections_n.get_size()) {
 			sections_n.push_back({.name = name});
 		}
 
@@ -127,7 +116,7 @@ namespace baremetal::assembler {
 				new_block->start_position = m_current_start_position;
 				new_block->section_index = m_current_section;
 
-				blocks.push_back(new_block);
+				m_block_count++;
 				sections_n[m_current_section].blocks.push_back(new_block);
 
 				m_current_start_position += m_current_segment_length;
@@ -164,7 +153,7 @@ namespace baremetal::assembler {
 		new_block->start_position = m_current_start_position;
 		new_block->section_index = m_current_section;
 
-		blocks.push_back(new_block);
+		m_block_count++;
 		sections_n[m_current_section].blocks.push_back(new_block);
 
 		m_current_start_position += m_current_segment_length;
@@ -189,35 +178,43 @@ namespace baremetal::assembler {
 		}
 	}
 
+	auto module_t::get_block_at_index(u64 i) const -> basic_block* {
+		const u64 original_i = i; // debugging
+
+		for(const section_t& section : sections_n) {
+			if(i < section.blocks.get_size()) {
+				return section.blocks[i];
+			}
+
+			i -= section.blocks.get_size();
+		}
+
+		ASSERT(false, "get_block_at_index: block at index {} is out of bounds\n", original_i);
+		SUPPRESS_C4100(original_i);
+
+		return nullptr;
+	}
+
+	auto module_t::get_symbol(utility::string_view* name) const -> section_t::symbol {
+		ASSERT(name != nullptr, "symbol is nullptr\n");
+
+		for(const section_t& section : sections_n) {
+			const auto it = section.symbols.find(name);
+
+			if(it != section.symbols.end()) {
+				return it->second;
+			}
+		}
+
+		ASSERT(false, "unknown symbol '{}'\n", *name);
+		return {};
+	}
+
+	auto module_t::get_block_count() const -> u64 {
+		return m_block_count;
+	}
+
 	void module_t::recalculate_block_sizes() {
-		u64 position = 0;
-		utility::dynamic_array<u64> old_start_positions;
-		old_start_positions.reserve(blocks.get_size());
-
-		for(basic_block* block : blocks) { 
-			old_start_positions.push_back(block->start_position);
-			u64 size = 0;
-
-			if(block->is_instruction_block()) {
-				for(u64 i = 0; i < block->instructions.size; ++i) {
-					size += block->instructions.data[i]->size;
-				}
-			}
-			else {
-				size += block->size;
-			}
-
-			block->start_position = position;
-			block->size = size; 
-
-			position += size;
-		}
-
-		for(auto& [symbol, location] : symbols) {
-			i64 diff = blocks[location.block_index]->start_position - old_start_positions[location.block_index];
-			location.position += diff;
-		}
-
 		// new
 		for(section_t& section : sections_n) {
 			section.size = 0;
