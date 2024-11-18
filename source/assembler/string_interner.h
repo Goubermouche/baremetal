@@ -8,6 +8,7 @@ namespace baremetal {
 		string_interner();
 
 		auto add(const utility::dynamic_string& string) -> utility::string_view*;
+		auto contains(utility::string_view string) const -> bool;
 
 		void clear();
 		void print();

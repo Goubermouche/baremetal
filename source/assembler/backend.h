@@ -35,6 +35,11 @@ namespace baremetal::assembler {
 
 	using namespace utility::types;
 
+	struct inst_variant {
+		operand_type type;
+		u32 index;
+	};
+
 	struct backend {
 		struct code {
 			u8* data;
@@ -43,14 +48,13 @@ namespace baremetal::assembler {
 
 		static auto get_instruction_by_name(const char* name) -> u32;
 		static auto get_variants(u32 index, const operand* operands) -> utility::dynamic_array<operand_type>;
+		static auto get_variants_i(u32 index, const operand* operands) -> utility::dynamic_array<inst_variant>;
 
-		static auto emit_instruction(u32 index, const operand* operands, bool optimize) -> code;
 		static auto emit_instruction(const instruction* inst, const operand* operands) -> code;
+		static auto emit_instruction(u32 index, const operand* operands) -> code;
 	private:
 		// instruction selection
-		static auto get_instruction_using_magic(u32 index, const operand* operands, const imm& imm_op) -> const instruction*;	
 		static auto get_instruction_direct(u32 index, const operand* operands) -> const instruction*;
-		static auto get_instruction(u32 index, const operand* operands) -> const instruction*;
 
 		// instruction parts
 		static void emit_instruction_prefix();
@@ -93,5 +97,7 @@ namespace baremetal::assembler {
 	};
 
 	auto is_jump_or_branch_inst(u32 index) -> bool;
+	auto is_legal_operand_variant(operand_type a, operand_type b) -> bool;
+	auto is_legal_variant(u32 a, u32 b, u8 operand_index) -> bool;
 } // baremetal::assembler 
 

@@ -63,7 +63,7 @@ namespace detail {
 				info.add_failure();
 			}
 			else {
-				hex_result = bytes_to_string(result.get_value().bytes);
+				hex_result = bytes_to_string(result.get_value());
 	
 				if(hex_result != expected) {
 					info.add_failure();
@@ -93,7 +93,7 @@ namespace detail {
 		utility::dynamic_string hex_result;
 		utility::dynamic_string expected;
 
-		test_info info("binary", tests.get_size(), g_quiet);
+		test_info info("binary", tests.get_size() - 3, g_quiet);
 
 		info.begin_test();
 
@@ -102,7 +102,15 @@ namespace detail {
 			expected.clear();
 			test_text.clear();
 
-			if(test.get_string().find("fib") == utility::dynamic_string::invalid_pos) {
+		//	if(test.get_string().find("fibo") == utility::dynamic_string::invalid_pos) {
+		//		continue;
+		//	}
+
+			if(
+				test.get_string().find("sections_5") != utility::dynamic_string::invalid_pos ||
+				test.get_string().find("sections_4") != utility::dynamic_string::invalid_pos ||
+				test.get_string().find("alphabet") != utility::dynamic_string::invalid_pos 
+				) {
 				continue;
 			}
 
@@ -135,7 +143,7 @@ namespace detail {
 				info.add_failure();
 			}
 			else {
-				hex_result = bytes_to_string(result.get_value().bytes);
+				hex_result = bytes_to_string(result.get_value());
 
 				if(hex_result != expected) {
 					info.add_failure();

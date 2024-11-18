@@ -3,6 +3,12 @@
 
 #include <utility/system/file.h>
 
+#include "assembler/passes/cfg_analyze_pass.h"
+#include "assembler/passes/inst_size_minimize_pass.h"
+#include "assembler/passes/symbolic_minimize_pass.h"
+
+#include "assembler/passes/emit/emit_binary_pass.h"
+
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
     if(m_lexer.current != expected) {                             \
@@ -118,286 +124,24 @@ namespace baremetal::assembler {
 		}
 	} // namespace detail
 
-	auto fits_into_type(i64 value, operand_type type) -> bool {
-		switch(type) {
-			case OP_REL8:
-			case OP_REL8_RIP:  return value >= utility::limits<i8>::min() && value <= utility::limits<i8>::max();
-			case OP_REL16_RIP: return value >= utility::limits<i16>::min() && value <= utility::limits<i16>::max();
-			case OP_REL32:     return value >= utility::limits<i32>::min() && value <= utility::limits<i32>::max();
-			default: ASSERT(false, "unexpected operand type {}\n", operand_type_to_string(type));
-		}
+	frontend::frontend() : m_module(&m_context) {}
 
-		return false;
-	}
-
-	frontend::frontend() : m_section_index(0), m_module(&m_context) {
-		section text {
-			.name = m_context.strings.add(".text"),
-			.subsections = {},
-			.unresolved = {},
-			.symbols = {}
-		};
-
-		m_sections.push_back(text);
-	}
-
-	auto frontend::assemble(const utility::dynamic_string& source) -> utility::result<frontend::module> {
+	auto frontend::assemble(const utility::dynamic_string& source) -> utility::result<utility::dynamic_array<u8>> {
 		m_lexer.set_text(source);
-		TRY(parse());           // generate the symbol table and unresolved list
-		TRY(resolve_symbols()); // resolve symbols locations
+		TRY(parse());
 
-		auto graph = m_module.emit_graph();
+		// m_module.print_section_info();
 
-		utility::file::write("./cfg.dot", graph);
+		// apply optimizations
+		pass::cfg_analyze(m_module);
+		pass::inst_size_minimize(m_module);
+		pass::symbolic_minimize(m_module);
 
-		return emit_module();
-	}
+		// emission
+		//auto graph  = pass::emit_control_flow_graph(m_module);
+		//utility::file::write("./cfg2.dot", graph);
 
-	auto frontend::emit_module() -> utility::result<frontend::module> {
-		utility::dynamic_array<relocation> relocations;
-		utility::dynamic_array<u8> bytes;
-		u64 total_size = 0;
-
-		// calculate the total section size
-		for(section& section : m_sections) {
-			// alignment
-			total_size += utility::align(total_size, 4) - total_size;
-			section.position = total_size;
-
-			for(const subsection& subsection : section.subsections) {
-				if(subsection.type == SS_NORMAL) {
-					total_size += subsection.resolved.size;
-				}
-				else {
-					total_size += section.unresolved[subsection.unresolved].size;
-				}
-			}
-		}
-
-		bytes.reserve(total_size);
-
-		// generate the final binary
-		for(const section& section : m_sections) {
-			if(section.subsections.is_empty()) {
-				continue;
-			}
-
-			// append alignment bytes for the previous section
-			const u64 alignment_offset = utility::align(bytes.get_size(), 4) - bytes.get_size();
-
-			for(u64 i = 0; i < alignment_offset; ++i) {
-				bytes.push_back(0);
-			}
-
-			// emit subsections
-			for(const subsection& subsection : section.subsections) {
-				if(subsection.type == SS_NORMAL) {
-					const u8* data = subsection.resolved.data;
-					bytes.insert(bytes.end(), data, data + subsection.resolved.size);
-				}
-				else {
-					unresolved_subsection unresolved = section.unresolved[subsection.unresolved];
-
-					// calculate the offset operand
-					const operand unresolved_operand = unresolved.operands[unresolved.unresolved_operand];
-					const auto symbol_it = section.symbols.find(unresolved_operand.symbol);
-					operand* operands = unresolved.operands;
-
-					// resolve the symbol position
-					switch(unresolved_operand.type) {
-						// immediates are absolute
-						case OP_I8:
-						case OP_I16:
-						case OP_I32:
-						case OP_I64: operands[unresolved.unresolved_operand].immediate = imm(get_symbol_global(unresolved_operand.symbol)); break;
-						case OP_M8: 
-						case OP_M16: 
-						case OP_M32: 
-						case OP_M64: 
-						case OP_M80: {
-							switch(unresolved.fixup) {
-								case FIXUP_DISPLACEMENT: {
-									i64 value;
-
-									if(symbol_it == section.symbols.end()) {
-										value = get_symbol_global(unresolved_operand.symbol);	
-									}
-									else {
-										value = symbol_it->second;	
-									}
-
-									operands[unresolved.unresolved_operand].memory.displacement = value;
-									// use the biggest possible displacement (MOD/RM hack)
-									operands[unresolved.unresolved_operand].memory.displacement.min_bits = 32;
-									break;
-								}
-								default: ASSERT(false, "unexpected fixup type {}\n", (i32)unresolved.fixup);
-							}
-
-							break; // TODO	
-						} 
-						// relocations are relative
-						case OP_REL32:
-						case OP_REL8:
-						case OP_REL8_RIP: {
-							u64 inst_pos = unresolved.position;
-							u64 inst_size = unresolved.size;
-							i64 value;
-
-							if(symbol_it == section.symbols.end()) {
-								// global symbol position - (section position + instruction position + instruction size)
-								value = get_symbol_global(unresolved_operand.symbol) - (section.position + inst_pos + inst_size);	
-							}
-							else {
-								// symbol position - (instruction position + instruction size)
-								value = symbol_it->second - (inst_pos + inst_size);	
-							}
-
-							operands[unresolved.unresolved_operand].immediate = imm(value);
-							break;
-						}
-						default: ASSERT(false, "unhandled unresolved operand type '{}'\n", operand_type_to_string(unresolved_operand.type));
-					}
-
-					// emit the instruction with our exact operands
-					auto code = backend::emit_instruction(unresolved.index, operands, false);
-					bytes.insert(bytes.end(), code.data, code.data + code.size);
-				}
-			}
-		}
-
-		return frontend::module{ .bytes = bytes };
-	}
-
-	auto frontend::resolve_symbols() -> utility::result<void> {
-		for(section& section : m_sections) {
-			// TODO: verify whether a symbol actually exists
-			// TODO: investigate the speed improvements of removing completed subsections
-			bool change = true;
-
-			// resolve and optimize symbol references within each section (we can ignore references to other sections
-			// since we'll resolve them during emission)
-			while(change) {
-				change = false;
-
-				// optimize symbol references, try to use the smallest possible operand
-				for(unresolved_subsection& current : section.unresolved) {
-					if(current.variants.is_empty()) {
-						// this element is already as optimized as it can be 
-						continue;
-					}
-
-					operand& unresolved = current.operands[current.unresolved_operand];
-					const auto symbol_it = section.symbols.find(unresolved.symbol);
-
-					if(symbol_it == section.symbols.end()) {
-						// skip symbols which aren't in this section, since we can't optimize them
-						continue;
-					}
-
-					const i64 distance = symbol_it->second - current.position + current.size;
-					const operand_type new_type = current.variants.get_last();
-
-					if(!fits_into_type(distance, new_type)) {
-						// we can't use a smaller operand, no optimization possible in this iteration
-						continue;
-					}
-
-					// use the next smallest operand instead
-					unresolved.type = new_type;
-
-					u8 new_size = backend::emit_instruction(current.index, current.operands, false).size;
-
-					// update our symbol table to account for the difference in code length
-					section.update_positions(current.position, current.size - new_size);
-
-					current.variants.pop_back();
-					current.size = new_size;
-					change = true;
-
-					// TODO: investigate whether it's better to break immediately or continue
-					break;
-				}
-			}
-		}
-
-		return SUCCESS;
-	}
-
-	void section::update_positions(u64 position, i32 diff) {
-		// move all symbols and unresolved instructions which are located past the specified position by diff bytes
-		for(auto& [sym_name, sym_position] : symbols) {
-			if(sym_position > position) {
-				sym_position -= diff;
-			}	
-		}
-
-		// we end up moving references which point to symbols which are not within this sections, this is fine
-		// since we don't use their position in that case anyways
-		for(auto& u : unresolved) {
-			if(u.position > position) {
-				u.position -= diff;
-			}
-		}	
-	}
-
-	void frontend::create_normal_subsection() {
-		if(!m_current_resolved.is_empty()) {
-			subsection p;
-
-			p.type = SS_NORMAL;
-			p.resolved.size = m_current_resolved.get_size();
-			p.resolved.data = static_cast<u8*>(m_context.allocator.allocate(m_current_resolved.get_size()));
-
-			utility::memcpy(p.resolved.data, m_current_resolved.get_data(), m_current_resolved.get_size());
-
-			m_sections[m_section_index].subsections.push_back(p);
-			m_current_resolved.clear();
-		}
-	}
-
-	auto frontend::get_symbol_global(utility::string_view* name) -> u64 {
-		for(const section& section : m_sections) {
-			const auto it = section.symbols.find(name);
-
-			if(it != section.symbols.end()) {
-				// section position + symbol position (relative to the parent section)
-				return section.position + it->second;
-			}
-		}
-
-		ASSERT(false, "unknown symbol '{}' specified\n", *name);
-		return {};
-	}
-
-	auto frontend::get_symbol_local(utility::string_view* name) -> u64 {
-		for(const section& section : m_sections) {
-			const auto it = section.symbols.find(name);
-
-			if(it != section.symbols.end()) {
-				return it->second;
-			}
-		}
-
-		ASSERT(false, "unknown symbol '{}' specified\n", *name);
-		return {};
-	}
-
-	void frontend::set_section(utility::string_view* name) {
-		for(u64 i = 0; i < m_sections.get_size(); ++i) {
-			if(m_sections[i].name == name) {
-				m_section_index = i;
-				return;
-			}
-		}
-
-		m_section_index = m_sections.get_size();
-		m_sections.push_back(section{
-			.name = name,
-			.subsections = {},
-			.unresolved = {},
-			.symbols = {}
-		});
+		return pass::emit_binary(m_module); 
 	}
 
 	auto frontend::parse() -> utility::result<void> {
@@ -417,8 +161,7 @@ namespace baremetal::assembler {
 			}	
 		}
 
-		m_module.begin_block(nullptr);
-		create_normal_subsection(); // capture any trailing instructions
+		m_module.begin_block(BB_INSTRUCTION, nullptr);
 		return SUCCESS;
 	}
 
@@ -440,22 +183,21 @@ namespace baremetal::assembler {
 		EXPECT_TOKEN(TOK_NUMBER);
 		TRY(m_lexer.get_next_token());
 
-		if(*m_sections[m_section_index].name != ".bss") {
-			for(u64 i = 0; i < m_lexer.current_immediate.value; ++i) {
-				m_current_resolved.push_back(0);
-			}
-		}
+		//if(*m_sections[m_section_index].name != ".bss") {
+		//	for(u64 i = 0; i < m_lexer.current_immediate.value; ++i) {
+		//		m_current_resolved.push_back(0);
+		//	}
+		//}
 
 		return SUCCESS;
 	}
 
 	auto frontend::parse_define_memory() -> utility::result<void> {
 		if(m_current_identifier) {
-			m_sections[m_section_index].symbols.insert({ m_current_identifier, {
-				m_sections[m_section_index].offset
-			}});
+			m_module.add_symbol(m_current_identifier);
 		}
 
+		bool sign = false;
 		u8 bytes = 0;
 
 		switch(m_lexer.current) {
@@ -467,14 +209,14 @@ namespace baremetal::assembler {
 		}
 
 		TRY(m_lexer.get_next_token());
+		utility::dynamic_array<u8> data;
 
 		while(m_lexer.current != TOK_EOF) {
 			switch(m_lexer.current) {
 				case TOK_CHAR: 
 				case TOK_STRING: {
 					for(const char c : m_lexer.current_string) {
-						m_current_resolved.push_back(c);
-						m_sections[m_section_index].offset++;
+						data.push_back(c);
 					}
 
 					// apend missing bytes, so that we're aligned with our data type
@@ -482,27 +224,34 @@ namespace baremetal::assembler {
 					const u64 alignment_offset = utility::align(offset, bytes) - offset; 
 
 					for(u64 i = 0; i < alignment_offset; ++i) {
-						m_current_resolved.push_back(0);
-						m_sections[m_section_index].offset++;
+						data.push_back(0);
 					}
 
 					break;
 				}
-				case TOK_MINUS: ASSERT(false, "TODO\n"); break;
+				case TOK_MINUS: {
+					sign = true; 
+					m_lexer.get_next_token();
+					EXPECT_TOKEN(TOK_NUMBER);
+				}
 				case TOK_NUMBER: {
-					if(m_lexer.current_immediate.min_bits / 8 > bytes) {
-						utility::console::print("warning: byte data exceeds bounds\n");
-					}
+					// if(m_lexer.current_immediate.min_bits / 8 > bytes) {
+					// 	utility::console::print("warning: byte data exceeds bounds\n");
+					// }
 
 					u64 value = m_lexer.current_immediate.value;
 
+					if(sign) {
+						value = static_cast<u64>(static_cast<i64>(value) * -1);
+					}
+
 					for(u8 i = 0; i < bytes; ++i) {
 			      u8 byte = static_cast<u8>(value & 0xFF);
-						m_current_resolved.push_back(byte);
-						m_sections[m_section_index].offset++;
+						data.push_back(byte);
 			      value >>= 8;
 			    }
 
+					sign = false;
 					break;
 				}
 				default: return utility::error("unexpected token following memory definition");
@@ -518,6 +267,7 @@ namespace baremetal::assembler {
 			TRY(m_lexer.get_next_token());
 		}
 
+		m_module.add_data_block(data);
 		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}
@@ -534,7 +284,6 @@ namespace baremetal::assembler {
 		utility::memset(m_operands, 0, sizeof(operand) * 4);
 
 		m_unresolved_index = utility::limits<u8>::max();
-		m_symbolic_operand = false;
 		m_broadcast_n = 0;
 		m_operand_i = 0;
 
@@ -590,85 +339,26 @@ namespace baremetal::assembler {
 	void frontend::assemble_instruction(const instruction* inst) {
 		// operands match, but, in some cases we need to retype some of them to the actual type, ie. 
 		// immediates can actually be relocations
-		for(u8 j = 0; j < m_operand_i; ++j) {
-			if(j == m_unresolved_index) {
+		for(u8 i = 0; i < m_operand_i; ++i) {
+			if(i == m_unresolved_index) {
 				continue;
 			}
 
-			m_operands[j].type = inst->operands[j];
+			m_operands[i].type = inst->operands[i];
 
-			if(is_operand_rel(inst->operands[j])) {
-				u8 size = backend::emit_instruction(m_instruction_i, m_operands, false).size;
-				m_operands[j].immediate = static_cast<i32>(m_operands[j].immediate.value) - size;
+			if(is_operand_rel(inst->operands[i])) {
+				u8 size = backend::emit_instruction(m_instruction_i, m_operands).size;
+				m_operands[i].immediate = static_cast<i32>(m_operands[i].immediate.value) - size;
 			}
 		}
 
-		if(m_symbolic_operand) {
-			if(is_operand_mem(m_operands[m_unresolved_index].type) && m_fixup == FIXUP_DISPLACEMENT) {
-				// force the longest possible encoding
-				m_operands[m_unresolved_index].memory.displacement = 1;
-				m_operands[m_unresolved_index].memory.displacement.min_bits = 32;
-			}
-		}
-
-		// HACK: assemble the instruction and use that as the length
-		// TODO: cleanup
-		auto code = backend::emit_instruction(m_instruction_i, m_operands, true);
-
-		u8 size = code.size;
-		section& parent = m_sections[m_section_index];
-
-		// NOTE: unoptimized instruction handle, fix this	
-		m_module.add_instruction(m_operands, m_instruction_i, size);
+		// assemble the instruction and use that as the length
+		const auto code = backend::emit_instruction(m_instruction_i, m_operands);
+		m_module.add_instruction(m_operands, m_instruction_i, code.size);
 	
 		if(is_jump_or_branch_inst(m_instruction_i)) {
-			m_module.begin_block(nullptr);
+			m_module.begin_block(BB_BRANCH, nullptr);
 		}
-
-		if(m_symbolic_operand) {
-			// append all of our relative instructions which we've encountered before this one
-			create_normal_subsection();
-
-			// create the fixup subsection for the current instruction
-			subsection fixup {
-				.type = SS_FIXUP,
-				.unresolved = parent.unresolved.get_size()
-			};
-
-			// remove the last potential variant (the largest one), and use it as our operand, this will
-			// most likely be optimized out by the resolve_symbols() function
-			auto variants = backend::get_variants(m_instruction_i, m_operands);
-
-			m_operands[m_unresolved_index].type = variants.pop_back();
-
-			if(!is_operand_rel(m_operands[m_unresolved_index].type)) {
-				variants.clear(); // no potential for optimizations
-			}
-
-			// create the actual subsection the fixup points to
-			unresolved_subsection unresolved = {
-				.index = m_instruction_i,
-				.operands = {},
-				.operand_count = m_operand_i,
-				.position = parent.offset,
-				.size = size,
-				.variants = variants,
-				.unresolved_operand = m_unresolved_index,
-				.fixup = m_fixup
-			};
-
-			utility::memcpy(unresolved.operands, m_operands, 4 * sizeof(operand));
-			
-			parent.unresolved.push_back(unresolved);
-			parent.subsections.push_back(fixup);
-		}
-		else {
-			m_current_resolved.insert(m_current_resolved.end(), code.data, code.data + code.size);
-		}
-
-
-
-		parent.offset += size;
 	}
 
 	auto frontend::parse_moff_operand(data_type type) -> utility::result<void> {
@@ -783,7 +473,6 @@ namespace baremetal::assembler {
 	auto frontend::parse_identifier_operand() -> utility::result<void> {
 		m_unresolved_index = m_operand_i;
 		m_operands[m_operand_i++] = operand(m_context.strings.add(m_lexer.current_string)); 
-		m_symbolic_operand = true;
 		TRY(m_lexer.get_next_token());
 		return SUCCESS;
 	}
@@ -903,16 +592,11 @@ namespace baremetal::assembler {
 	auto frontend::parse_section() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_SECTION);
 
-		// get_next_token();
-		// EXPECT_TOKEN(TOK_DOT);
-
 		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 		ASSERT(m_lexer.current_string[0] == '.', "first char of a section should be a '.'\n");
 
-		create_normal_subsection(); // capture any trailing instructions
-
-		set_section(m_context.strings.add(m_lexer.current_string));
+		m_module.set_section(m_context.strings.add(m_lexer.current_string));
 
 		TRY(m_lexer.get_next_token());
 		return SUCCESS;
@@ -921,13 +605,9 @@ namespace baremetal::assembler {
 	auto frontend::parse_label() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_COLON);
 
-		m_sections[m_section_index].symbols.insert({ 
-			m_current_identifier,
-			m_sections[m_section_index].offset
-		});
-
-		m_module.begin_block(m_current_identifier);
+		m_module.begin_block(BB_INSTRUCTION, nullptr);
 		m_module.add_symbol(m_current_identifier);
+		m_module.begin_block(BB_LABEL, m_current_identifier);
 		TRY(m_lexer.get_next_token());
 
 		return SUCCESS;
@@ -954,8 +634,6 @@ namespace baremetal::assembler {
 				case TOK_DB ... TOK_DQ: TRY(parse_define_memory()); break;
 				default: ASSERT(false, "unexpected times token: {}\n", token_to_string(m_lexer.current)); 
 			}
-			
-			// TODO: traverse to the end of our current line and verify there isn't anything else here
 		}
 
 		TRY(m_lexer.get_next_token());
@@ -1149,12 +827,11 @@ namespace baremetal::assembler {
 				}
 				case TOK_IDENTIFIER: {
 					m_unresolved_index = m_operand_i;
-					m_symbolic_operand = true;
-					m_fixup = FIXUP_DISPLACEMENT;
 					op.symbol = m_context.strings.add(m_lexer.current_string);
 					op.unknown = true;
 					memory.displacement.min_bits = 32;
 					displacement_set = true;
+
 					break;
 				}
 				default: {

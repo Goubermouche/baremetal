@@ -19,6 +19,7 @@ workspace "assembler"
 
     filter "toolset:gcc or clang"
         -- buildoptions { "-Wno-comment", "-Wno-missing-field-initializers" }
+        -- buildoptions { "-O3" }
 
     filter "configurations:Release"
         defines { "NDEBUG" }

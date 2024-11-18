@@ -36,5 +36,9 @@ namespace baremetal {
 		// new string added
 		return view;
 	}
+
+	auto string_interner::contains(utility::string_view string) const -> bool {
+		return m_strings.find(string) != m_strings.end();
+	}
 } // namespace baremetal
 
