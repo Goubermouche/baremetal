@@ -419,3 +419,5 @@ perf.data.old
 \\/
 
 *.vgcore*
+
+*.dot
