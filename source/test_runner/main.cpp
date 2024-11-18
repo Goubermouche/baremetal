@@ -93,7 +93,7 @@ namespace detail {
 		utility::dynamic_string hex_result;
 		utility::dynamic_string expected;
 
-		test_info info("binary", tests.get_size(), g_quiet);
+		test_info info("binary", tests.get_size() - 3, g_quiet);
 
 		info.begin_test();
 
