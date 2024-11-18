@@ -1,6 +1,6 @@
 #pragma once
 #include "assembler/context.h"
-#include "assembler/instruction/operands/operands.h"
+#include "assembler/backend.h"
 
 namespace baremetal::assembler {
   using namespace utility::types;
@@ -59,8 +59,9 @@ namespace baremetal::assembler {
 
 		utility::string_view* name;
 
-		u64 offset = 0; // current offset of the section, only used when a section is being constructed
-		u64 size = 0;   // unaligned size of this section, in bytes
+		u64 position = 0;  // aligned section position
+		u64 offset = 0;    // current offset of the section, only used when a section is being constructed
+		u64 size = 0;      // unaligned size of this section, in bytes
 
 		utility::map<utility::string_view*, symbol> symbols;
     utility::dynamic_array<basic_block*> blocks;
@@ -74,7 +75,8 @@ namespace baremetal::assembler {
 		void add_symbol(utility::string_view* name);
 		
 		void set_section(utility::string_view* name);
-		
+	
+		auto get_global_symbol_position(utility::string_view* name) const -> u64;
 		auto get_symbol(utility::string_view* name) const -> section::symbol;
 		auto get_block_at_index(u64 i) const -> basic_block*;
 		auto get_block_count() const -> u64;
@@ -83,6 +85,8 @@ namespace baremetal::assembler {
 		auto allocate_block(basic_block_type type) -> basic_block*;
 		void recalculate_block_sizes();
 		void print_section_info();
+
+		auto resolve_instruction(const instruction_data* data, const section& section, u64 position) const -> backend::code;
 
 		utility::dynamic_array<section> sections;
     context* ctx;

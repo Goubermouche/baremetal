@@ -139,8 +139,8 @@ namespace baremetal::assembler {
 		pass::symbolic_minimize(m_module);
 
 		// emission
-		// auto graph  = pass::emit_control_flow_graph(m_module);
-		// utility::file::write("./cfg2.dot", graph);
+		//auto graph  = pass::emit_control_flow_graph(m_module);
+		//utility::file::write("./cfg2.dot", graph);
 
 		return pass::emit_binary(m_module); 
 	}

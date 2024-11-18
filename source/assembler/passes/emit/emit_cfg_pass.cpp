@@ -4,38 +4,15 @@
 
 namespace baremetal::assembler::pass {
 	namespace detail {
-		auto instruction_block_to_string(const basic_block* block, const module& module) -> utility::dynamic_string {
+		auto instruction_block_to_string(const basic_block* block, const section& section, const module& module) -> utility::dynamic_string {
 			utility::dynamic_string string;
-			operand operands[4];
 			u64 position = 0;
 
 			for(u64 i = 0; i < block->instructions.size; ++i) {
-				const instruction_data* inst_ir = block->instructions.data[i];
-				const instruction*   inst    = &instruction_db[inst_ir->index];
+				const instruction_data* instruction_data = block->instructions.data[i];
+				const instruction* inst = &instruction_db[instruction_data->index];
 
-				// copy operands so that we don't modify the actual values
-				utility::memcpy(operands, inst_ir->operands, sizeof(operand) * 4);
-
-				// resolve symbols
-				for(u8 j = 0; j < inst->operand_count; ++j) {
-					if(operands[j].symbol) {
-						auto symbol = module.get_symbol(operands[j].symbol);
-						i64 value = 0;
-
-						if(!is_operand_rel(operands[j].type)) {
-							value = symbol.position;
-						}
-						else {
-							// TODO: different sections, add a unified method for resolving relocations 
-							// same sections
-							value = symbol.position - (position + inst_ir->size);
-						}
-
-						operands[j].immediate = imm(value);
-					}
-				}
-
-				auto data = backend::emit_instruction(inst, operands);
+				auto data = module.resolve_instruction(instruction_data, section, position);
 
 				string += "<tr><td align=\"left\" width=\"50px\">";
 				string += utility::int_to_string(block->start_position + position);
@@ -46,7 +23,7 @@ namespace baremetal::assembler::pass {
 				string += "</b></font></td><td align=\"left\"><font COLOR=\"black\"> ";
 
 				for(u8 j = 0; j < inst->operand_count; ++j) {
-					string += operand_to_string(inst, inst_ir->operands[j], j);
+					string += operand_to_string(inst, instruction_data->operands[j], j);
 			
 					if(j + 1 != inst->operand_count) {
 						string += ", ";
@@ -54,7 +31,7 @@ namespace baremetal::assembler::pass {
 				}
 				
 				string += "</font></td></tr>";
-				position += inst_ir->size;
+				position += instruction_data->size;
 			}
 
 			return string;
@@ -252,11 +229,11 @@ namespace baremetal::assembler::pass {
 						break;
 					}
 					case BB_INSTRUCTION: {
-						graph += detail::instruction_block_to_string(block, module);
+						graph += detail::instruction_block_to_string(block, section, module);
 						break;
 					}
 					case BB_BRANCH: {
-						graph += detail::instruction_block_to_string(block, module);
+						graph += detail::instruction_block_to_string(block, section, module);
 						block_is_new_segment = true;
 						break;
 					}

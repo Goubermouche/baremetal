@@ -178,6 +178,50 @@ namespace baremetal::assembler {
 		}
 	}
 
+	auto module::resolve_instruction(const instruction_data* data, const section& section, u64 position) const  -> backend::code {
+		const instruction* inst = &instruction_db[data->index];
+		static operand operands[4];
+
+		utility::memcpy(operands, data->operands, sizeof(operand) * 4);
+
+		// resolve symbols
+		for(u8 i = 0; i < inst->operand_count; ++i) {
+			if(operands[i].symbol) {
+				auto symbol_it = section.symbols.find(operands[i].symbol);
+				i64 value = 0;
+
+				switch(operands[i].type) {
+					// immediates are absolute
+					case OP_I8:
+					case OP_I16:
+					case OP_I32:
+					case OP_I64: value = get_global_symbol_position(operands[i].symbol); break;
+					// relocations are relative
+					case OP_REL32:
+					case OP_REL8:
+					case OP_REL16_RIP:
+					case OP_REL8_RIP: {
+						if(symbol_it == section.symbols.end()) {
+							// global symbol position - (section position + instruction position + instruction size)
+							value = get_global_symbol_position(operands[i].symbol) - (section.position + position + data->size);
+						}
+						else {
+							// symbol position - (instruction position + instruction size)
+							value = symbol_it->second.position - (position + data->size);
+						}
+
+						break;
+					} 
+					default: ASSERT(false, "unhandled unresolved operand type '{}' (index = {})\n", operand_type_to_string(operands[i].type), i);
+				}
+
+				operands[i].immediate = imm(value);
+			}
+		}
+
+		return backend::emit_instruction(inst, operands);
+	}
+
 	auto module::get_block_at_index(u64 i) const -> basic_block* {
 		const u64 original_i = i; // debugging
 
@@ -193,6 +237,21 @@ namespace baremetal::assembler {
 		SUPPRESS_C4100(original_i);
 
 		return nullptr;
+	}
+
+	auto module::get_global_symbol_position(utility::string_view* name) const -> u64 {
+		for(u64 i = 0; i < sections.get_size(); ++i) {
+			const auto& section = sections[i];
+			const auto it = section.symbols.find(name);
+	
+			if(it != section.symbols.end()) {
+				// section position + symbol position (relative to the parent section)
+				return section.position + it->second.position;
+			}
+		}
+	
+		ASSERT(false, "unknown symbol '{}' specified\n", *name);
+		return 0;
 	}
 
 	auto module::get_symbol(utility::string_view* name) const -> section::symbol {
@@ -215,6 +274,8 @@ namespace baremetal::assembler {
 	}
 
 	void module::recalculate_block_sizes() {
+		u64 position = 0;
+
 		for(section& section : sections) {
 			section.size = 0;
 
@@ -232,6 +293,10 @@ namespace baremetal::assembler {
 					section.symbols[block->label.name].position = section.size;
 				}
 			}
+
+			position += utility::align(position, 4) - position;
+			section.position = position;
+			position += section.size;
 		}
 	}
 } // namespace baremetal::assembler
