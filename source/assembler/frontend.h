@@ -46,6 +46,7 @@ namespace baremetal::assembler {
 		void assemble_instruction(const instruction* inst);
 	private:
 		context m_context;
+		module m_module;
 		lexer m_lexer;
 
 		// parsing
@@ -57,8 +58,6 @@ namespace baremetal::assembler {
 		u8 m_broadcast_n;
 		u8 m_operand_i;
 		u8 m_unresolved_index;
-
-		module m_module;
 	};
 } // namespace baremetal::assembler
 

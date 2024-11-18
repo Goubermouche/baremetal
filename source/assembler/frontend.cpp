@@ -8,7 +8,6 @@
 #include "assembler/passes/symbolic_minimize_pass.h"
 
 #include "assembler/passes/emit/emit_binary_pass.h"
-#include "assembler/passes/emit/emit_cfg_pass.h"
 
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
@@ -198,6 +197,7 @@ namespace baremetal::assembler {
 			m_module.add_symbol(m_current_identifier);
 		}
 
+		bool sign = false;
 		u8 bytes = 0;
 
 		switch(m_lexer.current) {
@@ -229,13 +229,21 @@ namespace baremetal::assembler {
 
 					break;
 				}
-				case TOK_MINUS: ASSERT(false, "TODO\n"); break;
+				case TOK_MINUS: {
+					sign = true; 
+					m_lexer.get_next_token();
+					EXPECT_TOKEN(TOK_NUMBER);
+				}
 				case TOK_NUMBER: {
-					if(m_lexer.current_immediate.min_bits / 8 > bytes) {
-						utility::console::print("warning: byte data exceeds bounds\n");
-					}
+					// if(m_lexer.current_immediate.min_bits / 8 > bytes) {
+					// 	utility::console::print("warning: byte data exceeds bounds\n");
+					// }
 
 					u64 value = m_lexer.current_immediate.value;
+
+					if(sign) {
+						value = static_cast<u64>(static_cast<i64>(value) * -1);
+					}
 
 					for(u8 i = 0; i < bytes; ++i) {
 			      u8 byte = static_cast<u8>(value & 0xFF);
@@ -243,6 +251,7 @@ namespace baremetal::assembler {
 			      value >>= 8;
 			    }
 
+					sign = false;
 					break;
 				}
 				default: return utility::error("unexpected token following memory definition");
@@ -330,26 +339,22 @@ namespace baremetal::assembler {
 	void frontend::assemble_instruction(const instruction* inst) {
 		// operands match, but, in some cases we need to retype some of them to the actual type, ie. 
 		// immediates can actually be relocations
-		for(u8 j = 0; j < m_operand_i; ++j) {
-			if(j == m_unresolved_index) {
+		for(u8 i = 0; i < m_operand_i; ++i) {
+			if(i == m_unresolved_index) {
 				continue;
 			}
 
-			m_operands[j].type = inst->operands[j];
+			m_operands[i].type = inst->operands[i];
 
-			if(is_operand_rel(inst->operands[j])) {
+			if(is_operand_rel(inst->operands[i])) {
 				u8 size = backend::emit_instruction(m_instruction_i, m_operands).size;
-				m_operands[j].immediate = static_cast<i32>(m_operands[j].immediate.value) - size;
+				m_operands[i].immediate = static_cast<i32>(m_operands[i].immediate.value) - size;
 			}
 		}
 
-		// HACK: assemble the instruction and use that as the length
-		// TODO: cleanup
-		auto code = backend::emit_instruction(m_instruction_i, m_operands);
-		u8 size = code.size;
-
-		// NOTE: unoptimized instruction handle, fix this	
-		m_module.add_instruction(m_operands, m_instruction_i, size);
+		// assemble the instruction and use that as the length
+		const auto code = backend::emit_instruction(m_instruction_i, m_operands);
+		m_module.add_instruction(m_operands, m_instruction_i, code.size);
 	
 		if(is_jump_or_branch_inst(m_instruction_i)) {
 			m_module.begin_block(BB_BRANCH, nullptr);
@@ -629,8 +634,6 @@ namespace baremetal::assembler {
 				case TOK_DB ... TOK_DQ: TRY(parse_define_memory()); break;
 				default: ASSERT(false, "unexpected times token: {}\n", token_to_string(m_lexer.current)); 
 			}
-			
-			// TODO: traverse to the end of our current line and verify there isn't anything else here
 		}
 
 		TRY(m_lexer.get_next_token());

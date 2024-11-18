@@ -161,25 +161,23 @@ namespace baremetal::assembler {
 		u8 operand_count = 0;
 	
 		for(operand_count = 0; operand_count< 4; ++operand_count) {
+			// we have an unresolved symbol as an operand, pick the biggest possible variant of this instruction
 			if(operands[operand_count].unknown) {
-				const instruction* legal_variants[5];
-
-				u32 current_index = index;
-				u8 legal_variants_index = 0;
-
-				while(is_legal_variant(index, current_index, operand_count)) {
-					legal_variants[legal_variants_index++] = &instruction_db[current_index++];
-				}
-
-				utility::stable_sort(legal_variants, legal_variants + legal_variants_index, [=](auto a, auto b) {
-					const u16 a_width = get_operand_bit_width(a->operands[operand_count]);
-					const u16 b_width = get_operand_bit_width(b->operands[operand_count]);
-
-					return a_width < b_width;
-				});
+				const instruction* largest_variant = &instruction_db[index];
+				u32 current_index = index + 1;
 				
-				// TODO: we just need the largest variant, we don't have to sort the entire array
-				return legal_variants[legal_variants_index - 1];
+				while(is_legal_variant(index, current_index, operand_count)) {
+				  const instruction* current = &instruction_db[current_index];
+
+				  if(get_operand_bit_width(current->operands[operand_count]) > 
+				    get_operand_bit_width(largest_variant->operands[operand_count])) {
+				    largest_variant = current;
+				  }
+
+				  current_index++;
+				}
+				
+				return largest_variant;
 			}
 
 			if(operands[operand_count].type == OP_NONE) {

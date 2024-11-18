@@ -137,7 +137,6 @@ namespace baremetal::assembler {
 		i32 base = 10;
 		char* data = current_string.get_data();
 
-		// TODO: add error checking
 		if(current_string[0] == '0' && current_string.get_size() > 1) {
 			switch(current_string[1]) {
 				case 'x':         base = 16; data += 2; break; // hex
@@ -147,9 +146,10 @@ namespace baremetal::assembler {
 			}
 		}
 
-		char* end;
-		u64 num = strtoull(data, &end, base);
-		current_immediate = imm(num);
+		const u64 number = strtoull(data, nullptr, base);
+		ASSERT(errno == 0, "strtoull failed for '{}'\n", current_string);
+
+		current_immediate = imm(number);
 
 		return current = TOK_NUMBER;
 	}
