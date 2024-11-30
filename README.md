@@ -19,6 +19,17 @@ $ ./output/bin/test_runner/test_runner
 ```
 You can find some basic examples in the [test directory](https://github.com/Goubermouche/baremetal/tree/f21bfa1933c139f4e8e275ac94fbe9d71f0cb09f/source/test_runner/tests/binary).
 
+## Supported passes
+### Optimization
+- CFG analysis
+- Instruction size minimization
+- Symbollic size minimiazation
+
+### Emission
+- Binary emit
+- CFG emission (Graphviz)
+
+
 ## Project structure
 ```
 - source       # assembler source directory
