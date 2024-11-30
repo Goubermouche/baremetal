@@ -3,11 +3,13 @@
 
 #include <utility/system/file.h>
 
+#include "assembler/ir/module.h"
 #include "assembler/passes/cfg_analyze_pass.h"
 #include "assembler/passes/inst_size_minimize_pass.h"
 #include "assembler/passes/symbolic_minimize_pass.h"
 
 #include "assembler/passes/emit/emit_binary_pass.h"
+#include "assembler/passes/emit/emit_cfg_pass.h"
 
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
@@ -161,7 +163,8 @@ namespace baremetal::assembler {
 			}	
 		}
 
-		m_module.begin_block(BB_INSTRUCTION, nullptr);
+		m_module.add_instruction_block(BB_INSTRUCTION);
+
 		return SUCCESS;
 	}
 
@@ -269,6 +272,7 @@ namespace baremetal::assembler {
 
 		m_module.add_data_block(data);
 		TRY(m_lexer.get_next_token());
+
 		return SUCCESS;
 	}
 	
@@ -357,7 +361,7 @@ namespace baremetal::assembler {
 		m_module.add_instruction(m_operands, m_instruction_i, code.size);
 	
 		if(is_jump_or_branch_inst(m_instruction_i)) {
-			m_module.begin_block(BB_BRANCH, nullptr);
+			m_module.add_instruction_block(BB_BRANCH);
 		}
 	}
 
@@ -605,9 +609,9 @@ namespace baremetal::assembler {
 	auto frontend::parse_label() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_COLON);
 
-		m_module.begin_block(BB_INSTRUCTION, nullptr);
-		m_module.add_symbol(m_current_identifier);
-		m_module.begin_block(BB_LABEL, m_current_identifier);
+		m_module.add_instruction_block(BB_INSTRUCTION);
+		m_module.add_label_block(m_current_identifier);
+
 		TRY(m_lexer.get_next_token());
 
 		return SUCCESS;

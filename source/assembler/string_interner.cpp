@@ -15,8 +15,6 @@ namespace baremetal {
 	}
 
 	auto string_interner::add(const utility::dynamic_string& string) -> utility::string_view* {
-		// TODO: potentially hash the string before, so that we can dodge the memcpy
-
 		// since the allocation in a block allocator is effectively an increment we can afford to 
 		// temporarily allocate a block
 		auto safepoint = m_allocator.create_safepoint();

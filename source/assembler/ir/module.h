@@ -42,7 +42,7 @@ namespace baremetal::assembler {
 		u64 start_position; // start position of this block in bytes
 		u64 size;           // block size in bytes 
 
-		u64 incoming_control_edge_count;
+		u64 incoming_control_edge_count = 0;
 
 		union {
 			instruction_block instructions;
@@ -70,10 +70,13 @@ namespace baremetal::assembler {
   struct module {
     module(context* ctx);
 
-		void add_data_block(const utility::dynamic_array<u8>& data);
     void add_instruction(const operand* operands, u32 index, u8 size);
 		void add_symbol(utility::string_view* name);
 		
+		void add_instruction_block(basic_block_type ty);
+		void add_label_block(utility::string_view* name);
+		void add_data_block(const utility::dynamic_array<u8>& data);
+
 		void set_section(utility::string_view* name);
 	
 		auto get_global_symbol_position(utility::string_view* name) const -> u64;
@@ -81,8 +84,6 @@ namespace baremetal::assembler {
 		auto get_block_at_index(u64 i) const -> basic_block*;
 		auto get_block_count() const -> u64;
 
-		void begin_block(basic_block_type ty, utility::string_view* name);
-		auto allocate_block(basic_block_type type) -> basic_block*;
 		void recalculate_block_sizes();
 		void print_section_info();
 
@@ -91,12 +92,12 @@ namespace baremetal::assembler {
 		utility::dynamic_array<section> sections;
     context* ctx;
 	private:
-		u64 m_current_section = 0;
-		u64 m_current_start_position = 0;
-		u64 m_current_segment_length = 0;
 		u64 m_block_count = 0; // total block count
+		u64 m_section_index = 0;
+
+		u64 m_current_block_position = 0;
+		u64 m_current_block_size = 0;
 
     utility::dynamic_array<instruction_data*> m_current_block;
-		utility::string_view* m_current_block_name = nullptr;
   };
 } // namespace baremetal::assembler

@@ -45,7 +45,7 @@ The following commands are intended to be used to aid the developer when manipul
 ```
 
 ## Planned
-- Executable/binary emission 
+- Executable 
 - Optional type prefixes
 - Better support for memory operands with SSE registers
 - Better error checking

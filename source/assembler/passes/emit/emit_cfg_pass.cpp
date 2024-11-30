@@ -8,23 +8,20 @@ namespace baremetal::assembler::pass {
 			utility::dynamic_string string;
 			u64 position = 0;
 
+			// stringify all isntruction in this block
 			for(u64 i = 0; i < block->instructions.size; ++i) {
 				const instruction_data* instruction_data = block->instructions.data[i];
 				const instruction* inst = &instruction_db[instruction_data->index];
 
+				// assemble the instruction
 				auto data = module.resolve_instruction(instruction_data, section, position);
+				string.append(g_instruction_label, block->start_position + position, bytes_to_string(data.data, data.size), inst->name);
 
-				string += "<tr><td align=\"left\" width=\"50px\">";
-				string += utility::int_to_string(block->start_position + position);
-				string += "</td><td align=\"left\" width=\"100px\">";
-				string += bytes_to_string(data.data, data.size);
-				string += "</td><td align=\"left\" width=\"100px\"><font COLOR=\"black\"><b>";
-				string += inst->name;
-				string += "</b></font></td><td align=\"left\"><font COLOR=\"black\"> ";
-
+				// stringify instruction operands
 				for(u8 j = 0; j < inst->operand_count; ++j) {
 					string += operand_to_string(inst, instruction_data->operands[j], j);
-			
+		
+					// separate individual operands with commas
 					if(j + 1 != inst->operand_count) {
 						string += ", ";
 					}
@@ -32,6 +29,43 @@ namespace baremetal::assembler::pass {
 				
 				string += "</font></td></tr>";
 				position += instruction_data->size;
+			}
+
+			return string;
+		}
+
+		auto label_block_to_string(const basic_block* block) -> utility::dynamic_string {
+			utility::dynamic_string string;
+
+			string.append(g_label_header, block->start_position, *block->label.name);
+
+			return string;
+		}
+
+		auto data_block_to_string(const basic_block* block)  -> utility::dynamic_string {
+			const u64 parts = ceil(static_cast<f32>(block->data.size) / 30.0f);
+			utility::dynamic_string string;
+
+			// stringify a block of data
+			for(u64 i = 0; i < parts; ++i) {
+				string.append("<tr><td align=\"left\">");
+	
+				if(i == 0) {
+					// first part
+					string.append(block->start_position);
+				}
+	
+				string.append("</td><td COLSPAN=\"100%\" align=\"left\">");
+	
+				u64 start = i * 30;
+				u64 end = utility::min(block->data.size, start + 30);
+	
+				for(u64 j = start; j < end; ++j) {
+					string += detail::byte_to_string(block->data.data[j]); 
+					string += ' ';
+				}
+	
+				string.append(" </td></tr>");
 			}
 
 			return string;
@@ -51,27 +85,23 @@ namespace baremetal::assembler::pass {
 				case OP_R8:  string += g_gpr8_names[op.r]; break;
 				case OP_R32: string += g_gpr32_names[op.r]; break;
 				case OP_R64: string += g_gpr64_names[op.r]; break;
-				case OP_XMM: string += "xmm"; string += utility::int_to_string(op.r); break;
-				case OP_YMM: string += "ymm"; string += utility::int_to_string(op.r); break;
-				case OP_ZMM: string += "zmm"; string += utility::int_to_string(op.r); break;
-				case OP_K_K: string += "k"; string += utility::int_to_string(op.mr.index); string += " {k"; string += utility::int_to_string(op.mr.k); string += "}"; break;
-				case OP_XMM_KZ: string += "xmm"; string += utility::int_to_string(op.r); string += " {k"; string += utility::int_to_string(op.mr.k); string += "}{z}"; break;
+				case OP_XMM: string.append("xmm{}", op.r); break;
+				case OP_YMM: string.append("ymm{}", op.r); break;
+				case OP_ZMM: string.append("zmm{}", op.r); break;
+				case OP_K_K: string.append("k{} {k{}}", op.mr.index, op.mr.k); break;
+				case OP_XMM_KZ: string.append("xmm{} {k{}}{z}", op.r, op.mr.k); break;
 				case OP_B32: {
-					const operand_type type = inst->operands[index];
-					const u8 broadcast_bits = broadcast_to_bits(type);
+					const u8 broadcast_bits = broadcast_to_bits(inst->operands[index]);
 					const u16 inst_size = inst_size_to_int(inst->op_size);
 
-					string += "[rax]{1to";
-					string += utility::int_to_string(inst_size / broadcast_bits);
-					string += '}';
-
+					string.append("[rax]{1to{}}", inst_size / broadcast_bits);
 					break;
 				} 
 				case OP_MEM:
-				case OP_M8:  string += "byte " + memory_to_string(op.memory); break;
-				case OP_M16: string += "word " + memory_to_string(op.memory); break;
-				case OP_M32: string += "dword " + memory_to_string(op.memory); break;
-				case OP_M64: string += "qword " + memory_to_string(op.memory); break;
+				case OP_M8:  string.append("byte {}", memory_to_string(op.memory)); break;
+				case OP_M16: string.append("word {}", memory_to_string(op.memory)); break;
+				case OP_M32: string.append("dword {}", memory_to_string(op.memory)); break;
+				case OP_M64: string.append("qword {}", memory_to_string(op.memory)); break;
 				case OP_I8:
 				case OP_I16:
 				case OP_I32:
@@ -86,11 +116,10 @@ namespace baremetal::assembler::pass {
 			utility::dynamic_string string;
 
 			if(i.sign) {
-				string += '-';
-				string += utility::int_to_string(~i.value + 1); // two's complement 
+				string.append("-{}", ~i.value + 1); // two's complement
 			}
 			else {
-				string += utility::int_to_string(i.value); 
+				string.append("{}", i.value);
 			}
 	
 			return string;
@@ -178,25 +207,22 @@ namespace baremetal::assembler::pass {
 			};
 
 			edge_type type;
-			u64 from;
-			u64 to;
+			u64 source;
+			u64 destination;
 		};
 
 		utility::dynamic_array<edge> edges;
 		utility::dynamic_string graph;
 
 		bool block_is_new_segment = true;
-
 		u64 global_block_offset = 0;
 		u64 current_block_id = 0;
-			
-		// utility::console::print("[cfg emit]: emitting cfg\n");
 
-		graph += "digraph cfg {\n";
-		graph += "\tgraph [splines=ortho]\n";
-		graph += "\tnode [shape=plaintext fontname=\"monospace\"]\n";
-		graph += "\tedge [penwidth=2.0]\n\n";
-
+		// graphviz header
+		graph.append("digraph cfg {\n");
+		graph.append("\tgraph [splines=ortho]\n");
+		graph.append("\tnode [shape=plaintext fontname=\"monospace\"]\n");
+		graph.append("\tedge [penwidth=2.0]\n\n");
 
 		// emit individual basic blocks
 		for(const section& section : module.sections) {
@@ -207,70 +233,29 @@ namespace baremetal::assembler::pass {
 				// new control flow block
 				if(block->incoming_control_edge_count || block_is_new_segment) {
 					if(global_block_index > 0) {
-						graph += "<tr PORT=\"bottom\"><td></td></tr></table>>]\n";
+						graph.append(detail::g_row_header);
 					}
 
-					graph += "\t\"";
-					graph += utility::int_to_string(global_block_index);
-					graph += "\"[label=<<table border=\"1\" cellborder=\"0\" cellspacing=\"0\"><tr PORT=\"top\"><td></td></tr>";
-
-					block_is_new_segment = false;
+					graph.append(detail::g_block_header, global_block_index);
 					current_block_id = global_block_index;
+					block_is_new_segment = false;
 				}	
 
 				// append the current instruction block to the current control flow block
 				switch(block->type) {
-					case BB_LABEL: {
-						graph += "<tr><td align=\"left\">";
-						graph += utility::int_to_string(block->start_position);
-						graph += "</td><td></td><td COLSPAN=\"100%\" align=\"left\"><b><font color=\"blue\">";
-						graph += *block->label.name;
-						graph += "</font></b></td></tr>";
-						break;
-					}
-					case BB_INSTRUCTION: {
-						graph += detail::instruction_block_to_string(block, section, module);
-						break;
-					}
-					case BB_BRANCH: {
-						graph += detail::instruction_block_to_string(block, section, module);
-						block_is_new_segment = true;
-						break;
-					}
-					case BB_DATA: {
-						u64 parts = ceil(static_cast<f32>(block->data.size) / 30.0f);
-	
-						for(u64 j = 0; j < parts; ++j) {
-							graph += "<tr><td align=\"left\">";
-	
-							if(j == 0) {
-								graph += utility::int_to_string(block->start_position);
-							}
-	
-							graph += "</td><td COLSPAN=\"100%\" align=\"left\">";
-	
-							u64 start = j * 30;
-							u64 end = utility::min(block->data.size, start + 30);
-	
-							for(u64 k = start; k < end; ++k) {
-								graph += detail::byte_to_string(block->data.data[k]); 
-								graph += ' ';
-							}
-	
-							graph += ' ';
-							graph +="</td></tr>";
-						}
-	
-						break;
-					}
+					case BB_INSTRUCTION: graph += detail::instruction_block_to_string(block, section, module); break;
+					case BB_BRANCH:      graph += detail::instruction_block_to_string(block, section, module); block_is_new_segment = true; break;
+					case BB_LABEL:       graph += detail::label_block_to_string(block); break; break;
+					case BB_DATA:        graph += detail::data_block_to_string(block); break;
+					default: ASSERT(false, "unknown basic block type received\n");
 				}
 
-				// instructions with no instructions cannot produce a control flow edge
+				// blocks with no instructions cannot produce a control flow edge
 				if(!block->is_instruction_block()) {
 					continue;
 				}
 
-				// generate edges
+				// generate control flow edges
 				const instruction_data* inst = block->instructions.data[block->instructions.size - 1];
 				bool is_branch = false;
 
@@ -282,8 +267,12 @@ namespace baremetal::assembler::pass {
 
 				// branch to the following control flow block (occurs when the next block has an incoming edge)
 				if(global_block_index < module.get_block_count() - 1) {
-					if((block_is_new_segment || module.get_block_at_index(global_block_index + 1)->incoming_control_edge_count)) {
-						edges.push_back({ is_branch ? edge::BRANCH_FAIL : edge::FALLTHROUGH, current_block_id, global_block_index + 1});	
+					if(block_is_new_segment || module.get_block_at_index(global_block_index + 1)->incoming_control_edge_count) {
+						edges.push_back({ 
+							is_branch ? edge::BRANCH_FAIL : edge::FALLTHROUGH,
+							current_block_id, 
+							global_block_index + 1
+						});	
 					}
 				}
 			}
@@ -295,11 +284,7 @@ namespace baremetal::assembler::pass {
 
 		// append generated edges
 		for(auto edge : edges) {
-			graph += "\t\"";
-			graph += utility::int_to_string(edge.from);
-			graph += "\":bottom:s -> \"";
-			graph += utility::int_to_string(edge.to);
-			graph += "\":top:n [color=\"";
+			graph.append("\t\"{}\":bottom:s -> \"{}\":top:n [color=\"", edge.source, edge.destination);
 
 			switch(edge.type) {
 				case edge::BRANCH_PASS: graph += "darkgreen"; break;
@@ -311,7 +296,7 @@ namespace baremetal::assembler::pass {
 
 			// if an edge creates a loop, we have to swap the direction, this is a workaround around 
 			// a bug with ortho edges in graphviz
-			if(edge.from == edge.to) {
+			if(edge.source == edge.destination) {
 				graph += "dir=back";
 			}
 
