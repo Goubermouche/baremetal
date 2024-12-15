@@ -1,5 +1,5 @@
 #pragma once
-#include "assembler/string_interner.h"
+#include <utility//containers/string_interner.h>
 
 namespace baremetal::assembler {
 	struct context {
