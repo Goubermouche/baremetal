@@ -1,5 +1,5 @@
 #pragma once
-#include <utility//containers/string_interner.h>
+#include <utility/containers/string_interner.h>
 
 namespace baremetal::assembler {
 	struct context {
@@ -8,7 +8,7 @@ namespace baremetal::assembler {
 		void clear();
 
 		utility::block_allocator allocator;
-		string_interner strings;
+		utility::string_interner strings;
 	};
 } // namespace baremetal::assembler
 
