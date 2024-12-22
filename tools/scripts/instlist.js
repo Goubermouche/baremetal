@@ -24,14 +24,6 @@ function main() {
 		names_total++;
 	})
 
-	// let names_arr = [...names].sort();
-
-	// // print the final array
-	// names_arr.forEach(name => {
-	// 	console.log(name);
-	// })
-	//
-	
 	console.log(`${names_total} total instruction variants`);
 	console.log(`${names.size} instruction instances`);
 

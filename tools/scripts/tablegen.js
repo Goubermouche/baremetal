@@ -154,21 +154,21 @@ function get_instruction_flags(inst) {
 }
 
 function encode_special(id, index) {
-  if (id < 0 || id > 3 || index < 0 || index > 16384) {
-    throw new Error('invalid id or index');
-  }
+	if(id < 0 || id > 3 || index < 0 || index > 16384) {
+		throw new Error('invalid id or index');
+	}
 
-  return (id << 14) | index;
+	return (id << 14) | index;
 }
 
 function is_immediate(op) {
-  switch(op) {
-    case 'i8':
-    case 'i16':
-    case 'i32':
-    case 'i64': return true;
-    default:    return false;
-  }
+	switch(op) {
+		case 'i8':
+		case 'i16':
+		case 'i32':
+		case 'i64': return true;
+		default:    return false;
+	}
 }
 
 function calculate_magic(inst, dest_to_source) {
@@ -215,33 +215,33 @@ function main() {
 	// sort instructions
 	instructions.sort((a, b) => {
 		const a_is_evex=a.enc.includes('EVEX');
-  	const b_is_evex=b.enc.includes('EVEX');
+		const b_is_evex=b.enc.includes('EVEX');
 
-  	if(a.name<b.name) { return -1; }
-  	if(a.name>b.name) { return 1; }
+		if(a.name<b.name) { return -1; }
+		if(a.name>b.name) { return 1; }
 
-  	if(a_is_evex===b_is_evex) {
-  	  const order_a_1=get_operand_order(a.operands[0]);
-  	  const order_b_1=get_operand_order(b.operands[0]);
+		if(a_is_evex===b_is_evex) {
+			const order_a_1=get_operand_order(a.operands[0]);
+			const order_b_1=get_operand_order(b.operands[0]);
 
-  	  if(order_a_1<order_b_1) { return -1; }
-  	  if(order_a_1>order_b_1) { return 1; }
+			if(order_a_1<order_b_1) { return -1; }
+			if(order_a_1>order_b_1) { return 1; }
 
-  	  const order_a_2=get_operand_order(a.operands[1]);
-  	  const order_b_2=get_operand_order(b.operands[1]);
+			const order_a_2=get_operand_order(a.operands[1]);
+			const order_b_2=get_operand_order(b.operands[1]);
 
-  	  if(order_a_2<order_b_2) { return -1; }
-  	  if(order_a_2>order_b_2) { return 1; }
+			if(order_a_2<order_b_2) { return -1; }
+			if(order_a_2>order_b_2) { return 1; }
 
-  	  return 0;
-  	}
+			return 0;
+		}
 
 		// EVEX instructions should be placed as the last ones in their mnemonic group,
 		// since we want to skip EVEX variants of VEX instructions (for cases where the
 		// magic index gets involved). Additionally, EVEX instructions will probably 
 		// get used much less often, hence this works as an optimization, but this is 
 		// just a bonus.
-  	return a_is_evex ? 1 : -1;
+		return a_is_evex ? 1 : -1;
 	});
 
 	// instruction lookup
@@ -276,7 +276,7 @@ function main() {
 
 	// format the table
 	const instruction_table_layout = utility.calculate_layout(instruction_table);
-  const instruction_table_text = utility.apply_layout(instruction_table_layout, instruction_table, 'inst(', '),');
+	const instruction_table_text = utility.apply_layout(instruction_table_layout, instruction_table, 'inst(', '),');
 
 	console.log(instruction_table_text);
 

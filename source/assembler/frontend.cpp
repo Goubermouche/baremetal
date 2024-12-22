@@ -15,7 +15,7 @@
   do {                                                            \
     if(m_lexer.current != expected) {                             \
       return utility::error("[PASS 1]unexpected token received"); \
-		}                                                             \
+    }                                                             \
   }                                                               \
   while(false)
 
@@ -249,10 +249,10 @@ namespace baremetal::assembler {
 					}
 
 					for(u8 i = 0; i < bytes; ++i) {
-			      u8 byte = static_cast<u8>(value & 0xFF);
+						u8 byte = static_cast<u8>(value & 0xFF);
 						data.push_back(byte);
-			      value >>= 8;
-			    }
+						value >>= 8;
+					}
 
 					sign = false;
 					break;
@@ -314,7 +314,7 @@ namespace baremetal::assembler {
 
 		// locate the specific variant (dumb linear search in our specific group)
 		while(m_instruction_i < INSTRUCTION_DB_SIZE) {
-			const instruction& current = instruction_db[m_instruction_i]; 
+			const instruction& current = g_instruction_db[m_instruction_i]; 
 
 			// verify that the instruction names are the same and that we've not left our instruction group
 			if(*instruction_name != current.name) {
@@ -330,7 +330,7 @@ namespace baremetal::assembler {
 			m_instruction_i++;
 		}
 
-		utility::console::print_err("'{}': ", instruction_db[start].name);
+		utility::console::print_err("'{}': ", g_instruction_db[start].name);
 		for(u8 i = 0; i < m_operand_i; ++i) {
 			utility::console::print_err("{} ", operand_type_to_string(m_operands[i].type));
 		}
@@ -394,9 +394,9 @@ namespace baremetal::assembler {
 
 		// find the bn from the current instruction
 		while(index < INSTRUCTION_DB_SIZE) {
-			const instruction& current = instruction_db[index];
+			const instruction& current = g_instruction_db[index];
 
-			if(utility::compare_strings(instruction_db[m_instruction_i].name, current.name) != 0) {
+			if(utility::compare_strings(g_instruction_db[m_instruction_i].name, current.name) != 0) {
 				break;
 			}
 
@@ -493,6 +493,7 @@ namespace baremetal::assembler {
 		}
 
 		TRY(m_lexer.get_next_token());
+
 		return SUCCESS;
 	}
 
@@ -502,6 +503,7 @@ namespace baremetal::assembler {
 
 		if(mask == MASK_NONE) {
 			m_operands[m_operand_i++] = op;
+
 			return SUCCESS; // no mask
 		}
 
@@ -513,6 +515,7 @@ namespace baremetal::assembler {
 		TRY(op.type, detail::mask_operand(op.type, mask));
 
 		m_operands[m_operand_i++] = op;
+
 		return SUCCESS;
 	}
 
@@ -534,6 +537,7 @@ namespace baremetal::assembler {
 		EXPECT_TOKEN(TOK_CHAR);
 		m_operands[m_operand_i++] = imm(static_cast<i32>(m_lexer.current_string[0]));
 		TRY(m_lexer.get_next_token());
+
 		return SUCCESS;
 	}
 
@@ -574,6 +578,7 @@ namespace baremetal::assembler {
 		m_operands[m_operand_i++] = rip_rel;
 
 		TRY(m_lexer.get_next_token());
+
 		return SUCCESS;
 	}
 
@@ -641,6 +646,7 @@ namespace baremetal::assembler {
 		}
 
 		TRY(m_lexer.get_next_token());
+
 		return SUCCESS;
 	}
 
@@ -649,6 +655,7 @@ namespace baremetal::assembler {
 		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_NUMBER);
 		TRY(m_lexer.get_next_token());
+
 		return SUCCESS;
 	}
 
@@ -694,10 +701,12 @@ namespace baremetal::assembler {
 					TRY(m_lexer.get_next_token());
 					EXPECT_TOKEN(TOK_DOLLARSIGN);
 					current_reg = rip;
+
 					break;
 				}
 				case TOK_ASTERISK: {
 					scale_mode = true;
+
 					break;
 				}
 				case TOK_PLUS: {
@@ -898,8 +907,8 @@ namespace baremetal::assembler {
 		result = static_cast<mask_type>(result + 8);
 		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_RBRACE);
-		
 		TRY(m_lexer.get_next_token());
+
 		return result;
 	}
 } // namespace baremetal::assembler

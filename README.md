@@ -1,6 +1,5 @@
 ## baremetal [![Tests (ubuntu-latest)](https://github.com/Goubermouche/baremetal/actions/workflows/test_ubuntu.yml/badge.svg)](https://github.com/Goubermouche/baremetal/actions/workflows/test_ubuntu.yml)
 
-
 Basic x64 assembler which currently supports the majority of x64 instructions, including pretty much all extensions as specified by the [Intel® 64 and IA-32 Architectures Software Developer’s Manual](https://cdrdv2.intel.com/v1/dl/getContent/671200). Additionally, it also supports out-of-order definition with optimal instruction selection (pretty much 1-to-1 with [Nasm](https://www.nasm.us/)), as well as labels, and memory defines. 
 
 ## Getting up and running
@@ -26,17 +25,16 @@ You can find some basic examples in the [test directory](https://github.com/Goub
 - Symbollic size minimiazation
 
 ### Emission
-- Binary emit
+- Binary emission (.bin)
 - CFG emission (Graphviz)
-
 
 ## Project structure
 ```
-- source       # assembler source directory
-  |- assembler # source code for the assembler implementation
-  `- tests     # test runners and test cases
-- tools        # utilities used for managing the instruction database and tests
-  `- scripts   # implementations of the utility programs
+- source         # assembler source directory
+  |- assembler   # source code for the assembler implementation
+  `- test_runner # test runners and test cases
+- tools          # utilities used for managing the instruction database and tests
+  `- scripts     # implementations of the utility programs
 ```
 To achieve overall correctness, the project utilizes a variety of tests, some of which may need to be regenerated once breaking changes to the instruction database are introduced.  
 
@@ -56,7 +54,7 @@ The following commands are intended to be used to aid the developer when manipul
 ```
 
 ## Planned
-- Executable 
+- Executable/Object file emission
 - Optional type prefixes
 - Better support for memory operands with SSE registers
 - Better error checking

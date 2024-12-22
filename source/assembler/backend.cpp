@@ -94,31 +94,31 @@ namespace baremetal::assembler {
 	u8 backend::m_data[MAX_INSTRUCTION_SIZE];
 
 	auto backend::get_instruction_by_name(const char* name) -> u32 {
-    i32 left = 0;
-    i32 right = INSTRUCTION_DB_SIZE - 1;
+		i32 left = 0;
+		i32 right = INSTRUCTION_DB_SIZE - 1;
 
 		// since our instructions are sorted alphabetically, we can just do a quick binary search
-    while(left <= right) {
-      u32 mid = (static_cast<u32>(left) + static_cast<u32>(right)) >> 1;
-      i32 cmp = utility::compare_strings(name, instruction_db[mid].name);
+		while(left <= right) {
+			u32 mid = (static_cast<u32>(left) + static_cast<u32>(right)) >> 1;
+			i32 cmp = utility::compare_strings(name, g_instruction_db[mid].name);
 
-      if(cmp == 0) {
+			if(cmp == 0) {
 				// found an element with the specified name, loccate the first one
-        while(mid > 0 && utility::compare_strings(name, instruction_db[mid - 1].name) == 0) {
-          --mid;
-        }
+				while(mid > 0 && utility::compare_strings(name, g_instruction_db[mid - 1].name) == 0) {
+					--mid;
+				}
 
-        return mid;
-      }
-      else if(cmp < 0) {
-        right = static_cast<i32>(mid) - 1;
-      }
-      else {
+				return mid;
+			}
+			else if(cmp < 0) {
+				right = static_cast<i32>(mid) - 1;
+			}
+			else {
 				left = static_cast<i32>(mid) + 1;
-      }
-    }
+			}
+		}
 
-    return utility::limits<u32>::max();
+		return utility::limits<u32>::max();
 	}
 
 	auto is_legal_operand_variant(operand_type a, operand_type b) -> bool {
@@ -134,9 +134,9 @@ namespace baremetal::assembler {
 
 	auto is_legal_variant(u32 a, u32 b, u8 operand_index) -> bool {
 		// check if instruction[a] == instruction[b]
-		const u8 operand_count = instruction_db[a].operand_count;
+		const u8 operand_count = g_instruction_db[a].operand_count;
 
-		if(utility::compare_strings(instruction_db[a].name, instruction_db[b].name) != 0) {
+		if(utility::compare_strings(g_instruction_db[a].name, g_instruction_db[b].name) != 0) {
 			return false;
 		}
 
@@ -145,36 +145,36 @@ namespace baremetal::assembler {
 				continue;
 			}
 
-			if(!is_legal_operand_variant(instruction_db[a].operands[i], instruction_db[b].operands[i])) {
+			if(!is_legal_operand_variant(g_instruction_db[a].operands[i], g_instruction_db[b].operands[i])) {
 				return false;
 			}
 		}
 
 		return 
-			is_operand_imm(instruction_db[b].operands[operand_index]) || 
-			is_operand_rel(instruction_db[b].operands[operand_index]) ||
-			is_operand_mem(instruction_db[b].operands[operand_index]); 
+			is_operand_imm(g_instruction_db[b].operands[operand_index]) || 
+			is_operand_rel(g_instruction_db[b].operands[operand_index]) ||
+			is_operand_mem(g_instruction_db[b].operands[operand_index]); 
 	}
 
 	auto backend::get_instruction_direct(u32 index, const operand* operands) -> const instruction* {
-		const instruction& first = instruction_db[index];
+		const instruction& first = g_instruction_db[index];
 		u8 operand_count = 0;
 	
 		for(operand_count = 0; operand_count< 4; ++operand_count) {
 			// we have an unresolved symbol as an operand, pick the biggest possible variant of this instruction
 			if(operands[operand_count].unknown) {
-				const instruction* largest_variant = &instruction_db[index];
+				const instruction* largest_variant = &g_instruction_db[index];
 				u32 current_index = index + 1;
 				
 				while(is_legal_variant(index, current_index, operand_count)) {
-				  const instruction* current = &instruction_db[current_index];
+					const instruction* current = &g_instruction_db[current_index];
 
-				  if(get_operand_bit_width(current->operands[operand_count]) > 
-				    get_operand_bit_width(largest_variant->operands[operand_count])) {
-				    largest_variant = current;
-				  }
+					if(get_operand_bit_width(current->operands[operand_count]) > 
+						get_operand_bit_width(largest_variant->operands[operand_count])) {
+						largest_variant = current;
+					}
 
-				  current_index++;
+					current_index++;
 				}
 				
 				return largest_variant;
@@ -185,8 +185,8 @@ namespace baremetal::assembler {
 			}
 		}
 	
-		while(utility::compare_strings(first.name, instruction_db[index].name) == 0) {
-			const instruction& other = instruction_db[index++];
+		while(utility::compare_strings(first.name, g_instruction_db[index].name) == 0) {
+			const instruction& other = g_instruction_db[index++];
 	
 			if(operand_count != other.operand_count) {
 				continue;
@@ -220,7 +220,7 @@ namespace baremetal::assembler {
 		u32 current_index = index;
 
 		while(is_legal_variant(index, current_index, unknown_index)) {
-			variants.push_back(instruction_db[current_index++].operands[unknown_index]);
+			variants.push_back(g_instruction_db[current_index++].operands[unknown_index]);
 		}
 
 		utility::stable_sort(variants.begin(), variants.end(), [=](auto a, auto b) {
@@ -247,7 +247,7 @@ namespace baremetal::assembler {
 		u32 current_index = index;
 
 		while(is_legal_variant(index, current_index, unknown_index)) {
-			variants.push_back({instruction_db[current_index].operands[unknown_index], current_index});
+			variants.push_back({g_instruction_db[current_index].operands[unknown_index], current_index});
 			current_index++;
 		}
 
@@ -279,6 +279,7 @@ namespace baremetal::assembler {
 	auto backend::emit_instruction(u32 index, const operand* operands) -> code {
 		const instruction* inst = get_instruction_direct(index, operands);
 		ASSERT(inst, "no instruction variant available for the provided operands\n");
+
 		return emit_instruction(inst, operands);
 	}
 

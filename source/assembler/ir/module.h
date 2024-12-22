@@ -3,13 +3,13 @@
 #include "assembler/backend.h"
 
 namespace baremetal::assembler {
-  using namespace utility::types;
+	using namespace utility::types;
 
-  struct instruction_data {
-    operand operands[4];
-    u32 index;
+	struct instruction_data {
+		operand operands[4];
+		u32 index;
 		u8 size;
-  };
+	};
 
 	enum basic_block_type : u8 {
 		BB_INSTRUCTION, // block containing at least one instruction
@@ -18,7 +18,7 @@ namespace baremetal::assembler {
 		BB_DATA         // block containing arbitrary binary data
 	};
 
-  struct basic_block {
+	struct basic_block {
 		struct instruction_block {
 			instruction_data** data; // instructions 
 			u64 size;                // number of instructions
@@ -64,13 +64,13 @@ namespace baremetal::assembler {
 		u64 size = 0;      // unaligned size of this section, in bytes
 
 		utility::map<utility::string_view*, symbol> symbols;
-    utility::dynamic_array<basic_block*> blocks;
+		utility::dynamic_array<basic_block*> blocks;
 	};
 
-  struct module {
-    module(context* ctx);
+	struct module {
+		module(context* ctx);
 
-    void add_instruction(const operand* operands, u32 index, u8 size);
+		void add_instruction(const operand* operands, u32 index, u8 size);
 		void add_symbol(utility::string_view* name);
 		
 		void add_instruction_block(basic_block_type ty);
@@ -90,7 +90,7 @@ namespace baremetal::assembler {
 		auto resolve_instruction(const instruction_data* data, const section& section, u64 position) const -> backend::code;
 
 		utility::dynamic_array<section> sections;
-    context* ctx;
+		context* ctx;
 	private:
 		u64 m_block_count = 0; // total block count
 		u64 m_section_index = 0;
@@ -98,6 +98,6 @@ namespace baremetal::assembler {
 		u64 m_current_block_position = 0;
 		u64 m_current_block_size = 0;
 
-    utility::dynamic_array<instruction_data*> m_current_block;
-  };
+		utility::dynamic_array<instruction_data*> m_current_block;
+	};
 } // namespace baremetal::assembler

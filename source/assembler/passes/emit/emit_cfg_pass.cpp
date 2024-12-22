@@ -11,7 +11,7 @@ namespace baremetal::assembler::pass {
 			// stringify all isntruction in this block
 			for(u64 i = 0; i < block->instructions.size; ++i) {
 				const instruction_data* instruction_data = block->instructions.data[i];
-				const instruction* inst = &instruction_db[instruction_data->index];
+				const instruction* inst = &g_instruction_db[instruction_data->index];
 
 				// assemble the instruction
 				auto data = module.resolve_instruction(instruction_data, section, position);

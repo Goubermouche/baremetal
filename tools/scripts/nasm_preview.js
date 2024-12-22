@@ -12,8 +12,8 @@ function main() {
 	const bin_path = 'tmp.bin';
 	const out_path = 'out.txt';
 
-  const nasm_command = `nasm -w+all -f bin -o ${bin_path} ${asm_path} > ${temp_path} 2>&1`;
-  let hexdump_command = `xxd -g 999999 ${bin_path} > ${out_path}`;
+	const nasm_command = `nasm -w+all -f bin -o ${bin_path} ${asm_path} > ${temp_path} 2>&1`;
+	let hexdump_command = `xxd -g 999999 ${bin_path} > ${out_path}`;
 
 	if(process.argv.length === 4) {
 		switch(process.argv[3]) {
@@ -26,8 +26,8 @@ function main() {
 				console.log('       filepath: mandatory path of the file to assemble')
 				console.log('       mode    : optional mode specifier (--plain/-p or --normal/-n)')
 				return 1;
-			} 
-		}	
+			}
+		}
 	}
 
 	try {
@@ -40,8 +40,8 @@ function main() {
 		// cleanup
 		try {
 			utility.delete_file(temp_path);
-  		utility.delete_file(bin_path);
-  		utility.delete_file(out_path);
+			utility.delete_file(bin_path);
+			utility.delete_file(out_path);
 		} catch(err) {}
 	}
 

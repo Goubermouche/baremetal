@@ -5,30 +5,30 @@ namespace baremetal::assembler {
 	using namespace utility::types;
 
 	enum reg_type : u8 {
-    REG_NONE = 0,
-    
-    // general purpose registers
-    REG_R8,
-    REG_R16,
-    REG_R32,
-    REG_R64,
-    
-    // instruction pointer
-    REG_RIP,
+		REG_NONE = 0,
+		
+		// general purpose registers
+		REG_R8,
+		REG_R16,
+		REG_R32,
+		REG_R64,
+		
+		// instruction pointer
+		REG_RIP,
 
-    // vector registers
-    REG_XMM,  // 128-bit
-    REG_YMM,  // 256-bit
-    REG_ZMM,  // 512-bit
-    REG_TMM,  // tensor (varies by ISA)
+		// vector registers
+		REG_XMM,  // 128-bit
+		REG_YMM,  // 256-bit
+		REG_ZMM,  // 512-bit
+		REG_TMM,  // tensor (varies by ISA)
 
-    REG_MMX,  // mmx registers
-    REG_K,    // mask registers:w
-    REG_ST,   // floating point registers
-    REG_SREG, // segment registers
-    REG_DREG, // debug registers
-    REG_CREG, // control registers
-    REG_BND   // bound registers
+		REG_MMX,  // mmx registers
+		REG_K,    // mask registers:w
+		REG_ST,   // floating point registers
+		REG_SREG, // segment registers
+		REG_DREG, // debug registers
+		REG_CREG, // control registers
+		REG_BND   // bound registers
 	};
 
 	struct reg {

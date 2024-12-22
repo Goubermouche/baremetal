@@ -406,11 +406,11 @@ namespace baremetal::assembler {
 	}
 
 	// main isntruction database
-	static constexpr instruction instruction_db[] = {
+	static constexpr instruction g_instruction_db[] = {
 		#include "assembler/instruction/databases/database.inc"
 	};
 
-	constexpr u32 INSTRUCTION_DB_SIZE = sizeof(instruction_db) / sizeof(instruction);
+	constexpr u32 INSTRUCTION_DB_SIZE = sizeof(g_instruction_db) / sizeof(instruction);
 	constexpr u8 MAX_INSTRUCTION_SIZE = 15;
 
 	static_assert(INSTRUCTION_DB_SIZE < 16384, "magic number limit reached");

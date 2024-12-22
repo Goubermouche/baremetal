@@ -21,25 +21,25 @@ namespace baremetal::assembler {
 		}
 	}
 
-  module::module(context* ctx) : ctx(ctx) {
+	module::module(context* ctx) : ctx(ctx) {
 		set_section(ctx->strings.add(".text"));
 	}
 
-  void module::add_instruction(const operand* operands, u32 index, u8 size) {
-    instruction_data* instruction = ctx->allocator.emplace<instruction_data>();
+	void module::add_instruction(const operand* operands, u32 index, u8 size) {
+		instruction_data* instruction = ctx->allocator.emplace<instruction_data>();
 
 		utility::memcpy(instruction->operands, operands, sizeof(operand) * 4);
 
-    instruction->index = index;
+		instruction->index = index;
 		instruction->size = size;
 
 		// update the parent section
 		sections[m_section_index].offset += instruction->size;
-    
+
 		// update the current block
 		m_current_block.push_back(instruction);
 		m_current_block_size += size;
-  }
+	}
 
 	void module::add_symbol(utility::string_view* name) {
 		section& current_section = sections[m_section_index];
@@ -161,7 +161,7 @@ namespace baremetal::assembler {
 	}
 
 	auto module::resolve_instruction(const instruction_data* data, const section& section, u64 position) const  -> backend::code {
-		const instruction* inst = &instruction_db[data->index];
+		const instruction* inst = &g_instruction_db[data->index];
 		static operand operands[4];
 
 		utility::memcpy(operands, data->operands, sizeof(operand) * 4);

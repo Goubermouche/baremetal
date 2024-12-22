@@ -213,30 +213,30 @@ namespace baremetal::assembler {
 			case MASK_BROADCAST_1TO8: 
 			case MASK_BROADCAST_1TO16:
 			case MASK_BROADCAST_1TO32: return true;
-      default: return false;
-    }
+			default: return false;
+		}
 	}
 
 	auto mask_to_k(mask_type mask) -> u8 {
 		switch(mask) {
-      case MASK_K0: 
+			case MASK_K0: 
 			case MASK_K0_Z: return 0;
-      case MASK_K1: 
+			case MASK_K1: 
 			case MASK_K1_Z: return 1;
-      case MASK_K2:
+			case MASK_K2:
 			case MASK_K2_Z: return 2;
-      case MASK_K3: 
+			case MASK_K3: 
 			case MASK_K3_Z: return 3;
-      case MASK_K4:
+			case MASK_K4:
 			case MASK_K4_Z: return 4;
-      case MASK_K5:
+			case MASK_K5:
 			case MASK_K5_Z: return 5;
-      case MASK_K6:
+			case MASK_K6:
 			case MASK_K6_Z: return 6;
-      case MASK_K7: 
+			case MASK_K7: 
 			case MASK_K7_Z: return 7;
-      default: return 0;
-    }
+			default: return 0;
+		}
 	}
 
 	auto mask_to_broadcast_n(mask_type mask) -> u8 {
@@ -246,8 +246,8 @@ namespace baremetal::assembler {
 			case MASK_BROADCAST_1TO8:  return 8;
 			case MASK_BROADCAST_1TO16: return 16;
 			case MASK_BROADCAST_1TO32: return 32;
-      default: return 0;
-    }
+			default: return 0;
+		}
 	}
 
 	auto token_to_data_type(token_type token) -> data_type {

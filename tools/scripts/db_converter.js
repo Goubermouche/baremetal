@@ -1,42 +1,42 @@
 const utility = require("./utility.js")
 
 function escape_exp(string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function remove_str(target, strings_to_remove) {
-  for(let str of strings_to_remove) {
-    let regex = new RegExp(str, 'g');
-    target = target.replace(regex, '');
-  }
+	for(let str of strings_to_remove) {
+		let regex = new RegExp(str, 'g');
+		target = target.replace(regex, '');
+	}
 
-  return target;
+	return target;
 }
 
 function is_hex(str) {
-  return Boolean(str.match(/^[0-9a-fA-F]+$/i))
+	return Boolean(str.match(/^[0-9a-fA-F]+$/i))
 }
 
 function generate_combinations(arr) {
-  function combine(prefix, elements) {
-    if (elements.length === 0) {
-      result.push(prefix);
-      return;
-    }
+	function combine(prefix, elements) {
+		if(elements.length === 0) {
+			result.push(prefix);
+			return;
+		}
 
-    const [first, ...rest] = elements;
-    const parts = first.split(/\/|\|/);
+		const [first, ...rest] = elements;
+		const parts = first.split(/\/|\|/);
 
-    parts.forEach(part => {
-      combine(prefix.concat(part), rest);
-    });
-  }
+		parts.forEach(part => {
+			combine(prefix.concat(part), rest);
+		});
+	}
 
-  const result = [];
-  combine([], arr);
-  return result;
+	const result = [];
+	combine([], arr);
+
+	return result;
 }
-
 
 function replace_all(input, rules) {
 	for(let rule of rules) {
@@ -45,7 +45,7 @@ function replace_all(input, rules) {
 		}
 	}
 
-  return input;
+	return input;
 }
 
 function extract_inst_operands(inst) {
@@ -57,22 +57,22 @@ function extract_inst_operands(inst) {
 	].map(r => escape_exp(r));
 
 	const replacements = [
-    { s: 'ib/ub', r: 'i8' },
-    { s: 'iw/uw', r: 'i16' },
-    { s: 'id/ud', r: 'i32' },
-    { s: 'iq/uq', r: 'i64' },
-    { s: 'ib', r: 'i8' },
-    { s: 'iw', r: 'i16' },
-    { s: 'id', r: 'i32' },
-    { s: 'iq', r: 'i64' },
+		{ s: 'ib/ub', r: 'i8' },
+		{ s: 'iw/uw', r: 'i16' },
+		{ s: 'id/ud', r: 'i32' },
+		{ s: 'iq/uq', r: 'i64' },
+		{ s: 'ib', r: 'i8' },
+		{ s: 'iw', r: 'i16' },
+		{ s: 'id', r: 'i32' },
+		{ s: 'iq', r: 'i64' },
 		{ s: 'ub', r: 'i8' },
-    { s: 'uw', r: 'i16' },
-    { s: 'ud', r: 'i32' },
-    { s: 'uq', r: 'i64' },
-    { s: 'mm', r: 'mmx' },
-    { s: 'mm/m64', r: 'mmx/m64' },
-    { s: 'st(0)', r: 'st0' },
-    { s: 'st(i)', r: 'st' },
+		{ s: 'uw', r: 'i16' },
+		{ s: 'ud', r: 'i32' },
+		{ s: 'uq', r: 'i64' },
+		{ s: 'mm', r: 'mmx' },
+		{ s: 'mm/m64', r: 'mmx/m64' },
+		{ s: 'st(0)', r: 'st0' },
+		{ s: 'st(i)', r: 'st' },
 	];
 
 	const masks = ['{kz}', '{k}'];
@@ -90,11 +90,11 @@ function extract_inst_operands(inst) {
 		let current = parts[i];
 
 		masks.some(mask => {
-		  if(current.startsWith(mask)) {
-		    current = current.slice(mask.length);
+			if(current.startsWith(mask)) {
+				current = current.slice(mask.length);
 				result[result.length - 1] += '_' + mask.slice(1, -1);
 
-		    return true; 		
+				return true; 		
 			}
 
 			return false;
@@ -109,10 +109,10 @@ function extract_inst_operands(inst) {
 }
 
 function process_enc(input) {
-  const i = input.indexOf('-');
-  const result = i !== -1 ? input.slice(0, i) : input;
-  
-  return result.replace(/:\s*$/, '');
+	const i = input.indexOf('-');
+	const result = i !== -1 ? input.slice(0, i) : input;
+
+	return result.replace(/:\s*$/, '');
 }
 
 function extract_encoding(enc) {
@@ -179,15 +179,14 @@ function extract_encoding(enc) {
 				else if(p === '256') {
 					result.size = 256;
 				}
-
 				else if(['0F38', '0F', '0F3A'].some(i => i == p)) {
 					result.opcode.push(p);
 				}
 				else if(['66', 'F3', 'F2'].some(i => i == p)) {
 					result.prefix.push(p);
-				}				
+				}
 				else if(p === 'WIG') {}
-				else if(p === 'LIG') {}				
+				else if(p === 'LIG') {}
 				else if(p === 'LZ') {}
 				else if(p === 'L0') {
 					result.l = '0';
@@ -204,7 +203,7 @@ function extract_encoding(enc) {
 		else if(part.startsWith('EVEX')) {
 			let pp = part.split('.');
 			is_special = true;
-
+			
 			for(let p of pp) {
 				if(p === 'EVEX') {
 					result.enc = ['EVEX', result.enc].filter(e => { return e !== undefined; }).join('_');
@@ -215,8 +214,8 @@ function extract_encoding(enc) {
 				else if(p === 'W0') {
 					result.rexw = false;
 				}
-				else if(p === 'NP') {}					
-				else if(p === 'LIG') {}					
+				else if(p === 'NP') {}
+				else if(p === 'LIG') {}
 				else if(p === 'WIG') {}
 				else if(p === 'MAP5') {
 					result.map = '5';
@@ -291,10 +290,10 @@ function main() {
 	let db;
 	
 	try {
-	  const data = utility.read_file(process.argv[2]);
-	  db = JSON.parse(data);
+		const data = utility.read_file(process.argv[2]);
+		db = JSON.parse(data);
 	} catch (err) {
-	  console.error('error reading source database', err);
+		console.error('error reading source database', err);
 	}
 	
 	let instructions = [];

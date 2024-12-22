@@ -62,11 +62,11 @@ namespace baremetal::tests {
 		}
 	private:
 		void update(bool force = false) {
-	    constexpr u8 max_segments = 20;
+			constexpr u8 max_segments = 20;
 	
-	    const u64 finished_count = m_success_count + m_fail_count;
-	    const f64 percentage = (static_cast<f64>(finished_count) / m_total_tests) * 100;
-	    const u8 completed_segments = static_cast<u8>((finished_count * max_segments) / m_total_tests);
+			const u64 finished_count = m_success_count + m_fail_count;
+			const f64 percentage = (static_cast<f64>(finished_count) / m_total_tests) * 100;
+			const u8 completed_segments = static_cast<u8>((finished_count * max_segments) / m_total_tests);
 	
 			// only update the bar when we've surpassed another bar segment
 			if(completed_segments == m_completed_segment_count_old || force) {
@@ -74,15 +74,15 @@ namespace baremetal::tests {
 			}
 	
 			m_completed_segment_count_old = completed_segments;
-	   
+
 			// render our progress bar
 			utility::console::print("\r[", static_cast<u8>(percentage));
 	
 			for(u8 i = 0; i < max_segments; ++i) {
 				if(i < completed_segments) {
-				  utility::console::print("#");
+					utility::console::print("#");
 				} else {
-				  utility::console::print(".");
+					utility::console::print(".");
 				}
 			}
 	

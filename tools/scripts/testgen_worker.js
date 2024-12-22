@@ -7,7 +7,7 @@ let errors = [];
 
 function assemble_test(test, bin_path, asm_path, temp_path) {
 	const assembly = `BITS 64\n${test}`; 
-  const command = `nasm -w+all -f bin -o ${bin_path} ${asm_path} > ${temp_path} 2>&1`;
+	const command = `nasm -w+all -f bin -o ${bin_path} ${asm_path} > ${temp_path} 2>&1`;
 
 	try {
 		utility.write_file(asm_path, assembly);

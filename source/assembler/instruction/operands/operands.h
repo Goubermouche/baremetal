@@ -245,7 +245,7 @@ namespace baremetal::assembler {
 	inline auto is_operand_large_reg(operand_type op) -> bool {
 		return is_operand_xmm(op) || is_operand_ymm(op) || is_operand_zmm(op);
 	}
- 
+
 	inline auto is_operand_moff(operand_type op) -> bool {
 		switch(op) {
 			case OP_MOFF8:
@@ -361,41 +361,41 @@ namespace baremetal::assembler {
 	}
 
 	inline auto is_operand_reg(operand_type op) -> bool {
-    switch(op) {
-      case OP_AL:
-      case OP_CL:
-      case OP_AX:
-      case OP_DX:
-      case OP_EAX:
-      case OP_ECX:
-      case OP_EDX:
-      case OP_RAX:
-      case OP_RCX:
-      case OP_R8:
-      case OP_R16:
-      case OP_R32:
-      case OP_R64:
-      case OP_XMM:
-      case OP_XMM_K:
-      case OP_XMM_KZ:
-      case OP_YMM:
-      case OP_YMM_K:
-      case OP_YMM_KZ:
-      case OP_ZMM:
-      case OP_ZMM_K:
-      case OP_ZMM_KZ:
-      case OP_TMM:
-      case OP_MMX:
-      case OP_K:
-      case OP_K_K:
-      case OP_ST0:
-      case OP_ST:
-      case OP_SREG:
-      case OP_DREG:
-      case OP_CREG:
-      case OP_BND: return true;
-      default: return false;
-    }
+		switch(op) {
+			case OP_AL:
+			case OP_CL:
+			case OP_AX:
+			case OP_DX:
+			case OP_EAX:
+			case OP_ECX:
+			case OP_EDX:
+			case OP_RAX:
+			case OP_RCX:
+			case OP_R8:
+			case OP_R16:
+			case OP_R32:
+			case OP_R64:
+			case OP_XMM:
+			case OP_XMM_K:
+			case OP_XMM_KZ:
+			case OP_YMM:
+			case OP_YMM_K:
+			case OP_YMM_KZ:
+			case OP_ZMM:
+			case OP_ZMM_K:
+			case OP_ZMM_KZ:
+			case OP_TMM:
+			case OP_MMX:
+			case OP_K:
+			case OP_K_K:
+			case OP_ST0:
+			case OP_ST:
+			case OP_SREG:
+			case OP_DREG:
+			case OP_CREG:
+			case OP_BND: return true;
+			default: return false;
+		}
 	}
 
 	inline auto is_extended_reg(const operand& op) -> bool {
@@ -420,65 +420,65 @@ namespace baremetal::assembler {
 
 
 	inline auto get_operand_bit_width(operand_type op) -> u16 {
-    switch(op) {
-      case OP_NONE:
-      case OP_MEM:
-      case OP_HIDDEN: return 0;
-      case OP_I8:
-      case OP_R8:
-      case OP_AL:
-      case OP_CL:
-      case OP_MOFF8:
-      case OP_M8:
-      case OP_REL8_RIP:
-      case OP_REL8: return 8;
-      case OP_I16:
-      case OP_R16:
-      case OP_SREG:
-      case OP_GS:
-      case OP_ES:
-      case OP_FS:
-      case OP_SS:
-      case OP_DS:
-      case OP_CS:
-      case OP_AX:
-      case OP_B16:
-      case OP_DX:
-      case OP_MOFF16:
-      case OP_REL16:
-      case OP_REL16_RIP:
-      case OP_M16:
-      case OP_M16_K: return 16;
-      case OP_I32:
-      case OP_R32:
-      case OP_EAX:
-      case OP_ECX:
-      case OP_EDX:
-      case OP_B32:
-      case OP_MOFF32:
-      case OP_M32:
-      case OP_M32_K:
-      case OP_REL32_RIP:
+		switch(op) {
+			case OP_NONE:
+			case OP_MEM:
+			case OP_HIDDEN: return 0;
+			case OP_I8:
+			case OP_R8:
+			case OP_AL:
+			case OP_CL:
+			case OP_MOFF8:
+			case OP_M8:
+			case OP_REL8_RIP:
+			case OP_REL8: return 8;
+			case OP_I16:
+			case OP_R16:
+			case OP_SREG:
+			case OP_GS:
+			case OP_ES:
+			case OP_FS:
+			case OP_SS:
+			case OP_DS:
+			case OP_CS:
+			case OP_AX:
+			case OP_B16:
+			case OP_DX:
+			case OP_MOFF16:
+			case OP_REL16:
+			case OP_REL16_RIP:
+			case OP_M16:
+			case OP_M16_K: return 16;
+			case OP_I32:
+			case OP_R32:
+			case OP_EAX:
+			case OP_ECX:
+			case OP_EDX:
+			case OP_B32:
+			case OP_MOFF32:
+			case OP_M32:
+			case OP_M32_K:
+			case OP_REL32_RIP:
 			case OP_VM32X:
 			case OP_VM32Y:
 			case OP_VM32Z:
 			case OP_VM32X_K:
 			case OP_VM32Y_K:
 			case OP_VM32Z_K:
-      case OP_REL32: return 32;
-      case OP_I64:
-      case OP_R64:
-      case OP_MOFF64:
-      case OP_M64:
-      case OP_M64_K:
-      case OP_CREG:
-      case OP_DREG:
-      case OP_MMX:
-      case OP_BND:
-      case OP_RCX:
-      case OP_RAX:
-      case OP_MIB:
-      case OP_K_K:
+			case OP_REL32: return 32;
+			case OP_I64:
+			case OP_R64:
+			case OP_MOFF64:
+			case OP_M64:
+			case OP_M64_K:
+			case OP_CREG:
+			case OP_DREG:
+			case OP_MMX:
+			case OP_BND:
+			case OP_RCX:
+			case OP_RAX:
+			case OP_MIB:
+			case OP_K_K:
 			case OP_K:
 			case OP_VM64X:
 			case OP_VM64Y:
@@ -486,30 +486,30 @@ namespace baremetal::assembler {
 			case OP_VM64X_K:
 			case OP_VM64Y_K:
 			case OP_VM64Z_K:
-      case OP_B64: return 64;
-      case OP_M80:
-      case OP_ST:
-      case OP_ST0: return 80;
-      case OP_XMM:
-      case OP_XMM_K:
-      case OP_XMM_KZ:
-      case OP_M128:
-      case OP_M128_K: return 128;
-      case OP_YMM:
-      case OP_YMM_K:
-      case OP_YMM_KZ:
-      case OP_M256:
-      case OP_M256_K: return 256;
-      case OP_ZMM:
-      case OP_ZMM_K:
-      case OP_ZMM_KZ:
-      case OP_M512:
-      case OP_M512_K: return 512;
-      case OP_TMEM:
-      case OP_TMM: return 1024;
-    }
+			case OP_B64: return 64;
+			case OP_M80:
+			case OP_ST:
+			case OP_ST0: return 80;
+			case OP_XMM:
+			case OP_XMM_K:
+			case OP_XMM_KZ:
+			case OP_M128:
+			case OP_M128_K: return 128;
+			case OP_YMM:
+			case OP_YMM_K:
+			case OP_YMM_KZ:
+			case OP_M256:
+			case OP_M256_K: return 256;
+			case OP_ZMM:
+			case OP_ZMM_K:
+			case OP_ZMM_KZ:
+			case OP_M512:
+			case OP_M512_K: return 512;
+			case OP_TMEM:
+			case OP_TMM: return 1024;
+		}
 
-    return 0; // unreachable
+		return 0; // unreachable
 	}
 
 	inline auto is_operand_masked(operand_type op) -> bool {
