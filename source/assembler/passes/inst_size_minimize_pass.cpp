@@ -145,7 +145,6 @@ namespace baremetal::assembler::pass {
 	} // namespace detail
 
 	void inst_size_minimize(module& module) {
-		// utility::console::print("[inst minimize]: minimizing {} blocks\n", module.blocks.get_size());
 		for(const section& section : module.sections) {
 			for(const basic_block* block : section.blocks) {
 				if(!block->is_instruction_block()) {
@@ -164,7 +163,6 @@ namespace baremetal::assembler::pass {
 	
 						if(old_size > inst->size) {
 							ASSERT(inst->size <= old_size, "[inst minimize]: minimized instruction is bigger than the original variant {} -> {}\n", old_size, inst->size);
-							// utility::console::print("[inst minimize]: inst minimized {}B -> {}B\n", old_size, inst->size);
 						}
 					}
 				}

@@ -63,7 +63,7 @@ namespace detail {
 				info.add_failure();
 			}
 			else {
-				hex_result = bytes_to_string(result.get_value());
+				hex_result = utility::bytes_to_string(result.get_value(), result.get_value().get_size());
 	
 				if(hex_result != expected) {
 					info.add_failure();
@@ -143,7 +143,7 @@ namespace detail {
 				info.add_failure();
 			}
 			else {
-				hex_result = bytes_to_string(result.get_value());
+				hex_result = utility::bytes_to_string(result.get_value(), result.get_value().get_size());
 
 				if(hex_result != expected) {
 					info.add_failure();

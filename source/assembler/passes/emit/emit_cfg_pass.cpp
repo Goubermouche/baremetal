@@ -13,11 +13,13 @@ namespace baremetal::assembler::pass {
 				const instruction_data* instruction_data = block->instructions.data[i];
 				const instruction* inst = &g_instruction_db[instruction_data->index];
 
-				// assemble the instruction
+				// assemble the instruction (hex representation)
 				auto data = module.resolve_instruction(instruction_data, section, position);
-				string.append(g_instruction_label, block->start_position + position, bytes_to_string(data.data, data.size), inst->name);
+				auto bytes = utility::bytes_to_string(data.data, data.size);
 
-				// stringify instruction operands
+				string.append(g_instruction_label, block->start_position + position, bytes, inst->name);
+
+				// stringify instruction operands (assembly representation)
 				for(u8 j = 0; j < inst->operand_count; ++j) {
 					string += operand_to_string(inst, instruction_data->operands[j], j);
 		
@@ -43,28 +45,33 @@ namespace baremetal::assembler::pass {
 		}
 
 		auto data_block_to_string(const basic_block* block)  -> utility::dynamic_string {
-			const u64 parts = ceil(static_cast<f32>(block->data.size) / 30.0f);
+			constexpr u8 chars_per_line = 30;
+			const u64 line_count = ceil(static_cast<f32>(block->data.size) / static_cast<f32>(chars_per_line));
+
 			utility::dynamic_string string;
 
 			// stringify a block of data
-			for(u64 i = 0; i < parts; ++i) {
+			for(u64 i = 0; i < line_count; ++i) {
 				string.append("<tr><td align=\"left\">");
 	
 				if(i == 0) {
-					// first part
+					// first part has a leading byte index
 					string.append(block->start_position);
 				}
 	
 				string.append("</td><td COLSPAN=\"100%\" align=\"left\">");
-	
-				u64 start = i * 30;
-				u64 end = utility::min(block->data.size, start + 30);
-	
+
+				// append a line of chars_per_line bytes
+				const u64 start = i * chars_per_line;
+				const u64 end = utility::min(block->data.size, start + chars_per_line);
+
+				// TODO: use utility::bytes_to_string instead
+
 				for(u64 j = start; j < end; ++j) {
-					string += detail::byte_to_string(block->data.data[j]); 
+					string += utility::byte_to_string(block->data.data[j]); 
 					string += ' ';
 				}
-	
+
 				string.append(" </td></tr>");
 			}
 
@@ -73,7 +80,8 @@ namespace baremetal::assembler::pass {
 
 		auto operand_to_string(const instruction* inst, const operand& op, u8 index) -> utility::dynamic_string {
 			utility::dynamic_string string;
-			
+		
+			// HACK: not all operands with a symbol should be resolved as their symbol
 			if(op.symbol) {
 				string += *op.symbol;
 				return string;
@@ -82,7 +90,8 @@ namespace baremetal::assembler::pass {
 			switch(op.type) {
 				case OP_RAX: string += "rax"; break;
 				case OP_EAX: string += "eax"; break;
-				case OP_R8:  string += g_gpr8_names[op.r]; break;
+				case OP_R8:  string += g_gpr8l_names[op.r]; break; // TODO: distinguish low and high 8 bit registers
+				case OP_R16: string += g_gpr16_names[op.r]; break;
 				case OP_R32: string += g_gpr32_names[op.r]; break;
 				case OP_R64: string += g_gpr64_names[op.r]; break;
 				case OP_XMM: string.append("xmm{}", op.r); break;
@@ -127,7 +136,8 @@ namespace baremetal::assembler::pass {
 
 		auto register_to_string(reg r) -> const char* {
 			switch(r.type) {
-				case REG_R8:  return g_gpr8_names[r.index];
+				case REG_R8:  return g_gpr8l_names[r.index];
+				case REG_R16: return g_gpr16_names[r.index];
 				case REG_R32: return g_gpr32_names[r.index];
 				case REG_R64: return g_gpr64_names[r.index];
 				default: return "unknown reg class";
@@ -155,7 +165,7 @@ namespace baremetal::assembler::pass {
 			}
 	
 			switch(m.s) {
-				case SCALE_1: break;
+				case SCALE_1:                break;
 				case SCALE_2: string += "2"; break;
 				case SCALE_4: string += "4"; break;
 				case SCALE_8: string += "8"; break;
@@ -171,29 +181,6 @@ namespace baremetal::assembler::pass {
 			}
 	
 			string += ']';
-			return string;
-		}
-
-		auto bytes_to_string(const u8* bytes, u8 count) -> utility::dynamic_string {
-			utility::dynamic_string string;
-			string.reserve(count * 3);
-
-			for(u64 i = 0; i < count; ++i) {
-				string += byte_to_string(bytes[i]);
-				string += ' ';
-			}
-
-			return string;
-		}
-		
-		auto byte_to_string(u8 byte) -> utility::dynamic_string {
-			utility::dynamic_string string;
-			string.reserve(2);
-
-			constexpr char digits[] = "0123456789abcdef";
-			string += (digits[(byte >> 4) & 0x0F]);
-			string += (digits[byte & 0x0F]);
-
 			return string;
 		}
 	} // namespace detail
@@ -245,7 +232,7 @@ namespace baremetal::assembler::pass {
 				switch(block->type) {
 					case BB_INSTRUCTION: graph += detail::instruction_block_to_string(block, section, module); break;
 					case BB_BRANCH:      graph += detail::instruction_block_to_string(block, section, module); block_is_new_segment = true; break;
-					case BB_LABEL:       graph += detail::label_block_to_string(block); break; break;
+					case BB_LABEL:       graph += detail::label_block_to_string(block); break;
 					case BB_DATA:        graph += detail::data_block_to_string(block); break;
 					default: ASSERT(false, "unknown basic block type received\n");
 				}
@@ -261,7 +248,12 @@ namespace baremetal::assembler::pass {
 
 				// branch edge
 				if(is_jump_or_branch_inst(inst->index)) {
-					edges.push_back({ edge::BRANCH_PASS, current_block_id, module.get_symbol(inst->operands[0].symbol).block_index });
+					edges.push_back({ 
+						edge::BRANCH_PASS,
+						current_block_id,
+						module.get_symbol(inst->operands[0].symbol).block_index
+					});
+					
 					is_branch = true;
 				}
 
@@ -272,7 +264,7 @@ namespace baremetal::assembler::pass {
 							is_branch ? edge::BRANCH_FAIL : edge::FALLTHROUGH,
 							current_block_id, 
 							global_block_index + 1
-						});	
+						});
 					}
 				}
 			}
@@ -288,8 +280,8 @@ namespace baremetal::assembler::pass {
 
 			switch(edge.type) {
 				case edge::BRANCH_PASS: graph += "darkgreen"; break;
-				case edge::BRANCH_FAIL: graph += "red"; break;
-				case edge::FALLTHROUGH: graph += "black"; break;
+				case edge::BRANCH_FAIL: graph += "red";       break;
+				case edge::FALLTHROUGH: graph += "black";     break;
 			}
 
 			graph += "\"";

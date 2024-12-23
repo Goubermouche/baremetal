@@ -99,19 +99,4 @@ namespace baremetal::tests {
 		u8 m_completed_segment_count_old = 1;
 		utility::timer m_timer;
 	};
-
-	inline auto bytes_to_string(const utility::dynamic_array<u8>& bytes) -> utility::dynamic_string {
-		utility::dynamic_string result;
-		result.reserve(bytes.get_size() * 2);
-
-		constexpr char digits[] = "0123456789abcdef";
-
-		for(u64 i = 0; i < bytes.get_size(); ++i) {
-			const u8 value = bytes[i];
-			result += (digits[(value >> 4) & 0x0F]);
-			result += (digits[value & 0x0F]);
-		}
-
-		return result;
-	}
 } // namespace baremetal::tests

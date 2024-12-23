@@ -2,7 +2,7 @@
 const utility = require("./utility.js")
 
 function main() {
-		if(process.argv.length != 3) {
+	if(process.argv.length != 3) {
 		console.error(`expected 1 argument but got ${process.argv.length - 2} arguments instead`);
 		return 1;
 	}

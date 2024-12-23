@@ -4,11 +4,11 @@
 
 namespace baremetal::assembler::pass {
 	namespace detail {
-		auto collect_unresolved_in_section(const section& section) -> utility::dynamic_array<unresolved> {
-			utility::dynamic_array<unresolved> indices;
+		auto collect_unresolved_symbols(const section& section) -> utility::dynamic_array<unresolved_symbol> {
+			utility::dynamic_array<unresolved_symbol> unresolved;
+			u64 local_pos = 0;
 
-			u64 local_pos = 0;	
-
+			// for every instruction block in this section
 			for(u64 i = 0; i < section.blocks.get_size(); ++i) {
 				const basic_block* block = section.blocks[i];
 
@@ -16,42 +16,47 @@ namespace baremetal::assembler::pass {
 					continue;
 				}
 
+				// check for symbolic references in all instructions
+				// TODO: collect these references when constructing the module?
 				for(u64 j = 0; j < block->instructions.size; ++j) {
 					instruction_data* inst = block->instructions.data[j];
 
 					for(u8 k= 0; k < 4; ++k) {
 						auto variants = backend::get_variants_i(inst->index, inst->operands);
 
-						if(inst->operands[k].symbol) {
-							const auto symbol_it = section.symbols.find(inst->operands[k].symbol);
-	
-							auto last = variants.pop_back();
-							inst->operands[k].type = last.type;
-							inst->index = last.index;
-							inst->size = backend::emit_instruction(&g_instruction_db[inst->index], inst->operands).size;
+						// skip operands which don't have a symbol
+						if(inst->operands[k].symbol == nullptr) {
+							continue;
+						}
 
-							if(symbol_it != section.symbols.end()) {
-								// we can only optimize references to symbols in the same section
-	
-								if(!is_operand_rel(inst->operands[k].type)) {
-									variants.clear(); // no potential for optimizations
-								}
+						const auto symbol_it = section.symbols.find(inst->operands[k].symbol);
+						
+						auto last = variants.pop_back();
+						inst->operands[k].type = last.type;
+						inst->index = last.index;
+						inst->size = backend::emit_instruction(&g_instruction_db[inst->index], inst->operands).size;
 
-								indices.push_back({ i, j, k, local_pos, variants });
-							}
-							else {
-								// utility::console::print("[sym minimize]: skipping non-local symbol reference to symbol '{}'\n", *inst->operands[k].symbol);
-							}
-	
+						// we can only optimize references to symbols in the same section
+						if(symbol_it == section.symbols.end()) {
 							break;
 						}
+
+						// right now we can only optimize relative offsets
+						if(!is_operand_rel(inst->operands[k].type)) {
+							break;
+						}
+
+						unresolved.push_back({ i, j, k, local_pos, variants });
+						
+						// TODO: we can't optimize multiple symbols per instruction yet
+						break;
 					}
 
 					local_pos += block->instructions.data[j]->size;
 				}
 			}
 
-			return utility::move(indices);
+			return utility::move(unresolved);
 		}
 
 		auto fits_into_type(i64 value, operand_type type) -> bool {
@@ -65,19 +70,31 @@ namespace baremetal::assembler::pass {
 	
 			return false;
 		}
+		
+		void shift_symbols(section& section, u64 position, i64 shift) {
+			for(auto& [sym_name, sym_position] : section.symbols) {
+				if(sym_position.position > position) {
+					sym_position.position -= shift;
+				}
+			}
+		}
+
+		void shift_unresolved(utility::dynamic_array<unresolved_symbol>& unresolved, u64 position, i64 shift) {
+			for(auto& u : unresolved) {
+				if(u.position > position) {
+					u.position -= shift;
+				}
+			}
+		}
 	} // namespace detail
 
 	void symbolic_minimize(module& module) {
-		// utility::console::print("[sym minimize]: minimizing {} symbols\n", module.symbols.size());
-		
+		// minimize individual sections (we can't optimize symbolic references across sections) 
 		for(section& section : module.sections) {
-			auto unresolved = detail::collect_unresolved_in_section(section);
+			auto unresolved = detail::collect_unresolved_symbols(section);
 			bool change = true;
 
-			// utility::console::print("[sym minimize]: section '{}': found {} unresolved instructions:\n", *section.name, unresolved.get_size());
-
-			// resolve and optimize symbol references within each section (we can ignore references to other sections
-			// since we'll resolve them during emission)
+			// resolve and optimize symbol references within each section
 			while(change) {
 				change = false;
 
@@ -88,15 +105,15 @@ namespace baremetal::assembler::pass {
 						continue;
 					}
 
-					instruction_data* current_inst = section.blocks[current.block_index]->instructions.data[current.instruction_index];
+					basic_block* current_block = section.blocks[current.block_index];
+					instruction_data* current_inst = current_block->instructions.data[current.instruction_index];
 					operand& operand = current_inst->operands[current.unresolved_index];
 					const auto symbol_it = section.symbols.find(operand.symbol);
 
-					if(symbol_it == section.symbols.end()) {
-						// skip symbols which aren't in this section, since we can't optimize them
-						continue;
-					}
+					// we shouldn't receive symbols from different sections
+					ASSERT(symbol_it != section.symbols.end(), "symbol from a different section received\n");
 
+					// calculate the distance to the target symbol
 					const i64 distance = symbol_it->second.position - current.position + current_inst->size;
 					const operand_type new_type = current.variants.get_last().type;
 
@@ -105,28 +122,19 @@ namespace baremetal::assembler::pass {
 						continue;
 					}
 
-					// use the next smallest operand instead
+					// success, we can use the smaller variant
 					operand.type = new_type;
 
-					u8 new_size = backend::emit_instruction(&g_instruction_db[current.variants.get_last().index], current_inst->operands).size;
-
-					current_inst->index = current.variants.pop_back().index;
-					change = true;
+					const instruction* inst = &g_instruction_db[current.variants.get_last().index];
+					const u8 new_size = backend::emit_instruction(inst, current_inst->operands).size;
 
 					// update our symbol table to account for the difference in code length
-					for(auto& [sym_name, sym_position] : section.symbols) {
-						if(sym_position.position > current.position) {
-							sym_position.position -= current_inst->size - new_size;
-						}	
-					}
+					detail::shift_symbols(section, current.position, current_inst->size - new_size);
+					detail::shift_unresolved(unresolved, current.position, current_inst->size - new_size);
 
-					for(auto& u : unresolved) {
-						if(u.position > current.position) {
-							u.position -= current_inst->size - new_size;
-						}
-					}
-					
+					current_inst->index = current.variants.pop_back().index;
 					current_inst->size = new_size;
+					change = true;
 
 					// TODO: investigate whether it's better to break immediately or continue
 					break;

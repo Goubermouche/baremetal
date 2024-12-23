@@ -11,7 +11,9 @@ namespace baremetal::assembler::pass {
 		constexpr const char* g_row_header = "<tr PORT=\"bottom\"><td></td></tr></table>>]\n";
 
 		// register names
-		static constexpr const char* g_gpr8_names[] = { "ax", "cx", "dx", "bx", "sp", "bp", "si", "di", "al", "cl", "dl", "bl", "spl", "bpl", "sil", "dil" };
+		static constexpr const char* g_gpr8l_names[] = { "al", "bl", "cl", "dl", "sil", "dil", "spl", "bpl", "r8b", "r9b", "r10b", "r11b", "r12b", "r13b", "r14b", "r15b" };
+		static constexpr const char* g_gpr8h_names[] = { "ah", "bh", "ch", "dh" };
+		static constexpr const char* g_gpr16_names[] = { "ax", "bx", "cx", "dx", "si", "di", "sp", "bp", "r8w", "r9w", "r10w", "r11w", "r12w", "r13w", "r14w", "r15w" };
 		static constexpr const char* g_gpr32_names[] = { "eax", "ecx", "edx", "ebx", "esp", "ebp", "esi", "edi", "r8d", "r9d", "r10d", "r11d", "r12d", "r13d", "r14d", "r15d" };
 		static constexpr const char* g_gpr64_names[] = { "rax", "rcx", "rdx", "rbx", "rsp", "rbp", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15" };
 
@@ -24,9 +26,6 @@ namespace baremetal::assembler::pass {
 		auto immediate_to_string(imm i) -> utility::dynamic_string;
 		auto memory_to_string(mem m) -> utility::dynamic_string;
 		auto register_to_string(reg r) -> const char*;
-
-		auto bytes_to_string(const u8* bytes, u8 count) -> utility::dynamic_string;
-		auto byte_to_string(u8 byte) -> utility::dynamic_string;
 	} // namespace detail
 
 	// generates a CFG representation of the program represented by the specified module, returns a 

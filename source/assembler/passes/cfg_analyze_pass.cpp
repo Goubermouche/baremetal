@@ -5,11 +5,12 @@ namespace baremetal::assembler::pass {
 	void cfg_analyze(module& module) {
 		u64 global_block_offset = 0;
 
-		// calculate edge connections
+		// calculate control flow edges
 		for(const section& section : module.sections) {
 			for(u64 i = 0; i < section.blocks.get_size(); ++i) {
 				const basic_block* block = section.blocks[i];
 
+				// only instruction blocks can produce control flow
 				if(!block->is_instruction_block()) {
 					continue; 
 				}
@@ -22,14 +23,14 @@ namespace baremetal::assembler::pass {
 						continue;
 					}
 
-					const u64 block_index = module.get_symbol(last_inst->operands[0].symbol).block_index;
+					const u64 target_block_index = module.get_symbol(last_inst->operands[0].symbol).block_index;
 					const u64 global_block_index = global_block_offset + i;
 
-					basic_block* target = module.get_block_at_index(block_index);
+					basic_block* target = module.get_block_at_index(target_block_index);
 					target->incoming_control_edge_count++;
 
 					if(global_block_index < module.get_block_count() - 1) {
-						// branch - fail case - incoming edge next block)
+						// branch - fail case - incoming edge to the next block
 						module.get_block_at_index(global_block_index + 1)->incoming_control_edge_count++;
 					}
 				}
