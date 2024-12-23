@@ -40,7 +40,7 @@ jobs:
       run: premake5 gmake
 
     - name: Build the project
-      run: make config=release
+      run: make config=release -j -B
 
     - name: Run tests
       # redirect everything to stdout
