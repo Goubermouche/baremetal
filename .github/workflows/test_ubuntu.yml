@@ -1,5 +1,4 @@
 name: Tests (ubuntu-latest)
-
 on:
   push:
     branches:
@@ -7,10 +6,8 @@ on:
   pull_request:
     branches:
       - main
-
 permissions:
   contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,29 +16,45 @@ jobs:
       uses: step-security/harden-runner@91182cccc01eb5e619899d80e4e971d6181294a7
       with:
         egress-policy: audit
-
+    
     - name: Checkout repository
       uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744
       with:
         fetch-depth: 0
         submodules: true
-
+    
+    - name: Cache Premake5
+      id: cache-premake
+      uses: actions/cache@v4
+      with:
+        path: /usr/local/bin/premake5
+        key: ${{ runner.os }}-premake5-0.0.alpha16
+    
+    - name: Cache build
+      uses: actions/cache@v4
+      with:
+        path: |
+          output/
+          obj/
+        key: ${{ runner.os }}-build-${{ hashFiles('**/*.cpp', '**/*.h', 'premake5.lua') }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+    
     - name: Download GCC
       run: sudo apt-get install -y gcc make
-
+    
     - name: Download Premake5
       if: steps.cache-premake.outputs.cache-hit != 'true'
       run: |
         wget https://github.com/premake/premake-core/releases/download/v5.0.0-alpha16/premake-5.0.0-alpha16-linux.tar.gz
         tar -xzvf premake-5.0.0-alpha16-linux.tar.gz
         sudo mv premake5 /usr/local/bin/        
-
+    
     - name: Generate project files
       run: premake5 gmake
-
+    
     - name: Build the project
       run: make config=release -j -B
-
+    
     - name: Run tests
-      # redirect everything to stdout
-      run: ./output/bin/test_runner/test_runner 2>&1 
+      run: ./output/bin/test_runner/test_runner 2>&1
