@@ -26,6 +26,7 @@ You can find some basic examples in the [test directory](https://github.com/Goub
 
 ### Emission
 - Binary emission (.bin)
+- ELF emission (WIP)
 - CFG emission (Graphviz)
 
 ## Project structure
@@ -58,6 +59,9 @@ The following commands are intended to be used to aid the developer when manipul
 - Optional type prefixes
 - Better support for memory operands with SSE registers
 - Better error checking
+- Port usage statistics 
+- Instruction reordering
+- Program obfuscation
 
 ## Acknowledgements
 - The original instruction database has been ported from the [AsmJit](https://asmjit.com/) project, although it has been slightly modified. 
