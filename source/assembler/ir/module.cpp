@@ -38,7 +38,7 @@ namespace baremetal::assembler {
 
 		// update the current block
 		m_current_block.push_back(instruction);
-		m_current_block_size += size;
+		sections[m_section_index].current_block_size += size;
 	}
 
 	void module::add_symbol(utility::string_view* name) {
@@ -60,16 +60,16 @@ namespace baremetal::assembler {
 		new_block->instructions.size = m_current_block.get_size();
 		utility::memcpy(new_block->instructions.data, m_current_block.get_data(), memory_size);
 
-		new_block->size = m_current_block_size;
-		new_block->start_position = m_current_block_position;
+		new_block->size = sections[m_section_index].current_block_size;
+		new_block->start_position = sections[m_section_index].current_block_position;
 		new_block->section_index = m_section_index;
-			
+	
 		sections[m_section_index].blocks.push_back(new_block);
-		sections[m_section_index].size += m_current_block_size;
+		sections[m_section_index].size += sections[m_section_index].current_block_size;
 		m_block_count++;
 
-		m_current_block_position += m_current_block_size;
-		m_current_block_size = 0;
+		sections[m_section_index].current_block_position += sections[m_section_index].current_block_size;
+		sections[m_section_index].current_block_size = 0;
 		m_current_block.clear();
 	}
 
@@ -80,14 +80,14 @@ namespace baremetal::assembler {
 		new_block->label.name = name;
 		new_block->type = BB_LABEL;
 
-		new_block->size = m_current_block_size;
-		new_block->start_position = m_current_block_position;
+		new_block->size = sections[m_section_index].current_block_size;
+		new_block->start_position = sections[m_section_index].current_block_position;
 		new_block->section_index = m_section_index;
 		sections[m_section_index].blocks.push_back(new_block);
 		m_block_count++;
 
-		m_current_block_position += m_current_block_size;
-		m_current_block_size = 0;
+		sections[m_section_index].current_block_position += sections[m_section_index].current_block_size;
+		sections[m_section_index].current_block_size = 0;
 		m_current_block.clear();
 	}
 
@@ -103,7 +103,7 @@ namespace baremetal::assembler {
 		utility::memcpy(new_block->data.data, data.get_data(), data.get_size() * sizeof(u8));
 
 		new_block->size = data.get_size();
-		new_block->start_position = m_current_block_position;
+		new_block->start_position = sections[m_section_index].current_block_position;
 		new_block->section_index = m_section_index;
 		
 		sections[m_section_index].blocks.push_back(new_block);
@@ -112,8 +112,7 @@ namespace baremetal::assembler {
 
 		m_block_count++;
 
-		m_current_block_position += m_current_block_size;
-		m_current_block_size = 0;
+		sections[m_section_index].current_block_position += data.get_size();
 		m_current_block.clear();
 	}
 
@@ -145,17 +144,22 @@ namespace baremetal::assembler {
 		for(const auto& section : sections) {
 			utility::console::print("{}:\n", *section.name);
 			utility::console::print("  position: {}\n", section.position);
-			utility::console::print("  blocks: {}\n", section.blocks.get_size());
 			utility::console::print("  size: {}\n", section.size);
 
-			if(section.symbols.is_empty()) {
-				continue;
+			if(section.symbols.is_empty() == false) {
+				utility::console::print("  symbols ({}):\n", section.symbols.get_size());
+
+				for(const auto& [symbol, location] : section.symbols) {
+					utility::console::print("    '{}': pos: {}, block: {}\n", *symbol, location.position, location.block_index);
+				}
 			}
 
-			utility::console::print("  symbols ({}):\n", section.symbols.get_size());
+			if(section.blocks.is_empty() == false) {
+				utility::console::print("  blocks: {}\n", section.blocks.get_size());
 
-			for(const auto& [symbol, location] : section.symbols) {
-				utility::console::print("    '{}': pos: {}, block: {}\n", *symbol, location.position, location.block_index);
+				for(const auto& block : section.blocks) {
+					utility::console::print("    pos: {}, size: {}\n", block->start_position, block->size);
+				}
 			}
 		}
 	}

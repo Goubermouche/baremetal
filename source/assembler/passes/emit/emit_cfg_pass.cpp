@@ -15,9 +15,9 @@ namespace baremetal::assembler::pass {
 
 				// assemble the instruction (hex representation)
 				auto data = module.resolve_instruction(instruction_data, section, position);
-				auto bytes = utility::bytes_to_string(data.data, data.size);
+				auto bytes = utility::bytes_to_string(data.data, data.size, ' ');
 
-				string.append(g_instruction_label, block->start_position + position, bytes, inst->name);
+				string.append(g_instruction_label, section.position + block->start_position + position, bytes, inst->name);
 
 				// stringify instruction operands (assembly representation)
 				for(u8 j = 0; j < inst->operand_count; ++j) {
@@ -36,15 +36,15 @@ namespace baremetal::assembler::pass {
 			return string;
 		}
 
-		auto label_block_to_string(const basic_block* block) -> utility::dynamic_string {
+		auto label_block_to_string(const basic_block* block, const section& section) -> utility::dynamic_string {
 			utility::dynamic_string string;
 
-			string.append(g_label_header, block->start_position, *block->label.name);
+			string.append(g_label_header, section.position + block->start_position, *block->label.name);
 
 			return string;
 		}
 
-		auto data_block_to_string(const basic_block* block)  -> utility::dynamic_string {
+		auto data_block_to_string(const basic_block* block, const section& section)  -> utility::dynamic_string {
 			constexpr u8 chars_per_line = 30;
 			const u64 line_count = ceil(static_cast<f32>(block->data.size) / static_cast<f32>(chars_per_line));
 
@@ -54,10 +54,7 @@ namespace baremetal::assembler::pass {
 			for(u64 i = 0; i < line_count; ++i) {
 				string.append("<tr><td align=\"left\">");
 	
-				if(i == 0) {
-					// first part has a leading byte index
-					string.append(block->start_position);
-				}
+					string.append(section.position + block->start_position + i * chars_per_line);
 	
 				string.append("</td><td COLSPAN=\"100%\" align=\"left\">");
 
@@ -65,14 +62,7 @@ namespace baremetal::assembler::pass {
 				const u64 start = i * chars_per_line;
 				const u64 end = utility::min(block->data.size, start + chars_per_line);
 
-				// TODO: use utility::bytes_to_string instead
-
-				for(u64 j = start; j < end; ++j) {
-					string += utility::byte_to_string(block->data.data[j]); 
-					string += ' ';
-				}
-
-				string.append(" </td></tr>");
+				string.append("{} </td></tr>", utility::bytes_to_string(block->data.data + start, end - start, ' '));
 			}
 
 			return string;
@@ -88,35 +78,41 @@ namespace baremetal::assembler::pass {
 			}
 
 			switch(op.type) {
-				case OP_RAX: string += "rax"; break;
-				case OP_EAX: string += "eax"; break;
-				case OP_R8:  string += g_gpr8l_names[op.r]; break; // TODO: distinguish low and high 8 bit registers
-				case OP_R16: string += g_gpr16_names[op.r]; break;
-				case OP_R32: string += g_gpr32_names[op.r]; break;
-				case OP_R64: string += g_gpr64_names[op.r]; break;
-				case OP_XMM: string.append("xmm{}", op.r); break;
-				case OP_YMM: string.append("ymm{}", op.r); break;
-				case OP_ZMM: string.append("zmm{}", op.r); break;
-				case OP_K_K: string.append("k{} {k{}}", op.mr.index, op.mr.k); break;
+				case OP_RAX:    string += "rax"; break;
+				case OP_EAX:    string += "eax"; break;
+				case OP_R8:     string += g_gpr8l_names[op.r]; break; // TODO: distinguish low and high 8 bit registers
+				case OP_R16:    string += g_gpr16_names[op.r]; break;
+				case OP_R32:    string += g_gpr32_names[op.r]; break;
+				case OP_R64:    string += g_gpr64_names[op.r]; break;
+				case OP_XMM:    string.append("xmm{}", op.r); break;
+				case OP_YMM:    string.append("ymm{}", op.r); break;
+				case OP_ZMM:    string.append("zmm{}", op.r); break;
+				case OP_K_K:    string.append("k{} {k{}}", op.mr.index, op.mr.k); break;
 				case OP_XMM_KZ: string.append("xmm{} {k{}}{z}", op.r, op.mr.k); break;
-				case OP_B32: {
-					const u8 broadcast_bits = broadcast_to_bits(inst->operands[index]);
-					const u16 inst_size = inst_size_to_int(inst->op_size);
-
-					string.append("[rax]{1to{}}", inst_size / broadcast_bits);
-					break;
-				} 
+				case OP_B16: 
+				case OP_B32: 
+				case OP_B64:    string += broadcast_to_string(inst, index); break;
 				case OP_MEM:
-				case OP_M8:  string.append("byte {}", memory_to_string(op.memory)); break;
-				case OP_M16: string.append("word {}", memory_to_string(op.memory)); break;
-				case OP_M32: string.append("dword {}", memory_to_string(op.memory)); break;
-				case OP_M64: string.append("qword {}", memory_to_string(op.memory)); break;
+				case OP_M8:     string.append("byte {}", memory_to_string(op.memory)); break;
+				case OP_M16:    string.append("word {}", memory_to_string(op.memory)); break;
+				case OP_M32:    string.append("dword {}", memory_to_string(op.memory)); break;
+				case OP_M64:    string.append("qword {}", memory_to_string(op.memory)); break;
 				case OP_I8:
 				case OP_I16:
 				case OP_I32:
-				case OP_I64: string += immediate_to_string(op.immediate); break;
-				default: utility::console::print_err("[cfg emit]: unhandled operand type '{}'\n", operand_type_to_string(op.type));
+				case OP_I64:    string += immediate_to_string(op.immediate); break;
+				default:        utility::console::print_err("[cfg emit]: unhandled operand type '{}'\n", operand_type_to_string(op.type));
 			}
+
+			return string;
+		}
+
+		auto broadcast_to_string(const instruction* inst, u8 index) -> utility::dynamic_string {
+			const u8 broadcast_bits = broadcast_to_bits(inst->operands[index]);
+			const u16 inst_size = inst_size_to_int(inst->op_size);
+
+			utility::dynamic_string string;
+			string.append("[rax]{1to{}}", inst_size / broadcast_bits);
 
 			return string;
 		}
@@ -232,8 +228,8 @@ namespace baremetal::assembler::pass {
 				switch(block->type) {
 					case BB_INSTRUCTION: graph += detail::instruction_block_to_string(block, section, module); break;
 					case BB_BRANCH:      graph += detail::instruction_block_to_string(block, section, module); block_is_new_segment = true; break;
-					case BB_LABEL:       graph += detail::label_block_to_string(block); break;
-					case BB_DATA:        graph += detail::data_block_to_string(block); break;
+					case BB_LABEL:       graph += detail::label_block_to_string(block, section); break;
+					case BB_DATA:        graph += detail::data_block_to_string(block, section); break;
 					default: ASSERT(false, "unknown basic block type received\n");
 				}
 

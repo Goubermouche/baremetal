@@ -9,6 +9,7 @@
 #include "assembler/passes/symbolic_minimize_pass.h"
 
 #include "assembler/passes/emit/emit_binary_pass.h"
+#include "assembler/passes/emit/emit_elf_pass.h"
 #include "assembler/passes/emit/emit_cfg_pass.h"
 
 #define EXPECT_TOKEN(expected)                                    \
@@ -132,18 +133,23 @@ namespace baremetal::assembler {
 		m_lexer.set_text(source);
 		TRY(parse());
 
-		// m_module.print_section_info();
-
 		// apply optimizations
 		pass::cfg_analyze(m_module);
 		pass::inst_size_minimize(m_module);
 		pass::symbolic_minimize(m_module);
 
+		// m_module.print_section_info();
+
 		// emission
 		//auto graph  = pass::emit_control_flow_graph(m_module);
-		//utility::file::write("./cfg2.dot", graph);
+		//utility::file::write("./cfg.dot", graph);
 
-		return pass::emit_binary(m_module); 
+		// auto elf = pass::emit_elf(m_module);
+		auto bin = pass::emit_binary(m_module);
+
+		// utility::file::write("./elf", elf);
+
+		return bin;
 	}
 
 	auto frontend::parse() -> utility::result<void> {
@@ -912,4 +918,5 @@ namespace baremetal::assembler {
 		return result;
 	}
 } // namespace baremetal::assembler
+
 

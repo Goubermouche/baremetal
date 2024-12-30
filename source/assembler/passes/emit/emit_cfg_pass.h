@@ -19,10 +19,11 @@ namespace baremetal::assembler::pass {
 
 		// block types
 		auto instruction_block_to_string(const basic_block* block, const section& section, const module& module) -> utility::dynamic_string;
-		auto label_block_to_string(const basic_block* block) -> utility::dynamic_string;
-		auto data_block_to_string(const basic_block* block) -> utility::dynamic_string;
+		auto label_block_to_string(const basic_block* block, const section& section) -> utility::dynamic_string;
+		auto data_block_to_string(const basic_block* block, const section& section) -> utility::dynamic_string;
 
 		auto operand_to_string(const instruction* inst, const operand& op, u8 index) -> utility::dynamic_string;
+		auto broadcast_to_string(const instruction* inst, u8 index) -> utility::dynamic_string;
 		auto immediate_to_string(imm i) -> utility::dynamic_string;
 		auto memory_to_string(mem m) -> utility::dynamic_string;
 		auto register_to_string(reg r) -> const char*;

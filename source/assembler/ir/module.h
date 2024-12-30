@@ -65,6 +65,9 @@ namespace baremetal::assembler {
 
 		utility::map<utility::string_view*, symbol> symbols;
 		utility::dynamic_array<basic_block*> blocks;
+
+		u64 current_block_position = 0;
+		u64 current_block_size = 0;
 	};
 
 	struct module {
@@ -94,9 +97,6 @@ namespace baremetal::assembler {
 	private:
 		u64 m_block_count = 0; // total block count
 		u64 m_section_index = 0;
-
-		u64 m_current_block_position = 0;
-		u64 m_current_block_size = 0;
 
 		utility::dynamic_array<instruction_data*> m_current_block;
 	};
