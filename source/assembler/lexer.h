@@ -269,6 +269,7 @@ namespace baremetal::assembler {
 		TOK_REL,     // rel
 		TOK_SECTION, // section
 		TOK_TIMES,   // section
+		TOK_GLOBAL,  // global
 		TOK_BITS,    // bits
 		TOK_DB,      // db
 		TOK_DW,      // dw

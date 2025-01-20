@@ -349,7 +349,7 @@ function main() {
 	
 	gp_inst.forEach(inst => {
 		let row = [];
-	
+
 		row.push(`"name": "${inst.name}"`);
 		row.push(`"operands": [${inst.operands.map(op => `"${op}"`).join(", ")}]`);
 		row.push(`"enc": "${inst.enc.enc}"`);

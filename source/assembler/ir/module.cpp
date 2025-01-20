@@ -41,10 +41,12 @@ namespace baremetal::assembler {
 		sections[m_section_index].current_block_size += size;
 	}
 
-	void module::add_symbol(utility::string_view* name) {
+	void module::add_symbol(utility::string_view* name, symbol_type type) {
 		section& current_section = sections[m_section_index];
 
-		current_section.symbols[name] = { current_section.offset, m_block_count };
+		// TODO: hack, we only insert a symbol the first time (temporary workaround for global 
+		// symbols needed for ELF object files)
+		current_section.symbols.insert({name, { current_section.offset, m_block_count, type }});
 	}
 
 	void module::add_instruction_block(basic_block_type ty) {
@@ -127,7 +129,7 @@ namespace baremetal::assembler {
 		}
 
 		if(new_index == sections.get_size()) {
-			sections.push_back({.name = name});
+			sections.push_back({.name = name });
 		}
 
 		// force a new block
@@ -150,7 +152,15 @@ namespace baremetal::assembler {
 				utility::console::print("  symbols ({}):\n", section.symbols.get_size());
 
 				for(const auto& [symbol, location] : section.symbols) {
-					utility::console::print("    '{}': pos: {}, block: {}\n", *symbol, location.position, location.block_index);
+					utility::console::print("    '{}': pos: {}, block: {}, type: ", *symbol, location.position, location.block_index);
+
+					switch(location.type) {
+						case SYM_REGULAR: utility::console::print("R"); break;
+						case SYM_GLOBAL:  utility::console::print("G"); break;
+						default: ASSERT(false, "unknown symbol type specified\n");
+					}
+
+					utility::console::print("\n");
 				}
 			}
 

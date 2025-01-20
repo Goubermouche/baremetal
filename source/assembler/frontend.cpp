@@ -4,6 +4,7 @@
 #include <utility/system/file.h>
 
 #include "assembler/ir/module.h"
+#include "assembler/lexer.h"
 #include "assembler/passes/cfg_analyze_pass.h"
 #include "assembler/passes/inst_size_minimize_pass.h"
 #include "assembler/passes/symbolic_minimize_pass.h"
@@ -163,6 +164,7 @@ namespace baremetal::assembler {
 				case TOK_RESB ... TOK_RESQ: TRY(parse_reserve_memory()); break;
 				case TOK_IDENTIFIER:        TRY(parse_identifier()); break;
 				case TOK_SECTION:           TRY(parse_section()); break;
+				case TOK_GLOBAL:            TRY(parse_global()); break;
 				case TOK_TIMES:             TRY(parse_times()); break;
 				case TOK_BITS:              TRY(parse_bits()); break;
 				default: ASSERT(false, "unexpected top level token: {}\n", token_to_string(m_lexer.current)); 
@@ -612,6 +614,19 @@ namespace baremetal::assembler {
 		ASSERT(m_lexer.current_string[0] == '.', "first char of a section should be a '.'\n");
 
 		m_module.set_section(m_context.strings.add(m_lexer.current_string));
+
+		TRY(m_lexer.get_next_token());
+		return SUCCESS;
+	}
+
+	auto frontend::parse_global() -> utility::result<void> {
+		EXPECT_TOKEN(TOK_GLOBAL);
+
+		TRY(m_lexer.get_next_token());
+		EXPECT_TOKEN(TOK_IDENTIFIER);
+
+		// utility::console::print("global symbol: '{}'\n", m_lexer.current_string);
+		m_module.add_symbol(m_context.strings.add(m_lexer.current_string), SYM_GLOBAL);
 
 		TRY(m_lexer.get_next_token());
 		return SUCCESS;

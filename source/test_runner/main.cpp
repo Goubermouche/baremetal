@@ -1,164 +1,21 @@
 #include "utilities.h"
 
+#include <utility/algorithms/sort.h>
+
 using namespace baremetal::tests;
 
 const utility::filepath g_test_path = "source/test_runner/tests";
-bool g_quiet = false;
+bool g_quiet = false; // TODO: not used yet
 
-namespace detail {
-	auto run_test_encoding() -> bool {
-		const utility::filepath test_path = g_test_path / "encoding/test.asm"; 
-		const utility::dynamic_string test_file = utility::file::read(test_path);
+enum test_result : u8 {
+	RES_PASS,
+	RES_FAIL,
+	RES_SKIP
+};
 
-		baremetal::assembler::context context;
-		// baremetal::assembler_parser assembler(&context);
-
-		utility::dynamic_string instruction;
-		utility::dynamic_string hex_result;
-		utility::dynamic_string expected;
-	
-		u64 i = 0;
-
-		test_info info("encoding", utility::file::get_file_line_count(test_path), g_quiet);
-	
-		info.begin_test();
-	
-		// run individual tests
-		while(i < test_file.get_size()) {
-			instruction.clear();
-			expected.clear();
-			hex_result.clear();
-			// assembler.clear();
-	
-			// locate the expected encoding part
-			while(i + 1 < test_file.get_size() && test_file[i] != '\n') {
-				if(test_file[i] == ';') {
-					break;
-				}
-	
-				instruction += test_file[i];
-				i++;
-			}
-	
-			i++;
-			
-			// semicolon located - print it
-			while(i + 1 < test_file.get_size() && test_file[i] != '\n') {
-				expected += test_file[i];
-				i++;
-			}
-	
-			i++;
-	
-			// empty instructions mean we've reached the end of our test file
-			if(instruction.get_size() == 0) {
-				break;
-			}
-
-			baremetal::assembler::frontend assembler;
-			const auto result = assembler.assemble(instruction);
-	
-			if(result.has_error()) {
-				utility::console::print_err("error: '{}'\n", result.get_error());
-				info.add_failure();
-			}
-			else {
-				hex_result = utility::bytes_to_string(result.get_value(), result.get_value().get_size());
-	
-				if(hex_result != expected) {
-					info.add_failure();
-					utility::console::print_err("mismatch: {} - expected '{}', but got '{}'\n", instruction, expected, hex_result); 
-				}
-				else {
-					info.add_success();
-				}
-			}
-		}
-	
-		return info.end_test();
-	}
-
-	auto run_test_binary() -> bool {
-		// various tests related to binary layout
-		// test format:
-		//   ; description
-		//   ; expect: expected_output_in_hex
-		//   assembly
-	
-		const auto tests = utility::directory::read(g_test_path / "binary");
-
-		baremetal::assembler::context context;
-
-		utility::dynamic_string test_text;
-		utility::dynamic_string hex_result;
-		utility::dynamic_string expected;
-
-		test_info info("binary", tests.get_size() - 3, g_quiet);
-
-		info.begin_test();
-
-		for(const auto& test : tests) {
-			hex_result.clear();
-			expected.clear();
-			test_text.clear();
-
-		//	if(test.get_string().find("mask") == utility::dynamic_string::invalid_pos) {
-		//		continue;
-		//	}
-
-			if(
-				test.get_string().find("sections_5") != utility::dynamic_string::invalid_pos ||
-				test.get_string().find("sections_4") != utility::dynamic_string::invalid_pos ||
-				test.get_string().find("alphabet") != utility::dynamic_string::invalid_pos 
-				) {
-				continue;
-			}
-
-			test_text = utility::file::read(test);
-
-			// locate the 'expect' directive
-			u64 expected_pos = test_text.find("expect:");
-
-			if(expected_pos == utility::dynamic_string::invalid_pos) {
-				utility::console::print_err("cannot find the 'expect:' directive in test '{}'\n", test);
-				info.add_failure();
-				continue;
-			}
-
-			expected_pos += 7; // move past the 'expect' directive
-			
-			// read to the end of the current line
-			while(expected_pos < test_text.get_size() && test_text[expected_pos] != '\n') {
-				expected += test_text[expected_pos++];	
-			}
-
-			expected = expected.trim();
-
-			// utility::console::print("running {}\n", test);
-			baremetal::assembler::frontend assembler;
-			const auto result = assembler.assemble(test_text);
-
-			if(result.has_error()) {
-				utility::console::print_err("error: {}\n", result.get_error());
-				info.add_failure();
-			}
-			else {
-				hex_result = utility::bytes_to_string(result.get_value(), result.get_value().get_size());
-
-				if(hex_result != expected) {
-					info.add_failure();
-					utility::console::print_err("mismatch: {} - expected '{}', but got '{}'\n", test, expected, hex_result); 
-				}
-				else {
-					info.add_success();
-				}
-				// utility::console::print("{}\n", bytes_to_string(result.get_value().bytes));
-			}
-		}
-		
-		return info.end_test();
-	}
-} // namespace detail
+auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {
+	return utility::compare_strings(shortform, input) == 0 || utility::compare_strings(longform, input) == 0;
+}
 
 auto get_all_groups() -> utility::dynamic_array<utility::dynamic_string> {
 	const auto group_paths = utility::directory::read(g_test_path);
@@ -173,160 +30,198 @@ auto get_all_groups() -> utility::dynamic_array<utility::dynamic_string> {
 	return groups;
 }
 
-void print_help() {
-	if(g_quiet) {
-		return;
+auto run_test(const utility::filepath& path) -> test_result {
+	baremetal::assembler::frontend assembler;
+	
+	utility::dynamic_string test_text = utility::file::read(path);
+	utility::dynamic_string expected;
+
+	// skip tests with the 'skip' directive
+	if(test_text.find("skip") != utility::dynamic_string::invalid_pos) {
+		// utility::console::print("skipping test '{}'\n", path);
+		return RES_SKIP;
 	}
 
-	utility::console::print("test_runner [FLAG] [OPTION] [ARGUMENT]\n\n");
-	utility::console::print("flags:\n");
-	utility::console::print("  -q, --quiet   don't produce any stdout outputs\n\n");
-	utility::console::print("options:\n");
-	utility::console::print("  -h, --help    show this help message\n");
-	utility::console::print("  -g, --group   specify one or more test groups to run (comma-separated)\n");
-	utility::console::print("  -a, --all     run tests in all groups\n");
-	utility::console::print("  -l, --list    list all test groups\n\n");
-	utility::console::print("examples:\n");
-	utility::console::print("  test_runner --all\n");
-	utility::console::print("  test_runner --group \"encoding, binary\"\n");
+	// locate the 'expect' directive
+	u64 expected_pos = test_text.find("expect:");
+
+	if(expected_pos == utility::dynamic_string::invalid_pos) {
+		utility::console::print_err("cannot find the 'expect:' directive in test '{}'\n", path);
+		return RES_FAIL;
+	}
+
+	expected_pos += 7; // move past the 'expect' directive
+	
+	// read to the end of the current line
+	while(expected_pos < test_text.get_size() && test_text[expected_pos] != '\n') {
+		expected += test_text[expected_pos++];	
+	}
+
+	expected = expected.trim();
+
+	// assemble the source file
+	const auto result = assembler.assemble(test_text);
+
+	// check for assembly errors
+	if(result.has_error()) {
+		utility::console::print_err("error: {}\n", result.get_error());
+		return RES_FAIL;
+	}
+
+	// compare against the expected hex encoding
+	utility::dynamic_string hex_result = utility::bytes_to_string(result.get_value(), result.get_value().get_size());
+
+	if(hex_result != expected) {
+		utility::console::print_err("mismatch: {} - expected '{}', but got '{}'\n", path, expected, hex_result); 
+		return RES_FAIL;
+	}
+
+	return RES_PASS;
 }
 
-auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {
-	return utility::compare_strings(shortform, input) == 0 || utility::compare_strings(longform, input) == 0;
-}
+auto run_tests_groups(const utility::dynamic_array<utility::dynamic_string>& groups) -> i32 {
+	utility::timer timer;
 
-auto run_tests(const utility::dynamic_array<utility::dynamic_string>& groups) -> i32 {
-	bool result = false;
+	u64 pass_count = 0;
+	u64 skip_count = 0;
+	u64 fail_count = 0;
 
-	for(u64 i = 0; i < groups.get_size(); ++i) {
-		if(groups[i] == "encoding") {
-			result |= detail::run_test_encoding();
+	timer.start();
+
+	for(const auto& group : groups) {
+		for(const auto& test : utility::directory::read(g_test_path / group)) {
+			test_result result = run_test(test);
+
+			switch(result) {
+				case RES_PASS: pass_count++; break;
+				case RES_FAIL: fail_count++; break;
+				case RES_SKIP: skip_count++; break;
+			}
 		}
-		else if(groups[i] == "binary") {
-			result |= detail::run_test_binary();
-		}
-		else {
-			utility::console::print_err("error: unknown instruction group '{}', exiting (type '--help' for help)\n", groups[i]);
-			return 1;
-		}
 	}
 
-	return result;
+	timer.stop();
+
+	utility::console::print(
+		"{}/{} tests successfully finished ({} tests skipped) in {}s\n",
+		pass_count, pass_count + fail_count, skip_count, timer.get_elapsed_s()
+	);
+
+	return fail_count;
 }
 
-auto check_invalid_option(i32 argc, i32 argi) -> i32 {
-	if(argc - 1 - argi == 0) {
-		return 0;
+auto run_tests_specific(const utility::dynamic_array<utility::dynamic_string>& tests) -> i32 {
+	utility::timer timer;
+	
+	u64 pass_count = 0;
+	u64 skip_count = 0;
+	u64 fail_count = 0;
+
+	timer.start();
+
+	for(const auto& group : get_all_groups()) {
+		for(const auto& test : utility::directory::read(g_test_path / group)) {
+			const auto test_name = test.get_filename().get_string();
+
+			// TODO: use a set
+			for(const auto& specified : tests) {
+				if(test_name == specified) {
+					test_result result  = run_test(test);
+
+					switch(result) {
+						case RES_PASS: pass_count++; break;
+						case RES_FAIL: fail_count++; break;
+						case RES_SKIP: skip_count++; break;
+					}
+
+					break;
+				}
+			}
+		}
 	}
 
-	utility::console::print_err("error: too many options specified (type '--help' for help)\n");
-	return 1;
+	timer.stop();
+
+	utility::console::print(
+		"{}/{} tests successfully finished ({} tests skipped) in {}s\n",
+		pass_count, pass_count + fail_count, skip_count, timer.get_elapsed_s()
+	);
+
+	return fail_count;
 }
 
-auto list_groups() -> i32 {
-	if(g_quiet) {
-		return 0;
-	} 
+void display_help() {
+	utility::console::print(
+		"usage: test [-l|-h|[[-q][-s test_names...|-g group_names...]]]\n"
+		"  -s --specific   specify one or more specific tests to run\n"
+		"  -g --group      specify one or more test groups to run\n"
+		"  -q --quiet      don't produce any console outputs\n"
+		"  -l --list       list all available test groups and tests\n"
+		"  -h --help       display this help message\n"
+		"\n"
+		"for bug reports and issues, please see:\n"
+		"<https://github.com/Goubermouche/baremetal/issues>\n"
+	);
+}
 
-	for(const auto& g : get_all_groups()) {
-		utility::console::print("{}\n", g);
+void list_tests() {
+	// groups
+	for(const auto& group : utility::directory::read(g_test_path)) {
+		auto tests = utility::directory::read(group);
+
+		utility::stable_sort(tests.begin(), tests.end(), [](const auto& left, const auto& right) {
+			return left < right;
+		});
+
+		utility::console::print("{}:\n", group.get_filename());
+
+		// individual tests
+		for(const auto& test : tests) {
+			utility::console::print("  {}\n", test.get_filename());
+		}
 	}
-
-	return 0;
 }
 
 auto main(i32 argc, const char** argv) -> i32 {
+	utility::dynamic_array<utility::dynamic_string> operands; // TODO: this should be a set
 	u8 argi = 1;
 
-	if(argc == 1) {
-		return run_tests(get_all_groups());
+	if(argc == 1) { 
+		return run_tests_groups(get_all_groups()); 
 	}
-
-	// quiet
-	if(compare_commands("-q", "--quiet", argv[argi])) {
-		g_quiet = true;
-		argi++;
-
-		if(argi == argc) {
-			utility::console::print_err("error: flag cannot be the only argument  (type '--help' for help)\n");
-			return 1;
-		}
+	else if(compare_commands("-h", "--help", argv[argi])) { 
+		display_help();
+		return 0; 
 	}
-
-	// help
-	if(compare_commands("-h", "--help", argv[argi])) {
-		print_help();
+	else if(compare_commands("-l", "--list", argv[argi])) { 
+		list_tests();
 		return 0;
 	}
-
-	// run all tests
-	if(compare_commands("-a", "--all", argv[argi])) {
-		if(check_invalid_option(argc, argi)) {
-			return 1;
-		}
-
-		return run_tests(get_all_groups());
+	else if(compare_commands("-q", "--quiet", argv[argi])) { 
+		g_quiet = true;
+		argi++;
 	}
 
-	// list available groups
-	if(compare_commands("-l", "--list", argv[argi])) {
-		if(check_invalid_option(argc, argi)) {
-			return 1;
-		}
-
-		return list_groups();
+	if(argc == argi) { 
+		utility::console::print_err("error: '{}' cannot be used alone (type '--help' for help)\n", argv[argi - 1]); 
+		return 1;
 	}
 
-	// run specific test groups
-	if(compare_commands("-g", "--group", argv[argi])) {
-		utility::dynamic_array<utility::dynamic_string> groups;
-		utility::dynamic_string current_group = "";
+	// collect operands
+	operands.reserve(argc - argi - 1);
 
-		if(argi + 1 == argc) {
-			utility::console::print_err("error: no groups were specified (type '--help' for help)\n");
-			return 1;
-		}
-
-		const char* input = argv[++argi];
-
-		u64 length = utility::string_len(input);
-		u64 i = 0;
-
-		while(i < length) {
-			if(input[i] == ',') {
-				current_group = current_group.trim();
-
-				if(!current_group.is_empty()) {
-					groups.push_back(current_group);
-					current_group.clear();
-				}
-
-				i++;
-				continue;
-			}
-
-			current_group += input[i++];	
-		}
-
-		current_group = current_group.trim();
-
-		if(!current_group.is_empty()) {
-			groups.push_back(current_group);
-		}
-
-		if(groups.is_empty()) {
-			utility::console::print_err("error: no groups were provided, exiting (type '--help' for help)\n");
-			return 1;
-		}
-
-		if(check_invalid_option(argc, argi)) {
-			return 1;
-		}
-
-		return run_tests(groups);
+	for(i32 i = argi + 1; i < argc; ++i) {
+		operands.push_back(argv[i]);
 	}
 
-	// unknown option
+	// options with operands
+	if(compare_commands("-g", "--group", argv[argi])) { 
+		return run_tests_groups(operands); 
+	}
+	else if(compare_commands("-s", "--specific", argv[argi])) {
+		return run_tests_specific(operands); 
+	}
+
 	utility::console::print_err("error: unknown option '{}' specified (type '--help' for help)\n", argv[argi]);
 	return 1;
 }

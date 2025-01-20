@@ -51,10 +51,16 @@ namespace baremetal::assembler {
 		};
   };
 
+	enum symbol_type : u8 {
+		SYM_REGULAR, 
+		SYM_GLOBAL
+	};
+
 	struct section {
 		struct symbol {
 			u64 position;    // offset within the local section
 			u64 block_index; // global block index (across all sections)
+			symbol_type type = SYM_REGULAR;
 		};
 
 		utility::string_view* name;
@@ -66,6 +72,7 @@ namespace baremetal::assembler {
 		utility::map<utility::string_view*, symbol> symbols;
 		utility::dynamic_array<basic_block*> blocks;
 
+		// only relevant when constructing the module
 		u64 current_block_position = 0;
 		u64 current_block_size = 0;
 	};
@@ -74,7 +81,7 @@ namespace baremetal::assembler {
 		module(context* ctx);
 
 		void add_instruction(const operand* operands, u32 index, u8 size);
-		void add_symbol(utility::string_view* name);
+		void add_symbol(utility::string_view* name, symbol_type type = SYM_REGULAR);
 		
 		void add_instruction_block(basic_block_type ty);
 		void add_label_block(utility::string_view* name);

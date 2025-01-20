@@ -746,6 +746,7 @@ namespace baremetal::assembler {
 			{ "rel"    , TOK_REL     },
 			{ "section", TOK_SECTION },
 			{ "times"  , TOK_TIMES   },
+			{ "global" , TOK_GLOBAL  },
 			{ "bits"   , TOK_BITS    },
 			{ "db"     , TOK_DB      },
 			{ "dw"     , TOK_DW      },
@@ -799,6 +800,7 @@ namespace baremetal::assembler {
 			case TOK_REL:              return "REL";
 			case TOK_SECTION:          return "SECTION";
 			case TOK_TIMES:            return "TIMES";
+			case TOK_GLOBAL:           return "GLOBAL";
 			case TOK_BITS:             return "BITS";
 			case TOK_DB:               return "DB";
 			case TOK_DW:               return "DW";

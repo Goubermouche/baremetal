@@ -26,6 +26,7 @@ namespace baremetal::assembler {
 		auto parse_instruction() -> utility::result<void>;
 		auto parse_identifier() -> utility::result<void>;
 		auto parse_section() -> utility::result<void>;
+		auto parse_global() -> utility::result<void>;
 		auto parse_label() -> utility::result<void>;
 		auto parse_times() -> utility::result<void>;
 		auto parse_bits() -> utility::result<void>;
