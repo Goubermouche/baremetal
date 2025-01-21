@@ -14,9 +14,9 @@ $ premake5 gmake
 
 # compile the project using gmake and run tests
 $ make
-$ ./output/bin/test_runner/test_runner
+$ ./output/bin/test/test
 ```
-You can find some basic examples in the [test directory](https://github.com/Goubermouche/baremetal/tree/f21bfa1933c139f4e8e275ac94fbe9d71f0cb09f/source/test_runner/tests/binary).
+You can find some basic examples in the [test directory](https://github.com/Goubermouche/baremetal/tree/f21bfa1933c139f4e8e275ac94fbe9d71f0cb09f/source/test/tests/binary).
 
 ## Supported passes
 ### Optimization
@@ -33,7 +33,7 @@ You can find some basic examples in the [test directory](https://github.com/Goub
 ```
 - source         # assembler source directory
   |- assembler   # source code for the assembler implementation
-  `- test_runner # test runners and test cases
+  `- test        # test runners and test cases
 - tools          # utilities used for managing the instruction database and tests
   `- scripts     # implementations of the utility programs
 ```

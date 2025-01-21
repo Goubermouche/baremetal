@@ -4,7 +4,7 @@
 
 using namespace baremetal::tests;
 
-utility::filepath g_test_path = "./source/test_runner/tests";
+utility::filepath g_test_path = "./source/test/tests";
 bool g_quiet = false; // TODO: not used yet
 
 enum test_result : u8 {
