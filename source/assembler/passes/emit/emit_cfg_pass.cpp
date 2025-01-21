@@ -1,6 +1,7 @@
 #include "emit_cfg_pass.h"
 
 #include "assembler/backend.h"
+#include "assembler/instruction/operands/memory.h"
 
 namespace baremetal::assembler::pass {
 	namespace detail {
@@ -137,28 +138,31 @@ namespace baremetal::assembler::pass {
 				case REG_R16: return g_gpr16_names[r.index];
 				case REG_R32: return g_gpr32_names[r.index];
 				case REG_R64: return g_gpr64_names[r.index];
+				case REG_RIP: return "rel $";
 				default: return "unknown reg class";
 			}
 		}
 
 		auto memory_to_string(mem m) -> utility::dynamic_string {
-			utility::dynamic_string string;
-			string += '[';
-			
+			utility::dynamic_string string = '[';
+		
+			// base register
 			if(m.has_base) {
 				string += register_to_string(m.base);
-	
-				if(m.has_index || m.s != SCALE_1 || (m.displacement.value != 0 && m.displacement.sign == false)) {
-					string += '+';
-				}
 			}
 	
+			// index register
 			if(m.has_index) {
-				string += register_to_string(m.index);
-	
-				if(m.s != SCALE_1 || (m.displacement.value != 0 && m.displacement.sign == false)) {
-					string += '+';
+				if(string.get_size() > 1) {
+					string += " + ";
 				}
+
+				string += register_to_string(m.index);
+			}
+
+			// scale
+			if(m.s != SCALE_1 && string.get_size() > 1) {
+				string += " * ";
 			}
 	
 			switch(m.s) {
@@ -169,15 +173,29 @@ namespace baremetal::assembler::pass {
 				default: ASSERT(false, "invalid scale specified\n");
 			}
 	
-			if(m.s != SCALE_1 && m.displacement.value != 0 && m.displacement.sign == false) {
-				string += '+';
+			// displacement
+			if(string.get_size() > 1 && m.displacement.value != 0 && m.displacement.sign == false) {
+				string += " + ";
 			}
 	
 			if(m.displacement.value != 0) {
-				string += immediate_to_string(m.displacement);
+				// workaround for when we have negative displacement with other operands, this ensures
+				// the operands are nicely spaced out
+				if(m.displacement.sign && string.get_size() > 1) {
+					string.append(" - {}", ~m.displacement.value + 1);
+				}
+				else {
+					string += immediate_to_string(m.displacement);
+				}
+			}
+
+			// empty memory operand
+			if(string.get_size() == 1) {
+				string += '0';
 			}
 	
 			string += ']';
+
 			return string;
 		}
 	} // namespace detail

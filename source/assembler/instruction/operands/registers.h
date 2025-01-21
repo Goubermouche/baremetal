@@ -23,7 +23,7 @@ namespace baremetal::assembler {
 		REG_TMM,  // tensor (varies by ISA)
 
 		REG_MMX,  // mmx registers
-		REG_K,    // mask registers:w
+		REG_K,    // mask registers
 		REG_ST,   // floating point registers
 		REG_SREG, // segment registers
 		REG_DREG, // debug registers

@@ -41,7 +41,7 @@ To achieve overall correctness, the project utilizes a variety of tests, some of
 
 > [!IMPORTANT]
 >
-> **baremetal** invokes [Nasm](https://www.nasm.us/) when generating encoding tests, depending on the number of instructions the test generation process may take up to 30 minutes.  
+> **baremetal** invokes [Nasm](https://www.nasm.us/) when generating encoding tests.  
 >
 
 The following commands are intended to be used to aid the developer when manipulating the instruction database: 
