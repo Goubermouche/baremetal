@@ -57,4 +57,4 @@ jobs:
       run: make config=release -j -B
     
     - name: Run tests
-      run: ./output/bin/test_runner/test_runner 2>&1
+      run: ./output/bin/test/test 2>&1
