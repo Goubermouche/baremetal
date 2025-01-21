@@ -232,26 +232,15 @@ function format_time(ms) {
 	return formatted_time.trim();
 }
 
-let results = [];
-let errors = [];
+function split_array(array, chunk) {
+	const chunks = [];
 
-function assemble_test(name, test, bin_path, asm_path, temp_path) {
-	const assembly = `BITS 64\n${test}`; 
-	const command = `nasm -w+all -f bin -o ${bin_path} ${asm_path} > ${temp_path} 2>&1`;
-
-	try {
-		utility.write_file(asm_path, assembly);
-		utility.execute(command);
-	} catch(error) {
-		errors.push(`${name} ${utility.read_file(temp_path)}`);
+	for(let i = 0; i < array.length; i += chunk) {
+		chunks.push(array.slice(i, i + chunk));
 	}
 
-	try {
-		results.push({ name: name, hex: utility.read_file_hex(bin_path)});
-	} catch(error) {
-		errors.push(`${name} ${utility.read_file(temp_path)}`);
-	}
-}
+	return chunks;
+};
 
 function main() {
 	let start_time = Date.now()
@@ -262,8 +251,11 @@ function main() {
 		process.exit(1);
 	}
 	
+	let variants = new Map();
 	let instructions;
-	
+	let tests = [];
+
+	// read the instruction database
 	try {
 		const data = fs.readFileSync(process.argv[2], 'utf8');
 		instructions = JSON.parse(data);
@@ -272,8 +264,7 @@ function main() {
 		process.exit(1);
 	}
 
-	let variants = new Map();
-
+	// collect instruction groups
 	instructions.forEach(inst => {
 		if(inst.operands.includes('hidden')) {
 			return;
@@ -287,13 +278,8 @@ function main() {
 		}
 	});
 
-	let tests = new Map();
-
+	// generate tests for every instruction group
 	variants.forEach((value, key) => {
-		//if(key !== 'mov') {
-		//	return;
-		//}
-
 		let test_set = new Set();
 
 		value.forEach(variant => {
@@ -304,40 +290,68 @@ function main() {
 			});
 		})
 
-		tests.set(key, Array.from(test_set).join('\n'));
+		tests.push({ name: key, test: Array.from(test_set).join('\n') });
 	})
 
-	const temp_path = utility.get_temp_path(0);
-	const asm_path = utility.get_asm_path(0);
-	const bin_path = utility.get_bin_path(0);
+	const worker_path = path.resolve(__dirname, 'testgen_worker.js');
+	const worker_count = Math.max(Math.min(Math.floor(tests.length / 100), os.cpus().length - 1), 1);
+	const chunks = split_array(tests, Math.ceil(tests.length / worker_count));
 
-	tests.forEach((test, name) => {
-		assemble_test(name, test, bin_path, asm_path, temp_path);
+	let finished_count = 0;
 
-		if((errors.length + results.length) % 10 == 0) {
-			process.stdout.write(`${errors.length + results.length}/${tests.size}\r`);
-		}
+	// create worker threads
+	const worker_promises = chunks.map((chunk, index) => {
+		return new Promise((resolve, reject) => {
+			const worker = new Worker(worker_path, { workerData: { id: index, tests: chunk } });
+	
+			worker.on('message', (message) => {
+				switch (message.id) {
+					case 'update': {
+						finished_count += 10; // we send an update every 10 tests
+						process.stdout.write(`${finished_count}/${tests.length}\r`);
+
+						break;
+					}
+					case 'result': {
+						chunk.forEach((test, j) => {
+							const test_path = path.join(process.argv[3], `/${test.name}.asm`);
+							const test_instructions = test.test;
+							const test_text = `; expect: ${message.data[j]}\n\n${test_instructions}`;
+
+							utility.write_file(test_path, test_text);
+						});
+
+						break;
+					}
+					default: console.error(`unknown worker message id '${message.id}' received`);
+				}
+			});
+	
+			worker.on('error', (err) => {
+				console.error(`worker error: ${err}`);
+				reject(err);
+			});
+	
+			worker.on('exit', (code) => {
+				if (code !== 0) {
+					console.error(`worker stopped with exit code ${code}`);
+					reject(new Error(`Worker ${index} stopped with exit code ${code}`));
+				} else {
+					resolve();
+				}
+			});
+		});
 	});
 
-	try {
-		utility.delete_file(temp_path);
-		utility.delete_file(bin_path);
-		utility.delete_file(asm_path);
-	} catch(err) {}
-
-	process.stdout.clearLine();
-	console.log(errors.length, results.length);
-
-	results.forEach(result => {
-		const test_path = path.join(process.argv[3], `/${result.name}.asm`);
-		const test_instructions = tests.get(result.name);
-		const test_text = `; expect: ${result.hex}\n\n${test_instructions}`;
-
-		utility.write_file(test_path, test_text);
-	})
-
-	return 0;
+	// run testgen workers
+	Promise.all(worker_promises)
+		.then(() => {
+			console.log(`testgen finished (${format_time(Date.now() - start_time)})`);
+		})
+		.catch((error) => {
+			console.log(`error: ${error}`);
+		});
 }
 
-process.exit(main());
+main();
 
