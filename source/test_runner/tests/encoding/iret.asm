@@ -1,0 +1,3 @@
+; expect: cf
+
+iret 

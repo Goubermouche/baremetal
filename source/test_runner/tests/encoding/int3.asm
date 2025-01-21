@@ -1,0 +1,3 @@
+; expect: cc
+
+int3 

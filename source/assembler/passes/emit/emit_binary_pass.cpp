@@ -30,7 +30,10 @@ namespace baremetal::assembler::pass {
 						instruction_data* instruction = block->instructions.data[i];
 						auto data = module.resolve_instruction(instruction, section, local_offset);
 
-						bytes.insert(bytes.end(), data.data, data.data + data.size);
+						utility::memcpy(bytes.get_data() + bytes.get_size(), data.data, data.size);
+						bytes.set_size(bytes.get_size() + data.size);
+
+						// bytes.insert(bytes.end(), data.data, data.data + data.size);
 						local_offset += instruction->size;
 					}
 				}

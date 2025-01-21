@@ -1,0 +1,1037 @@
+; expect: c4e37d38c000c4e37d38c001c4e37d38c064c4e37d38c07fc4e37d38c080c4e37d38c100c4e37d38c101c4e37d38c164c4e37d38c17fc4e37d38c180c4c37d38c700c4c37d38c701c4c37d38c764c4c37d38c77fc4c37d38c780c4e37538c000c4e37538c001c4e37538c064c4e37538c07fc4e37538c080c4e37538c100c4e37538c101c4e37538c164c4e37538c17fc4e37538c180c4c37538c700c4c37538c701c4c37538c764c4c37538c77fc4c37538c780c4e30538c000c4e30538c001c4e30538c064c4e30538c07fc4e30538c080c4e30538c100c4e30538c101c4e30538c164c4e30538c17fc4e30538c180c4c30538c700c4c30538c701c4c30538c764c4c30538c77fc4c30538c780c4e37d38c800c4e37d38c801c4e37d38c864c4e37d38c87fc4e37d38c880c4e37d38c900c4e37d38c901c4e37d38c964c4e37d38c97fc4e37d38c980c4c37d38cf00c4c37d38cf01c4c37d38cf64c4c37d38cf7fc4c37d38cf80c4e37538c800c4e37538c801c4e37538c864c4e37538c87fc4e37538c880c4e37538c900c4e37538c901c4e37538c964c4e37538c97fc4e37538c980c4c37538cf00c4c37538cf01c4c37538cf64c4c37538cf7fc4c37538cf80c4e30538c800c4e30538c801c4e30538c864c4e30538c87fc4e30538c880c4e30538c900c4e30538c901c4e30538c964c4e30538c97fc4e30538c980c4c30538cf00c4c30538cf01c4c30538cf64c4c30538cf7fc4c30538cf80c4637d38f800c4637d38f801c4637d38f864c4637d38f87fc4637d38f880c4637d38f900c4637d38f901c4637d38f964c4637d38f97fc4637d38f980c4437d38ff00c4437d38ff01c4437d38ff64c4437d38ff7fc4437d38ff80c4637538f800c4637538f801c4637538f864c4637538f87fc4637538f880c4637538f900c4637538f901c4637538f964c4637538f97fc4637538f980c4437538ff00c4437538ff01c4437538ff64c4437538ff7fc4437538ff80c4630538f800c4630538f801c4630538f864c4630538f87fc4630538f880c4630538f900c4630538f901c4630538f964c4630538f97fc4630538f980c4430538ff00c4430538ff01c4430538ff64c4430538ff7fc4430538ff80c4e37d3804250000000000c4e37d3804250000000001c4e37d3804250000000064c4e37d380425000000007fc4e37d3804250000000080c4e37d380425ff00000000c4e37d380425ff00000001c4e37d380425ff00000064c4e37d380425ff0000007fc4e37d380425ff00000080c4e37d3805f6ffffff00c4e37d3805f6ffffff01c4e37d3805f6ffffff64c4e37d3805f6ffffff7fc4e37d3805f6ffffff80c4e37d3805f500000000c4e37d3805f500000001c4e37d3805f500000064c4e37d3805f50000007fc4e37d3805f500000080c4e37d3805f5ff000000c4e37d3805f5ff000001c4e37d3805f5ff000064c4e37d3805f5ff00007fc4e37d3805f5ff000080c4e37d380000c4e37d380001c4e37d380064c4e37d38007fc4e37d380080c4e37d380000c4e37d380001c4e37d380064c4e37d38007fc4e37d380080c4e37d3880ffff000000c4e37d3880ffff000001c4e37d3880ffff000064c4e37d3880ffff00007fc4e37d3880ffff000080c4c37d3887ffff000000c4c37d3887ffff000001c4c37d3887ffff000064c4c37d3887ffff00007fc4c37d3887ffff000080c4e37d38043000c4e37d38043001c4e37d38043064c4e37d3804307fc4e37d38043080c4e37d388430ffff000000c4e37d388430ffff000001c4e37d388430ffff000064c4e37d388430ffff00007fc4e37d388430ffff000080c4c37d388437ffff000000c4c37d388437ffff000001c4c37d388437ffff000064c4c37d388437ffff00007fc4c37d388437ffff000080c4a37d388438ffff000000c4a37d388438ffff000001c4a37d388438ffff000064c4a37d388438ffff00007fc4a37d388438ffff000080c4e37d388470f2ff0f0000c4e37d388470f2ff0f0001c4e37d388470f2ff0f0064c4e37d388470f2ff0f007fc4e37d388470f2ff0f0080c4e37d3884b0f4ff0f0000c4e37d3884b0f4ff0f0001c4e37d3884b0f4ff0f0064c4e37d3884b0f4ff0f007fc4e37d3884b0f4ff0f0080c4e37d3884f0f8ff0f0000c4e37d3884f0f8ff0f0001c4e37d3884f0f8ff0f0064c4e37d3884f0f8ff0f007fc4e37d3884f0f8ff0f0080c4e37d3884c4f8ff0f0000c4e37d3884c4f8ff0f0001c4e37d3884c4f8ff0f0064c4e37d3884c4f8ff0f007fc4e37d3884c4f8ff0f0080c4c37d3884c7f8ff0f0000c4c37d3884c7f8ff0f0001c4c37d3884c7f8ff0f0064c4c37d3884c7f8ff0f007fc4c37d3884c7f8ff0f0080c4a37d3884fcf8ff0f0000c4a37d3884fcf8ff0f0001c4a37d3884fcf8ff0f0064c4a37d3884fcf8ff0f007fc4a37d3884fcf8ff0f0080c4837d3884fef8ff0f0000c4837d3884fef8ff0f0001c4837d3884fef8ff0f0064c4837d3884fef8ff0f007fc4837d3884fef8ff0f0080c4e3753804250000000000c4e3753804250000000001c4e3753804250000000064c4e375380425000000007fc4e3753804250000000080c4e375380425ff00000000c4e375380425ff00000001c4e375380425ff00000064c4e375380425ff0000007fc4e375380425ff00000080c4e3753805f6ffffff00c4e3753805f6ffffff01c4e3753805f6ffffff64c4e3753805f6ffffff7fc4e3753805f6ffffff80c4e3753805f500000000c4e3753805f500000001c4e3753805f500000064c4e3753805f50000007fc4e3753805f500000080c4e3753805f5ff000000c4e3753805f5ff000001c4e3753805f5ff000064c4e3753805f5ff00007fc4e3753805f5ff000080c4e375380000c4e375380001c4e375380064c4e37538007fc4e375380080c4e375380000c4e375380001c4e375380064c4e37538007fc4e375380080c4e3753880ffff000000c4e3753880ffff000001c4e3753880ffff000064c4e3753880ffff00007fc4e3753880ffff000080c4c3753887ffff000000c4c3753887ffff000001c4c3753887ffff000064c4c3753887ffff00007fc4c3753887ffff000080c4e37538043000c4e37538043001c4e37538043064c4e3753804307fc4e37538043080c4e375388430ffff000000c4e375388430ffff000001c4e375388430ffff000064c4e375388430ffff00007fc4e375388430ffff000080c4c375388437ffff000000c4c375388437ffff000001c4c375388437ffff000064c4c375388437ffff00007fc4c375388437ffff000080c4a375388438ffff000000c4a375388438ffff000001c4a375388438ffff000064c4a375388438ffff00007fc4a375388438ffff000080c4e375388470f2ff0f0000c4e375388470f2ff0f0001c4e375388470f2ff0f0064c4e375388470f2ff0f007fc4e375388470f2ff0f0080c4e3753884b0f4ff0f0000c4e3753884b0f4ff0f0001c4e3753884b0f4ff0f0064c4e3753884b0f4ff0f007fc4e3753884b0f4ff0f0080c4e3753884f0f8ff0f0000c4e3753884f0f8ff0f0001c4e3753884f0f8ff0f0064c4e3753884f0f8ff0f007fc4e3753884f0f8ff0f0080c4e3753884c4f8ff0f0000c4e3753884c4f8ff0f0001c4e3753884c4f8ff0f0064c4e3753884c4f8ff0f007fc4e3753884c4f8ff0f0080c4c3753884c7f8ff0f0000c4c3753884c7f8ff0f0001c4c3753884c7f8ff0f0064c4c3753884c7f8ff0f007fc4c3753884c7f8ff0f0080c4a3753884fcf8ff0f0000c4a3753884fcf8ff0f0001c4a3753884fcf8ff0f0064c4a3753884fcf8ff0f007fc4a3753884fcf8ff0f0080c483753884fef8ff0f0000c483753884fef8ff0f0001c483753884fef8ff0f0064c483753884fef8ff0f007fc483753884fef8ff0f0080c4e3053804250000000000c4e3053804250000000001c4e3053804250000000064c4e305380425000000007fc4e3053804250000000080c4e305380425ff00000000c4e305380425ff00000001c4e305380425ff00000064c4e305380425ff0000007fc4e305380425ff00000080c4e3053805f6ffffff00c4e3053805f6ffffff01c4e3053805f6ffffff64c4e3053805f6ffffff7fc4e3053805f6ffffff80c4e3053805f500000000c4e3053805f500000001c4e3053805f500000064c4e3053805f50000007fc4e3053805f500000080c4e3053805f5ff000000c4e3053805f5ff000001c4e3053805f5ff000064c4e3053805f5ff00007fc4e3053805f5ff000080c4e305380000c4e305380001c4e305380064c4e30538007fc4e305380080c4e305380000c4e305380001c4e305380064c4e30538007fc4e305380080c4e3053880ffff000000c4e3053880ffff000001c4e3053880ffff000064c4e3053880ffff00007fc4e3053880ffff000080c4c3053887ffff000000c4c3053887ffff000001c4c3053887ffff000064c4c3053887ffff00007fc4c3053887ffff000080c4e30538043000c4e30538043001c4e30538043064c4e3053804307fc4e30538043080c4e305388430ffff000000c4e305388430ffff000001c4e305388430ffff000064c4e305388430ffff00007fc4e305388430ffff000080c4c305388437ffff000000c4c305388437ffff000001c4c305388437ffff000064c4c305388437ffff00007fc4c305388437ffff000080c4a305388438ffff000000c4a305388438ffff000001c4a305388438ffff000064c4a305388438ffff00007fc4a305388438ffff000080c4e305388470f2ff0f0000c4e305388470f2ff0f0001c4e305388470f2ff0f0064c4e305388470f2ff0f007fc4e305388470f2ff0f0080c4e3053884b0f4ff0f0000c4e3053884b0f4ff0f0001c4e3053884b0f4ff0f0064c4e3053884b0f4ff0f007fc4e3053884b0f4ff0f0080c4e3053884f0f8ff0f0000c4e3053884f0f8ff0f0001c4e3053884f0f8ff0f0064c4e3053884f0f8ff0f007fc4e3053884f0f8ff0f0080c4e3053884c4f8ff0f0000c4e3053884c4f8ff0f0001c4e3053884c4f8ff0f0064c4e3053884c4f8ff0f007fc4e3053884c4f8ff0f0080c4c3053884c7f8ff0f0000c4c3053884c7f8ff0f0001c4c3053884c7f8ff0f0064c4c3053884c7f8ff0f007fc4c3053884c7f8ff0f0080c4a3053884fcf8ff0f0000c4a3053884fcf8ff0f0001c4a3053884fcf8ff0f0064c4a3053884fcf8ff0f007fc4a3053884fcf8ff0f0080c483053884fef8ff0f0000c483053884fef8ff0f0001c483053884fef8ff0f0064c483053884fef8ff0f007fc483053884fef8ff0f0080c4e37d380c250000000000c4e37d380c250000000001c4e37d380c250000000064c4e37d380c25000000007fc4e37d380c250000000080c4e37d380c25ff00000000c4e37d380c25ff00000001c4e37d380c25ff00000064c4e37d380c25ff0000007fc4e37d380c25ff00000080c4e37d380df6ffffff00c4e37d380df6ffffff01c4e37d380df6ffffff64c4e37d380df6ffffff7fc4e37d380df6ffffff80c4e37d380df500000000c4e37d380df500000001c4e37d380df500000064c4e37d380df50000007fc4e37d380df500000080c4e37d380df5ff000000c4e37d380df5ff000001c4e37d380df5ff000064c4e37d380df5ff00007fc4e37d380df5ff000080c4e37d380800c4e37d380801c4e37d380864c4e37d38087fc4e37d380880c4e37d380800c4e37d380801c4e37d380864c4e37d38087fc4e37d380880c4e37d3888ffff000000c4e37d3888ffff000001c4e37d3888ffff000064c4e37d3888ffff00007fc4e37d3888ffff000080c4c37d388fffff000000c4c37d388fffff000001c4c37d388fffff000064c4c37d388fffff00007fc4c37d388fffff000080c4e37d380c3000c4e37d380c3001c4e37d380c3064c4e37d380c307fc4e37d380c3080c4e37d388c30ffff000000c4e37d388c30ffff000001c4e37d388c30ffff000064c4e37d388c30ffff00007fc4e37d388c30ffff000080c4c37d388c37ffff000000c4c37d388c37ffff000001c4c37d388c37ffff000064c4c37d388c37ffff00007fc4c37d388c37ffff000080c4a37d388c38ffff000000c4a37d388c38ffff000001c4a37d388c38ffff000064c4a37d388c38ffff00007fc4a37d388c38ffff000080c4e37d388c70f2ff0f0000c4e37d388c70f2ff0f0001c4e37d388c70f2ff0f0064c4e37d388c70f2ff0f007fc4e37d388c70f2ff0f0080c4e37d388cb0f4ff0f0000c4e37d388cb0f4ff0f0001c4e37d388cb0f4ff0f0064c4e37d388cb0f4ff0f007fc4e37d388cb0f4ff0f0080c4e37d388cf0f8ff0f0000c4e37d388cf0f8ff0f0001c4e37d388cf0f8ff0f0064c4e37d388cf0f8ff0f007fc4e37d388cf0f8ff0f0080c4e37d388cc4f8ff0f0000c4e37d388cc4f8ff0f0001c4e37d388cc4f8ff0f0064c4e37d388cc4f8ff0f007fc4e37d388cc4f8ff0f0080c4c37d388cc7f8ff0f0000c4c37d388cc7f8ff0f0001c4c37d388cc7f8ff0f0064c4c37d388cc7f8ff0f007fc4c37d388cc7f8ff0f0080c4a37d388cfcf8ff0f0000c4a37d388cfcf8ff0f0001c4a37d388cfcf8ff0f0064c4a37d388cfcf8ff0f007fc4a37d388cfcf8ff0f0080c4837d388cfef8ff0f0000c4837d388cfef8ff0f0001c4837d388cfef8ff0f0064c4837d388cfef8ff0f007fc4837d388cfef8ff0f0080c4e375380c250000000000c4e375380c250000000001c4e375380c250000000064c4e375380c25000000007fc4e375380c250000000080c4e375380c25ff00000000c4e375380c25ff00000001c4e375380c25ff00000064c4e375380c25ff0000007fc4e375380c25ff00000080c4e375380df6ffffff00c4e375380df6ffffff01c4e375380df6ffffff64c4e375380df6ffffff7fc4e375380df6ffffff80c4e375380df500000000c4e375380df500000001c4e375380df500000064c4e375380df50000007fc4e375380df500000080c4e375380df5ff000000c4e375380df5ff000001c4e375380df5ff000064c4e375380df5ff00007fc4e375380df5ff000080c4e375380800c4e375380801c4e375380864c4e37538087fc4e375380880c4e375380800c4e375380801c4e375380864c4e37538087fc4e375380880c4e3753888ffff000000c4e3753888ffff000001c4e3753888ffff000064c4e3753888ffff00007fc4e3753888ffff000080c4c375388fffff000000c4c375388fffff000001c4c375388fffff000064c4c375388fffff00007fc4c375388fffff000080c4e375380c3000c4e375380c3001c4e375380c3064c4e375380c307fc4e375380c3080c4e375388c30ffff000000c4e375388c30ffff000001c4e375388c30ffff000064c4e375388c30ffff00007fc4e375388c30ffff000080c4c375388c37ffff000000c4c375388c37ffff000001c4c375388c37ffff000064c4c375388c37ffff00007fc4c375388c37ffff000080c4a375388c38ffff000000c4a375388c38ffff000001c4a375388c38ffff000064c4a375388c38ffff00007fc4a375388c38ffff000080c4e375388c70f2ff0f0000c4e375388c70f2ff0f0001c4e375388c70f2ff0f0064c4e375388c70f2ff0f007fc4e375388c70f2ff0f0080c4e375388cb0f4ff0f0000c4e375388cb0f4ff0f0001c4e375388cb0f4ff0f0064c4e375388cb0f4ff0f007fc4e375388cb0f4ff0f0080c4e375388cf0f8ff0f0000c4e375388cf0f8ff0f0001c4e375388cf0f8ff0f0064c4e375388cf0f8ff0f007fc4e375388cf0f8ff0f0080c4e375388cc4f8ff0f0000c4e375388cc4f8ff0f0001c4e375388cc4f8ff0f0064c4e375388cc4f8ff0f007fc4e375388cc4f8ff0f0080c4c375388cc7f8ff0f0000c4c375388cc7f8ff0f0001c4c375388cc7f8ff0f0064c4c375388cc7f8ff0f007fc4c375388cc7f8ff0f0080c4a375388cfcf8ff0f0000c4a375388cfcf8ff0f0001c4a375388cfcf8ff0f0064c4a375388cfcf8ff0f007fc4a375388cfcf8ff0f0080c48375388cfef8ff0f0000c48375388cfef8ff0f0001c48375388cfef8ff0f0064c48375388cfef8ff0f007fc48375388cfef8ff0f0080c4e305380c250000000000c4e305380c250000000001c4e305380c250000000064c4e305380c25000000007fc4e305380c250000000080c4e305380c25ff00000000c4e305380c25ff00000001c4e305380c25ff00000064c4e305380c25ff0000007fc4e305380c25ff00000080c4e305380df6ffffff00c4e305380df6ffffff01c4e305380df6ffffff64c4e305380df6ffffff7fc4e305380df6ffffff80c4e305380df500000000c4e305380df500000001c4e305380df500000064c4e305380df50000007fc4e305380df500000080c4e305380df5ff000000c4e305380df5ff000001c4e305380df5ff000064c4e305380df5ff00007fc4e305380df5ff000080c4e305380800c4e305380801c4e305380864c4e30538087fc4e305380880c4e305380800c4e305380801c4e305380864c4e30538087fc4e305380880c4e3053888ffff000000c4e3053888ffff000001c4e3053888ffff000064c4e3053888ffff00007fc4e3053888ffff000080c4c305388fffff000000c4c305388fffff000001c4c305388fffff000064c4c305388fffff00007fc4c305388fffff000080c4e305380c3000c4e305380c3001c4e305380c3064c4e305380c307fc4e305380c3080c4e305388c30ffff000000c4e305388c30ffff000001c4e305388c30ffff000064c4e305388c30ffff00007fc4e305388c30ffff000080c4c305388c37ffff000000c4c305388c37ffff000001c4c305388c37ffff000064c4c305388c37ffff00007fc4c305388c37ffff000080c4a305388c38ffff000000c4a305388c38ffff000001c4a305388c38ffff000064c4a305388c38ffff00007fc4a305388c38ffff000080c4e305388c70f2ff0f0000c4e305388c70f2ff0f0001c4e305388c70f2ff0f0064c4e305388c70f2ff0f007fc4e305388c70f2ff0f0080c4e305388cb0f4ff0f0000c4e305388cb0f4ff0f0001c4e305388cb0f4ff0f0064c4e305388cb0f4ff0f007fc4e305388cb0f4ff0f0080c4e305388cf0f8ff0f0000c4e305388cf0f8ff0f0001c4e305388cf0f8ff0f0064c4e305388cf0f8ff0f007fc4e305388cf0f8ff0f0080c4e305388cc4f8ff0f0000c4e305388cc4f8ff0f0001c4e305388cc4f8ff0f0064c4e305388cc4f8ff0f007fc4e305388cc4f8ff0f0080c4c305388cc7f8ff0f0000c4c305388cc7f8ff0f0001c4c305388cc7f8ff0f0064c4c305388cc7f8ff0f007fc4c305388cc7f8ff0f0080c4a305388cfcf8ff0f0000c4a305388cfcf8ff0f0001c4a305388cfcf8ff0f0064c4a305388cfcf8ff0f007fc4a305388cfcf8ff0f0080c48305388cfef8ff0f0000c48305388cfef8ff0f0001c48305388cfef8ff0f0064c48305388cfef8ff0f007fc48305388cfef8ff0f0080c4637d383c250000000000c4637d383c250000000001c4637d383c250000000064c4637d383c25000000007fc4637d383c250000000080c4637d383c25ff00000000c4637d383c25ff00000001c4637d383c25ff00000064c4637d383c25ff0000007fc4637d383c25ff00000080c4637d383df6ffffff00c4637d383df6ffffff01c4637d383df6ffffff64c4637d383df6ffffff7fc4637d383df6ffffff80c4637d383df500000000c4637d383df500000001c4637d383df500000064c4637d383df50000007fc4637d383df500000080c4637d383df5ff000000c4637d383df5ff000001c4637d383df5ff000064c4637d383df5ff00007fc4637d383df5ff000080c4637d383800c4637d383801c4637d383864c4637d38387fc4637d383880c4637d383800c4637d383801c4637d383864c4637d38387fc4637d383880c4637d38b8ffff000000c4637d38b8ffff000001c4637d38b8ffff000064c4637d38b8ffff00007fc4637d38b8ffff000080c4437d38bfffff000000c4437d38bfffff000001c4437d38bfffff000064c4437d38bfffff00007fc4437d38bfffff000080c4637d383c3000c4637d383c3001c4637d383c3064c4637d383c307fc4637d383c3080c4637d38bc30ffff000000c4637d38bc30ffff000001c4637d38bc30ffff000064c4637d38bc30ffff00007fc4637d38bc30ffff000080c4437d38bc37ffff000000c4437d38bc37ffff000001c4437d38bc37ffff000064c4437d38bc37ffff00007fc4437d38bc37ffff000080c4237d38bc38ffff000000c4237d38bc38ffff000001c4237d38bc38ffff000064c4237d38bc38ffff00007fc4237d38bc38ffff000080c4637d38bc70f2ff0f0000c4637d38bc70f2ff0f0001c4637d38bc70f2ff0f0064c4637d38bc70f2ff0f007fc4637d38bc70f2ff0f0080c4637d38bcb0f4ff0f0000c4637d38bcb0f4ff0f0001c4637d38bcb0f4ff0f0064c4637d38bcb0f4ff0f007fc4637d38bcb0f4ff0f0080c4637d38bcf0f8ff0f0000c4637d38bcf0f8ff0f0001c4637d38bcf0f8ff0f0064c4637d38bcf0f8ff0f007fc4637d38bcf0f8ff0f0080c4637d38bcc4f8ff0f0000c4637d38bcc4f8ff0f0001c4637d38bcc4f8ff0f0064c4637d38bcc4f8ff0f007fc4637d38bcc4f8ff0f0080c4437d38bcc7f8ff0f0000c4437d38bcc7f8ff0f0001c4437d38bcc7f8ff0f0064c4437d38bcc7f8ff0f007fc4437d38bcc7f8ff0f0080c4237d38bcfcf8ff0f0000c4237d38bcfcf8ff0f0001c4237d38bcfcf8ff0f0064c4237d38bcfcf8ff0f007fc4237d38bcfcf8ff0f0080c4037d38bcfef8ff0f0000c4037d38bcfef8ff0f0001c4037d38bcfef8ff0f0064c4037d38bcfef8ff0f007fc4037d38bcfef8ff0f0080c46375383c250000000000c46375383c250000000001c46375383c250000000064c46375383c25000000007fc46375383c250000000080c46375383c25ff00000000c46375383c25ff00000001c46375383c25ff00000064c46375383c25ff0000007fc46375383c25ff00000080c46375383df6ffffff00c46375383df6ffffff01c46375383df6ffffff64c46375383df6ffffff7fc46375383df6ffffff80c46375383df500000000c46375383df500000001c46375383df500000064c46375383df50000007fc46375383df500000080c46375383df5ff000000c46375383df5ff000001c46375383df5ff000064c46375383df5ff00007fc46375383df5ff000080c46375383800c46375383801c46375383864c4637538387fc46375383880c46375383800c46375383801c46375383864c4637538387fc46375383880c4637538b8ffff000000c4637538b8ffff000001c4637538b8ffff000064c4637538b8ffff00007fc4637538b8ffff000080c4437538bfffff000000c4437538bfffff000001c4437538bfffff000064c4437538bfffff00007fc4437538bfffff000080c46375383c3000c46375383c3001c46375383c3064c46375383c307fc46375383c3080c4637538bc30ffff000000c4637538bc30ffff000001c4637538bc30ffff000064c4637538bc30ffff00007fc4637538bc30ffff000080c4437538bc37ffff000000c4437538bc37ffff000001c4437538bc37ffff000064c4437538bc37ffff00007fc4437538bc37ffff000080c4237538bc38ffff000000c4237538bc38ffff000001c4237538bc38ffff000064c4237538bc38ffff00007fc4237538bc38ffff000080c4637538bc70f2ff0f0000c4637538bc70f2ff0f0001c4637538bc70f2ff0f0064c4637538bc70f2ff0f007fc4637538bc70f2ff0f0080c4637538bcb0f4ff0f0000c4637538bcb0f4ff0f0001c4637538bcb0f4ff0f0064c4637538bcb0f4ff0f007fc4637538bcb0f4ff0f0080c4637538bcf0f8ff0f0000c4637538bcf0f8ff0f0001c4637538bcf0f8ff0f0064c4637538bcf0f8ff0f007fc4637538bcf0f8ff0f0080c4637538bcc4f8ff0f0000c4637538bcc4f8ff0f0001c4637538bcc4f8ff0f0064c4637538bcc4f8ff0f007fc4637538bcc4f8ff0f0080c4437538bcc7f8ff0f0000c4437538bcc7f8ff0f0001c4437538bcc7f8ff0f0064c4437538bcc7f8ff0f007fc4437538bcc7f8ff0f0080c4237538bcfcf8ff0f0000c4237538bcfcf8ff0f0001c4237538bcfcf8ff0f0064c4237538bcfcf8ff0f007fc4237538bcfcf8ff0f0080c4037538bcfef8ff0f0000c4037538bcfef8ff0f0001c4037538bcfef8ff0f0064c4037538bcfef8ff0f007fc4037538bcfef8ff0f0080c46305383c250000000000c46305383c250000000001c46305383c250000000064c46305383c25000000007fc46305383c250000000080c46305383c25ff00000000c46305383c25ff00000001c46305383c25ff00000064c46305383c25ff0000007fc46305383c25ff00000080c46305383df6ffffff00c46305383df6ffffff01c46305383df6ffffff64c46305383df6ffffff7fc46305383df6ffffff80c46305383df500000000c46305383df500000001c46305383df500000064c46305383df50000007fc46305383df500000080c46305383df5ff000000c46305383df5ff000001c46305383df5ff000064c46305383df5ff00007fc46305383df5ff000080c46305383800c46305383801c46305383864c4630538387fc46305383880c46305383800c46305383801c46305383864c4630538387fc46305383880c4630538b8ffff000000c4630538b8ffff000001c4630538b8ffff000064c4630538b8ffff00007fc4630538b8ffff000080c4430538bfffff000000c4430538bfffff000001c4430538bfffff000064c4430538bfffff00007fc4430538bfffff000080c46305383c3000c46305383c3001c46305383c3064c46305383c307fc46305383c3080c4630538bc30ffff000000c4630538bc30ffff000001c4630538bc30ffff000064c4630538bc30ffff00007fc4630538bc30ffff000080c4430538bc37ffff000000c4430538bc37ffff000001c4430538bc37ffff000064c4430538bc37ffff00007fc4430538bc37ffff000080c4230538bc38ffff000000c4230538bc38ffff000001c4230538bc38ffff000064c4230538bc38ffff00007fc4230538bc38ffff000080c4630538bc70f2ff0f0000c4630538bc70f2ff0f0001c4630538bc70f2ff0f0064c4630538bc70f2ff0f007fc4630538bc70f2ff0f0080c4630538bcb0f4ff0f0000c4630538bcb0f4ff0f0001c4630538bcb0f4ff0f0064c4630538bcb0f4ff0f007fc4630538bcb0f4ff0f0080c4630538bcf0f8ff0f0000c4630538bcf0f8ff0f0001c4630538bcf0f8ff0f0064c4630538bcf0f8ff0f007fc4630538bcf0f8ff0f0080c4630538bcc4f8ff0f0000c4630538bcc4f8ff0f0001c4630538bcc4f8ff0f0064c4630538bcc4f8ff0f007fc4630538bcc4f8ff0f0080c4430538bcc7f8ff0f0000c4430538bcc7f8ff0f0001c4430538bcc7f8ff0f0064c4430538bcc7f8ff0f007fc4430538bcc7f8ff0f0080c4230538bcfcf8ff0f0000c4230538bcfcf8ff0f0001c4230538bcfcf8ff0f0064c4230538bcfcf8ff0f007fc4230538bcfcf8ff0f0080c4030538bcfef8ff0f0000c4030538bcfef8ff0f0001c4030538bcfef8ff0f0064c4030538bcfef8ff0f007fc4030538bcfef8ff0f0080
+
+vinserti128 ymm0, ymm0, xmm0, 0
+vinserti128 ymm0, ymm0, xmm0, 1
+vinserti128 ymm0, ymm0, xmm0, 100
+vinserti128 ymm0, ymm0, xmm0, 127
+vinserti128 ymm0, ymm0, xmm0, -128
+vinserti128 ymm0, ymm0, xmm1, 0
+vinserti128 ymm0, ymm0, xmm1, 1
+vinserti128 ymm0, ymm0, xmm1, 100
+vinserti128 ymm0, ymm0, xmm1, 127
+vinserti128 ymm0, ymm0, xmm1, -128
+vinserti128 ymm0, ymm0, xmm15, 0
+vinserti128 ymm0, ymm0, xmm15, 1
+vinserti128 ymm0, ymm0, xmm15, 100
+vinserti128 ymm0, ymm0, xmm15, 127
+vinserti128 ymm0, ymm0, xmm15, -128
+vinserti128 ymm0, ymm1, xmm0, 0
+vinserti128 ymm0, ymm1, xmm0, 1
+vinserti128 ymm0, ymm1, xmm0, 100
+vinserti128 ymm0, ymm1, xmm0, 127
+vinserti128 ymm0, ymm1, xmm0, -128
+vinserti128 ymm0, ymm1, xmm1, 0
+vinserti128 ymm0, ymm1, xmm1, 1
+vinserti128 ymm0, ymm1, xmm1, 100
+vinserti128 ymm0, ymm1, xmm1, 127
+vinserti128 ymm0, ymm1, xmm1, -128
+vinserti128 ymm0, ymm1, xmm15, 0
+vinserti128 ymm0, ymm1, xmm15, 1
+vinserti128 ymm0, ymm1, xmm15, 100
+vinserti128 ymm0, ymm1, xmm15, 127
+vinserti128 ymm0, ymm1, xmm15, -128
+vinserti128 ymm0, ymm15, xmm0, 0
+vinserti128 ymm0, ymm15, xmm0, 1
+vinserti128 ymm0, ymm15, xmm0, 100
+vinserti128 ymm0, ymm15, xmm0, 127
+vinserti128 ymm0, ymm15, xmm0, -128
+vinserti128 ymm0, ymm15, xmm1, 0
+vinserti128 ymm0, ymm15, xmm1, 1
+vinserti128 ymm0, ymm15, xmm1, 100
+vinserti128 ymm0, ymm15, xmm1, 127
+vinserti128 ymm0, ymm15, xmm1, -128
+vinserti128 ymm0, ymm15, xmm15, 0
+vinserti128 ymm0, ymm15, xmm15, 1
+vinserti128 ymm0, ymm15, xmm15, 100
+vinserti128 ymm0, ymm15, xmm15, 127
+vinserti128 ymm0, ymm15, xmm15, -128
+vinserti128 ymm1, ymm0, xmm0, 0
+vinserti128 ymm1, ymm0, xmm0, 1
+vinserti128 ymm1, ymm0, xmm0, 100
+vinserti128 ymm1, ymm0, xmm0, 127
+vinserti128 ymm1, ymm0, xmm0, -128
+vinserti128 ymm1, ymm0, xmm1, 0
+vinserti128 ymm1, ymm0, xmm1, 1
+vinserti128 ymm1, ymm0, xmm1, 100
+vinserti128 ymm1, ymm0, xmm1, 127
+vinserti128 ymm1, ymm0, xmm1, -128
+vinserti128 ymm1, ymm0, xmm15, 0
+vinserti128 ymm1, ymm0, xmm15, 1
+vinserti128 ymm1, ymm0, xmm15, 100
+vinserti128 ymm1, ymm0, xmm15, 127
+vinserti128 ymm1, ymm0, xmm15, -128
+vinserti128 ymm1, ymm1, xmm0, 0
+vinserti128 ymm1, ymm1, xmm0, 1
+vinserti128 ymm1, ymm1, xmm0, 100
+vinserti128 ymm1, ymm1, xmm0, 127
+vinserti128 ymm1, ymm1, xmm0, -128
+vinserti128 ymm1, ymm1, xmm1, 0
+vinserti128 ymm1, ymm1, xmm1, 1
+vinserti128 ymm1, ymm1, xmm1, 100
+vinserti128 ymm1, ymm1, xmm1, 127
+vinserti128 ymm1, ymm1, xmm1, -128
+vinserti128 ymm1, ymm1, xmm15, 0
+vinserti128 ymm1, ymm1, xmm15, 1
+vinserti128 ymm1, ymm1, xmm15, 100
+vinserti128 ymm1, ymm1, xmm15, 127
+vinserti128 ymm1, ymm1, xmm15, -128
+vinserti128 ymm1, ymm15, xmm0, 0
+vinserti128 ymm1, ymm15, xmm0, 1
+vinserti128 ymm1, ymm15, xmm0, 100
+vinserti128 ymm1, ymm15, xmm0, 127
+vinserti128 ymm1, ymm15, xmm0, -128
+vinserti128 ymm1, ymm15, xmm1, 0
+vinserti128 ymm1, ymm15, xmm1, 1
+vinserti128 ymm1, ymm15, xmm1, 100
+vinserti128 ymm1, ymm15, xmm1, 127
+vinserti128 ymm1, ymm15, xmm1, -128
+vinserti128 ymm1, ymm15, xmm15, 0
+vinserti128 ymm1, ymm15, xmm15, 1
+vinserti128 ymm1, ymm15, xmm15, 100
+vinserti128 ymm1, ymm15, xmm15, 127
+vinserti128 ymm1, ymm15, xmm15, -128
+vinserti128 ymm15, ymm0, xmm0, 0
+vinserti128 ymm15, ymm0, xmm0, 1
+vinserti128 ymm15, ymm0, xmm0, 100
+vinserti128 ymm15, ymm0, xmm0, 127
+vinserti128 ymm15, ymm0, xmm0, -128
+vinserti128 ymm15, ymm0, xmm1, 0
+vinserti128 ymm15, ymm0, xmm1, 1
+vinserti128 ymm15, ymm0, xmm1, 100
+vinserti128 ymm15, ymm0, xmm1, 127
+vinserti128 ymm15, ymm0, xmm1, -128
+vinserti128 ymm15, ymm0, xmm15, 0
+vinserti128 ymm15, ymm0, xmm15, 1
+vinserti128 ymm15, ymm0, xmm15, 100
+vinserti128 ymm15, ymm0, xmm15, 127
+vinserti128 ymm15, ymm0, xmm15, -128
+vinserti128 ymm15, ymm1, xmm0, 0
+vinserti128 ymm15, ymm1, xmm0, 1
+vinserti128 ymm15, ymm1, xmm0, 100
+vinserti128 ymm15, ymm1, xmm0, 127
+vinserti128 ymm15, ymm1, xmm0, -128
+vinserti128 ymm15, ymm1, xmm1, 0
+vinserti128 ymm15, ymm1, xmm1, 1
+vinserti128 ymm15, ymm1, xmm1, 100
+vinserti128 ymm15, ymm1, xmm1, 127
+vinserti128 ymm15, ymm1, xmm1, -128
+vinserti128 ymm15, ymm1, xmm15, 0
+vinserti128 ymm15, ymm1, xmm15, 1
+vinserti128 ymm15, ymm1, xmm15, 100
+vinserti128 ymm15, ymm1, xmm15, 127
+vinserti128 ymm15, ymm1, xmm15, -128
+vinserti128 ymm15, ymm15, xmm0, 0
+vinserti128 ymm15, ymm15, xmm0, 1
+vinserti128 ymm15, ymm15, xmm0, 100
+vinserti128 ymm15, ymm15, xmm0, 127
+vinserti128 ymm15, ymm15, xmm0, -128
+vinserti128 ymm15, ymm15, xmm1, 0
+vinserti128 ymm15, ymm15, xmm1, 1
+vinserti128 ymm15, ymm15, xmm1, 100
+vinserti128 ymm15, ymm15, xmm1, 127
+vinserti128 ymm15, ymm15, xmm1, -128
+vinserti128 ymm15, ymm15, xmm15, 0
+vinserti128 ymm15, ymm15, xmm15, 1
+vinserti128 ymm15, ymm15, xmm15, 100
+vinserti128 ymm15, ymm15, xmm15, 127
+vinserti128 ymm15, ymm15, xmm15, -128
+vinserti128 ymm0, ymm0, [0x0], 0
+vinserti128 ymm0, ymm0, [0x0], 1
+vinserti128 ymm0, ymm0, [0x0], 100
+vinserti128 ymm0, ymm0, [0x0], 127
+vinserti128 ymm0, ymm0, [0x0], -128
+vinserti128 ymm0, ymm0, [0xFF], 0
+vinserti128 ymm0, ymm0, [0xFF], 1
+vinserti128 ymm0, ymm0, [0xFF], 100
+vinserti128 ymm0, ymm0, [0xFF], 127
+vinserti128 ymm0, ymm0, [0xFF], -128
+vinserti128 ymm0, ymm0, [rel $ + 0x0], 0
+vinserti128 ymm0, ymm0, [rel $ + 0x0], 1
+vinserti128 ymm0, ymm0, [rel $ + 0x0], 100
+vinserti128 ymm0, ymm0, [rel $ + 0x0], 127
+vinserti128 ymm0, ymm0, [rel $ + 0x0], -128
+vinserti128 ymm0, ymm0, [rel $ + 0xFF], 0
+vinserti128 ymm0, ymm0, [rel $ + 0xFF], 1
+vinserti128 ymm0, ymm0, [rel $ + 0xFF], 100
+vinserti128 ymm0, ymm0, [rel $ + 0xFF], 127
+vinserti128 ymm0, ymm0, [rel $ + 0xFF], -128
+vinserti128 ymm0, ymm0, [rel $ + 0xFFFF], 0
+vinserti128 ymm0, ymm0, [rel $ + 0xFFFF], 1
+vinserti128 ymm0, ymm0, [rel $ + 0xFFFF], 100
+vinserti128 ymm0, ymm0, [rel $ + 0xFFFF], 127
+vinserti128 ymm0, ymm0, [rel $ + 0xFFFF], -128
+vinserti128 ymm0, ymm0, [rax], 0
+vinserti128 ymm0, ymm0, [rax], 1
+vinserti128 ymm0, ymm0, [rax], 100
+vinserti128 ymm0, ymm0, [rax], 127
+vinserti128 ymm0, ymm0, [rax], -128
+vinserti128 ymm0, ymm0, [rax + 0x0], 0
+vinserti128 ymm0, ymm0, [rax + 0x0], 1
+vinserti128 ymm0, ymm0, [rax + 0x0], 100
+vinserti128 ymm0, ymm0, [rax + 0x0], 127
+vinserti128 ymm0, ymm0, [rax + 0x0], -128
+vinserti128 ymm0, ymm0, [rax + 0xFFFF], 0
+vinserti128 ymm0, ymm0, [rax + 0xFFFF], 1
+vinserti128 ymm0, ymm0, [rax + 0xFFFF], 100
+vinserti128 ymm0, ymm0, [rax + 0xFFFF], 127
+vinserti128 ymm0, ymm0, [rax + 0xFFFF], -128
+vinserti128 ymm0, ymm0, [r15 + 0xFFFF], 0
+vinserti128 ymm0, ymm0, [r15 + 0xFFFF], 1
+vinserti128 ymm0, ymm0, [r15 + 0xFFFF], 100
+vinserti128 ymm0, ymm0, [r15 + 0xFFFF], 127
+vinserti128 ymm0, ymm0, [r15 + 0xFFFF], -128
+vinserti128 ymm0, ymm0, [rax + rsi * 1  + 0x0], 0
+vinserti128 ymm0, ymm0, [rax + rsi * 1  + 0x0], 1
+vinserti128 ymm0, ymm0, [rax + rsi * 1  + 0x0], 100
+vinserti128 ymm0, ymm0, [rax + rsi * 1  + 0x0], 127
+vinserti128 ymm0, ymm0, [rax + rsi * 1  + 0x0], -128
+vinserti128 ymm0, ymm0, [rax + rsi + 0xFFFF], 0
+vinserti128 ymm0, ymm0, [rax + rsi + 0xFFFF], 1
+vinserti128 ymm0, ymm0, [rax + rsi + 0xFFFF], 100
+vinserti128 ymm0, ymm0, [rax + rsi + 0xFFFF], 127
+vinserti128 ymm0, ymm0, [rax + rsi + 0xFFFF], -128
+vinserti128 ymm0, ymm0, [r15 + rsi + 0xFFFF], 0
+vinserti128 ymm0, ymm0, [r15 + rsi + 0xFFFF], 1
+vinserti128 ymm0, ymm0, [r15 + rsi + 0xFFFF], 100
+vinserti128 ymm0, ymm0, [r15 + rsi + 0xFFFF], 127
+vinserti128 ymm0, ymm0, [r15 + rsi + 0xFFFF], -128
+vinserti128 ymm0, ymm0, [rax + r15 + 0xFFFF], 0
+vinserti128 ymm0, ymm0, [rax + r15 + 0xFFFF], 1
+vinserti128 ymm0, ymm0, [rax + r15 + 0xFFFF], 100
+vinserti128 ymm0, ymm0, [rax + r15 + 0xFFFF], 127
+vinserti128 ymm0, ymm0, [rax + r15 + 0xFFFF], -128
+vinserti128 ymm0, ymm0, [rax + rsi * 2 + 0xFFFF2], 0
+vinserti128 ymm0, ymm0, [rax + rsi * 2 + 0xFFFF2], 1
+vinserti128 ymm0, ymm0, [rax + rsi * 2 + 0xFFFF2], 100
+vinserti128 ymm0, ymm0, [rax + rsi * 2 + 0xFFFF2], 127
+vinserti128 ymm0, ymm0, [rax + rsi * 2 + 0xFFFF2], -128
+vinserti128 ymm0, ymm0, [rax + rsi * 4 + 0xFFFF4], 0
+vinserti128 ymm0, ymm0, [rax + rsi * 4 + 0xFFFF4], 1
+vinserti128 ymm0, ymm0, [rax + rsi * 4 + 0xFFFF4], 100
+vinserti128 ymm0, ymm0, [rax + rsi * 4 + 0xFFFF4], 127
+vinserti128 ymm0, ymm0, [rax + rsi * 4 + 0xFFFF4], -128
+vinserti128 ymm0, ymm0, [rax + rsi * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm0, [rax + rsi * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm0, [rax + rsi * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm0, [rax + rsi * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm0, [rax + rsi * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm0, [rsp + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm0, [rsp + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm0, [rsp + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm0, [rsp + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm0, [rsp + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm0, [r15 + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm0, [r15 + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm0, [r15 + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm0, [r15 + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm0, [r15 + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm0, [rsp + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm0, [rsp + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm0, [rsp + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm0, [rsp + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm0, [rsp + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm0, [r14 + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm0, [r14 + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm0, [r14 + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm0, [r14 + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm0, [r14 + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm1, [0x0], 0
+vinserti128 ymm0, ymm1, [0x0], 1
+vinserti128 ymm0, ymm1, [0x0], 100
+vinserti128 ymm0, ymm1, [0x0], 127
+vinserti128 ymm0, ymm1, [0x0], -128
+vinserti128 ymm0, ymm1, [0xFF], 0
+vinserti128 ymm0, ymm1, [0xFF], 1
+vinserti128 ymm0, ymm1, [0xFF], 100
+vinserti128 ymm0, ymm1, [0xFF], 127
+vinserti128 ymm0, ymm1, [0xFF], -128
+vinserti128 ymm0, ymm1, [rel $ + 0x0], 0
+vinserti128 ymm0, ymm1, [rel $ + 0x0], 1
+vinserti128 ymm0, ymm1, [rel $ + 0x0], 100
+vinserti128 ymm0, ymm1, [rel $ + 0x0], 127
+vinserti128 ymm0, ymm1, [rel $ + 0x0], -128
+vinserti128 ymm0, ymm1, [rel $ + 0xFF], 0
+vinserti128 ymm0, ymm1, [rel $ + 0xFF], 1
+vinserti128 ymm0, ymm1, [rel $ + 0xFF], 100
+vinserti128 ymm0, ymm1, [rel $ + 0xFF], 127
+vinserti128 ymm0, ymm1, [rel $ + 0xFF], -128
+vinserti128 ymm0, ymm1, [rel $ + 0xFFFF], 0
+vinserti128 ymm0, ymm1, [rel $ + 0xFFFF], 1
+vinserti128 ymm0, ymm1, [rel $ + 0xFFFF], 100
+vinserti128 ymm0, ymm1, [rel $ + 0xFFFF], 127
+vinserti128 ymm0, ymm1, [rel $ + 0xFFFF], -128
+vinserti128 ymm0, ymm1, [rax], 0
+vinserti128 ymm0, ymm1, [rax], 1
+vinserti128 ymm0, ymm1, [rax], 100
+vinserti128 ymm0, ymm1, [rax], 127
+vinserti128 ymm0, ymm1, [rax], -128
+vinserti128 ymm0, ymm1, [rax + 0x0], 0
+vinserti128 ymm0, ymm1, [rax + 0x0], 1
+vinserti128 ymm0, ymm1, [rax + 0x0], 100
+vinserti128 ymm0, ymm1, [rax + 0x0], 127
+vinserti128 ymm0, ymm1, [rax + 0x0], -128
+vinserti128 ymm0, ymm1, [rax + 0xFFFF], 0
+vinserti128 ymm0, ymm1, [rax + 0xFFFF], 1
+vinserti128 ymm0, ymm1, [rax + 0xFFFF], 100
+vinserti128 ymm0, ymm1, [rax + 0xFFFF], 127
+vinserti128 ymm0, ymm1, [rax + 0xFFFF], -128
+vinserti128 ymm0, ymm1, [r15 + 0xFFFF], 0
+vinserti128 ymm0, ymm1, [r15 + 0xFFFF], 1
+vinserti128 ymm0, ymm1, [r15 + 0xFFFF], 100
+vinserti128 ymm0, ymm1, [r15 + 0xFFFF], 127
+vinserti128 ymm0, ymm1, [r15 + 0xFFFF], -128
+vinserti128 ymm0, ymm1, [rax + rsi * 1  + 0x0], 0
+vinserti128 ymm0, ymm1, [rax + rsi * 1  + 0x0], 1
+vinserti128 ymm0, ymm1, [rax + rsi * 1  + 0x0], 100
+vinserti128 ymm0, ymm1, [rax + rsi * 1  + 0x0], 127
+vinserti128 ymm0, ymm1, [rax + rsi * 1  + 0x0], -128
+vinserti128 ymm0, ymm1, [rax + rsi + 0xFFFF], 0
+vinserti128 ymm0, ymm1, [rax + rsi + 0xFFFF], 1
+vinserti128 ymm0, ymm1, [rax + rsi + 0xFFFF], 100
+vinserti128 ymm0, ymm1, [rax + rsi + 0xFFFF], 127
+vinserti128 ymm0, ymm1, [rax + rsi + 0xFFFF], -128
+vinserti128 ymm0, ymm1, [r15 + rsi + 0xFFFF], 0
+vinserti128 ymm0, ymm1, [r15 + rsi + 0xFFFF], 1
+vinserti128 ymm0, ymm1, [r15 + rsi + 0xFFFF], 100
+vinserti128 ymm0, ymm1, [r15 + rsi + 0xFFFF], 127
+vinserti128 ymm0, ymm1, [r15 + rsi + 0xFFFF], -128
+vinserti128 ymm0, ymm1, [rax + r15 + 0xFFFF], 0
+vinserti128 ymm0, ymm1, [rax + r15 + 0xFFFF], 1
+vinserti128 ymm0, ymm1, [rax + r15 + 0xFFFF], 100
+vinserti128 ymm0, ymm1, [rax + r15 + 0xFFFF], 127
+vinserti128 ymm0, ymm1, [rax + r15 + 0xFFFF], -128
+vinserti128 ymm0, ymm1, [rax + rsi * 2 + 0xFFFF2], 0
+vinserti128 ymm0, ymm1, [rax + rsi * 2 + 0xFFFF2], 1
+vinserti128 ymm0, ymm1, [rax + rsi * 2 + 0xFFFF2], 100
+vinserti128 ymm0, ymm1, [rax + rsi * 2 + 0xFFFF2], 127
+vinserti128 ymm0, ymm1, [rax + rsi * 2 + 0xFFFF2], -128
+vinserti128 ymm0, ymm1, [rax + rsi * 4 + 0xFFFF4], 0
+vinserti128 ymm0, ymm1, [rax + rsi * 4 + 0xFFFF4], 1
+vinserti128 ymm0, ymm1, [rax + rsi * 4 + 0xFFFF4], 100
+vinserti128 ymm0, ymm1, [rax + rsi * 4 + 0xFFFF4], 127
+vinserti128 ymm0, ymm1, [rax + rsi * 4 + 0xFFFF4], -128
+vinserti128 ymm0, ymm1, [rax + rsi * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm1, [rax + rsi * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm1, [rax + rsi * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm1, [rax + rsi * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm1, [rax + rsi * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm1, [rsp + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm1, [rsp + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm1, [rsp + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm1, [rsp + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm1, [rsp + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm1, [r15 + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm1, [r15 + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm1, [r15 + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm1, [r15 + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm1, [r15 + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm1, [rsp + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm1, [rsp + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm1, [rsp + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm1, [rsp + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm1, [rsp + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm1, [r14 + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm1, [r14 + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm1, [r14 + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm1, [r14 + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm1, [r14 + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm15, [0x0], 0
+vinserti128 ymm0, ymm15, [0x0], 1
+vinserti128 ymm0, ymm15, [0x0], 100
+vinserti128 ymm0, ymm15, [0x0], 127
+vinserti128 ymm0, ymm15, [0x0], -128
+vinserti128 ymm0, ymm15, [0xFF], 0
+vinserti128 ymm0, ymm15, [0xFF], 1
+vinserti128 ymm0, ymm15, [0xFF], 100
+vinserti128 ymm0, ymm15, [0xFF], 127
+vinserti128 ymm0, ymm15, [0xFF], -128
+vinserti128 ymm0, ymm15, [rel $ + 0x0], 0
+vinserti128 ymm0, ymm15, [rel $ + 0x0], 1
+vinserti128 ymm0, ymm15, [rel $ + 0x0], 100
+vinserti128 ymm0, ymm15, [rel $ + 0x0], 127
+vinserti128 ymm0, ymm15, [rel $ + 0x0], -128
+vinserti128 ymm0, ymm15, [rel $ + 0xFF], 0
+vinserti128 ymm0, ymm15, [rel $ + 0xFF], 1
+vinserti128 ymm0, ymm15, [rel $ + 0xFF], 100
+vinserti128 ymm0, ymm15, [rel $ + 0xFF], 127
+vinserti128 ymm0, ymm15, [rel $ + 0xFF], -128
+vinserti128 ymm0, ymm15, [rel $ + 0xFFFF], 0
+vinserti128 ymm0, ymm15, [rel $ + 0xFFFF], 1
+vinserti128 ymm0, ymm15, [rel $ + 0xFFFF], 100
+vinserti128 ymm0, ymm15, [rel $ + 0xFFFF], 127
+vinserti128 ymm0, ymm15, [rel $ + 0xFFFF], -128
+vinserti128 ymm0, ymm15, [rax], 0
+vinserti128 ymm0, ymm15, [rax], 1
+vinserti128 ymm0, ymm15, [rax], 100
+vinserti128 ymm0, ymm15, [rax], 127
+vinserti128 ymm0, ymm15, [rax], -128
+vinserti128 ymm0, ymm15, [rax + 0x0], 0
+vinserti128 ymm0, ymm15, [rax + 0x0], 1
+vinserti128 ymm0, ymm15, [rax + 0x0], 100
+vinserti128 ymm0, ymm15, [rax + 0x0], 127
+vinserti128 ymm0, ymm15, [rax + 0x0], -128
+vinserti128 ymm0, ymm15, [rax + 0xFFFF], 0
+vinserti128 ymm0, ymm15, [rax + 0xFFFF], 1
+vinserti128 ymm0, ymm15, [rax + 0xFFFF], 100
+vinserti128 ymm0, ymm15, [rax + 0xFFFF], 127
+vinserti128 ymm0, ymm15, [rax + 0xFFFF], -128
+vinserti128 ymm0, ymm15, [r15 + 0xFFFF], 0
+vinserti128 ymm0, ymm15, [r15 + 0xFFFF], 1
+vinserti128 ymm0, ymm15, [r15 + 0xFFFF], 100
+vinserti128 ymm0, ymm15, [r15 + 0xFFFF], 127
+vinserti128 ymm0, ymm15, [r15 + 0xFFFF], -128
+vinserti128 ymm0, ymm15, [rax + rsi * 1  + 0x0], 0
+vinserti128 ymm0, ymm15, [rax + rsi * 1  + 0x0], 1
+vinserti128 ymm0, ymm15, [rax + rsi * 1  + 0x0], 100
+vinserti128 ymm0, ymm15, [rax + rsi * 1  + 0x0], 127
+vinserti128 ymm0, ymm15, [rax + rsi * 1  + 0x0], -128
+vinserti128 ymm0, ymm15, [rax + rsi + 0xFFFF], 0
+vinserti128 ymm0, ymm15, [rax + rsi + 0xFFFF], 1
+vinserti128 ymm0, ymm15, [rax + rsi + 0xFFFF], 100
+vinserti128 ymm0, ymm15, [rax + rsi + 0xFFFF], 127
+vinserti128 ymm0, ymm15, [rax + rsi + 0xFFFF], -128
+vinserti128 ymm0, ymm15, [r15 + rsi + 0xFFFF], 0
+vinserti128 ymm0, ymm15, [r15 + rsi + 0xFFFF], 1
+vinserti128 ymm0, ymm15, [r15 + rsi + 0xFFFF], 100
+vinserti128 ymm0, ymm15, [r15 + rsi + 0xFFFF], 127
+vinserti128 ymm0, ymm15, [r15 + rsi + 0xFFFF], -128
+vinserti128 ymm0, ymm15, [rax + r15 + 0xFFFF], 0
+vinserti128 ymm0, ymm15, [rax + r15 + 0xFFFF], 1
+vinserti128 ymm0, ymm15, [rax + r15 + 0xFFFF], 100
+vinserti128 ymm0, ymm15, [rax + r15 + 0xFFFF], 127
+vinserti128 ymm0, ymm15, [rax + r15 + 0xFFFF], -128
+vinserti128 ymm0, ymm15, [rax + rsi * 2 + 0xFFFF2], 0
+vinserti128 ymm0, ymm15, [rax + rsi * 2 + 0xFFFF2], 1
+vinserti128 ymm0, ymm15, [rax + rsi * 2 + 0xFFFF2], 100
+vinserti128 ymm0, ymm15, [rax + rsi * 2 + 0xFFFF2], 127
+vinserti128 ymm0, ymm15, [rax + rsi * 2 + 0xFFFF2], -128
+vinserti128 ymm0, ymm15, [rax + rsi * 4 + 0xFFFF4], 0
+vinserti128 ymm0, ymm15, [rax + rsi * 4 + 0xFFFF4], 1
+vinserti128 ymm0, ymm15, [rax + rsi * 4 + 0xFFFF4], 100
+vinserti128 ymm0, ymm15, [rax + rsi * 4 + 0xFFFF4], 127
+vinserti128 ymm0, ymm15, [rax + rsi * 4 + 0xFFFF4], -128
+vinserti128 ymm0, ymm15, [rax + rsi * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm15, [rax + rsi * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm15, [rax + rsi * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm15, [rax + rsi * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm15, [rax + rsi * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm15, [rsp + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm15, [rsp + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm15, [rsp + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm15, [rsp + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm15, [rsp + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm15, [r15 + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm15, [r15 + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm15, [r15 + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm15, [r15 + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm15, [r15 + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm15, [rsp + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm15, [rsp + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm15, [rsp + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm15, [rsp + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm15, [rsp + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm0, ymm15, [r14 + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm0, ymm15, [r14 + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm0, ymm15, [r14 + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm0, ymm15, [r14 + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm0, ymm15, [r14 + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm0, [0x0], 0
+vinserti128 ymm1, ymm0, [0x0], 1
+vinserti128 ymm1, ymm0, [0x0], 100
+vinserti128 ymm1, ymm0, [0x0], 127
+vinserti128 ymm1, ymm0, [0x0], -128
+vinserti128 ymm1, ymm0, [0xFF], 0
+vinserti128 ymm1, ymm0, [0xFF], 1
+vinserti128 ymm1, ymm0, [0xFF], 100
+vinserti128 ymm1, ymm0, [0xFF], 127
+vinserti128 ymm1, ymm0, [0xFF], -128
+vinserti128 ymm1, ymm0, [rel $ + 0x0], 0
+vinserti128 ymm1, ymm0, [rel $ + 0x0], 1
+vinserti128 ymm1, ymm0, [rel $ + 0x0], 100
+vinserti128 ymm1, ymm0, [rel $ + 0x0], 127
+vinserti128 ymm1, ymm0, [rel $ + 0x0], -128
+vinserti128 ymm1, ymm0, [rel $ + 0xFF], 0
+vinserti128 ymm1, ymm0, [rel $ + 0xFF], 1
+vinserti128 ymm1, ymm0, [rel $ + 0xFF], 100
+vinserti128 ymm1, ymm0, [rel $ + 0xFF], 127
+vinserti128 ymm1, ymm0, [rel $ + 0xFF], -128
+vinserti128 ymm1, ymm0, [rel $ + 0xFFFF], 0
+vinserti128 ymm1, ymm0, [rel $ + 0xFFFF], 1
+vinserti128 ymm1, ymm0, [rel $ + 0xFFFF], 100
+vinserti128 ymm1, ymm0, [rel $ + 0xFFFF], 127
+vinserti128 ymm1, ymm0, [rel $ + 0xFFFF], -128
+vinserti128 ymm1, ymm0, [rax], 0
+vinserti128 ymm1, ymm0, [rax], 1
+vinserti128 ymm1, ymm0, [rax], 100
+vinserti128 ymm1, ymm0, [rax], 127
+vinserti128 ymm1, ymm0, [rax], -128
+vinserti128 ymm1, ymm0, [rax + 0x0], 0
+vinserti128 ymm1, ymm0, [rax + 0x0], 1
+vinserti128 ymm1, ymm0, [rax + 0x0], 100
+vinserti128 ymm1, ymm0, [rax + 0x0], 127
+vinserti128 ymm1, ymm0, [rax + 0x0], -128
+vinserti128 ymm1, ymm0, [rax + 0xFFFF], 0
+vinserti128 ymm1, ymm0, [rax + 0xFFFF], 1
+vinserti128 ymm1, ymm0, [rax + 0xFFFF], 100
+vinserti128 ymm1, ymm0, [rax + 0xFFFF], 127
+vinserti128 ymm1, ymm0, [rax + 0xFFFF], -128
+vinserti128 ymm1, ymm0, [r15 + 0xFFFF], 0
+vinserti128 ymm1, ymm0, [r15 + 0xFFFF], 1
+vinserti128 ymm1, ymm0, [r15 + 0xFFFF], 100
+vinserti128 ymm1, ymm0, [r15 + 0xFFFF], 127
+vinserti128 ymm1, ymm0, [r15 + 0xFFFF], -128
+vinserti128 ymm1, ymm0, [rax + rsi * 1  + 0x0], 0
+vinserti128 ymm1, ymm0, [rax + rsi * 1  + 0x0], 1
+vinserti128 ymm1, ymm0, [rax + rsi * 1  + 0x0], 100
+vinserti128 ymm1, ymm0, [rax + rsi * 1  + 0x0], 127
+vinserti128 ymm1, ymm0, [rax + rsi * 1  + 0x0], -128
+vinserti128 ymm1, ymm0, [rax + rsi + 0xFFFF], 0
+vinserti128 ymm1, ymm0, [rax + rsi + 0xFFFF], 1
+vinserti128 ymm1, ymm0, [rax + rsi + 0xFFFF], 100
+vinserti128 ymm1, ymm0, [rax + rsi + 0xFFFF], 127
+vinserti128 ymm1, ymm0, [rax + rsi + 0xFFFF], -128
+vinserti128 ymm1, ymm0, [r15 + rsi + 0xFFFF], 0
+vinserti128 ymm1, ymm0, [r15 + rsi + 0xFFFF], 1
+vinserti128 ymm1, ymm0, [r15 + rsi + 0xFFFF], 100
+vinserti128 ymm1, ymm0, [r15 + rsi + 0xFFFF], 127
+vinserti128 ymm1, ymm0, [r15 + rsi + 0xFFFF], -128
+vinserti128 ymm1, ymm0, [rax + r15 + 0xFFFF], 0
+vinserti128 ymm1, ymm0, [rax + r15 + 0xFFFF], 1
+vinserti128 ymm1, ymm0, [rax + r15 + 0xFFFF], 100
+vinserti128 ymm1, ymm0, [rax + r15 + 0xFFFF], 127
+vinserti128 ymm1, ymm0, [rax + r15 + 0xFFFF], -128
+vinserti128 ymm1, ymm0, [rax + rsi * 2 + 0xFFFF2], 0
+vinserti128 ymm1, ymm0, [rax + rsi * 2 + 0xFFFF2], 1
+vinserti128 ymm1, ymm0, [rax + rsi * 2 + 0xFFFF2], 100
+vinserti128 ymm1, ymm0, [rax + rsi * 2 + 0xFFFF2], 127
+vinserti128 ymm1, ymm0, [rax + rsi * 2 + 0xFFFF2], -128
+vinserti128 ymm1, ymm0, [rax + rsi * 4 + 0xFFFF4], 0
+vinserti128 ymm1, ymm0, [rax + rsi * 4 + 0xFFFF4], 1
+vinserti128 ymm1, ymm0, [rax + rsi * 4 + 0xFFFF4], 100
+vinserti128 ymm1, ymm0, [rax + rsi * 4 + 0xFFFF4], 127
+vinserti128 ymm1, ymm0, [rax + rsi * 4 + 0xFFFF4], -128
+vinserti128 ymm1, ymm0, [rax + rsi * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm0, [rax + rsi * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm0, [rax + rsi * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm0, [rax + rsi * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm0, [rax + rsi * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm0, [rsp + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm0, [rsp + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm0, [rsp + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm0, [rsp + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm0, [rsp + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm0, [r15 + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm0, [r15 + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm0, [r15 + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm0, [r15 + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm0, [r15 + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm0, [rsp + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm0, [rsp + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm0, [rsp + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm0, [rsp + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm0, [rsp + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm0, [r14 + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm0, [r14 + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm0, [r14 + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm0, [r14 + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm0, [r14 + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm1, [0x0], 0
+vinserti128 ymm1, ymm1, [0x0], 1
+vinserti128 ymm1, ymm1, [0x0], 100
+vinserti128 ymm1, ymm1, [0x0], 127
+vinserti128 ymm1, ymm1, [0x0], -128
+vinserti128 ymm1, ymm1, [0xFF], 0
+vinserti128 ymm1, ymm1, [0xFF], 1
+vinserti128 ymm1, ymm1, [0xFF], 100
+vinserti128 ymm1, ymm1, [0xFF], 127
+vinserti128 ymm1, ymm1, [0xFF], -128
+vinserti128 ymm1, ymm1, [rel $ + 0x0], 0
+vinserti128 ymm1, ymm1, [rel $ + 0x0], 1
+vinserti128 ymm1, ymm1, [rel $ + 0x0], 100
+vinserti128 ymm1, ymm1, [rel $ + 0x0], 127
+vinserti128 ymm1, ymm1, [rel $ + 0x0], -128
+vinserti128 ymm1, ymm1, [rel $ + 0xFF], 0
+vinserti128 ymm1, ymm1, [rel $ + 0xFF], 1
+vinserti128 ymm1, ymm1, [rel $ + 0xFF], 100
+vinserti128 ymm1, ymm1, [rel $ + 0xFF], 127
+vinserti128 ymm1, ymm1, [rel $ + 0xFF], -128
+vinserti128 ymm1, ymm1, [rel $ + 0xFFFF], 0
+vinserti128 ymm1, ymm1, [rel $ + 0xFFFF], 1
+vinserti128 ymm1, ymm1, [rel $ + 0xFFFF], 100
+vinserti128 ymm1, ymm1, [rel $ + 0xFFFF], 127
+vinserti128 ymm1, ymm1, [rel $ + 0xFFFF], -128
+vinserti128 ymm1, ymm1, [rax], 0
+vinserti128 ymm1, ymm1, [rax], 1
+vinserti128 ymm1, ymm1, [rax], 100
+vinserti128 ymm1, ymm1, [rax], 127
+vinserti128 ymm1, ymm1, [rax], -128
+vinserti128 ymm1, ymm1, [rax + 0x0], 0
+vinserti128 ymm1, ymm1, [rax + 0x0], 1
+vinserti128 ymm1, ymm1, [rax + 0x0], 100
+vinserti128 ymm1, ymm1, [rax + 0x0], 127
+vinserti128 ymm1, ymm1, [rax + 0x0], -128
+vinserti128 ymm1, ymm1, [rax + 0xFFFF], 0
+vinserti128 ymm1, ymm1, [rax + 0xFFFF], 1
+vinserti128 ymm1, ymm1, [rax + 0xFFFF], 100
+vinserti128 ymm1, ymm1, [rax + 0xFFFF], 127
+vinserti128 ymm1, ymm1, [rax + 0xFFFF], -128
+vinserti128 ymm1, ymm1, [r15 + 0xFFFF], 0
+vinserti128 ymm1, ymm1, [r15 + 0xFFFF], 1
+vinserti128 ymm1, ymm1, [r15 + 0xFFFF], 100
+vinserti128 ymm1, ymm1, [r15 + 0xFFFF], 127
+vinserti128 ymm1, ymm1, [r15 + 0xFFFF], -128
+vinserti128 ymm1, ymm1, [rax + rsi * 1  + 0x0], 0
+vinserti128 ymm1, ymm1, [rax + rsi * 1  + 0x0], 1
+vinserti128 ymm1, ymm1, [rax + rsi * 1  + 0x0], 100
+vinserti128 ymm1, ymm1, [rax + rsi * 1  + 0x0], 127
+vinserti128 ymm1, ymm1, [rax + rsi * 1  + 0x0], -128
+vinserti128 ymm1, ymm1, [rax + rsi + 0xFFFF], 0
+vinserti128 ymm1, ymm1, [rax + rsi + 0xFFFF], 1
+vinserti128 ymm1, ymm1, [rax + rsi + 0xFFFF], 100
+vinserti128 ymm1, ymm1, [rax + rsi + 0xFFFF], 127
+vinserti128 ymm1, ymm1, [rax + rsi + 0xFFFF], -128
+vinserti128 ymm1, ymm1, [r15 + rsi + 0xFFFF], 0
+vinserti128 ymm1, ymm1, [r15 + rsi + 0xFFFF], 1
+vinserti128 ymm1, ymm1, [r15 + rsi + 0xFFFF], 100
+vinserti128 ymm1, ymm1, [r15 + rsi + 0xFFFF], 127
+vinserti128 ymm1, ymm1, [r15 + rsi + 0xFFFF], -128
+vinserti128 ymm1, ymm1, [rax + r15 + 0xFFFF], 0
+vinserti128 ymm1, ymm1, [rax + r15 + 0xFFFF], 1
+vinserti128 ymm1, ymm1, [rax + r15 + 0xFFFF], 100
+vinserti128 ymm1, ymm1, [rax + r15 + 0xFFFF], 127
+vinserti128 ymm1, ymm1, [rax + r15 + 0xFFFF], -128
+vinserti128 ymm1, ymm1, [rax + rsi * 2 + 0xFFFF2], 0
+vinserti128 ymm1, ymm1, [rax + rsi * 2 + 0xFFFF2], 1
+vinserti128 ymm1, ymm1, [rax + rsi * 2 + 0xFFFF2], 100
+vinserti128 ymm1, ymm1, [rax + rsi * 2 + 0xFFFF2], 127
+vinserti128 ymm1, ymm1, [rax + rsi * 2 + 0xFFFF2], -128
+vinserti128 ymm1, ymm1, [rax + rsi * 4 + 0xFFFF4], 0
+vinserti128 ymm1, ymm1, [rax + rsi * 4 + 0xFFFF4], 1
+vinserti128 ymm1, ymm1, [rax + rsi * 4 + 0xFFFF4], 100
+vinserti128 ymm1, ymm1, [rax + rsi * 4 + 0xFFFF4], 127
+vinserti128 ymm1, ymm1, [rax + rsi * 4 + 0xFFFF4], -128
+vinserti128 ymm1, ymm1, [rax + rsi * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm1, [rax + rsi * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm1, [rax + rsi * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm1, [rax + rsi * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm1, [rax + rsi * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm1, [rsp + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm1, [rsp + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm1, [rsp + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm1, [rsp + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm1, [rsp + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm1, [r15 + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm1, [r15 + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm1, [r15 + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm1, [r15 + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm1, [r15 + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm1, [rsp + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm1, [rsp + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm1, [rsp + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm1, [rsp + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm1, [rsp + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm1, [r14 + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm1, [r14 + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm1, [r14 + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm1, [r14 + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm1, [r14 + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm15, [0x0], 0
+vinserti128 ymm1, ymm15, [0x0], 1
+vinserti128 ymm1, ymm15, [0x0], 100
+vinserti128 ymm1, ymm15, [0x0], 127
+vinserti128 ymm1, ymm15, [0x0], -128
+vinserti128 ymm1, ymm15, [0xFF], 0
+vinserti128 ymm1, ymm15, [0xFF], 1
+vinserti128 ymm1, ymm15, [0xFF], 100
+vinserti128 ymm1, ymm15, [0xFF], 127
+vinserti128 ymm1, ymm15, [0xFF], -128
+vinserti128 ymm1, ymm15, [rel $ + 0x0], 0
+vinserti128 ymm1, ymm15, [rel $ + 0x0], 1
+vinserti128 ymm1, ymm15, [rel $ + 0x0], 100
+vinserti128 ymm1, ymm15, [rel $ + 0x0], 127
+vinserti128 ymm1, ymm15, [rel $ + 0x0], -128
+vinserti128 ymm1, ymm15, [rel $ + 0xFF], 0
+vinserti128 ymm1, ymm15, [rel $ + 0xFF], 1
+vinserti128 ymm1, ymm15, [rel $ + 0xFF], 100
+vinserti128 ymm1, ymm15, [rel $ + 0xFF], 127
+vinserti128 ymm1, ymm15, [rel $ + 0xFF], -128
+vinserti128 ymm1, ymm15, [rel $ + 0xFFFF], 0
+vinserti128 ymm1, ymm15, [rel $ + 0xFFFF], 1
+vinserti128 ymm1, ymm15, [rel $ + 0xFFFF], 100
+vinserti128 ymm1, ymm15, [rel $ + 0xFFFF], 127
+vinserti128 ymm1, ymm15, [rel $ + 0xFFFF], -128
+vinserti128 ymm1, ymm15, [rax], 0
+vinserti128 ymm1, ymm15, [rax], 1
+vinserti128 ymm1, ymm15, [rax], 100
+vinserti128 ymm1, ymm15, [rax], 127
+vinserti128 ymm1, ymm15, [rax], -128
+vinserti128 ymm1, ymm15, [rax + 0x0], 0
+vinserti128 ymm1, ymm15, [rax + 0x0], 1
+vinserti128 ymm1, ymm15, [rax + 0x0], 100
+vinserti128 ymm1, ymm15, [rax + 0x0], 127
+vinserti128 ymm1, ymm15, [rax + 0x0], -128
+vinserti128 ymm1, ymm15, [rax + 0xFFFF], 0
+vinserti128 ymm1, ymm15, [rax + 0xFFFF], 1
+vinserti128 ymm1, ymm15, [rax + 0xFFFF], 100
+vinserti128 ymm1, ymm15, [rax + 0xFFFF], 127
+vinserti128 ymm1, ymm15, [rax + 0xFFFF], -128
+vinserti128 ymm1, ymm15, [r15 + 0xFFFF], 0
+vinserti128 ymm1, ymm15, [r15 + 0xFFFF], 1
+vinserti128 ymm1, ymm15, [r15 + 0xFFFF], 100
+vinserti128 ymm1, ymm15, [r15 + 0xFFFF], 127
+vinserti128 ymm1, ymm15, [r15 + 0xFFFF], -128
+vinserti128 ymm1, ymm15, [rax + rsi * 1  + 0x0], 0
+vinserti128 ymm1, ymm15, [rax + rsi * 1  + 0x0], 1
+vinserti128 ymm1, ymm15, [rax + rsi * 1  + 0x0], 100
+vinserti128 ymm1, ymm15, [rax + rsi * 1  + 0x0], 127
+vinserti128 ymm1, ymm15, [rax + rsi * 1  + 0x0], -128
+vinserti128 ymm1, ymm15, [rax + rsi + 0xFFFF], 0
+vinserti128 ymm1, ymm15, [rax + rsi + 0xFFFF], 1
+vinserti128 ymm1, ymm15, [rax + rsi + 0xFFFF], 100
+vinserti128 ymm1, ymm15, [rax + rsi + 0xFFFF], 127
+vinserti128 ymm1, ymm15, [rax + rsi + 0xFFFF], -128
+vinserti128 ymm1, ymm15, [r15 + rsi + 0xFFFF], 0
+vinserti128 ymm1, ymm15, [r15 + rsi + 0xFFFF], 1
+vinserti128 ymm1, ymm15, [r15 + rsi + 0xFFFF], 100
+vinserti128 ymm1, ymm15, [r15 + rsi + 0xFFFF], 127
+vinserti128 ymm1, ymm15, [r15 + rsi + 0xFFFF], -128
+vinserti128 ymm1, ymm15, [rax + r15 + 0xFFFF], 0
+vinserti128 ymm1, ymm15, [rax + r15 + 0xFFFF], 1
+vinserti128 ymm1, ymm15, [rax + r15 + 0xFFFF], 100
+vinserti128 ymm1, ymm15, [rax + r15 + 0xFFFF], 127
+vinserti128 ymm1, ymm15, [rax + r15 + 0xFFFF], -128
+vinserti128 ymm1, ymm15, [rax + rsi * 2 + 0xFFFF2], 0
+vinserti128 ymm1, ymm15, [rax + rsi * 2 + 0xFFFF2], 1
+vinserti128 ymm1, ymm15, [rax + rsi * 2 + 0xFFFF2], 100
+vinserti128 ymm1, ymm15, [rax + rsi * 2 + 0xFFFF2], 127
+vinserti128 ymm1, ymm15, [rax + rsi * 2 + 0xFFFF2], -128
+vinserti128 ymm1, ymm15, [rax + rsi * 4 + 0xFFFF4], 0
+vinserti128 ymm1, ymm15, [rax + rsi * 4 + 0xFFFF4], 1
+vinserti128 ymm1, ymm15, [rax + rsi * 4 + 0xFFFF4], 100
+vinserti128 ymm1, ymm15, [rax + rsi * 4 + 0xFFFF4], 127
+vinserti128 ymm1, ymm15, [rax + rsi * 4 + 0xFFFF4], -128
+vinserti128 ymm1, ymm15, [rax + rsi * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm15, [rax + rsi * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm15, [rax + rsi * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm15, [rax + rsi * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm15, [rax + rsi * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm15, [rsp + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm15, [rsp + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm15, [rsp + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm15, [rsp + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm15, [rsp + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm15, [r15 + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm15, [r15 + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm15, [r15 + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm15, [r15 + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm15, [r15 + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm15, [rsp + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm15, [rsp + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm15, [rsp + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm15, [rsp + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm15, [rsp + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm1, ymm15, [r14 + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm1, ymm15, [r14 + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm1, ymm15, [r14 + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm1, ymm15, [r14 + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm1, ymm15, [r14 + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm0, [0x0], 0
+vinserti128 ymm15, ymm0, [0x0], 1
+vinserti128 ymm15, ymm0, [0x0], 100
+vinserti128 ymm15, ymm0, [0x0], 127
+vinserti128 ymm15, ymm0, [0x0], -128
+vinserti128 ymm15, ymm0, [0xFF], 0
+vinserti128 ymm15, ymm0, [0xFF], 1
+vinserti128 ymm15, ymm0, [0xFF], 100
+vinserti128 ymm15, ymm0, [0xFF], 127
+vinserti128 ymm15, ymm0, [0xFF], -128
+vinserti128 ymm15, ymm0, [rel $ + 0x0], 0
+vinserti128 ymm15, ymm0, [rel $ + 0x0], 1
+vinserti128 ymm15, ymm0, [rel $ + 0x0], 100
+vinserti128 ymm15, ymm0, [rel $ + 0x0], 127
+vinserti128 ymm15, ymm0, [rel $ + 0x0], -128
+vinserti128 ymm15, ymm0, [rel $ + 0xFF], 0
+vinserti128 ymm15, ymm0, [rel $ + 0xFF], 1
+vinserti128 ymm15, ymm0, [rel $ + 0xFF], 100
+vinserti128 ymm15, ymm0, [rel $ + 0xFF], 127
+vinserti128 ymm15, ymm0, [rel $ + 0xFF], -128
+vinserti128 ymm15, ymm0, [rel $ + 0xFFFF], 0
+vinserti128 ymm15, ymm0, [rel $ + 0xFFFF], 1
+vinserti128 ymm15, ymm0, [rel $ + 0xFFFF], 100
+vinserti128 ymm15, ymm0, [rel $ + 0xFFFF], 127
+vinserti128 ymm15, ymm0, [rel $ + 0xFFFF], -128
+vinserti128 ymm15, ymm0, [rax], 0
+vinserti128 ymm15, ymm0, [rax], 1
+vinserti128 ymm15, ymm0, [rax], 100
+vinserti128 ymm15, ymm0, [rax], 127
+vinserti128 ymm15, ymm0, [rax], -128
+vinserti128 ymm15, ymm0, [rax + 0x0], 0
+vinserti128 ymm15, ymm0, [rax + 0x0], 1
+vinserti128 ymm15, ymm0, [rax + 0x0], 100
+vinserti128 ymm15, ymm0, [rax + 0x0], 127
+vinserti128 ymm15, ymm0, [rax + 0x0], -128
+vinserti128 ymm15, ymm0, [rax + 0xFFFF], 0
+vinserti128 ymm15, ymm0, [rax + 0xFFFF], 1
+vinserti128 ymm15, ymm0, [rax + 0xFFFF], 100
+vinserti128 ymm15, ymm0, [rax + 0xFFFF], 127
+vinserti128 ymm15, ymm0, [rax + 0xFFFF], -128
+vinserti128 ymm15, ymm0, [r15 + 0xFFFF], 0
+vinserti128 ymm15, ymm0, [r15 + 0xFFFF], 1
+vinserti128 ymm15, ymm0, [r15 + 0xFFFF], 100
+vinserti128 ymm15, ymm0, [r15 + 0xFFFF], 127
+vinserti128 ymm15, ymm0, [r15 + 0xFFFF], -128
+vinserti128 ymm15, ymm0, [rax + rsi * 1  + 0x0], 0
+vinserti128 ymm15, ymm0, [rax + rsi * 1  + 0x0], 1
+vinserti128 ymm15, ymm0, [rax + rsi * 1  + 0x0], 100
+vinserti128 ymm15, ymm0, [rax + rsi * 1  + 0x0], 127
+vinserti128 ymm15, ymm0, [rax + rsi * 1  + 0x0], -128
+vinserti128 ymm15, ymm0, [rax + rsi + 0xFFFF], 0
+vinserti128 ymm15, ymm0, [rax + rsi + 0xFFFF], 1
+vinserti128 ymm15, ymm0, [rax + rsi + 0xFFFF], 100
+vinserti128 ymm15, ymm0, [rax + rsi + 0xFFFF], 127
+vinserti128 ymm15, ymm0, [rax + rsi + 0xFFFF], -128
+vinserti128 ymm15, ymm0, [r15 + rsi + 0xFFFF], 0
+vinserti128 ymm15, ymm0, [r15 + rsi + 0xFFFF], 1
+vinserti128 ymm15, ymm0, [r15 + rsi + 0xFFFF], 100
+vinserti128 ymm15, ymm0, [r15 + rsi + 0xFFFF], 127
+vinserti128 ymm15, ymm0, [r15 + rsi + 0xFFFF], -128
+vinserti128 ymm15, ymm0, [rax + r15 + 0xFFFF], 0
+vinserti128 ymm15, ymm0, [rax + r15 + 0xFFFF], 1
+vinserti128 ymm15, ymm0, [rax + r15 + 0xFFFF], 100
+vinserti128 ymm15, ymm0, [rax + r15 + 0xFFFF], 127
+vinserti128 ymm15, ymm0, [rax + r15 + 0xFFFF], -128
+vinserti128 ymm15, ymm0, [rax + rsi * 2 + 0xFFFF2], 0
+vinserti128 ymm15, ymm0, [rax + rsi * 2 + 0xFFFF2], 1
+vinserti128 ymm15, ymm0, [rax + rsi * 2 + 0xFFFF2], 100
+vinserti128 ymm15, ymm0, [rax + rsi * 2 + 0xFFFF2], 127
+vinserti128 ymm15, ymm0, [rax + rsi * 2 + 0xFFFF2], -128
+vinserti128 ymm15, ymm0, [rax + rsi * 4 + 0xFFFF4], 0
+vinserti128 ymm15, ymm0, [rax + rsi * 4 + 0xFFFF4], 1
+vinserti128 ymm15, ymm0, [rax + rsi * 4 + 0xFFFF4], 100
+vinserti128 ymm15, ymm0, [rax + rsi * 4 + 0xFFFF4], 127
+vinserti128 ymm15, ymm0, [rax + rsi * 4 + 0xFFFF4], -128
+vinserti128 ymm15, ymm0, [rax + rsi * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm0, [rax + rsi * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm0, [rax + rsi * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm0, [rax + rsi * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm0, [rax + rsi * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm0, [rsp + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm0, [rsp + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm0, [rsp + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm0, [rsp + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm0, [rsp + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm0, [r15 + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm0, [r15 + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm0, [r15 + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm0, [r15 + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm0, [r15 + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm0, [rsp + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm0, [rsp + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm0, [rsp + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm0, [rsp + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm0, [rsp + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm0, [r14 + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm0, [r14 + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm0, [r14 + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm0, [r14 + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm0, [r14 + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm1, [0x0], 0
+vinserti128 ymm15, ymm1, [0x0], 1
+vinserti128 ymm15, ymm1, [0x0], 100
+vinserti128 ymm15, ymm1, [0x0], 127
+vinserti128 ymm15, ymm1, [0x0], -128
+vinserti128 ymm15, ymm1, [0xFF], 0
+vinserti128 ymm15, ymm1, [0xFF], 1
+vinserti128 ymm15, ymm1, [0xFF], 100
+vinserti128 ymm15, ymm1, [0xFF], 127
+vinserti128 ymm15, ymm1, [0xFF], -128
+vinserti128 ymm15, ymm1, [rel $ + 0x0], 0
+vinserti128 ymm15, ymm1, [rel $ + 0x0], 1
+vinserti128 ymm15, ymm1, [rel $ + 0x0], 100
+vinserti128 ymm15, ymm1, [rel $ + 0x0], 127
+vinserti128 ymm15, ymm1, [rel $ + 0x0], -128
+vinserti128 ymm15, ymm1, [rel $ + 0xFF], 0
+vinserti128 ymm15, ymm1, [rel $ + 0xFF], 1
+vinserti128 ymm15, ymm1, [rel $ + 0xFF], 100
+vinserti128 ymm15, ymm1, [rel $ + 0xFF], 127
+vinserti128 ymm15, ymm1, [rel $ + 0xFF], -128
+vinserti128 ymm15, ymm1, [rel $ + 0xFFFF], 0
+vinserti128 ymm15, ymm1, [rel $ + 0xFFFF], 1
+vinserti128 ymm15, ymm1, [rel $ + 0xFFFF], 100
+vinserti128 ymm15, ymm1, [rel $ + 0xFFFF], 127
+vinserti128 ymm15, ymm1, [rel $ + 0xFFFF], -128
+vinserti128 ymm15, ymm1, [rax], 0
+vinserti128 ymm15, ymm1, [rax], 1
+vinserti128 ymm15, ymm1, [rax], 100
+vinserti128 ymm15, ymm1, [rax], 127
+vinserti128 ymm15, ymm1, [rax], -128
+vinserti128 ymm15, ymm1, [rax + 0x0], 0
+vinserti128 ymm15, ymm1, [rax + 0x0], 1
+vinserti128 ymm15, ymm1, [rax + 0x0], 100
+vinserti128 ymm15, ymm1, [rax + 0x0], 127
+vinserti128 ymm15, ymm1, [rax + 0x0], -128
+vinserti128 ymm15, ymm1, [rax + 0xFFFF], 0
+vinserti128 ymm15, ymm1, [rax + 0xFFFF], 1
+vinserti128 ymm15, ymm1, [rax + 0xFFFF], 100
+vinserti128 ymm15, ymm1, [rax + 0xFFFF], 127
+vinserti128 ymm15, ymm1, [rax + 0xFFFF], -128
+vinserti128 ymm15, ymm1, [r15 + 0xFFFF], 0
+vinserti128 ymm15, ymm1, [r15 + 0xFFFF], 1
+vinserti128 ymm15, ymm1, [r15 + 0xFFFF], 100
+vinserti128 ymm15, ymm1, [r15 + 0xFFFF], 127
+vinserti128 ymm15, ymm1, [r15 + 0xFFFF], -128
+vinserti128 ymm15, ymm1, [rax + rsi * 1  + 0x0], 0
+vinserti128 ymm15, ymm1, [rax + rsi * 1  + 0x0], 1
+vinserti128 ymm15, ymm1, [rax + rsi * 1  + 0x0], 100
+vinserti128 ymm15, ymm1, [rax + rsi * 1  + 0x0], 127
+vinserti128 ymm15, ymm1, [rax + rsi * 1  + 0x0], -128
+vinserti128 ymm15, ymm1, [rax + rsi + 0xFFFF], 0
+vinserti128 ymm15, ymm1, [rax + rsi + 0xFFFF], 1
+vinserti128 ymm15, ymm1, [rax + rsi + 0xFFFF], 100
+vinserti128 ymm15, ymm1, [rax + rsi + 0xFFFF], 127
+vinserti128 ymm15, ymm1, [rax + rsi + 0xFFFF], -128
+vinserti128 ymm15, ymm1, [r15 + rsi + 0xFFFF], 0
+vinserti128 ymm15, ymm1, [r15 + rsi + 0xFFFF], 1
+vinserti128 ymm15, ymm1, [r15 + rsi + 0xFFFF], 100
+vinserti128 ymm15, ymm1, [r15 + rsi + 0xFFFF], 127
+vinserti128 ymm15, ymm1, [r15 + rsi + 0xFFFF], -128
+vinserti128 ymm15, ymm1, [rax + r15 + 0xFFFF], 0
+vinserti128 ymm15, ymm1, [rax + r15 + 0xFFFF], 1
+vinserti128 ymm15, ymm1, [rax + r15 + 0xFFFF], 100
+vinserti128 ymm15, ymm1, [rax + r15 + 0xFFFF], 127
+vinserti128 ymm15, ymm1, [rax + r15 + 0xFFFF], -128
+vinserti128 ymm15, ymm1, [rax + rsi * 2 + 0xFFFF2], 0
+vinserti128 ymm15, ymm1, [rax + rsi * 2 + 0xFFFF2], 1
+vinserti128 ymm15, ymm1, [rax + rsi * 2 + 0xFFFF2], 100
+vinserti128 ymm15, ymm1, [rax + rsi * 2 + 0xFFFF2], 127
+vinserti128 ymm15, ymm1, [rax + rsi * 2 + 0xFFFF2], -128
+vinserti128 ymm15, ymm1, [rax + rsi * 4 + 0xFFFF4], 0
+vinserti128 ymm15, ymm1, [rax + rsi * 4 + 0xFFFF4], 1
+vinserti128 ymm15, ymm1, [rax + rsi * 4 + 0xFFFF4], 100
+vinserti128 ymm15, ymm1, [rax + rsi * 4 + 0xFFFF4], 127
+vinserti128 ymm15, ymm1, [rax + rsi * 4 + 0xFFFF4], -128
+vinserti128 ymm15, ymm1, [rax + rsi * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm1, [rax + rsi * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm1, [rax + rsi * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm1, [rax + rsi * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm1, [rax + rsi * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm1, [rsp + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm1, [rsp + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm1, [rsp + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm1, [rsp + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm1, [rsp + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm1, [r15 + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm1, [r15 + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm1, [r15 + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm1, [r15 + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm1, [r15 + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm1, [rsp + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm1, [rsp + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm1, [rsp + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm1, [rsp + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm1, [rsp + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm1, [r14 + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm1, [r14 + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm1, [r14 + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm1, [r14 + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm1, [r14 + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm15, [0x0], 0
+vinserti128 ymm15, ymm15, [0x0], 1
+vinserti128 ymm15, ymm15, [0x0], 100
+vinserti128 ymm15, ymm15, [0x0], 127
+vinserti128 ymm15, ymm15, [0x0], -128
+vinserti128 ymm15, ymm15, [0xFF], 0
+vinserti128 ymm15, ymm15, [0xFF], 1
+vinserti128 ymm15, ymm15, [0xFF], 100
+vinserti128 ymm15, ymm15, [0xFF], 127
+vinserti128 ymm15, ymm15, [0xFF], -128
+vinserti128 ymm15, ymm15, [rel $ + 0x0], 0
+vinserti128 ymm15, ymm15, [rel $ + 0x0], 1
+vinserti128 ymm15, ymm15, [rel $ + 0x0], 100
+vinserti128 ymm15, ymm15, [rel $ + 0x0], 127
+vinserti128 ymm15, ymm15, [rel $ + 0x0], -128
+vinserti128 ymm15, ymm15, [rel $ + 0xFF], 0
+vinserti128 ymm15, ymm15, [rel $ + 0xFF], 1
+vinserti128 ymm15, ymm15, [rel $ + 0xFF], 100
+vinserti128 ymm15, ymm15, [rel $ + 0xFF], 127
+vinserti128 ymm15, ymm15, [rel $ + 0xFF], -128
+vinserti128 ymm15, ymm15, [rel $ + 0xFFFF], 0
+vinserti128 ymm15, ymm15, [rel $ + 0xFFFF], 1
+vinserti128 ymm15, ymm15, [rel $ + 0xFFFF], 100
+vinserti128 ymm15, ymm15, [rel $ + 0xFFFF], 127
+vinserti128 ymm15, ymm15, [rel $ + 0xFFFF], -128
+vinserti128 ymm15, ymm15, [rax], 0
+vinserti128 ymm15, ymm15, [rax], 1
+vinserti128 ymm15, ymm15, [rax], 100
+vinserti128 ymm15, ymm15, [rax], 127
+vinserti128 ymm15, ymm15, [rax], -128
+vinserti128 ymm15, ymm15, [rax + 0x0], 0
+vinserti128 ymm15, ymm15, [rax + 0x0], 1
+vinserti128 ymm15, ymm15, [rax + 0x0], 100
+vinserti128 ymm15, ymm15, [rax + 0x0], 127
+vinserti128 ymm15, ymm15, [rax + 0x0], -128
+vinserti128 ymm15, ymm15, [rax + 0xFFFF], 0
+vinserti128 ymm15, ymm15, [rax + 0xFFFF], 1
+vinserti128 ymm15, ymm15, [rax + 0xFFFF], 100
+vinserti128 ymm15, ymm15, [rax + 0xFFFF], 127
+vinserti128 ymm15, ymm15, [rax + 0xFFFF], -128
+vinserti128 ymm15, ymm15, [r15 + 0xFFFF], 0
+vinserti128 ymm15, ymm15, [r15 + 0xFFFF], 1
+vinserti128 ymm15, ymm15, [r15 + 0xFFFF], 100
+vinserti128 ymm15, ymm15, [r15 + 0xFFFF], 127
+vinserti128 ymm15, ymm15, [r15 + 0xFFFF], -128
+vinserti128 ymm15, ymm15, [rax + rsi * 1  + 0x0], 0
+vinserti128 ymm15, ymm15, [rax + rsi * 1  + 0x0], 1
+vinserti128 ymm15, ymm15, [rax + rsi * 1  + 0x0], 100
+vinserti128 ymm15, ymm15, [rax + rsi * 1  + 0x0], 127
+vinserti128 ymm15, ymm15, [rax + rsi * 1  + 0x0], -128
+vinserti128 ymm15, ymm15, [rax + rsi + 0xFFFF], 0
+vinserti128 ymm15, ymm15, [rax + rsi + 0xFFFF], 1
+vinserti128 ymm15, ymm15, [rax + rsi + 0xFFFF], 100
+vinserti128 ymm15, ymm15, [rax + rsi + 0xFFFF], 127
+vinserti128 ymm15, ymm15, [rax + rsi + 0xFFFF], -128
+vinserti128 ymm15, ymm15, [r15 + rsi + 0xFFFF], 0
+vinserti128 ymm15, ymm15, [r15 + rsi + 0xFFFF], 1
+vinserti128 ymm15, ymm15, [r15 + rsi + 0xFFFF], 100
+vinserti128 ymm15, ymm15, [r15 + rsi + 0xFFFF], 127
+vinserti128 ymm15, ymm15, [r15 + rsi + 0xFFFF], -128
+vinserti128 ymm15, ymm15, [rax + r15 + 0xFFFF], 0
+vinserti128 ymm15, ymm15, [rax + r15 + 0xFFFF], 1
+vinserti128 ymm15, ymm15, [rax + r15 + 0xFFFF], 100
+vinserti128 ymm15, ymm15, [rax + r15 + 0xFFFF], 127
+vinserti128 ymm15, ymm15, [rax + r15 + 0xFFFF], -128
+vinserti128 ymm15, ymm15, [rax + rsi * 2 + 0xFFFF2], 0
+vinserti128 ymm15, ymm15, [rax + rsi * 2 + 0xFFFF2], 1
+vinserti128 ymm15, ymm15, [rax + rsi * 2 + 0xFFFF2], 100
+vinserti128 ymm15, ymm15, [rax + rsi * 2 + 0xFFFF2], 127
+vinserti128 ymm15, ymm15, [rax + rsi * 2 + 0xFFFF2], -128
+vinserti128 ymm15, ymm15, [rax + rsi * 4 + 0xFFFF4], 0
+vinserti128 ymm15, ymm15, [rax + rsi * 4 + 0xFFFF4], 1
+vinserti128 ymm15, ymm15, [rax + rsi * 4 + 0xFFFF4], 100
+vinserti128 ymm15, ymm15, [rax + rsi * 4 + 0xFFFF4], 127
+vinserti128 ymm15, ymm15, [rax + rsi * 4 + 0xFFFF4], -128
+vinserti128 ymm15, ymm15, [rax + rsi * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm15, [rax + rsi * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm15, [rax + rsi * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm15, [rax + rsi * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm15, [rax + rsi * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm15, [rsp + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm15, [rsp + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm15, [rsp + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm15, [rsp + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm15, [rsp + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm15, [r15 + rax * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm15, [r15 + rax * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm15, [r15 + rax * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm15, [r15 + rax * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm15, [r15 + rax * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm15, [rsp + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm15, [rsp + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm15, [rsp + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm15, [rsp + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm15, [rsp + r15 * 8 + 0xFFFF8], -128
+vinserti128 ymm15, ymm15, [r14 + r15 * 8 + 0xFFFF8], 0
+vinserti128 ymm15, ymm15, [r14 + r15 * 8 + 0xFFFF8], 1
+vinserti128 ymm15, ymm15, [r14 + r15 * 8 + 0xFFFF8], 100
+vinserti128 ymm15, ymm15, [r14 + r15 * 8 + 0xFFFF8], 127
+vinserti128 ymm15, ymm15, [r14 + r15 * 8 + 0xFFFF8], -128

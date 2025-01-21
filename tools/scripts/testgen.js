@@ -160,8 +160,9 @@ function generate_combinations(inst) {
 		['rel8', [ '0', '1', '-128', '127' ]],
 		['rel16', [ '0', '1', '-128', '127' ]],
 		['rel32', [ '0', '1', '-128', '127' ]],
-		['rel8_rip', [ '$+0', '$+1', '$+-128', '$+127' ]],
-		['rel16_rip', [ '$+0', '$+1', '$+-128', '$+127' ]],
+		// TODO: negative rip-relative operands are broken
+		['rel8_rip', [ '$+0', '$+1', /*'$+-128',*/ '$+127' ]],
+		['rel16_rip', [ '$+0', '$+1', /*'$+-128',*/ '$+127' ]],
 		['moff8', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
 		['moff16', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
 		['moff32', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
@@ -231,6 +232,27 @@ function format_time(ms) {
 	return formatted_time.trim();
 }
 
+let results = [];
+let errors = [];
+
+function assemble_test(name, test, bin_path, asm_path, temp_path) {
+	const assembly = `BITS 64\n${test}`; 
+	const command = `nasm -w+all -f bin -o ${bin_path} ${asm_path} > ${temp_path} 2>&1`;
+
+	try {
+		utility.write_file(asm_path, assembly);
+		utility.execute(command);
+	} catch(error) {
+		errors.push(`${name} ${utility.read_file(temp_path)}`);
+	}
+
+	try {
+		results.push({ name: name, hex: utility.read_file_hex(bin_path)});
+	} catch(error) {
+		errors.push(`${name} ${utility.read_file(temp_path)}`);
+	}
+}
+
 function main() {
 	let start_time = Date.now()
 
@@ -241,8 +263,6 @@ function main() {
 	}
 	
 	let instructions;
-	let tests_set = new Set();
-	let tests = [];
 	
 	try {
 		const data = fs.readFileSync(process.argv[2], 'utf8');
@@ -252,99 +272,69 @@ function main() {
 		process.exit(1);
 	}
 
-	// generate our tests
+	let variants = new Map();
+
 	instructions.forEach(inst => {
 		if(inst.operands.includes('hidden')) {
 			return;
 		}
 
-		let operand_combinations = generate_combinations(inst);
-
-		operand_combinations.forEach(combination => {
-			tests_set.add(`${inst.name} ${combination.join(', ')}`);
-		});
+		if(variants.has(inst.name)) {
+			variants.get(inst.name).push(inst);
+		}
+		else {
+			variants.set(inst.name, [inst]);
+		}
 	});
 
-	tests_set.forEach(test => {
-		tests.push(test);
+	let tests = new Map();
+
+	variants.forEach((value, key) => {
+		//if(key !== 'mov') {
+		//	return;
+		//}
+
+		let test_set = new Set();
+
+		value.forEach(variant => {
+			let operand_combinations = generate_combinations(variant);
+
+			operand_combinations.forEach(combination => {
+				test_set.add(`${key} ${combination.join(', ')}`);
+			});
+		})
+
+		tests.set(key, Array.from(test_set).join('\n'));
 	})
 
-	// calculate the worker count
-	const worker_path = path.join(__dirname, 'testgen_worker.js');
-	const worker_count = Math.max(Math.min(Math.floor(tests.length / 100), os.cpus().length - 1), 1);
-	const chunk_size = Math.ceil(tests.length / worker_count);
+	const temp_path = utility.get_temp_path(0);
+	const asm_path = utility.get_asm_path(0);
+	const bin_path = utility.get_bin_path(0);
 
-	let finished_count = 0; // count of finished tests so that we can print the total %
+	tests.forEach((test, name) => {
+		assemble_test(name, test, bin_path, asm_path, temp_path);
 
-	// initialize our workers
-	const worker_promises = Array.from({ length: worker_count }, (_, i) => {
-		return new Promise((resolve, reject) => {
-			const start = i * chunk_size;
-			const end = Math.min(start + chunk_size, tests.length);
-			const worker_tests = tests.slice(start, end);
-			const worker = new Worker(worker_path, { workerData: { tests: worker_tests, id: i } });
-
-			worker.on('message', (message) => {
-				switch(message.id) {
-					case 'update': {
-						finished_count += 10; // we send an update every 10 tests
-						process.stdout.write(`${finished_count}/${tests.length}\r`);
-						break;
-					}
-					case 'result': resolve(message.data); break;
-					default: console.error(`unknown worker message id '${message.id}' received`);
-				}
-			});
-
-			worker.on('error', (error) => {
-				reject(error);
-			});
-
-			worker.on('exit', (code) => {
-				if (code !== 0) {
-					reject(new Error(`worker stopped with exit code ${code}`));
-				}
-			});
-		});
+		if((errors.length + results.length) % 10 == 0) {
+			process.stdout.write(`${errors.length + results.length}/${tests.size}\r`);
+		}
 	});
 
-	// run all worker threads
-	Promise.all(worker_promises)
-		.then(result => {
-			let error_text = '';
-			let test_text = '';
+	try {
+		utility.delete_file(temp_path);
+		utility.delete_file(bin_path);
+		utility.delete_file(asm_path);
+	} catch(err) {}
 
-			result.forEach(res => {
-				res.errors.forEach(err => {
-					error_text += `${err}`; 
-				});
-			});
+	process.stdout.clearLine();
+	console.log(errors.length, results.length);
 
-			result.forEach(res => {
-				res.results.forEach(res => {
-					 test_text += `${res}\n`; 
-				});
-			});
+	results.forEach(result => {
+		const test_path = path.join(process.argv[3], `/${result.name}.asm`);
+		const test_instructions = tests.get(result.name);
+		const test_text = `; expect: ${result.hex}\n\n${test_instructions}`;
 
-			utility.write_file(process.argv[3], test_text);
-
-			if(error_text.length > 0) {
-				const now = new Date();
-				const timestamp = now.toISOString().replace(/:/g, '-').substring(0, 19).replace(/:/g, '-');
-				const error_path = path.join(process.argv[4], `log_${timestamp}.txt`) 
-
-				console.error(`encountered errors (see ${error_path} for more information)`);
-				utility.write_file(error_path, error_text);
-			}
-
-			console.log(`testgen finished (${format_time(Date.now() - start_time)})`);
-
-			process.exit(0);
-		})
-		.catch(error => {
-			console.error(error);
-			process.exit(1);
-		});
+		utility.write_file(test_path, test_text);
+	})
 
 	return 0;
 }

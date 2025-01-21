@@ -1,0 +1,1037 @@
+; expect: c4e37941c000c4e37941c001c4e37941c064c4e37941c07fc4e37941c080c4e37941c100c4e37941c101c4e37941c164c4e37941c17fc4e37941c180c4c37941c700c4c37941c701c4c37941c764c4c37941c77fc4c37941c780c4e37141c000c4e37141c001c4e37141c064c4e37141c07fc4e37141c080c4e37141c100c4e37141c101c4e37141c164c4e37141c17fc4e37141c180c4c37141c700c4c37141c701c4c37141c764c4c37141c77fc4c37141c780c4e30141c000c4e30141c001c4e30141c064c4e30141c07fc4e30141c080c4e30141c100c4e30141c101c4e30141c164c4e30141c17fc4e30141c180c4c30141c700c4c30141c701c4c30141c764c4c30141c77fc4c30141c780c4e37941c800c4e37941c801c4e37941c864c4e37941c87fc4e37941c880c4e37941c900c4e37941c901c4e37941c964c4e37941c97fc4e37941c980c4c37941cf00c4c37941cf01c4c37941cf64c4c37941cf7fc4c37941cf80c4e37141c800c4e37141c801c4e37141c864c4e37141c87fc4e37141c880c4e37141c900c4e37141c901c4e37141c964c4e37141c97fc4e37141c980c4c37141cf00c4c37141cf01c4c37141cf64c4c37141cf7fc4c37141cf80c4e30141c800c4e30141c801c4e30141c864c4e30141c87fc4e30141c880c4e30141c900c4e30141c901c4e30141c964c4e30141c97fc4e30141c980c4c30141cf00c4c30141cf01c4c30141cf64c4c30141cf7fc4c30141cf80c4637941f800c4637941f801c4637941f864c4637941f87fc4637941f880c4637941f900c4637941f901c4637941f964c4637941f97fc4637941f980c4437941ff00c4437941ff01c4437941ff64c4437941ff7fc4437941ff80c4637141f800c4637141f801c4637141f864c4637141f87fc4637141f880c4637141f900c4637141f901c4637141f964c4637141f97fc4637141f980c4437141ff00c4437141ff01c4437141ff64c4437141ff7fc4437141ff80c4630141f800c4630141f801c4630141f864c4630141f87fc4630141f880c4630141f900c4630141f901c4630141f964c4630141f97fc4630141f980c4430141ff00c4430141ff01c4430141ff64c4430141ff7fc4430141ff80c4e3794104250000000000c4e3794104250000000001c4e3794104250000000064c4e379410425000000007fc4e3794104250000000080c4e379410425ff00000000c4e379410425ff00000001c4e379410425ff00000064c4e379410425ff0000007fc4e379410425ff00000080c4e3794105f6ffffff00c4e3794105f6ffffff01c4e3794105f6ffffff64c4e3794105f6ffffff7fc4e3794105f6ffffff80c4e3794105f500000000c4e3794105f500000001c4e3794105f500000064c4e3794105f50000007fc4e3794105f500000080c4e3794105f5ff000000c4e3794105f5ff000001c4e3794105f5ff000064c4e3794105f5ff00007fc4e3794105f5ff000080c4e379410000c4e379410001c4e379410064c4e37941007fc4e379410080c4e379410000c4e379410001c4e379410064c4e37941007fc4e379410080c4e3794180ffff000000c4e3794180ffff000001c4e3794180ffff000064c4e3794180ffff00007fc4e3794180ffff000080c4c3794187ffff000000c4c3794187ffff000001c4c3794187ffff000064c4c3794187ffff00007fc4c3794187ffff000080c4e37941043000c4e37941043001c4e37941043064c4e3794104307fc4e37941043080c4e379418430ffff000000c4e379418430ffff000001c4e379418430ffff000064c4e379418430ffff00007fc4e379418430ffff000080c4c379418437ffff000000c4c379418437ffff000001c4c379418437ffff000064c4c379418437ffff00007fc4c379418437ffff000080c4a379418438ffff000000c4a379418438ffff000001c4a379418438ffff000064c4a379418438ffff00007fc4a379418438ffff000080c4e379418470f2ff0f0000c4e379418470f2ff0f0001c4e379418470f2ff0f0064c4e379418470f2ff0f007fc4e379418470f2ff0f0080c4e3794184b0f4ff0f0000c4e3794184b0f4ff0f0001c4e3794184b0f4ff0f0064c4e3794184b0f4ff0f007fc4e3794184b0f4ff0f0080c4e3794184f0f8ff0f0000c4e3794184f0f8ff0f0001c4e3794184f0f8ff0f0064c4e3794184f0f8ff0f007fc4e3794184f0f8ff0f0080c4e3794184c4f8ff0f0000c4e3794184c4f8ff0f0001c4e3794184c4f8ff0f0064c4e3794184c4f8ff0f007fc4e3794184c4f8ff0f0080c4c3794184c7f8ff0f0000c4c3794184c7f8ff0f0001c4c3794184c7f8ff0f0064c4c3794184c7f8ff0f007fc4c3794184c7f8ff0f0080c4a3794184fcf8ff0f0000c4a3794184fcf8ff0f0001c4a3794184fcf8ff0f0064c4a3794184fcf8ff0f007fc4a3794184fcf8ff0f0080c483794184fef8ff0f0000c483794184fef8ff0f0001c483794184fef8ff0f0064c483794184fef8ff0f007fc483794184fef8ff0f0080c4e3714104250000000000c4e3714104250000000001c4e3714104250000000064c4e371410425000000007fc4e3714104250000000080c4e371410425ff00000000c4e371410425ff00000001c4e371410425ff00000064c4e371410425ff0000007fc4e371410425ff00000080c4e3714105f6ffffff00c4e3714105f6ffffff01c4e3714105f6ffffff64c4e3714105f6ffffff7fc4e3714105f6ffffff80c4e3714105f500000000c4e3714105f500000001c4e3714105f500000064c4e3714105f50000007fc4e3714105f500000080c4e3714105f5ff000000c4e3714105f5ff000001c4e3714105f5ff000064c4e3714105f5ff00007fc4e3714105f5ff000080c4e371410000c4e371410001c4e371410064c4e37141007fc4e371410080c4e371410000c4e371410001c4e371410064c4e37141007fc4e371410080c4e3714180ffff000000c4e3714180ffff000001c4e3714180ffff000064c4e3714180ffff00007fc4e3714180ffff000080c4c3714187ffff000000c4c3714187ffff000001c4c3714187ffff000064c4c3714187ffff00007fc4c3714187ffff000080c4e37141043000c4e37141043001c4e37141043064c4e3714104307fc4e37141043080c4e371418430ffff000000c4e371418430ffff000001c4e371418430ffff000064c4e371418430ffff00007fc4e371418430ffff000080c4c371418437ffff000000c4c371418437ffff000001c4c371418437ffff000064c4c371418437ffff00007fc4c371418437ffff000080c4a371418438ffff000000c4a371418438ffff000001c4a371418438ffff000064c4a371418438ffff00007fc4a371418438ffff000080c4e371418470f2ff0f0000c4e371418470f2ff0f0001c4e371418470f2ff0f0064c4e371418470f2ff0f007fc4e371418470f2ff0f0080c4e3714184b0f4ff0f0000c4e3714184b0f4ff0f0001c4e3714184b0f4ff0f0064c4e3714184b0f4ff0f007fc4e3714184b0f4ff0f0080c4e3714184f0f8ff0f0000c4e3714184f0f8ff0f0001c4e3714184f0f8ff0f0064c4e3714184f0f8ff0f007fc4e3714184f0f8ff0f0080c4e3714184c4f8ff0f0000c4e3714184c4f8ff0f0001c4e3714184c4f8ff0f0064c4e3714184c4f8ff0f007fc4e3714184c4f8ff0f0080c4c3714184c7f8ff0f0000c4c3714184c7f8ff0f0001c4c3714184c7f8ff0f0064c4c3714184c7f8ff0f007fc4c3714184c7f8ff0f0080c4a3714184fcf8ff0f0000c4a3714184fcf8ff0f0001c4a3714184fcf8ff0f0064c4a3714184fcf8ff0f007fc4a3714184fcf8ff0f0080c483714184fef8ff0f0000c483714184fef8ff0f0001c483714184fef8ff0f0064c483714184fef8ff0f007fc483714184fef8ff0f0080c4e3014104250000000000c4e3014104250000000001c4e3014104250000000064c4e301410425000000007fc4e3014104250000000080c4e301410425ff00000000c4e301410425ff00000001c4e301410425ff00000064c4e301410425ff0000007fc4e301410425ff00000080c4e3014105f6ffffff00c4e3014105f6ffffff01c4e3014105f6ffffff64c4e3014105f6ffffff7fc4e3014105f6ffffff80c4e3014105f500000000c4e3014105f500000001c4e3014105f500000064c4e3014105f50000007fc4e3014105f500000080c4e3014105f5ff000000c4e3014105f5ff000001c4e3014105f5ff000064c4e3014105f5ff00007fc4e3014105f5ff000080c4e301410000c4e301410001c4e301410064c4e30141007fc4e301410080c4e301410000c4e301410001c4e301410064c4e30141007fc4e301410080c4e3014180ffff000000c4e3014180ffff000001c4e3014180ffff000064c4e3014180ffff00007fc4e3014180ffff000080c4c3014187ffff000000c4c3014187ffff000001c4c3014187ffff000064c4c3014187ffff00007fc4c3014187ffff000080c4e30141043000c4e30141043001c4e30141043064c4e3014104307fc4e30141043080c4e301418430ffff000000c4e301418430ffff000001c4e301418430ffff000064c4e301418430ffff00007fc4e301418430ffff000080c4c301418437ffff000000c4c301418437ffff000001c4c301418437ffff000064c4c301418437ffff00007fc4c301418437ffff000080c4a301418438ffff000000c4a301418438ffff000001c4a301418438ffff000064c4a301418438ffff00007fc4a301418438ffff000080c4e301418470f2ff0f0000c4e301418470f2ff0f0001c4e301418470f2ff0f0064c4e301418470f2ff0f007fc4e301418470f2ff0f0080c4e3014184b0f4ff0f0000c4e3014184b0f4ff0f0001c4e3014184b0f4ff0f0064c4e3014184b0f4ff0f007fc4e3014184b0f4ff0f0080c4e3014184f0f8ff0f0000c4e3014184f0f8ff0f0001c4e3014184f0f8ff0f0064c4e3014184f0f8ff0f007fc4e3014184f0f8ff0f0080c4e3014184c4f8ff0f0000c4e3014184c4f8ff0f0001c4e3014184c4f8ff0f0064c4e3014184c4f8ff0f007fc4e3014184c4f8ff0f0080c4c3014184c7f8ff0f0000c4c3014184c7f8ff0f0001c4c3014184c7f8ff0f0064c4c3014184c7f8ff0f007fc4c3014184c7f8ff0f0080c4a3014184fcf8ff0f0000c4a3014184fcf8ff0f0001c4a3014184fcf8ff0f0064c4a3014184fcf8ff0f007fc4a3014184fcf8ff0f0080c483014184fef8ff0f0000c483014184fef8ff0f0001c483014184fef8ff0f0064c483014184fef8ff0f007fc483014184fef8ff0f0080c4e379410c250000000000c4e379410c250000000001c4e379410c250000000064c4e379410c25000000007fc4e379410c250000000080c4e379410c25ff00000000c4e379410c25ff00000001c4e379410c25ff00000064c4e379410c25ff0000007fc4e379410c25ff00000080c4e379410df6ffffff00c4e379410df6ffffff01c4e379410df6ffffff64c4e379410df6ffffff7fc4e379410df6ffffff80c4e379410df500000000c4e379410df500000001c4e379410df500000064c4e379410df50000007fc4e379410df500000080c4e379410df5ff000000c4e379410df5ff000001c4e379410df5ff000064c4e379410df5ff00007fc4e379410df5ff000080c4e379410800c4e379410801c4e379410864c4e37941087fc4e379410880c4e379410800c4e379410801c4e379410864c4e37941087fc4e379410880c4e3794188ffff000000c4e3794188ffff000001c4e3794188ffff000064c4e3794188ffff00007fc4e3794188ffff000080c4c379418fffff000000c4c379418fffff000001c4c379418fffff000064c4c379418fffff00007fc4c379418fffff000080c4e379410c3000c4e379410c3001c4e379410c3064c4e379410c307fc4e379410c3080c4e379418c30ffff000000c4e379418c30ffff000001c4e379418c30ffff000064c4e379418c30ffff00007fc4e379418c30ffff000080c4c379418c37ffff000000c4c379418c37ffff000001c4c379418c37ffff000064c4c379418c37ffff00007fc4c379418c37ffff000080c4a379418c38ffff000000c4a379418c38ffff000001c4a379418c38ffff000064c4a379418c38ffff00007fc4a379418c38ffff000080c4e379418c70f2ff0f0000c4e379418c70f2ff0f0001c4e379418c70f2ff0f0064c4e379418c70f2ff0f007fc4e379418c70f2ff0f0080c4e379418cb0f4ff0f0000c4e379418cb0f4ff0f0001c4e379418cb0f4ff0f0064c4e379418cb0f4ff0f007fc4e379418cb0f4ff0f0080c4e379418cf0f8ff0f0000c4e379418cf0f8ff0f0001c4e379418cf0f8ff0f0064c4e379418cf0f8ff0f007fc4e379418cf0f8ff0f0080c4e379418cc4f8ff0f0000c4e379418cc4f8ff0f0001c4e379418cc4f8ff0f0064c4e379418cc4f8ff0f007fc4e379418cc4f8ff0f0080c4c379418cc7f8ff0f0000c4c379418cc7f8ff0f0001c4c379418cc7f8ff0f0064c4c379418cc7f8ff0f007fc4c379418cc7f8ff0f0080c4a379418cfcf8ff0f0000c4a379418cfcf8ff0f0001c4a379418cfcf8ff0f0064c4a379418cfcf8ff0f007fc4a379418cfcf8ff0f0080c48379418cfef8ff0f0000c48379418cfef8ff0f0001c48379418cfef8ff0f0064c48379418cfef8ff0f007fc48379418cfef8ff0f0080c4e371410c250000000000c4e371410c250000000001c4e371410c250000000064c4e371410c25000000007fc4e371410c250000000080c4e371410c25ff00000000c4e371410c25ff00000001c4e371410c25ff00000064c4e371410c25ff0000007fc4e371410c25ff00000080c4e371410df6ffffff00c4e371410df6ffffff01c4e371410df6ffffff64c4e371410df6ffffff7fc4e371410df6ffffff80c4e371410df500000000c4e371410df500000001c4e371410df500000064c4e371410df50000007fc4e371410df500000080c4e371410df5ff000000c4e371410df5ff000001c4e371410df5ff000064c4e371410df5ff00007fc4e371410df5ff000080c4e371410800c4e371410801c4e371410864c4e37141087fc4e371410880c4e371410800c4e371410801c4e371410864c4e37141087fc4e371410880c4e3714188ffff000000c4e3714188ffff000001c4e3714188ffff000064c4e3714188ffff00007fc4e3714188ffff000080c4c371418fffff000000c4c371418fffff000001c4c371418fffff000064c4c371418fffff00007fc4c371418fffff000080c4e371410c3000c4e371410c3001c4e371410c3064c4e371410c307fc4e371410c3080c4e371418c30ffff000000c4e371418c30ffff000001c4e371418c30ffff000064c4e371418c30ffff00007fc4e371418c30ffff000080c4c371418c37ffff000000c4c371418c37ffff000001c4c371418c37ffff000064c4c371418c37ffff00007fc4c371418c37ffff000080c4a371418c38ffff000000c4a371418c38ffff000001c4a371418c38ffff000064c4a371418c38ffff00007fc4a371418c38ffff000080c4e371418c70f2ff0f0000c4e371418c70f2ff0f0001c4e371418c70f2ff0f0064c4e371418c70f2ff0f007fc4e371418c70f2ff0f0080c4e371418cb0f4ff0f0000c4e371418cb0f4ff0f0001c4e371418cb0f4ff0f0064c4e371418cb0f4ff0f007fc4e371418cb0f4ff0f0080c4e371418cf0f8ff0f0000c4e371418cf0f8ff0f0001c4e371418cf0f8ff0f0064c4e371418cf0f8ff0f007fc4e371418cf0f8ff0f0080c4e371418cc4f8ff0f0000c4e371418cc4f8ff0f0001c4e371418cc4f8ff0f0064c4e371418cc4f8ff0f007fc4e371418cc4f8ff0f0080c4c371418cc7f8ff0f0000c4c371418cc7f8ff0f0001c4c371418cc7f8ff0f0064c4c371418cc7f8ff0f007fc4c371418cc7f8ff0f0080c4a371418cfcf8ff0f0000c4a371418cfcf8ff0f0001c4a371418cfcf8ff0f0064c4a371418cfcf8ff0f007fc4a371418cfcf8ff0f0080c48371418cfef8ff0f0000c48371418cfef8ff0f0001c48371418cfef8ff0f0064c48371418cfef8ff0f007fc48371418cfef8ff0f0080c4e301410c250000000000c4e301410c250000000001c4e301410c250000000064c4e301410c25000000007fc4e301410c250000000080c4e301410c25ff00000000c4e301410c25ff00000001c4e301410c25ff00000064c4e301410c25ff0000007fc4e301410c25ff00000080c4e301410df6ffffff00c4e301410df6ffffff01c4e301410df6ffffff64c4e301410df6ffffff7fc4e301410df6ffffff80c4e301410df500000000c4e301410df500000001c4e301410df500000064c4e301410df50000007fc4e301410df500000080c4e301410df5ff000000c4e301410df5ff000001c4e301410df5ff000064c4e301410df5ff00007fc4e301410df5ff000080c4e301410800c4e301410801c4e301410864c4e30141087fc4e301410880c4e301410800c4e301410801c4e301410864c4e30141087fc4e301410880c4e3014188ffff000000c4e3014188ffff000001c4e3014188ffff000064c4e3014188ffff00007fc4e3014188ffff000080c4c301418fffff000000c4c301418fffff000001c4c301418fffff000064c4c301418fffff00007fc4c301418fffff000080c4e301410c3000c4e301410c3001c4e301410c3064c4e301410c307fc4e301410c3080c4e301418c30ffff000000c4e301418c30ffff000001c4e301418c30ffff000064c4e301418c30ffff00007fc4e301418c30ffff000080c4c301418c37ffff000000c4c301418c37ffff000001c4c301418c37ffff000064c4c301418c37ffff00007fc4c301418c37ffff000080c4a301418c38ffff000000c4a301418c38ffff000001c4a301418c38ffff000064c4a301418c38ffff00007fc4a301418c38ffff000080c4e301418c70f2ff0f0000c4e301418c70f2ff0f0001c4e301418c70f2ff0f0064c4e301418c70f2ff0f007fc4e301418c70f2ff0f0080c4e301418cb0f4ff0f0000c4e301418cb0f4ff0f0001c4e301418cb0f4ff0f0064c4e301418cb0f4ff0f007fc4e301418cb0f4ff0f0080c4e301418cf0f8ff0f0000c4e301418cf0f8ff0f0001c4e301418cf0f8ff0f0064c4e301418cf0f8ff0f007fc4e301418cf0f8ff0f0080c4e301418cc4f8ff0f0000c4e301418cc4f8ff0f0001c4e301418cc4f8ff0f0064c4e301418cc4f8ff0f007fc4e301418cc4f8ff0f0080c4c301418cc7f8ff0f0000c4c301418cc7f8ff0f0001c4c301418cc7f8ff0f0064c4c301418cc7f8ff0f007fc4c301418cc7f8ff0f0080c4a301418cfcf8ff0f0000c4a301418cfcf8ff0f0001c4a301418cfcf8ff0f0064c4a301418cfcf8ff0f007fc4a301418cfcf8ff0f0080c48301418cfef8ff0f0000c48301418cfef8ff0f0001c48301418cfef8ff0f0064c48301418cfef8ff0f007fc48301418cfef8ff0f0080c46379413c250000000000c46379413c250000000001c46379413c250000000064c46379413c25000000007fc46379413c250000000080c46379413c25ff00000000c46379413c25ff00000001c46379413c25ff00000064c46379413c25ff0000007fc46379413c25ff00000080c46379413df6ffffff00c46379413df6ffffff01c46379413df6ffffff64c46379413df6ffffff7fc46379413df6ffffff80c46379413df500000000c46379413df500000001c46379413df500000064c46379413df50000007fc46379413df500000080c46379413df5ff000000c46379413df5ff000001c46379413df5ff000064c46379413df5ff00007fc46379413df5ff000080c46379413800c46379413801c46379413864c4637941387fc46379413880c46379413800c46379413801c46379413864c4637941387fc46379413880c4637941b8ffff000000c4637941b8ffff000001c4637941b8ffff000064c4637941b8ffff00007fc4637941b8ffff000080c4437941bfffff000000c4437941bfffff000001c4437941bfffff000064c4437941bfffff00007fc4437941bfffff000080c46379413c3000c46379413c3001c46379413c3064c46379413c307fc46379413c3080c4637941bc30ffff000000c4637941bc30ffff000001c4637941bc30ffff000064c4637941bc30ffff00007fc4637941bc30ffff000080c4437941bc37ffff000000c4437941bc37ffff000001c4437941bc37ffff000064c4437941bc37ffff00007fc4437941bc37ffff000080c4237941bc38ffff000000c4237941bc38ffff000001c4237941bc38ffff000064c4237941bc38ffff00007fc4237941bc38ffff000080c4637941bc70f2ff0f0000c4637941bc70f2ff0f0001c4637941bc70f2ff0f0064c4637941bc70f2ff0f007fc4637941bc70f2ff0f0080c4637941bcb0f4ff0f0000c4637941bcb0f4ff0f0001c4637941bcb0f4ff0f0064c4637941bcb0f4ff0f007fc4637941bcb0f4ff0f0080c4637941bcf0f8ff0f0000c4637941bcf0f8ff0f0001c4637941bcf0f8ff0f0064c4637941bcf0f8ff0f007fc4637941bcf0f8ff0f0080c4637941bcc4f8ff0f0000c4637941bcc4f8ff0f0001c4637941bcc4f8ff0f0064c4637941bcc4f8ff0f007fc4637941bcc4f8ff0f0080c4437941bcc7f8ff0f0000c4437941bcc7f8ff0f0001c4437941bcc7f8ff0f0064c4437941bcc7f8ff0f007fc4437941bcc7f8ff0f0080c4237941bcfcf8ff0f0000c4237941bcfcf8ff0f0001c4237941bcfcf8ff0f0064c4237941bcfcf8ff0f007fc4237941bcfcf8ff0f0080c4037941bcfef8ff0f0000c4037941bcfef8ff0f0001c4037941bcfef8ff0f0064c4037941bcfef8ff0f007fc4037941bcfef8ff0f0080c46371413c250000000000c46371413c250000000001c46371413c250000000064c46371413c25000000007fc46371413c250000000080c46371413c25ff00000000c46371413c25ff00000001c46371413c25ff00000064c46371413c25ff0000007fc46371413c25ff00000080c46371413df6ffffff00c46371413df6ffffff01c46371413df6ffffff64c46371413df6ffffff7fc46371413df6ffffff80c46371413df500000000c46371413df500000001c46371413df500000064c46371413df50000007fc46371413df500000080c46371413df5ff000000c46371413df5ff000001c46371413df5ff000064c46371413df5ff00007fc46371413df5ff000080c46371413800c46371413801c46371413864c4637141387fc46371413880c46371413800c46371413801c46371413864c4637141387fc46371413880c4637141b8ffff000000c4637141b8ffff000001c4637141b8ffff000064c4637141b8ffff00007fc4637141b8ffff000080c4437141bfffff000000c4437141bfffff000001c4437141bfffff000064c4437141bfffff00007fc4437141bfffff000080c46371413c3000c46371413c3001c46371413c3064c46371413c307fc46371413c3080c4637141bc30ffff000000c4637141bc30ffff000001c4637141bc30ffff000064c4637141bc30ffff00007fc4637141bc30ffff000080c4437141bc37ffff000000c4437141bc37ffff000001c4437141bc37ffff000064c4437141bc37ffff00007fc4437141bc37ffff000080c4237141bc38ffff000000c4237141bc38ffff000001c4237141bc38ffff000064c4237141bc38ffff00007fc4237141bc38ffff000080c4637141bc70f2ff0f0000c4637141bc70f2ff0f0001c4637141bc70f2ff0f0064c4637141bc70f2ff0f007fc4637141bc70f2ff0f0080c4637141bcb0f4ff0f0000c4637141bcb0f4ff0f0001c4637141bcb0f4ff0f0064c4637141bcb0f4ff0f007fc4637141bcb0f4ff0f0080c4637141bcf0f8ff0f0000c4637141bcf0f8ff0f0001c4637141bcf0f8ff0f0064c4637141bcf0f8ff0f007fc4637141bcf0f8ff0f0080c4637141bcc4f8ff0f0000c4637141bcc4f8ff0f0001c4637141bcc4f8ff0f0064c4637141bcc4f8ff0f007fc4637141bcc4f8ff0f0080c4437141bcc7f8ff0f0000c4437141bcc7f8ff0f0001c4437141bcc7f8ff0f0064c4437141bcc7f8ff0f007fc4437141bcc7f8ff0f0080c4237141bcfcf8ff0f0000c4237141bcfcf8ff0f0001c4237141bcfcf8ff0f0064c4237141bcfcf8ff0f007fc4237141bcfcf8ff0f0080c4037141bcfef8ff0f0000c4037141bcfef8ff0f0001c4037141bcfef8ff0f0064c4037141bcfef8ff0f007fc4037141bcfef8ff0f0080c46301413c250000000000c46301413c250000000001c46301413c250000000064c46301413c25000000007fc46301413c250000000080c46301413c25ff00000000c46301413c25ff00000001c46301413c25ff00000064c46301413c25ff0000007fc46301413c25ff00000080c46301413df6ffffff00c46301413df6ffffff01c46301413df6ffffff64c46301413df6ffffff7fc46301413df6ffffff80c46301413df500000000c46301413df500000001c46301413df500000064c46301413df50000007fc46301413df500000080c46301413df5ff000000c46301413df5ff000001c46301413df5ff000064c46301413df5ff00007fc46301413df5ff000080c46301413800c46301413801c46301413864c4630141387fc46301413880c46301413800c46301413801c46301413864c4630141387fc46301413880c4630141b8ffff000000c4630141b8ffff000001c4630141b8ffff000064c4630141b8ffff00007fc4630141b8ffff000080c4430141bfffff000000c4430141bfffff000001c4430141bfffff000064c4430141bfffff00007fc4430141bfffff000080c46301413c3000c46301413c3001c46301413c3064c46301413c307fc46301413c3080c4630141bc30ffff000000c4630141bc30ffff000001c4630141bc30ffff000064c4630141bc30ffff00007fc4630141bc30ffff000080c4430141bc37ffff000000c4430141bc37ffff000001c4430141bc37ffff000064c4430141bc37ffff00007fc4430141bc37ffff000080c4230141bc38ffff000000c4230141bc38ffff000001c4230141bc38ffff000064c4230141bc38ffff00007fc4230141bc38ffff000080c4630141bc70f2ff0f0000c4630141bc70f2ff0f0001c4630141bc70f2ff0f0064c4630141bc70f2ff0f007fc4630141bc70f2ff0f0080c4630141bcb0f4ff0f0000c4630141bcb0f4ff0f0001c4630141bcb0f4ff0f0064c4630141bcb0f4ff0f007fc4630141bcb0f4ff0f0080c4630141bcf0f8ff0f0000c4630141bcf0f8ff0f0001c4630141bcf0f8ff0f0064c4630141bcf0f8ff0f007fc4630141bcf0f8ff0f0080c4630141bcc4f8ff0f0000c4630141bcc4f8ff0f0001c4630141bcc4f8ff0f0064c4630141bcc4f8ff0f007fc4630141bcc4f8ff0f0080c4430141bcc7f8ff0f0000c4430141bcc7f8ff0f0001c4430141bcc7f8ff0f0064c4430141bcc7f8ff0f007fc4430141bcc7f8ff0f0080c4230141bcfcf8ff0f0000c4230141bcfcf8ff0f0001c4230141bcfcf8ff0f0064c4230141bcfcf8ff0f007fc4230141bcfcf8ff0f0080c4030141bcfef8ff0f0000c4030141bcfef8ff0f0001c4030141bcfef8ff0f0064c4030141bcfef8ff0f007fc4030141bcfef8ff0f0080
+
+vdppd xmm0, xmm0, xmm0, 0
+vdppd xmm0, xmm0, xmm0, 1
+vdppd xmm0, xmm0, xmm0, 100
+vdppd xmm0, xmm0, xmm0, 127
+vdppd xmm0, xmm0, xmm0, -128
+vdppd xmm0, xmm0, xmm1, 0
+vdppd xmm0, xmm0, xmm1, 1
+vdppd xmm0, xmm0, xmm1, 100
+vdppd xmm0, xmm0, xmm1, 127
+vdppd xmm0, xmm0, xmm1, -128
+vdppd xmm0, xmm0, xmm15, 0
+vdppd xmm0, xmm0, xmm15, 1
+vdppd xmm0, xmm0, xmm15, 100
+vdppd xmm0, xmm0, xmm15, 127
+vdppd xmm0, xmm0, xmm15, -128
+vdppd xmm0, xmm1, xmm0, 0
+vdppd xmm0, xmm1, xmm0, 1
+vdppd xmm0, xmm1, xmm0, 100
+vdppd xmm0, xmm1, xmm0, 127
+vdppd xmm0, xmm1, xmm0, -128
+vdppd xmm0, xmm1, xmm1, 0
+vdppd xmm0, xmm1, xmm1, 1
+vdppd xmm0, xmm1, xmm1, 100
+vdppd xmm0, xmm1, xmm1, 127
+vdppd xmm0, xmm1, xmm1, -128
+vdppd xmm0, xmm1, xmm15, 0
+vdppd xmm0, xmm1, xmm15, 1
+vdppd xmm0, xmm1, xmm15, 100
+vdppd xmm0, xmm1, xmm15, 127
+vdppd xmm0, xmm1, xmm15, -128
+vdppd xmm0, xmm15, xmm0, 0
+vdppd xmm0, xmm15, xmm0, 1
+vdppd xmm0, xmm15, xmm0, 100
+vdppd xmm0, xmm15, xmm0, 127
+vdppd xmm0, xmm15, xmm0, -128
+vdppd xmm0, xmm15, xmm1, 0
+vdppd xmm0, xmm15, xmm1, 1
+vdppd xmm0, xmm15, xmm1, 100
+vdppd xmm0, xmm15, xmm1, 127
+vdppd xmm0, xmm15, xmm1, -128
+vdppd xmm0, xmm15, xmm15, 0
+vdppd xmm0, xmm15, xmm15, 1
+vdppd xmm0, xmm15, xmm15, 100
+vdppd xmm0, xmm15, xmm15, 127
+vdppd xmm0, xmm15, xmm15, -128
+vdppd xmm1, xmm0, xmm0, 0
+vdppd xmm1, xmm0, xmm0, 1
+vdppd xmm1, xmm0, xmm0, 100
+vdppd xmm1, xmm0, xmm0, 127
+vdppd xmm1, xmm0, xmm0, -128
+vdppd xmm1, xmm0, xmm1, 0
+vdppd xmm1, xmm0, xmm1, 1
+vdppd xmm1, xmm0, xmm1, 100
+vdppd xmm1, xmm0, xmm1, 127
+vdppd xmm1, xmm0, xmm1, -128
+vdppd xmm1, xmm0, xmm15, 0
+vdppd xmm1, xmm0, xmm15, 1
+vdppd xmm1, xmm0, xmm15, 100
+vdppd xmm1, xmm0, xmm15, 127
+vdppd xmm1, xmm0, xmm15, -128
+vdppd xmm1, xmm1, xmm0, 0
+vdppd xmm1, xmm1, xmm0, 1
+vdppd xmm1, xmm1, xmm0, 100
+vdppd xmm1, xmm1, xmm0, 127
+vdppd xmm1, xmm1, xmm0, -128
+vdppd xmm1, xmm1, xmm1, 0
+vdppd xmm1, xmm1, xmm1, 1
+vdppd xmm1, xmm1, xmm1, 100
+vdppd xmm1, xmm1, xmm1, 127
+vdppd xmm1, xmm1, xmm1, -128
+vdppd xmm1, xmm1, xmm15, 0
+vdppd xmm1, xmm1, xmm15, 1
+vdppd xmm1, xmm1, xmm15, 100
+vdppd xmm1, xmm1, xmm15, 127
+vdppd xmm1, xmm1, xmm15, -128
+vdppd xmm1, xmm15, xmm0, 0
+vdppd xmm1, xmm15, xmm0, 1
+vdppd xmm1, xmm15, xmm0, 100
+vdppd xmm1, xmm15, xmm0, 127
+vdppd xmm1, xmm15, xmm0, -128
+vdppd xmm1, xmm15, xmm1, 0
+vdppd xmm1, xmm15, xmm1, 1
+vdppd xmm1, xmm15, xmm1, 100
+vdppd xmm1, xmm15, xmm1, 127
+vdppd xmm1, xmm15, xmm1, -128
+vdppd xmm1, xmm15, xmm15, 0
+vdppd xmm1, xmm15, xmm15, 1
+vdppd xmm1, xmm15, xmm15, 100
+vdppd xmm1, xmm15, xmm15, 127
+vdppd xmm1, xmm15, xmm15, -128
+vdppd xmm15, xmm0, xmm0, 0
+vdppd xmm15, xmm0, xmm0, 1
+vdppd xmm15, xmm0, xmm0, 100
+vdppd xmm15, xmm0, xmm0, 127
+vdppd xmm15, xmm0, xmm0, -128
+vdppd xmm15, xmm0, xmm1, 0
+vdppd xmm15, xmm0, xmm1, 1
+vdppd xmm15, xmm0, xmm1, 100
+vdppd xmm15, xmm0, xmm1, 127
+vdppd xmm15, xmm0, xmm1, -128
+vdppd xmm15, xmm0, xmm15, 0
+vdppd xmm15, xmm0, xmm15, 1
+vdppd xmm15, xmm0, xmm15, 100
+vdppd xmm15, xmm0, xmm15, 127
+vdppd xmm15, xmm0, xmm15, -128
+vdppd xmm15, xmm1, xmm0, 0
+vdppd xmm15, xmm1, xmm0, 1
+vdppd xmm15, xmm1, xmm0, 100
+vdppd xmm15, xmm1, xmm0, 127
+vdppd xmm15, xmm1, xmm0, -128
+vdppd xmm15, xmm1, xmm1, 0
+vdppd xmm15, xmm1, xmm1, 1
+vdppd xmm15, xmm1, xmm1, 100
+vdppd xmm15, xmm1, xmm1, 127
+vdppd xmm15, xmm1, xmm1, -128
+vdppd xmm15, xmm1, xmm15, 0
+vdppd xmm15, xmm1, xmm15, 1
+vdppd xmm15, xmm1, xmm15, 100
+vdppd xmm15, xmm1, xmm15, 127
+vdppd xmm15, xmm1, xmm15, -128
+vdppd xmm15, xmm15, xmm0, 0
+vdppd xmm15, xmm15, xmm0, 1
+vdppd xmm15, xmm15, xmm0, 100
+vdppd xmm15, xmm15, xmm0, 127
+vdppd xmm15, xmm15, xmm0, -128
+vdppd xmm15, xmm15, xmm1, 0
+vdppd xmm15, xmm15, xmm1, 1
+vdppd xmm15, xmm15, xmm1, 100
+vdppd xmm15, xmm15, xmm1, 127
+vdppd xmm15, xmm15, xmm1, -128
+vdppd xmm15, xmm15, xmm15, 0
+vdppd xmm15, xmm15, xmm15, 1
+vdppd xmm15, xmm15, xmm15, 100
+vdppd xmm15, xmm15, xmm15, 127
+vdppd xmm15, xmm15, xmm15, -128
+vdppd xmm0, xmm0, [0x0], 0
+vdppd xmm0, xmm0, [0x0], 1
+vdppd xmm0, xmm0, [0x0], 100
+vdppd xmm0, xmm0, [0x0], 127
+vdppd xmm0, xmm0, [0x0], -128
+vdppd xmm0, xmm0, [0xFF], 0
+vdppd xmm0, xmm0, [0xFF], 1
+vdppd xmm0, xmm0, [0xFF], 100
+vdppd xmm0, xmm0, [0xFF], 127
+vdppd xmm0, xmm0, [0xFF], -128
+vdppd xmm0, xmm0, [rel $ + 0x0], 0
+vdppd xmm0, xmm0, [rel $ + 0x0], 1
+vdppd xmm0, xmm0, [rel $ + 0x0], 100
+vdppd xmm0, xmm0, [rel $ + 0x0], 127
+vdppd xmm0, xmm0, [rel $ + 0x0], -128
+vdppd xmm0, xmm0, [rel $ + 0xFF], 0
+vdppd xmm0, xmm0, [rel $ + 0xFF], 1
+vdppd xmm0, xmm0, [rel $ + 0xFF], 100
+vdppd xmm0, xmm0, [rel $ + 0xFF], 127
+vdppd xmm0, xmm0, [rel $ + 0xFF], -128
+vdppd xmm0, xmm0, [rel $ + 0xFFFF], 0
+vdppd xmm0, xmm0, [rel $ + 0xFFFF], 1
+vdppd xmm0, xmm0, [rel $ + 0xFFFF], 100
+vdppd xmm0, xmm0, [rel $ + 0xFFFF], 127
+vdppd xmm0, xmm0, [rel $ + 0xFFFF], -128
+vdppd xmm0, xmm0, [rax], 0
+vdppd xmm0, xmm0, [rax], 1
+vdppd xmm0, xmm0, [rax], 100
+vdppd xmm0, xmm0, [rax], 127
+vdppd xmm0, xmm0, [rax], -128
+vdppd xmm0, xmm0, [rax + 0x0], 0
+vdppd xmm0, xmm0, [rax + 0x0], 1
+vdppd xmm0, xmm0, [rax + 0x0], 100
+vdppd xmm0, xmm0, [rax + 0x0], 127
+vdppd xmm0, xmm0, [rax + 0x0], -128
+vdppd xmm0, xmm0, [rax + 0xFFFF], 0
+vdppd xmm0, xmm0, [rax + 0xFFFF], 1
+vdppd xmm0, xmm0, [rax + 0xFFFF], 100
+vdppd xmm0, xmm0, [rax + 0xFFFF], 127
+vdppd xmm0, xmm0, [rax + 0xFFFF], -128
+vdppd xmm0, xmm0, [r15 + 0xFFFF], 0
+vdppd xmm0, xmm0, [r15 + 0xFFFF], 1
+vdppd xmm0, xmm0, [r15 + 0xFFFF], 100
+vdppd xmm0, xmm0, [r15 + 0xFFFF], 127
+vdppd xmm0, xmm0, [r15 + 0xFFFF], -128
+vdppd xmm0, xmm0, [rax + rsi * 1  + 0x0], 0
+vdppd xmm0, xmm0, [rax + rsi * 1  + 0x0], 1
+vdppd xmm0, xmm0, [rax + rsi * 1  + 0x0], 100
+vdppd xmm0, xmm0, [rax + rsi * 1  + 0x0], 127
+vdppd xmm0, xmm0, [rax + rsi * 1  + 0x0], -128
+vdppd xmm0, xmm0, [rax + rsi + 0xFFFF], 0
+vdppd xmm0, xmm0, [rax + rsi + 0xFFFF], 1
+vdppd xmm0, xmm0, [rax + rsi + 0xFFFF], 100
+vdppd xmm0, xmm0, [rax + rsi + 0xFFFF], 127
+vdppd xmm0, xmm0, [rax + rsi + 0xFFFF], -128
+vdppd xmm0, xmm0, [r15 + rsi + 0xFFFF], 0
+vdppd xmm0, xmm0, [r15 + rsi + 0xFFFF], 1
+vdppd xmm0, xmm0, [r15 + rsi + 0xFFFF], 100
+vdppd xmm0, xmm0, [r15 + rsi + 0xFFFF], 127
+vdppd xmm0, xmm0, [r15 + rsi + 0xFFFF], -128
+vdppd xmm0, xmm0, [rax + r15 + 0xFFFF], 0
+vdppd xmm0, xmm0, [rax + r15 + 0xFFFF], 1
+vdppd xmm0, xmm0, [rax + r15 + 0xFFFF], 100
+vdppd xmm0, xmm0, [rax + r15 + 0xFFFF], 127
+vdppd xmm0, xmm0, [rax + r15 + 0xFFFF], -128
+vdppd xmm0, xmm0, [rax + rsi * 2 + 0xFFFF2], 0
+vdppd xmm0, xmm0, [rax + rsi * 2 + 0xFFFF2], 1
+vdppd xmm0, xmm0, [rax + rsi * 2 + 0xFFFF2], 100
+vdppd xmm0, xmm0, [rax + rsi * 2 + 0xFFFF2], 127
+vdppd xmm0, xmm0, [rax + rsi * 2 + 0xFFFF2], -128
+vdppd xmm0, xmm0, [rax + rsi * 4 + 0xFFFF4], 0
+vdppd xmm0, xmm0, [rax + rsi * 4 + 0xFFFF4], 1
+vdppd xmm0, xmm0, [rax + rsi * 4 + 0xFFFF4], 100
+vdppd xmm0, xmm0, [rax + rsi * 4 + 0xFFFF4], 127
+vdppd xmm0, xmm0, [rax + rsi * 4 + 0xFFFF4], -128
+vdppd xmm0, xmm0, [rax + rsi * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm0, [rax + rsi * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm0, [rax + rsi * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm0, [rax + rsi * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm0, [rax + rsi * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm0, [rsp + rax * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm0, [rsp + rax * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm0, [rsp + rax * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm0, [rsp + rax * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm0, [rsp + rax * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm0, [r15 + rax * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm0, [r15 + rax * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm0, [r15 + rax * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm0, [r15 + rax * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm0, [r15 + rax * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm0, [rsp + r15 * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm0, [rsp + r15 * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm0, [rsp + r15 * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm0, [rsp + r15 * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm0, [rsp + r15 * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm0, [r14 + r15 * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm0, [r14 + r15 * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm0, [r14 + r15 * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm0, [r14 + r15 * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm0, [r14 + r15 * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm1, [0x0], 0
+vdppd xmm0, xmm1, [0x0], 1
+vdppd xmm0, xmm1, [0x0], 100
+vdppd xmm0, xmm1, [0x0], 127
+vdppd xmm0, xmm1, [0x0], -128
+vdppd xmm0, xmm1, [0xFF], 0
+vdppd xmm0, xmm1, [0xFF], 1
+vdppd xmm0, xmm1, [0xFF], 100
+vdppd xmm0, xmm1, [0xFF], 127
+vdppd xmm0, xmm1, [0xFF], -128
+vdppd xmm0, xmm1, [rel $ + 0x0], 0
+vdppd xmm0, xmm1, [rel $ + 0x0], 1
+vdppd xmm0, xmm1, [rel $ + 0x0], 100
+vdppd xmm0, xmm1, [rel $ + 0x0], 127
+vdppd xmm0, xmm1, [rel $ + 0x0], -128
+vdppd xmm0, xmm1, [rel $ + 0xFF], 0
+vdppd xmm0, xmm1, [rel $ + 0xFF], 1
+vdppd xmm0, xmm1, [rel $ + 0xFF], 100
+vdppd xmm0, xmm1, [rel $ + 0xFF], 127
+vdppd xmm0, xmm1, [rel $ + 0xFF], -128
+vdppd xmm0, xmm1, [rel $ + 0xFFFF], 0
+vdppd xmm0, xmm1, [rel $ + 0xFFFF], 1
+vdppd xmm0, xmm1, [rel $ + 0xFFFF], 100
+vdppd xmm0, xmm1, [rel $ + 0xFFFF], 127
+vdppd xmm0, xmm1, [rel $ + 0xFFFF], -128
+vdppd xmm0, xmm1, [rax], 0
+vdppd xmm0, xmm1, [rax], 1
+vdppd xmm0, xmm1, [rax], 100
+vdppd xmm0, xmm1, [rax], 127
+vdppd xmm0, xmm1, [rax], -128
+vdppd xmm0, xmm1, [rax + 0x0], 0
+vdppd xmm0, xmm1, [rax + 0x0], 1
+vdppd xmm0, xmm1, [rax + 0x0], 100
+vdppd xmm0, xmm1, [rax + 0x0], 127
+vdppd xmm0, xmm1, [rax + 0x0], -128
+vdppd xmm0, xmm1, [rax + 0xFFFF], 0
+vdppd xmm0, xmm1, [rax + 0xFFFF], 1
+vdppd xmm0, xmm1, [rax + 0xFFFF], 100
+vdppd xmm0, xmm1, [rax + 0xFFFF], 127
+vdppd xmm0, xmm1, [rax + 0xFFFF], -128
+vdppd xmm0, xmm1, [r15 + 0xFFFF], 0
+vdppd xmm0, xmm1, [r15 + 0xFFFF], 1
+vdppd xmm0, xmm1, [r15 + 0xFFFF], 100
+vdppd xmm0, xmm1, [r15 + 0xFFFF], 127
+vdppd xmm0, xmm1, [r15 + 0xFFFF], -128
+vdppd xmm0, xmm1, [rax + rsi * 1  + 0x0], 0
+vdppd xmm0, xmm1, [rax + rsi * 1  + 0x0], 1
+vdppd xmm0, xmm1, [rax + rsi * 1  + 0x0], 100
+vdppd xmm0, xmm1, [rax + rsi * 1  + 0x0], 127
+vdppd xmm0, xmm1, [rax + rsi * 1  + 0x0], -128
+vdppd xmm0, xmm1, [rax + rsi + 0xFFFF], 0
+vdppd xmm0, xmm1, [rax + rsi + 0xFFFF], 1
+vdppd xmm0, xmm1, [rax + rsi + 0xFFFF], 100
+vdppd xmm0, xmm1, [rax + rsi + 0xFFFF], 127
+vdppd xmm0, xmm1, [rax + rsi + 0xFFFF], -128
+vdppd xmm0, xmm1, [r15 + rsi + 0xFFFF], 0
+vdppd xmm0, xmm1, [r15 + rsi + 0xFFFF], 1
+vdppd xmm0, xmm1, [r15 + rsi + 0xFFFF], 100
+vdppd xmm0, xmm1, [r15 + rsi + 0xFFFF], 127
+vdppd xmm0, xmm1, [r15 + rsi + 0xFFFF], -128
+vdppd xmm0, xmm1, [rax + r15 + 0xFFFF], 0
+vdppd xmm0, xmm1, [rax + r15 + 0xFFFF], 1
+vdppd xmm0, xmm1, [rax + r15 + 0xFFFF], 100
+vdppd xmm0, xmm1, [rax + r15 + 0xFFFF], 127
+vdppd xmm0, xmm1, [rax + r15 + 0xFFFF], -128
+vdppd xmm0, xmm1, [rax + rsi * 2 + 0xFFFF2], 0
+vdppd xmm0, xmm1, [rax + rsi * 2 + 0xFFFF2], 1
+vdppd xmm0, xmm1, [rax + rsi * 2 + 0xFFFF2], 100
+vdppd xmm0, xmm1, [rax + rsi * 2 + 0xFFFF2], 127
+vdppd xmm0, xmm1, [rax + rsi * 2 + 0xFFFF2], -128
+vdppd xmm0, xmm1, [rax + rsi * 4 + 0xFFFF4], 0
+vdppd xmm0, xmm1, [rax + rsi * 4 + 0xFFFF4], 1
+vdppd xmm0, xmm1, [rax + rsi * 4 + 0xFFFF4], 100
+vdppd xmm0, xmm1, [rax + rsi * 4 + 0xFFFF4], 127
+vdppd xmm0, xmm1, [rax + rsi * 4 + 0xFFFF4], -128
+vdppd xmm0, xmm1, [rax + rsi * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm1, [rax + rsi * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm1, [rax + rsi * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm1, [rax + rsi * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm1, [rax + rsi * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm1, [rsp + rax * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm1, [rsp + rax * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm1, [rsp + rax * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm1, [rsp + rax * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm1, [rsp + rax * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm1, [r15 + rax * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm1, [r15 + rax * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm1, [r15 + rax * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm1, [r15 + rax * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm1, [r15 + rax * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm1, [rsp + r15 * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm1, [rsp + r15 * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm1, [rsp + r15 * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm1, [rsp + r15 * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm1, [rsp + r15 * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm1, [r14 + r15 * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm1, [r14 + r15 * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm1, [r14 + r15 * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm1, [r14 + r15 * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm1, [r14 + r15 * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm15, [0x0], 0
+vdppd xmm0, xmm15, [0x0], 1
+vdppd xmm0, xmm15, [0x0], 100
+vdppd xmm0, xmm15, [0x0], 127
+vdppd xmm0, xmm15, [0x0], -128
+vdppd xmm0, xmm15, [0xFF], 0
+vdppd xmm0, xmm15, [0xFF], 1
+vdppd xmm0, xmm15, [0xFF], 100
+vdppd xmm0, xmm15, [0xFF], 127
+vdppd xmm0, xmm15, [0xFF], -128
+vdppd xmm0, xmm15, [rel $ + 0x0], 0
+vdppd xmm0, xmm15, [rel $ + 0x0], 1
+vdppd xmm0, xmm15, [rel $ + 0x0], 100
+vdppd xmm0, xmm15, [rel $ + 0x0], 127
+vdppd xmm0, xmm15, [rel $ + 0x0], -128
+vdppd xmm0, xmm15, [rel $ + 0xFF], 0
+vdppd xmm0, xmm15, [rel $ + 0xFF], 1
+vdppd xmm0, xmm15, [rel $ + 0xFF], 100
+vdppd xmm0, xmm15, [rel $ + 0xFF], 127
+vdppd xmm0, xmm15, [rel $ + 0xFF], -128
+vdppd xmm0, xmm15, [rel $ + 0xFFFF], 0
+vdppd xmm0, xmm15, [rel $ + 0xFFFF], 1
+vdppd xmm0, xmm15, [rel $ + 0xFFFF], 100
+vdppd xmm0, xmm15, [rel $ + 0xFFFF], 127
+vdppd xmm0, xmm15, [rel $ + 0xFFFF], -128
+vdppd xmm0, xmm15, [rax], 0
+vdppd xmm0, xmm15, [rax], 1
+vdppd xmm0, xmm15, [rax], 100
+vdppd xmm0, xmm15, [rax], 127
+vdppd xmm0, xmm15, [rax], -128
+vdppd xmm0, xmm15, [rax + 0x0], 0
+vdppd xmm0, xmm15, [rax + 0x0], 1
+vdppd xmm0, xmm15, [rax + 0x0], 100
+vdppd xmm0, xmm15, [rax + 0x0], 127
+vdppd xmm0, xmm15, [rax + 0x0], -128
+vdppd xmm0, xmm15, [rax + 0xFFFF], 0
+vdppd xmm0, xmm15, [rax + 0xFFFF], 1
+vdppd xmm0, xmm15, [rax + 0xFFFF], 100
+vdppd xmm0, xmm15, [rax + 0xFFFF], 127
+vdppd xmm0, xmm15, [rax + 0xFFFF], -128
+vdppd xmm0, xmm15, [r15 + 0xFFFF], 0
+vdppd xmm0, xmm15, [r15 + 0xFFFF], 1
+vdppd xmm0, xmm15, [r15 + 0xFFFF], 100
+vdppd xmm0, xmm15, [r15 + 0xFFFF], 127
+vdppd xmm0, xmm15, [r15 + 0xFFFF], -128
+vdppd xmm0, xmm15, [rax + rsi * 1  + 0x0], 0
+vdppd xmm0, xmm15, [rax + rsi * 1  + 0x0], 1
+vdppd xmm0, xmm15, [rax + rsi * 1  + 0x0], 100
+vdppd xmm0, xmm15, [rax + rsi * 1  + 0x0], 127
+vdppd xmm0, xmm15, [rax + rsi * 1  + 0x0], -128
+vdppd xmm0, xmm15, [rax + rsi + 0xFFFF], 0
+vdppd xmm0, xmm15, [rax + rsi + 0xFFFF], 1
+vdppd xmm0, xmm15, [rax + rsi + 0xFFFF], 100
+vdppd xmm0, xmm15, [rax + rsi + 0xFFFF], 127
+vdppd xmm0, xmm15, [rax + rsi + 0xFFFF], -128
+vdppd xmm0, xmm15, [r15 + rsi + 0xFFFF], 0
+vdppd xmm0, xmm15, [r15 + rsi + 0xFFFF], 1
+vdppd xmm0, xmm15, [r15 + rsi + 0xFFFF], 100
+vdppd xmm0, xmm15, [r15 + rsi + 0xFFFF], 127
+vdppd xmm0, xmm15, [r15 + rsi + 0xFFFF], -128
+vdppd xmm0, xmm15, [rax + r15 + 0xFFFF], 0
+vdppd xmm0, xmm15, [rax + r15 + 0xFFFF], 1
+vdppd xmm0, xmm15, [rax + r15 + 0xFFFF], 100
+vdppd xmm0, xmm15, [rax + r15 + 0xFFFF], 127
+vdppd xmm0, xmm15, [rax + r15 + 0xFFFF], -128
+vdppd xmm0, xmm15, [rax + rsi * 2 + 0xFFFF2], 0
+vdppd xmm0, xmm15, [rax + rsi * 2 + 0xFFFF2], 1
+vdppd xmm0, xmm15, [rax + rsi * 2 + 0xFFFF2], 100
+vdppd xmm0, xmm15, [rax + rsi * 2 + 0xFFFF2], 127
+vdppd xmm0, xmm15, [rax + rsi * 2 + 0xFFFF2], -128
+vdppd xmm0, xmm15, [rax + rsi * 4 + 0xFFFF4], 0
+vdppd xmm0, xmm15, [rax + rsi * 4 + 0xFFFF4], 1
+vdppd xmm0, xmm15, [rax + rsi * 4 + 0xFFFF4], 100
+vdppd xmm0, xmm15, [rax + rsi * 4 + 0xFFFF4], 127
+vdppd xmm0, xmm15, [rax + rsi * 4 + 0xFFFF4], -128
+vdppd xmm0, xmm15, [rax + rsi * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm15, [rax + rsi * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm15, [rax + rsi * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm15, [rax + rsi * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm15, [rax + rsi * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm15, [rsp + rax * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm15, [rsp + rax * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm15, [rsp + rax * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm15, [rsp + rax * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm15, [rsp + rax * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm15, [r15 + rax * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm15, [r15 + rax * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm15, [r15 + rax * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm15, [r15 + rax * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm15, [r15 + rax * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm15, [rsp + r15 * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm15, [rsp + r15 * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm15, [rsp + r15 * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm15, [rsp + r15 * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm15, [rsp + r15 * 8 + 0xFFFF8], -128
+vdppd xmm0, xmm15, [r14 + r15 * 8 + 0xFFFF8], 0
+vdppd xmm0, xmm15, [r14 + r15 * 8 + 0xFFFF8], 1
+vdppd xmm0, xmm15, [r14 + r15 * 8 + 0xFFFF8], 100
+vdppd xmm0, xmm15, [r14 + r15 * 8 + 0xFFFF8], 127
+vdppd xmm0, xmm15, [r14 + r15 * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm0, [0x0], 0
+vdppd xmm1, xmm0, [0x0], 1
+vdppd xmm1, xmm0, [0x0], 100
+vdppd xmm1, xmm0, [0x0], 127
+vdppd xmm1, xmm0, [0x0], -128
+vdppd xmm1, xmm0, [0xFF], 0
+vdppd xmm1, xmm0, [0xFF], 1
+vdppd xmm1, xmm0, [0xFF], 100
+vdppd xmm1, xmm0, [0xFF], 127
+vdppd xmm1, xmm0, [0xFF], -128
+vdppd xmm1, xmm0, [rel $ + 0x0], 0
+vdppd xmm1, xmm0, [rel $ + 0x0], 1
+vdppd xmm1, xmm0, [rel $ + 0x0], 100
+vdppd xmm1, xmm0, [rel $ + 0x0], 127
+vdppd xmm1, xmm0, [rel $ + 0x0], -128
+vdppd xmm1, xmm0, [rel $ + 0xFF], 0
+vdppd xmm1, xmm0, [rel $ + 0xFF], 1
+vdppd xmm1, xmm0, [rel $ + 0xFF], 100
+vdppd xmm1, xmm0, [rel $ + 0xFF], 127
+vdppd xmm1, xmm0, [rel $ + 0xFF], -128
+vdppd xmm1, xmm0, [rel $ + 0xFFFF], 0
+vdppd xmm1, xmm0, [rel $ + 0xFFFF], 1
+vdppd xmm1, xmm0, [rel $ + 0xFFFF], 100
+vdppd xmm1, xmm0, [rel $ + 0xFFFF], 127
+vdppd xmm1, xmm0, [rel $ + 0xFFFF], -128
+vdppd xmm1, xmm0, [rax], 0
+vdppd xmm1, xmm0, [rax], 1
+vdppd xmm1, xmm0, [rax], 100
+vdppd xmm1, xmm0, [rax], 127
+vdppd xmm1, xmm0, [rax], -128
+vdppd xmm1, xmm0, [rax + 0x0], 0
+vdppd xmm1, xmm0, [rax + 0x0], 1
+vdppd xmm1, xmm0, [rax + 0x0], 100
+vdppd xmm1, xmm0, [rax + 0x0], 127
+vdppd xmm1, xmm0, [rax + 0x0], -128
+vdppd xmm1, xmm0, [rax + 0xFFFF], 0
+vdppd xmm1, xmm0, [rax + 0xFFFF], 1
+vdppd xmm1, xmm0, [rax + 0xFFFF], 100
+vdppd xmm1, xmm0, [rax + 0xFFFF], 127
+vdppd xmm1, xmm0, [rax + 0xFFFF], -128
+vdppd xmm1, xmm0, [r15 + 0xFFFF], 0
+vdppd xmm1, xmm0, [r15 + 0xFFFF], 1
+vdppd xmm1, xmm0, [r15 + 0xFFFF], 100
+vdppd xmm1, xmm0, [r15 + 0xFFFF], 127
+vdppd xmm1, xmm0, [r15 + 0xFFFF], -128
+vdppd xmm1, xmm0, [rax + rsi * 1  + 0x0], 0
+vdppd xmm1, xmm0, [rax + rsi * 1  + 0x0], 1
+vdppd xmm1, xmm0, [rax + rsi * 1  + 0x0], 100
+vdppd xmm1, xmm0, [rax + rsi * 1  + 0x0], 127
+vdppd xmm1, xmm0, [rax + rsi * 1  + 0x0], -128
+vdppd xmm1, xmm0, [rax + rsi + 0xFFFF], 0
+vdppd xmm1, xmm0, [rax + rsi + 0xFFFF], 1
+vdppd xmm1, xmm0, [rax + rsi + 0xFFFF], 100
+vdppd xmm1, xmm0, [rax + rsi + 0xFFFF], 127
+vdppd xmm1, xmm0, [rax + rsi + 0xFFFF], -128
+vdppd xmm1, xmm0, [r15 + rsi + 0xFFFF], 0
+vdppd xmm1, xmm0, [r15 + rsi + 0xFFFF], 1
+vdppd xmm1, xmm0, [r15 + rsi + 0xFFFF], 100
+vdppd xmm1, xmm0, [r15 + rsi + 0xFFFF], 127
+vdppd xmm1, xmm0, [r15 + rsi + 0xFFFF], -128
+vdppd xmm1, xmm0, [rax + r15 + 0xFFFF], 0
+vdppd xmm1, xmm0, [rax + r15 + 0xFFFF], 1
+vdppd xmm1, xmm0, [rax + r15 + 0xFFFF], 100
+vdppd xmm1, xmm0, [rax + r15 + 0xFFFF], 127
+vdppd xmm1, xmm0, [rax + r15 + 0xFFFF], -128
+vdppd xmm1, xmm0, [rax + rsi * 2 + 0xFFFF2], 0
+vdppd xmm1, xmm0, [rax + rsi * 2 + 0xFFFF2], 1
+vdppd xmm1, xmm0, [rax + rsi * 2 + 0xFFFF2], 100
+vdppd xmm1, xmm0, [rax + rsi * 2 + 0xFFFF2], 127
+vdppd xmm1, xmm0, [rax + rsi * 2 + 0xFFFF2], -128
+vdppd xmm1, xmm0, [rax + rsi * 4 + 0xFFFF4], 0
+vdppd xmm1, xmm0, [rax + rsi * 4 + 0xFFFF4], 1
+vdppd xmm1, xmm0, [rax + rsi * 4 + 0xFFFF4], 100
+vdppd xmm1, xmm0, [rax + rsi * 4 + 0xFFFF4], 127
+vdppd xmm1, xmm0, [rax + rsi * 4 + 0xFFFF4], -128
+vdppd xmm1, xmm0, [rax + rsi * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm0, [rax + rsi * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm0, [rax + rsi * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm0, [rax + rsi * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm0, [rax + rsi * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm0, [rsp + rax * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm0, [rsp + rax * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm0, [rsp + rax * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm0, [rsp + rax * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm0, [rsp + rax * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm0, [r15 + rax * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm0, [r15 + rax * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm0, [r15 + rax * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm0, [r15 + rax * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm0, [r15 + rax * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm0, [rsp + r15 * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm0, [rsp + r15 * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm0, [rsp + r15 * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm0, [rsp + r15 * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm0, [rsp + r15 * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm0, [r14 + r15 * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm0, [r14 + r15 * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm0, [r14 + r15 * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm0, [r14 + r15 * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm0, [r14 + r15 * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm1, [0x0], 0
+vdppd xmm1, xmm1, [0x0], 1
+vdppd xmm1, xmm1, [0x0], 100
+vdppd xmm1, xmm1, [0x0], 127
+vdppd xmm1, xmm1, [0x0], -128
+vdppd xmm1, xmm1, [0xFF], 0
+vdppd xmm1, xmm1, [0xFF], 1
+vdppd xmm1, xmm1, [0xFF], 100
+vdppd xmm1, xmm1, [0xFF], 127
+vdppd xmm1, xmm1, [0xFF], -128
+vdppd xmm1, xmm1, [rel $ + 0x0], 0
+vdppd xmm1, xmm1, [rel $ + 0x0], 1
+vdppd xmm1, xmm1, [rel $ + 0x0], 100
+vdppd xmm1, xmm1, [rel $ + 0x0], 127
+vdppd xmm1, xmm1, [rel $ + 0x0], -128
+vdppd xmm1, xmm1, [rel $ + 0xFF], 0
+vdppd xmm1, xmm1, [rel $ + 0xFF], 1
+vdppd xmm1, xmm1, [rel $ + 0xFF], 100
+vdppd xmm1, xmm1, [rel $ + 0xFF], 127
+vdppd xmm1, xmm1, [rel $ + 0xFF], -128
+vdppd xmm1, xmm1, [rel $ + 0xFFFF], 0
+vdppd xmm1, xmm1, [rel $ + 0xFFFF], 1
+vdppd xmm1, xmm1, [rel $ + 0xFFFF], 100
+vdppd xmm1, xmm1, [rel $ + 0xFFFF], 127
+vdppd xmm1, xmm1, [rel $ + 0xFFFF], -128
+vdppd xmm1, xmm1, [rax], 0
+vdppd xmm1, xmm1, [rax], 1
+vdppd xmm1, xmm1, [rax], 100
+vdppd xmm1, xmm1, [rax], 127
+vdppd xmm1, xmm1, [rax], -128
+vdppd xmm1, xmm1, [rax + 0x0], 0
+vdppd xmm1, xmm1, [rax + 0x0], 1
+vdppd xmm1, xmm1, [rax + 0x0], 100
+vdppd xmm1, xmm1, [rax + 0x0], 127
+vdppd xmm1, xmm1, [rax + 0x0], -128
+vdppd xmm1, xmm1, [rax + 0xFFFF], 0
+vdppd xmm1, xmm1, [rax + 0xFFFF], 1
+vdppd xmm1, xmm1, [rax + 0xFFFF], 100
+vdppd xmm1, xmm1, [rax + 0xFFFF], 127
+vdppd xmm1, xmm1, [rax + 0xFFFF], -128
+vdppd xmm1, xmm1, [r15 + 0xFFFF], 0
+vdppd xmm1, xmm1, [r15 + 0xFFFF], 1
+vdppd xmm1, xmm1, [r15 + 0xFFFF], 100
+vdppd xmm1, xmm1, [r15 + 0xFFFF], 127
+vdppd xmm1, xmm1, [r15 + 0xFFFF], -128
+vdppd xmm1, xmm1, [rax + rsi * 1  + 0x0], 0
+vdppd xmm1, xmm1, [rax + rsi * 1  + 0x0], 1
+vdppd xmm1, xmm1, [rax + rsi * 1  + 0x0], 100
+vdppd xmm1, xmm1, [rax + rsi * 1  + 0x0], 127
+vdppd xmm1, xmm1, [rax + rsi * 1  + 0x0], -128
+vdppd xmm1, xmm1, [rax + rsi + 0xFFFF], 0
+vdppd xmm1, xmm1, [rax + rsi + 0xFFFF], 1
+vdppd xmm1, xmm1, [rax + rsi + 0xFFFF], 100
+vdppd xmm1, xmm1, [rax + rsi + 0xFFFF], 127
+vdppd xmm1, xmm1, [rax + rsi + 0xFFFF], -128
+vdppd xmm1, xmm1, [r15 + rsi + 0xFFFF], 0
+vdppd xmm1, xmm1, [r15 + rsi + 0xFFFF], 1
+vdppd xmm1, xmm1, [r15 + rsi + 0xFFFF], 100
+vdppd xmm1, xmm1, [r15 + rsi + 0xFFFF], 127
+vdppd xmm1, xmm1, [r15 + rsi + 0xFFFF], -128
+vdppd xmm1, xmm1, [rax + r15 + 0xFFFF], 0
+vdppd xmm1, xmm1, [rax + r15 + 0xFFFF], 1
+vdppd xmm1, xmm1, [rax + r15 + 0xFFFF], 100
+vdppd xmm1, xmm1, [rax + r15 + 0xFFFF], 127
+vdppd xmm1, xmm1, [rax + r15 + 0xFFFF], -128
+vdppd xmm1, xmm1, [rax + rsi * 2 + 0xFFFF2], 0
+vdppd xmm1, xmm1, [rax + rsi * 2 + 0xFFFF2], 1
+vdppd xmm1, xmm1, [rax + rsi * 2 + 0xFFFF2], 100
+vdppd xmm1, xmm1, [rax + rsi * 2 + 0xFFFF2], 127
+vdppd xmm1, xmm1, [rax + rsi * 2 + 0xFFFF2], -128
+vdppd xmm1, xmm1, [rax + rsi * 4 + 0xFFFF4], 0
+vdppd xmm1, xmm1, [rax + rsi * 4 + 0xFFFF4], 1
+vdppd xmm1, xmm1, [rax + rsi * 4 + 0xFFFF4], 100
+vdppd xmm1, xmm1, [rax + rsi * 4 + 0xFFFF4], 127
+vdppd xmm1, xmm1, [rax + rsi * 4 + 0xFFFF4], -128
+vdppd xmm1, xmm1, [rax + rsi * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm1, [rax + rsi * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm1, [rax + rsi * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm1, [rax + rsi * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm1, [rax + rsi * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm1, [rsp + rax * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm1, [rsp + rax * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm1, [rsp + rax * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm1, [rsp + rax * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm1, [rsp + rax * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm1, [r15 + rax * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm1, [r15 + rax * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm1, [r15 + rax * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm1, [r15 + rax * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm1, [r15 + rax * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm1, [rsp + r15 * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm1, [rsp + r15 * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm1, [rsp + r15 * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm1, [rsp + r15 * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm1, [rsp + r15 * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm1, [r14 + r15 * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm1, [r14 + r15 * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm1, [r14 + r15 * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm1, [r14 + r15 * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm1, [r14 + r15 * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm15, [0x0], 0
+vdppd xmm1, xmm15, [0x0], 1
+vdppd xmm1, xmm15, [0x0], 100
+vdppd xmm1, xmm15, [0x0], 127
+vdppd xmm1, xmm15, [0x0], -128
+vdppd xmm1, xmm15, [0xFF], 0
+vdppd xmm1, xmm15, [0xFF], 1
+vdppd xmm1, xmm15, [0xFF], 100
+vdppd xmm1, xmm15, [0xFF], 127
+vdppd xmm1, xmm15, [0xFF], -128
+vdppd xmm1, xmm15, [rel $ + 0x0], 0
+vdppd xmm1, xmm15, [rel $ + 0x0], 1
+vdppd xmm1, xmm15, [rel $ + 0x0], 100
+vdppd xmm1, xmm15, [rel $ + 0x0], 127
+vdppd xmm1, xmm15, [rel $ + 0x0], -128
+vdppd xmm1, xmm15, [rel $ + 0xFF], 0
+vdppd xmm1, xmm15, [rel $ + 0xFF], 1
+vdppd xmm1, xmm15, [rel $ + 0xFF], 100
+vdppd xmm1, xmm15, [rel $ + 0xFF], 127
+vdppd xmm1, xmm15, [rel $ + 0xFF], -128
+vdppd xmm1, xmm15, [rel $ + 0xFFFF], 0
+vdppd xmm1, xmm15, [rel $ + 0xFFFF], 1
+vdppd xmm1, xmm15, [rel $ + 0xFFFF], 100
+vdppd xmm1, xmm15, [rel $ + 0xFFFF], 127
+vdppd xmm1, xmm15, [rel $ + 0xFFFF], -128
+vdppd xmm1, xmm15, [rax], 0
+vdppd xmm1, xmm15, [rax], 1
+vdppd xmm1, xmm15, [rax], 100
+vdppd xmm1, xmm15, [rax], 127
+vdppd xmm1, xmm15, [rax], -128
+vdppd xmm1, xmm15, [rax + 0x0], 0
+vdppd xmm1, xmm15, [rax + 0x0], 1
+vdppd xmm1, xmm15, [rax + 0x0], 100
+vdppd xmm1, xmm15, [rax + 0x0], 127
+vdppd xmm1, xmm15, [rax + 0x0], -128
+vdppd xmm1, xmm15, [rax + 0xFFFF], 0
+vdppd xmm1, xmm15, [rax + 0xFFFF], 1
+vdppd xmm1, xmm15, [rax + 0xFFFF], 100
+vdppd xmm1, xmm15, [rax + 0xFFFF], 127
+vdppd xmm1, xmm15, [rax + 0xFFFF], -128
+vdppd xmm1, xmm15, [r15 + 0xFFFF], 0
+vdppd xmm1, xmm15, [r15 + 0xFFFF], 1
+vdppd xmm1, xmm15, [r15 + 0xFFFF], 100
+vdppd xmm1, xmm15, [r15 + 0xFFFF], 127
+vdppd xmm1, xmm15, [r15 + 0xFFFF], -128
+vdppd xmm1, xmm15, [rax + rsi * 1  + 0x0], 0
+vdppd xmm1, xmm15, [rax + rsi * 1  + 0x0], 1
+vdppd xmm1, xmm15, [rax + rsi * 1  + 0x0], 100
+vdppd xmm1, xmm15, [rax + rsi * 1  + 0x0], 127
+vdppd xmm1, xmm15, [rax + rsi * 1  + 0x0], -128
+vdppd xmm1, xmm15, [rax + rsi + 0xFFFF], 0
+vdppd xmm1, xmm15, [rax + rsi + 0xFFFF], 1
+vdppd xmm1, xmm15, [rax + rsi + 0xFFFF], 100
+vdppd xmm1, xmm15, [rax + rsi + 0xFFFF], 127
+vdppd xmm1, xmm15, [rax + rsi + 0xFFFF], -128
+vdppd xmm1, xmm15, [r15 + rsi + 0xFFFF], 0
+vdppd xmm1, xmm15, [r15 + rsi + 0xFFFF], 1
+vdppd xmm1, xmm15, [r15 + rsi + 0xFFFF], 100
+vdppd xmm1, xmm15, [r15 + rsi + 0xFFFF], 127
+vdppd xmm1, xmm15, [r15 + rsi + 0xFFFF], -128
+vdppd xmm1, xmm15, [rax + r15 + 0xFFFF], 0
+vdppd xmm1, xmm15, [rax + r15 + 0xFFFF], 1
+vdppd xmm1, xmm15, [rax + r15 + 0xFFFF], 100
+vdppd xmm1, xmm15, [rax + r15 + 0xFFFF], 127
+vdppd xmm1, xmm15, [rax + r15 + 0xFFFF], -128
+vdppd xmm1, xmm15, [rax + rsi * 2 + 0xFFFF2], 0
+vdppd xmm1, xmm15, [rax + rsi * 2 + 0xFFFF2], 1
+vdppd xmm1, xmm15, [rax + rsi * 2 + 0xFFFF2], 100
+vdppd xmm1, xmm15, [rax + rsi * 2 + 0xFFFF2], 127
+vdppd xmm1, xmm15, [rax + rsi * 2 + 0xFFFF2], -128
+vdppd xmm1, xmm15, [rax + rsi * 4 + 0xFFFF4], 0
+vdppd xmm1, xmm15, [rax + rsi * 4 + 0xFFFF4], 1
+vdppd xmm1, xmm15, [rax + rsi * 4 + 0xFFFF4], 100
+vdppd xmm1, xmm15, [rax + rsi * 4 + 0xFFFF4], 127
+vdppd xmm1, xmm15, [rax + rsi * 4 + 0xFFFF4], -128
+vdppd xmm1, xmm15, [rax + rsi * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm15, [rax + rsi * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm15, [rax + rsi * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm15, [rax + rsi * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm15, [rax + rsi * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm15, [rsp + rax * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm15, [rsp + rax * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm15, [rsp + rax * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm15, [rsp + rax * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm15, [rsp + rax * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm15, [r15 + rax * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm15, [r15 + rax * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm15, [r15 + rax * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm15, [r15 + rax * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm15, [r15 + rax * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm15, [rsp + r15 * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm15, [rsp + r15 * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm15, [rsp + r15 * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm15, [rsp + r15 * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm15, [rsp + r15 * 8 + 0xFFFF8], -128
+vdppd xmm1, xmm15, [r14 + r15 * 8 + 0xFFFF8], 0
+vdppd xmm1, xmm15, [r14 + r15 * 8 + 0xFFFF8], 1
+vdppd xmm1, xmm15, [r14 + r15 * 8 + 0xFFFF8], 100
+vdppd xmm1, xmm15, [r14 + r15 * 8 + 0xFFFF8], 127
+vdppd xmm1, xmm15, [r14 + r15 * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm0, [0x0], 0
+vdppd xmm15, xmm0, [0x0], 1
+vdppd xmm15, xmm0, [0x0], 100
+vdppd xmm15, xmm0, [0x0], 127
+vdppd xmm15, xmm0, [0x0], -128
+vdppd xmm15, xmm0, [0xFF], 0
+vdppd xmm15, xmm0, [0xFF], 1
+vdppd xmm15, xmm0, [0xFF], 100
+vdppd xmm15, xmm0, [0xFF], 127
+vdppd xmm15, xmm0, [0xFF], -128
+vdppd xmm15, xmm0, [rel $ + 0x0], 0
+vdppd xmm15, xmm0, [rel $ + 0x0], 1
+vdppd xmm15, xmm0, [rel $ + 0x0], 100
+vdppd xmm15, xmm0, [rel $ + 0x0], 127
+vdppd xmm15, xmm0, [rel $ + 0x0], -128
+vdppd xmm15, xmm0, [rel $ + 0xFF], 0
+vdppd xmm15, xmm0, [rel $ + 0xFF], 1
+vdppd xmm15, xmm0, [rel $ + 0xFF], 100
+vdppd xmm15, xmm0, [rel $ + 0xFF], 127
+vdppd xmm15, xmm0, [rel $ + 0xFF], -128
+vdppd xmm15, xmm0, [rel $ + 0xFFFF], 0
+vdppd xmm15, xmm0, [rel $ + 0xFFFF], 1
+vdppd xmm15, xmm0, [rel $ + 0xFFFF], 100
+vdppd xmm15, xmm0, [rel $ + 0xFFFF], 127
+vdppd xmm15, xmm0, [rel $ + 0xFFFF], -128
+vdppd xmm15, xmm0, [rax], 0
+vdppd xmm15, xmm0, [rax], 1
+vdppd xmm15, xmm0, [rax], 100
+vdppd xmm15, xmm0, [rax], 127
+vdppd xmm15, xmm0, [rax], -128
+vdppd xmm15, xmm0, [rax + 0x0], 0
+vdppd xmm15, xmm0, [rax + 0x0], 1
+vdppd xmm15, xmm0, [rax + 0x0], 100
+vdppd xmm15, xmm0, [rax + 0x0], 127
+vdppd xmm15, xmm0, [rax + 0x0], -128
+vdppd xmm15, xmm0, [rax + 0xFFFF], 0
+vdppd xmm15, xmm0, [rax + 0xFFFF], 1
+vdppd xmm15, xmm0, [rax + 0xFFFF], 100
+vdppd xmm15, xmm0, [rax + 0xFFFF], 127
+vdppd xmm15, xmm0, [rax + 0xFFFF], -128
+vdppd xmm15, xmm0, [r15 + 0xFFFF], 0
+vdppd xmm15, xmm0, [r15 + 0xFFFF], 1
+vdppd xmm15, xmm0, [r15 + 0xFFFF], 100
+vdppd xmm15, xmm0, [r15 + 0xFFFF], 127
+vdppd xmm15, xmm0, [r15 + 0xFFFF], -128
+vdppd xmm15, xmm0, [rax + rsi * 1  + 0x0], 0
+vdppd xmm15, xmm0, [rax + rsi * 1  + 0x0], 1
+vdppd xmm15, xmm0, [rax + rsi * 1  + 0x0], 100
+vdppd xmm15, xmm0, [rax + rsi * 1  + 0x0], 127
+vdppd xmm15, xmm0, [rax + rsi * 1  + 0x0], -128
+vdppd xmm15, xmm0, [rax + rsi + 0xFFFF], 0
+vdppd xmm15, xmm0, [rax + rsi + 0xFFFF], 1
+vdppd xmm15, xmm0, [rax + rsi + 0xFFFF], 100
+vdppd xmm15, xmm0, [rax + rsi + 0xFFFF], 127
+vdppd xmm15, xmm0, [rax + rsi + 0xFFFF], -128
+vdppd xmm15, xmm0, [r15 + rsi + 0xFFFF], 0
+vdppd xmm15, xmm0, [r15 + rsi + 0xFFFF], 1
+vdppd xmm15, xmm0, [r15 + rsi + 0xFFFF], 100
+vdppd xmm15, xmm0, [r15 + rsi + 0xFFFF], 127
+vdppd xmm15, xmm0, [r15 + rsi + 0xFFFF], -128
+vdppd xmm15, xmm0, [rax + r15 + 0xFFFF], 0
+vdppd xmm15, xmm0, [rax + r15 + 0xFFFF], 1
+vdppd xmm15, xmm0, [rax + r15 + 0xFFFF], 100
+vdppd xmm15, xmm0, [rax + r15 + 0xFFFF], 127
+vdppd xmm15, xmm0, [rax + r15 + 0xFFFF], -128
+vdppd xmm15, xmm0, [rax + rsi * 2 + 0xFFFF2], 0
+vdppd xmm15, xmm0, [rax + rsi * 2 + 0xFFFF2], 1
+vdppd xmm15, xmm0, [rax + rsi * 2 + 0xFFFF2], 100
+vdppd xmm15, xmm0, [rax + rsi * 2 + 0xFFFF2], 127
+vdppd xmm15, xmm0, [rax + rsi * 2 + 0xFFFF2], -128
+vdppd xmm15, xmm0, [rax + rsi * 4 + 0xFFFF4], 0
+vdppd xmm15, xmm0, [rax + rsi * 4 + 0xFFFF4], 1
+vdppd xmm15, xmm0, [rax + rsi * 4 + 0xFFFF4], 100
+vdppd xmm15, xmm0, [rax + rsi * 4 + 0xFFFF4], 127
+vdppd xmm15, xmm0, [rax + rsi * 4 + 0xFFFF4], -128
+vdppd xmm15, xmm0, [rax + rsi * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm0, [rax + rsi * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm0, [rax + rsi * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm0, [rax + rsi * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm0, [rax + rsi * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm0, [rsp + rax * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm0, [rsp + rax * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm0, [rsp + rax * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm0, [rsp + rax * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm0, [rsp + rax * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm0, [r15 + rax * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm0, [r15 + rax * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm0, [r15 + rax * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm0, [r15 + rax * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm0, [r15 + rax * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm0, [rsp + r15 * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm0, [rsp + r15 * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm0, [rsp + r15 * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm0, [rsp + r15 * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm0, [rsp + r15 * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm0, [r14 + r15 * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm0, [r14 + r15 * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm0, [r14 + r15 * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm0, [r14 + r15 * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm0, [r14 + r15 * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm1, [0x0], 0
+vdppd xmm15, xmm1, [0x0], 1
+vdppd xmm15, xmm1, [0x0], 100
+vdppd xmm15, xmm1, [0x0], 127
+vdppd xmm15, xmm1, [0x0], -128
+vdppd xmm15, xmm1, [0xFF], 0
+vdppd xmm15, xmm1, [0xFF], 1
+vdppd xmm15, xmm1, [0xFF], 100
+vdppd xmm15, xmm1, [0xFF], 127
+vdppd xmm15, xmm1, [0xFF], -128
+vdppd xmm15, xmm1, [rel $ + 0x0], 0
+vdppd xmm15, xmm1, [rel $ + 0x0], 1
+vdppd xmm15, xmm1, [rel $ + 0x0], 100
+vdppd xmm15, xmm1, [rel $ + 0x0], 127
+vdppd xmm15, xmm1, [rel $ + 0x0], -128
+vdppd xmm15, xmm1, [rel $ + 0xFF], 0
+vdppd xmm15, xmm1, [rel $ + 0xFF], 1
+vdppd xmm15, xmm1, [rel $ + 0xFF], 100
+vdppd xmm15, xmm1, [rel $ + 0xFF], 127
+vdppd xmm15, xmm1, [rel $ + 0xFF], -128
+vdppd xmm15, xmm1, [rel $ + 0xFFFF], 0
+vdppd xmm15, xmm1, [rel $ + 0xFFFF], 1
+vdppd xmm15, xmm1, [rel $ + 0xFFFF], 100
+vdppd xmm15, xmm1, [rel $ + 0xFFFF], 127
+vdppd xmm15, xmm1, [rel $ + 0xFFFF], -128
+vdppd xmm15, xmm1, [rax], 0
+vdppd xmm15, xmm1, [rax], 1
+vdppd xmm15, xmm1, [rax], 100
+vdppd xmm15, xmm1, [rax], 127
+vdppd xmm15, xmm1, [rax], -128
+vdppd xmm15, xmm1, [rax + 0x0], 0
+vdppd xmm15, xmm1, [rax + 0x0], 1
+vdppd xmm15, xmm1, [rax + 0x0], 100
+vdppd xmm15, xmm1, [rax + 0x0], 127
+vdppd xmm15, xmm1, [rax + 0x0], -128
+vdppd xmm15, xmm1, [rax + 0xFFFF], 0
+vdppd xmm15, xmm1, [rax + 0xFFFF], 1
+vdppd xmm15, xmm1, [rax + 0xFFFF], 100
+vdppd xmm15, xmm1, [rax + 0xFFFF], 127
+vdppd xmm15, xmm1, [rax + 0xFFFF], -128
+vdppd xmm15, xmm1, [r15 + 0xFFFF], 0
+vdppd xmm15, xmm1, [r15 + 0xFFFF], 1
+vdppd xmm15, xmm1, [r15 + 0xFFFF], 100
+vdppd xmm15, xmm1, [r15 + 0xFFFF], 127
+vdppd xmm15, xmm1, [r15 + 0xFFFF], -128
+vdppd xmm15, xmm1, [rax + rsi * 1  + 0x0], 0
+vdppd xmm15, xmm1, [rax + rsi * 1  + 0x0], 1
+vdppd xmm15, xmm1, [rax + rsi * 1  + 0x0], 100
+vdppd xmm15, xmm1, [rax + rsi * 1  + 0x0], 127
+vdppd xmm15, xmm1, [rax + rsi * 1  + 0x0], -128
+vdppd xmm15, xmm1, [rax + rsi + 0xFFFF], 0
+vdppd xmm15, xmm1, [rax + rsi + 0xFFFF], 1
+vdppd xmm15, xmm1, [rax + rsi + 0xFFFF], 100
+vdppd xmm15, xmm1, [rax + rsi + 0xFFFF], 127
+vdppd xmm15, xmm1, [rax + rsi + 0xFFFF], -128
+vdppd xmm15, xmm1, [r15 + rsi + 0xFFFF], 0
+vdppd xmm15, xmm1, [r15 + rsi + 0xFFFF], 1
+vdppd xmm15, xmm1, [r15 + rsi + 0xFFFF], 100
+vdppd xmm15, xmm1, [r15 + rsi + 0xFFFF], 127
+vdppd xmm15, xmm1, [r15 + rsi + 0xFFFF], -128
+vdppd xmm15, xmm1, [rax + r15 + 0xFFFF], 0
+vdppd xmm15, xmm1, [rax + r15 + 0xFFFF], 1
+vdppd xmm15, xmm1, [rax + r15 + 0xFFFF], 100
+vdppd xmm15, xmm1, [rax + r15 + 0xFFFF], 127
+vdppd xmm15, xmm1, [rax + r15 + 0xFFFF], -128
+vdppd xmm15, xmm1, [rax + rsi * 2 + 0xFFFF2], 0
+vdppd xmm15, xmm1, [rax + rsi * 2 + 0xFFFF2], 1
+vdppd xmm15, xmm1, [rax + rsi * 2 + 0xFFFF2], 100
+vdppd xmm15, xmm1, [rax + rsi * 2 + 0xFFFF2], 127
+vdppd xmm15, xmm1, [rax + rsi * 2 + 0xFFFF2], -128
+vdppd xmm15, xmm1, [rax + rsi * 4 + 0xFFFF4], 0
+vdppd xmm15, xmm1, [rax + rsi * 4 + 0xFFFF4], 1
+vdppd xmm15, xmm1, [rax + rsi * 4 + 0xFFFF4], 100
+vdppd xmm15, xmm1, [rax + rsi * 4 + 0xFFFF4], 127
+vdppd xmm15, xmm1, [rax + rsi * 4 + 0xFFFF4], -128
+vdppd xmm15, xmm1, [rax + rsi * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm1, [rax + rsi * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm1, [rax + rsi * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm1, [rax + rsi * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm1, [rax + rsi * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm1, [rsp + rax * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm1, [rsp + rax * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm1, [rsp + rax * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm1, [rsp + rax * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm1, [rsp + rax * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm1, [r15 + rax * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm1, [r15 + rax * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm1, [r15 + rax * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm1, [r15 + rax * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm1, [r15 + rax * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm1, [rsp + r15 * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm1, [rsp + r15 * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm1, [rsp + r15 * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm1, [rsp + r15 * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm1, [rsp + r15 * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm1, [r14 + r15 * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm1, [r14 + r15 * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm1, [r14 + r15 * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm1, [r14 + r15 * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm1, [r14 + r15 * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm15, [0x0], 0
+vdppd xmm15, xmm15, [0x0], 1
+vdppd xmm15, xmm15, [0x0], 100
+vdppd xmm15, xmm15, [0x0], 127
+vdppd xmm15, xmm15, [0x0], -128
+vdppd xmm15, xmm15, [0xFF], 0
+vdppd xmm15, xmm15, [0xFF], 1
+vdppd xmm15, xmm15, [0xFF], 100
+vdppd xmm15, xmm15, [0xFF], 127
+vdppd xmm15, xmm15, [0xFF], -128
+vdppd xmm15, xmm15, [rel $ + 0x0], 0
+vdppd xmm15, xmm15, [rel $ + 0x0], 1
+vdppd xmm15, xmm15, [rel $ + 0x0], 100
+vdppd xmm15, xmm15, [rel $ + 0x0], 127
+vdppd xmm15, xmm15, [rel $ + 0x0], -128
+vdppd xmm15, xmm15, [rel $ + 0xFF], 0
+vdppd xmm15, xmm15, [rel $ + 0xFF], 1
+vdppd xmm15, xmm15, [rel $ + 0xFF], 100
+vdppd xmm15, xmm15, [rel $ + 0xFF], 127
+vdppd xmm15, xmm15, [rel $ + 0xFF], -128
+vdppd xmm15, xmm15, [rel $ + 0xFFFF], 0
+vdppd xmm15, xmm15, [rel $ + 0xFFFF], 1
+vdppd xmm15, xmm15, [rel $ + 0xFFFF], 100
+vdppd xmm15, xmm15, [rel $ + 0xFFFF], 127
+vdppd xmm15, xmm15, [rel $ + 0xFFFF], -128
+vdppd xmm15, xmm15, [rax], 0
+vdppd xmm15, xmm15, [rax], 1
+vdppd xmm15, xmm15, [rax], 100
+vdppd xmm15, xmm15, [rax], 127
+vdppd xmm15, xmm15, [rax], -128
+vdppd xmm15, xmm15, [rax + 0x0], 0
+vdppd xmm15, xmm15, [rax + 0x0], 1
+vdppd xmm15, xmm15, [rax + 0x0], 100
+vdppd xmm15, xmm15, [rax + 0x0], 127
+vdppd xmm15, xmm15, [rax + 0x0], -128
+vdppd xmm15, xmm15, [rax + 0xFFFF], 0
+vdppd xmm15, xmm15, [rax + 0xFFFF], 1
+vdppd xmm15, xmm15, [rax + 0xFFFF], 100
+vdppd xmm15, xmm15, [rax + 0xFFFF], 127
+vdppd xmm15, xmm15, [rax + 0xFFFF], -128
+vdppd xmm15, xmm15, [r15 + 0xFFFF], 0
+vdppd xmm15, xmm15, [r15 + 0xFFFF], 1
+vdppd xmm15, xmm15, [r15 + 0xFFFF], 100
+vdppd xmm15, xmm15, [r15 + 0xFFFF], 127
+vdppd xmm15, xmm15, [r15 + 0xFFFF], -128
+vdppd xmm15, xmm15, [rax + rsi * 1  + 0x0], 0
+vdppd xmm15, xmm15, [rax + rsi * 1  + 0x0], 1
+vdppd xmm15, xmm15, [rax + rsi * 1  + 0x0], 100
+vdppd xmm15, xmm15, [rax + rsi * 1  + 0x0], 127
+vdppd xmm15, xmm15, [rax + rsi * 1  + 0x0], -128
+vdppd xmm15, xmm15, [rax + rsi + 0xFFFF], 0
+vdppd xmm15, xmm15, [rax + rsi + 0xFFFF], 1
+vdppd xmm15, xmm15, [rax + rsi + 0xFFFF], 100
+vdppd xmm15, xmm15, [rax + rsi + 0xFFFF], 127
+vdppd xmm15, xmm15, [rax + rsi + 0xFFFF], -128
+vdppd xmm15, xmm15, [r15 + rsi + 0xFFFF], 0
+vdppd xmm15, xmm15, [r15 + rsi + 0xFFFF], 1
+vdppd xmm15, xmm15, [r15 + rsi + 0xFFFF], 100
+vdppd xmm15, xmm15, [r15 + rsi + 0xFFFF], 127
+vdppd xmm15, xmm15, [r15 + rsi + 0xFFFF], -128
+vdppd xmm15, xmm15, [rax + r15 + 0xFFFF], 0
+vdppd xmm15, xmm15, [rax + r15 + 0xFFFF], 1
+vdppd xmm15, xmm15, [rax + r15 + 0xFFFF], 100
+vdppd xmm15, xmm15, [rax + r15 + 0xFFFF], 127
+vdppd xmm15, xmm15, [rax + r15 + 0xFFFF], -128
+vdppd xmm15, xmm15, [rax + rsi * 2 + 0xFFFF2], 0
+vdppd xmm15, xmm15, [rax + rsi * 2 + 0xFFFF2], 1
+vdppd xmm15, xmm15, [rax + rsi * 2 + 0xFFFF2], 100
+vdppd xmm15, xmm15, [rax + rsi * 2 + 0xFFFF2], 127
+vdppd xmm15, xmm15, [rax + rsi * 2 + 0xFFFF2], -128
+vdppd xmm15, xmm15, [rax + rsi * 4 + 0xFFFF4], 0
+vdppd xmm15, xmm15, [rax + rsi * 4 + 0xFFFF4], 1
+vdppd xmm15, xmm15, [rax + rsi * 4 + 0xFFFF4], 100
+vdppd xmm15, xmm15, [rax + rsi * 4 + 0xFFFF4], 127
+vdppd xmm15, xmm15, [rax + rsi * 4 + 0xFFFF4], -128
+vdppd xmm15, xmm15, [rax + rsi * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm15, [rax + rsi * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm15, [rax + rsi * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm15, [rax + rsi * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm15, [rax + rsi * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm15, [rsp + rax * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm15, [rsp + rax * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm15, [rsp + rax * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm15, [rsp + rax * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm15, [rsp + rax * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm15, [r15 + rax * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm15, [r15 + rax * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm15, [r15 + rax * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm15, [r15 + rax * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm15, [r15 + rax * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm15, [rsp + r15 * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm15, [rsp + r15 * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm15, [rsp + r15 * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm15, [rsp + r15 * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm15, [rsp + r15 * 8 + 0xFFFF8], -128
+vdppd xmm15, xmm15, [r14 + r15 * 8 + 0xFFFF8], 0
+vdppd xmm15, xmm15, [r14 + r15 * 8 + 0xFFFF8], 1
+vdppd xmm15, xmm15, [r14 + r15 * 8 + 0xFFFF8], 100
+vdppd xmm15, xmm15, [r14 + r15 * 8 + 0xFFFF8], 127
+vdppd xmm15, xmm15, [r14 + r15 * 8 + 0xFFFF8], -128

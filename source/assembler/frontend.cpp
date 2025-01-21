@@ -358,10 +358,10 @@ namespace baremetal::assembler {
 
 			m_operands[i].type = inst->operands[i];
 
-			if(is_operand_rel(inst->operands[i])) {
-				u8 size = backend::emit_instruction(m_instruction_i, m_operands).size;
-				m_operands[i].immediate = static_cast<i32>(m_operands[i].immediate.value) - size;
-			}
+			//if(is_operand_rel(inst->operands[i])) {
+			//	u8 size = backend::emit_instruction(m_instruction_i, m_operands).size;
+			//	m_operands[i].immediate = static_cast<i32>(m_operands[i].immediate.value) - size;
+			//}
 		}
 
 		// assemble the instruction and use that as the length

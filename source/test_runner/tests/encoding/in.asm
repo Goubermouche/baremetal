@@ -1,0 +1,20 @@
+; expect: e400e401e464e47fe48066e50066e50166e56466e57f66e580e500e501e564e57fe580ec66eded
+
+in al, 0
+in al, 1
+in al, 100
+in al, 127
+in al, -128
+in ax, 0
+in ax, 1
+in ax, 100
+in ax, 127
+in ax, -128
+in eax, 0
+in eax, 1
+in eax, 100
+in eax, 127
+in eax, -128
+in al, dx
+in ax, dx
+in eax, dx

@@ -4,7 +4,7 @@
 
 using namespace baremetal::tests;
 
-const utility::filepath g_test_path = "source/test_runner/tests";
+utility::filepath g_test_path = "./source/test_runner/tests";
 bool g_quiet = false; // TODO: not used yet
 
 enum test_result : u8 {
@@ -52,12 +52,13 @@ auto run_test(const utility::filepath& path) -> test_result {
 
 	expected_pos += 7; // move past the 'expect' directive
 	
-	// read to the end of the current line
-	while(expected_pos < test_text.get_size() && test_text[expected_pos] != '\n') {
-		expected += test_text[expected_pos++];	
+	u64 end_pos = test_text.find("\n", expected_pos);
+
+	if(end_pos == utility::dynamic_string::invalid_pos) {
+    end_pos = test_text.get_size();
 	}
 
-	expected = expected.trim();
+	expected = test_text.substring(expected_pos + 1, end_pos - expected_pos - 1);
 
 	// assemble the source file
 	const auto result = assembler.assemble(test_text);
@@ -73,6 +74,7 @@ auto run_test(const utility::filepath& path) -> test_result {
 
 	if(hex_result != expected) {
 		utility::console::print_err("mismatch: {} - expected '{}', but got '{}'\n", path, expected, hex_result); 
+		// utility::console::print_err("mismatch: {}\n", path); 
 		return RES_FAIL;
 	}
 
@@ -152,11 +154,12 @@ auto run_tests_specific(const utility::dynamic_array<utility::dynamic_string>& t
 
 void display_help() {
 	utility::console::print(
-		"usage: test [-l|-h|[[-q][-s test_names...|-g group_names...]]]\n"
+		"usage: test [-l|-h|-p|[[-q][-s test_names...|-g group_names...]]]\n"
 		"  -s --specific   specify one or more specific tests to run\n"
 		"  -g --group      specify one or more test groups to run\n"
 		"  -q --quiet      don't produce any console outputs\n"
 		"  -l --list       list all available test groups and tests\n"
+		"  -p --path       display the test path of the test directory\n"
 		"  -h --help       display this help message\n"
 		"\n"
 		"for bug reports and issues, please see:\n"
@@ -195,6 +198,10 @@ auto main(i32 argc, const char** argv) -> i32 {
 	}
 	else if(compare_commands("-l", "--list", argv[argi])) { 
 		list_tests();
+		return 0;
+	}
+	else if(compare_commands("-p", "--path", argv[argi])) { 
+		utility::console::print("{}\n", g_test_path);
 		return 0;
 	}
 	else if(compare_commands("-q", "--quiet", argv[argi])) { 

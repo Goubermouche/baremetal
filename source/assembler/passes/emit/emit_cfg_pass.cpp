@@ -97,6 +97,7 @@ namespace baremetal::assembler::pass {
 				case OP_M16:    string.append("word {}", memory_to_string(op.memory)); break;
 				case OP_M32:    string.append("dword {}", memory_to_string(op.memory)); break;
 				case OP_M64:    string.append("qword {}", memory_to_string(op.memory)); break;
+				case OP_M128:   string += memory_to_string(op.memory); break;
 				case OP_I8:
 				case OP_I16:
 				case OP_I32:

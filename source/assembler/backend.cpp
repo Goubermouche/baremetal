@@ -288,6 +288,7 @@ namespace baremetal::assembler {
 			const operand_type current = m_inst->operands[i];
 
 			if(is_operand_imm(current) || is_operand_rel(current)) {
+				// utility::console::print("{}\n", m_operands[i].immediate.value);
 				emit_data_operand(m_operands[i].immediate.value, get_operand_bit_width(current));
 			}
 			else if(is_operand_moff(current)) {

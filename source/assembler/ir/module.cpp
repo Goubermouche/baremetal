@@ -213,6 +213,14 @@ namespace baremetal::assembler {
 
 				operands[i].immediate = imm(value);
 			}
+			else if(is_operand_rip_rel(operands[i].type)) {
+				const i64 value = operands[i].immediate.value;
+				operands[i].immediate = value - data->size;
+			}
+			else if(is_operand_rel(operands[i].type)) {
+				const i64 value = operands[i].immediate.value;
+				operands[i].immediate = value - (position + data->size);
+			}
 		}
 
 		return backend::emit_instruction(inst, operands);

@@ -3,5 +3,5 @@
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-node "$SCRIPT_DIR/scripts/testgen.js" "$SCRIPT_DIR/scripts/db.json" "$SCRIPT_DIR/../source/test_runner/tests.txt" "$SCRIPT_DIR"
+node "$SCRIPT_DIR/scripts/testgen.js" "$SCRIPT_DIR/scripts/db.json" "$SCRIPT_DIR/../source/test_runner/tests/encoding/" "$SCRIPT_DIR"
  
