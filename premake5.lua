@@ -21,6 +21,7 @@ workspace "assembler"
 		optimize "Off"
 		runtime "Debug"
 
+	-- libs
 	include "source/lib/utility"
 
 	project "assembler"
@@ -35,6 +36,7 @@ workspace "assembler"
 		includedirs { "source/lib", "source/lib/utility/" }
 		links { "utility" }
 
+	-- apps
 	project "test"
 		kind "ConsoleApp"
 		location "source/app/test"
@@ -47,3 +49,14 @@ workspace "assembler"
 		includedirs { "source/lib", "source/lib/utility/", "source/lib/assembler" }
 		links { "utility", "assembler" }
 
+	project "basm"
+		kind "ConsoleApp"
+		location "source/app/basm"
+		
+		targetdir ("output/bin/%{prj.name}")
+		objdir ("output/obj/%{prj.name}")
+		
+		files { "source/app/basm/**.cpp", "source/app/basm/**.h" }
+		
+		includedirs { "source/lib", "source/lib/utility/", "source/lib/assembler" }
+		links { "utility", "assembler" }

@@ -4,6 +4,9 @@
 
 #include "assembler/frontend.h"
 
+constexpr const char* g_version = "0.1.0";
+const utility::filepath g_test_path = "./tests";
+
 using namespace utility::types;
 
 enum test_result : u8 {
@@ -12,7 +15,6 @@ enum test_result : u8 {
 	RES_SKIP
 };
 
-utility::filepath g_test_path = "./tests";
 
 auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {
 	return utility::compare_strings(shortform, input) == 0 || utility::compare_strings(longform, input) == 0;
@@ -153,8 +155,9 @@ auto run_tests_specific(const utility::set<utility::dynamic_string>& tests) -> i
 
 void display_help() {
 	utility::console::print(
-		"usage: test [-l|-h|-p|-s test_names...|-g group_names...]\n"
+		"usage: test [-l|-h|-v|-p|-s test_names...|-g group_names...]\n"
 		"  -s --specific   specify one or more specific tests to run\n"
+		"  -v --version    print the test runner version number\n"
 		"  -g --group      specify one or more test groups to run\n"
 		"  -l --list       list all available test groups and tests\n"
 		"  -p --path       display the path of the test directory\n"
@@ -163,6 +166,10 @@ void display_help() {
 		"for bug reports and issues, please see:\n"
 		"<https://github.com/Goubermouche/baremetal/issues>\n"
 	);
+}
+
+void display_version() {
+	utility::console::print("test runner version {} compiled on {}\n", g_version, __DATE__);
 }
 
 void list_tests() {
@@ -192,6 +199,10 @@ auto main(i32 argc, const char** argv) -> i32 {
 	}
 	else if(compare_commands("-h", "--help", argv[argi])) { 
 		display_help();
+		return 0; 
+	}
+	else if(compare_commands("-v", "--version", argv[argi])) { 
+		display_version();
 		return 0; 
 	}
 	else if(compare_commands("-l", "--list", argv[argi])) { 

@@ -3,6 +3,7 @@
 #define NOMINMAX
 #include <windows.h>
 #elif __linux__
+#include <sys/stat.h>
 #include <unistd.h>
 #endif
 

@@ -125,6 +125,10 @@ namespace utility {
 			return false;
 		}
 #endif
+		static auto exists(const filepath& path) -> bool {
+			struct stat buffer;
+			return (stat (path.get_data(), &buffer) == 0);
+		}
 		static auto get_file_line_count(const filepath& path) -> u64 {
 			FILE *file = fopen(path.get_data(), "rb");
 			ASSERT(file, "failed to open file '{}'\n", path);
