@@ -12,7 +12,7 @@ enum test_result : u8 {
 	RES_SKIP
 };
 
-utility::filepath g_test_path = "./source/test/tests";
+utility::filepath g_test_path = "./tests";
 
 auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {
 	return utility::compare_strings(shortform, input) == 0 || utility::compare_strings(longform, input) == 0;

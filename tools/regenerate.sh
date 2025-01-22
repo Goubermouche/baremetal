@@ -8,4 +8,5 @@ SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
 bash "$SCRIPT_DIR/convert_db.sh"
 bash "$SCRIPT_DIR/table_generator.sh"
+bash "$SCRIPT_DIR/test_generator.sh"
 

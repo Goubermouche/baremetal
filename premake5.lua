@@ -21,29 +21,29 @@ workspace "assembler"
 		optimize "Off"
 		runtime "Debug"
 
-	include "source/utility"
+	include "source/lib/utility"
 
 	project "assembler"
 		kind "StaticLib"
-		location "source/assembler"
+		location "source/lib/assembler"
 
 		targetdir ("output/bin/%{prj.name}")
 		objdir ("output/obj/%{prj.name}")
 
-		files { "source/assembler/**.cpp", "source/assembler/**.h", "source/assembler/**.inc" }
+		files { "source/lib/assembler/**.cpp", "source/lib/assembler/**.h", "source/lib/assembler/**.inc" }
 
-		includedirs { "source", "source/utility/" }
+		includedirs { "source/lib", "source/lib/utility/" }
 		links { "utility" }
 
 	project "test"
 		kind "ConsoleApp"
-		location "source/test"
+		location "source/app/test"
 
 		targetdir ("output/bin/%{prj.name}")
 		objdir ("output/obj/%{prj.name}")
 
-		files { "source/test/**.cpp", "source/test/**.h" }
+		files { "source/app/test/**.cpp", "source/app/test/**.h" }
 
-		includedirs { "source", "source/utility/", "source/assembler" }
+		includedirs { "source/lib", "source/lib/utility/", "source/lib/assembler" }
 		links { "utility", "assembler" }
 
