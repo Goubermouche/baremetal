@@ -1,11 +1,10 @@
-#include "utilities.h"
-
 #include <utility/algorithms/sort.h>
+#include <utility/containers/set.h>
+#include <utility/system/file.h>
 
-using namespace baremetal::tests;
+#include "assembler/frontend.h"
 
-utility::filepath g_test_path = "./source/test/tests";
-bool g_quiet = false; // TODO: not used yet
+using namespace utility::types;
 
 enum test_result : u8 {
 	RES_PASS,
@@ -13,18 +12,18 @@ enum test_result : u8 {
 	RES_SKIP
 };
 
+utility::filepath g_test_path = "./source/test/tests";
+
 auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {
 	return utility::compare_strings(shortform, input) == 0 || utility::compare_strings(longform, input) == 0;
 }
 
-auto get_all_groups() -> utility::dynamic_array<utility::dynamic_string> {
+auto get_all_groups() -> utility::set<utility::dynamic_string> {
 	const auto group_paths = utility::directory::read(g_test_path);
-	utility::dynamic_array<utility::dynamic_string> groups;
+	utility::set<utility::dynamic_string> groups;
 	
-	groups.reserve(group_paths.get_size());
-
 	for(const auto& path : group_paths) {
-		groups.push_back(path.get_filename().get_string());
+		groups.insert(path.get_filename().get_string());
 	}
 
 	return groups;
@@ -81,7 +80,7 @@ auto run_test(const utility::filepath& path) -> test_result {
 	return RES_PASS;
 }
 
-auto run_tests_groups(const utility::dynamic_array<utility::dynamic_string>& groups) -> i32 {
+auto run_tests_groups(const utility::set<utility::dynamic_string>& groups) -> i32 {
 	utility::timer timer;
 
 	u64 pass_count = 0;
@@ -91,6 +90,11 @@ auto run_tests_groups(const utility::dynamic_array<utility::dynamic_string>& gro
 	timer.start();
 
 	for(const auto& group : groups) {
+		if(!utility::directory::exists(g_test_path / group)) {
+			utility::console::print("skipping unknown test group '{}'\n", group);
+			continue;
+		}
+
 		for(const auto& test : utility::directory::read(g_test_path / group)) {
 			test_result result = run_test(test);
 
@@ -112,7 +116,7 @@ auto run_tests_groups(const utility::dynamic_array<utility::dynamic_string>& gro
 	return fail_count;
 }
 
-auto run_tests_specific(const utility::dynamic_array<utility::dynamic_string>& tests) -> i32 {
+auto run_tests_specific(const utility::set<utility::dynamic_string>& tests) -> i32 {
 	utility::timer timer;
 	
 	u64 pass_count = 0;
@@ -125,18 +129,13 @@ auto run_tests_specific(const utility::dynamic_array<utility::dynamic_string>& t
 		for(const auto& test : utility::directory::read(g_test_path / group)) {
 			const auto test_name = test.get_filename().get_string();
 
-			// TODO: use a set
-			for(const auto& specified : tests) {
-				if(test_name == specified) {
-					test_result result  = run_test(test);
+			if(tests.contains(test_name)) {
+				test_result result  = run_test(test);
 
-					switch(result) {
-						case RES_PASS: pass_count++; break;
-						case RES_FAIL: fail_count++; break;
-						case RES_SKIP: skip_count++; break;
-					}
-
-					break;
+				switch(result) {
+					case RES_PASS: pass_count++; break;
+					case RES_FAIL: fail_count++; break;
+					case RES_SKIP: skip_count++; break;
 				}
 			}
 		}
@@ -154,12 +153,11 @@ auto run_tests_specific(const utility::dynamic_array<utility::dynamic_string>& t
 
 void display_help() {
 	utility::console::print(
-		"usage: test [-l|-h|-p|[[-q][-s test_names...|-g group_names...]]]\n"
+		"usage: test [-l|-h|-p|-s test_names...|-g group_names...]\n"
 		"  -s --specific   specify one or more specific tests to run\n"
 		"  -g --group      specify one or more test groups to run\n"
-		"  -q --quiet      don't produce any console outputs\n"
 		"  -l --list       list all available test groups and tests\n"
-		"  -p --path       display the test path of the test directory\n"
+		"  -p --path       display the path of the test directory\n"
 		"  -h --help       display this help message\n"
 		"\n"
 		"for bug reports and issues, please see:\n"
@@ -186,7 +184,7 @@ void list_tests() {
 }
 
 auto main(i32 argc, const char** argv) -> i32 {
-	utility::dynamic_array<utility::dynamic_string> operands; // TODO: this should be a set
+	utility::set<utility::dynamic_string> operands;
 	u8 argi = 1;
 
 	if(argc == 1) { 
@@ -204,21 +202,10 @@ auto main(i32 argc, const char** argv) -> i32 {
 		utility::console::print("{}\n", g_test_path);
 		return 0;
 	}
-	else if(compare_commands("-q", "--quiet", argv[argi])) { 
-		g_quiet = true;
-		argi++;
-	}
-
-	if(argc == argi) { 
-		utility::console::print_err("error: '{}' cannot be used alone (type '--help' for help)\n", argv[argi - 1]); 
-		return 1;
-	}
 
 	// collect operands
-	operands.reserve(argc - argi - 1);
-
 	for(i32 i = argi + 1; i < argc; ++i) {
-		operands.push_back(argv[i]);
+		operands.insert(argv[i]);
 	}
 
 	// options with operands

@@ -7,13 +7,6 @@
 
 using namespace utility::types;
 
-#define TEST(name)                           \
-  do {                                       \
-    const auto result = run_test_ ## name(); \
-    total_success += result.success_count;   \
-    total_fail    += result.fail_count;      \
-  } while(false)
-
 namespace baremetal::tests {
 	struct test_info {
 		test_info(const char* name, u64 total_tests, bool quiet) : m_name(name), m_total_tests(total_tests), m_quiet(quiet) {

@@ -39,7 +39,6 @@ namespace baremetal::assembler::pass {
 
 		auto label_block_to_string(const basic_block* block, const section& section) -> utility::dynamic_string {
 			utility::dynamic_string string;
-
 			string.append(g_label_header, section.position + block->start_position, *block->label.name);
 
 			return string;
@@ -54,9 +53,7 @@ namespace baremetal::assembler::pass {
 			// stringify a block of data
 			for(u64 i = 0; i < line_count; ++i) {
 				string.append("<tr><td align=\"left\">");
-	
-					string.append(section.position + block->start_position + i * chars_per_line);
-	
+				string.append(section.position + block->start_position + i * chars_per_line);
 				string.append("</td><td COLSPAN=\"100%\" align=\"left\">");
 
 				// append a line of chars_per_line bytes
