@@ -31,11 +31,17 @@ You can find some basic examples in the [test directory](https://github.com/Goub
 
 ## Project structure
 ```
-- source         # assembler source directory
-  |- assembler   # source code for the assembler implementation
-  `- test        # test runners and test cases
-- tools          # utilities used for managing the instruction database and tests
-  `- scripts     # implementations of the utility programs
+baremetal
+|- source          # assembler source directory
+|  |- app          # baremetal executables
+|  |  |- basm      # baremetal assembler (BASM)
+|  |  `- test      # BASM test runner
+|  `- lib          # executable backends
+|    |- assembler  # source code for the assembler implementation
+|    `- utility    # utilities
+|- tools           # utilities used for managing the instruction database and tests
+|  `- scripts      # implementations of various utility scripts
+`- tests           # BASM tests
 ```
 To achieve overall correctness, the project utilizes a variety of tests, some of which may need to be regenerated once breaking changes to the instruction database are introduced.  
 
