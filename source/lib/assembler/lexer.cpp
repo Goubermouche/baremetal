@@ -184,28 +184,6 @@ namespace baremetal::assembler {
 		return get_next_token();
 	}
 
-	void token_buffer::print() {
-		for(token tok : value) {
-			utility::console::print("TOK: {}", token_to_string(tok.type));
-
-			switch(tok.type) {
-				case TOK_IDENTIFIER: 
-				case TOK_STRING:     
-				case TOK_CHAR  :     utility::console::print(" {}\n", *tok.identifier);     break;
-				case TOK_NUMBER:     utility::console::print(" {}\n", tok.immediate.value); break;
-				default:             utility::console::print("\n");                         break;
-			}
-		}
-	}
-
-	auto token_buffer::operator[](u64 i) -> token {
-		if(i >= value.get_size()) {
-			return value[value.get_size() - 1]; 
-		}
-
-		return value[i];
-	}
-
 	auto is_mask_broadcast(mask_type mask) -> bool {
 		switch(mask) {
 			case MASK_BROADCAST_1TO2: 

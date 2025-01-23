@@ -78,13 +78,20 @@ namespace baremetal::assembler::pass {
 			switch(op.type) {
 				case OP_RAX:    string += "rax"; break;
 				case OP_EAX:    string += "eax"; break;
-				case OP_R8:     string += g_gpr8l_names[op.r]; break; // TODO: distinguish low and high 8 bit registers
-				case OP_R16:    string += g_gpr16_names[op.r]; break;
-				case OP_R32:    string += g_gpr32_names[op.r]; break;
-				case OP_R64:    string += g_gpr64_names[op.r]; break;
-				case OP_XMM:    string.append("xmm{}", op.r); break;
-				case OP_YMM:    string.append("ymm{}", op.r); break;
-				case OP_ZMM:    string.append("zmm{}", op.r); break;
+				case OP_R8:     
+				case OP_R16:    
+				case OP_R32:    
+				case OP_R64:    
+				case OP_XMM:    
+				case OP_YMM:    
+				case OP_ZMM:    
+				case OP_TMM:    
+				case OP_MMX:    
+				case OP_ST:    
+				case OP_SREG:    
+				case OP_DREG:    
+				case OP_CREG:    
+				case OP_BND:    string += register_to_string(reg(op.r, static_cast<reg_type>(op.type))); break;
 				case OP_K_K:    string.append("k{} {k{}}", op.mr.index, op.mr.k); break;
 				case OP_XMM_KZ: string.append("xmm{} {k{}}{z}", op.r, op.mr.k); break;
 				case OP_B16: 
@@ -112,86 +119,6 @@ namespace baremetal::assembler::pass {
 
 			utility::dynamic_string string;
 			string.append("[rax]{1to{}}", inst_size / broadcast_bits);
-
-			return string;
-		}
-
-		auto immediate_to_string(imm i) -> utility::dynamic_string {
-			utility::dynamic_string string;
-
-			if(i.sign) {
-				string.append("-{}", ~i.value + 1); // two's complement
-			}
-			else {
-				string.append("{}", i.value);
-			}
-	
-			return string;
-		}
-
-		auto register_to_string(reg r) -> const char* {
-			switch(r.type) {
-				case REG_R8:  return g_gpr8l_names[r.index];
-				case REG_R16: return g_gpr16_names[r.index];
-				case REG_R32: return g_gpr32_names[r.index];
-				case REG_R64: return g_gpr64_names[r.index];
-				case REG_RIP: return "rel $";
-				default: return "unknown reg class";
-			}
-		}
-
-		auto memory_to_string(mem m) -> utility::dynamic_string {
-			utility::dynamic_string string = '[';
-		
-			// base register
-			if(m.has_base) {
-				string += register_to_string(m.base);
-			}
-	
-			// index register
-			if(m.has_index) {
-				if(string.get_size() > 1) {
-					string += " + ";
-				}
-
-				string += register_to_string(m.index);
-			}
-
-			// scale
-			if(m.s != SCALE_1 && string.get_size() > 1) {
-				string += " * ";
-			}
-	
-			switch(m.s) {
-				case SCALE_1:                break;
-				case SCALE_2: string += "2"; break;
-				case SCALE_4: string += "4"; break;
-				case SCALE_8: string += "8"; break;
-				default: ASSERT(false, "invalid scale specified\n");
-			}
-	
-			// displacement
-			if(string.get_size() > 1 && m.displacement.value != 0 && m.displacement.sign == false) {
-				string += " + ";
-			}
-	
-			if(m.displacement.value != 0) {
-				// workaround for when we have negative displacement with other operands, this ensures
-				// the operands are nicely spaced out
-				if(m.displacement.sign && string.get_size() > 1) {
-					string.append(" - {}", ~m.displacement.value + 1);
-				}
-				else {
-					string += immediate_to_string(m.displacement);
-				}
-			}
-
-			// empty memory operand
-			if(string.get_size() == 1) {
-				string += '0';
-			}
-	
-			string += ']';
 
 			return string;
 		}

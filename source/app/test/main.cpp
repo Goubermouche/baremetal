@@ -25,12 +25,11 @@ enum test_result : u8 {
 	RES_SKIP
 };
 
-
-auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {
+[[nodiscard]] auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {
 	return utility::compare_strings(shortform, input) == 0 || utility::compare_strings(longform, input) == 0;
 }
 
-auto get_all_groups() -> utility::set<utility::dynamic_string> {
+[[nodiscard]] auto get_all_groups() -> utility::set<utility::dynamic_string> {
 	const auto group_paths = utility::directory::read(g_test_path);
 	utility::set<utility::dynamic_string> groups;
 	
@@ -41,8 +40,7 @@ auto get_all_groups() -> utility::set<utility::dynamic_string> {
 	return groups;
 }
 
-auto run_test(const utility::filepath& path) -> test_result {
-	
+[[nodiscard]] auto run_test(const utility::filepath& path) -> test_result {
 	utility::dynamic_string test_text = utility::file::read(path);
 	utility::dynamic_string expected;
 
@@ -101,7 +99,7 @@ auto run_test(const utility::filepath& path) -> test_result {
 	return RES_PASS;
 }
 
-auto run_tests_groups(const utility::set<utility::dynamic_string>& groups) -> i32 {
+[[nodiscard]] auto run_tests_groups(const utility::set<utility::dynamic_string>& groups) -> i32 {
 	utility::timer timer;
 
 	u64 pass_count = 0;
@@ -137,7 +135,7 @@ auto run_tests_groups(const utility::set<utility::dynamic_string>& groups) -> i3
 	return fail_count;
 }
 
-auto run_tests_specific(const utility::set<utility::dynamic_string>& tests) -> i32 {
+[[nodiscard]] auto run_tests_specific(const utility::set<utility::dynamic_string>& tests) -> i32 {
 	utility::timer timer;
 	
 	u64 pass_count = 0;

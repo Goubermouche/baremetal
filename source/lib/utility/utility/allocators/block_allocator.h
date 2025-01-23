@@ -98,7 +98,7 @@ namespace utility {
 			return new (allocate(sizeof(type))) type(forward<value_types>(values)...);
 		}
 
-		auto create_safepoint() const -> safepoint {
+		[[nodiscard]] auto create_safepoint() const -> safepoint {
 			return { m_current_block, m_current_block->position };
 		}
 

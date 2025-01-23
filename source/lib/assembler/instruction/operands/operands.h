@@ -137,7 +137,7 @@ namespace baremetal::assembler {
 		};
 	};
 
-	inline auto operand_type_to_string(operand_type op) -> const char* {
+	[[nodiscard]] inline auto operand_type_to_string(operand_type op) -> const char* {
 		switch(op) {
 			case OP_NONE:        return "NONE"; 
 			case OP_R8:          return "R8"; 
@@ -230,23 +230,23 @@ namespace baremetal::assembler {
 		return "";
 	}
 
-	inline auto is_operand_xmm(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_xmm(operand_type op) -> bool {
 		return op == OP_XMM || op == OP_XMM_K || op == OP_XMM_KZ;
 	}
 	
-	inline auto is_operand_ymm(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_ymm(operand_type op) -> bool {
 		return op == OP_YMM || op == OP_YMM_KZ || op == OP_YMM_K;
 	}
 	
-	inline auto is_operand_zmm(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_zmm(operand_type op) -> bool {
 		return op == OP_ZMM || op == OP_ZMM_K || op == OP_ZMM_KZ;
 	}
 	
-	inline auto is_operand_large_reg(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_large_reg(operand_type op) -> bool {
 		return is_operand_xmm(op) || is_operand_ymm(op) || is_operand_zmm(op);
 	}
 
-	inline auto is_operand_moff(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_moff(operand_type op) -> bool {
 		switch(op) {
 			case OP_MOFF8:
 			case OP_MOFF16:
@@ -256,7 +256,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto is_operand_imm(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_imm(operand_type op) -> bool {
 		switch(op) {
 			case OP_I8:
 			case OP_I16:
@@ -266,7 +266,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto is_operand_rip_rel(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_rip_rel(operand_type op) -> bool {
 		switch(op) {
 			case OP_REL8_RIP:
 			case OP_REL16_RIP:
@@ -275,7 +275,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto is_operand_rel(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_rel(operand_type op) -> bool {
 		switch(op) {
 			case OP_REL8:
 			case OP_REL16:
@@ -287,7 +287,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto is_operand_masked_mem(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_masked_mem(operand_type op) -> bool {
 		switch(op) {
 			case OP_M16_K: 
 			case OP_M32_K: 
@@ -299,7 +299,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto is_operand_rax(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_rax(operand_type op) -> bool {
 		switch(op) {
 			case OP_RAX:
 			case OP_EAX:
@@ -308,7 +308,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto is_operand_broadcast(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_broadcast(operand_type op) -> bool {
 		switch(op) {
 			case OP_B16:
 			case OP_B32:
@@ -317,7 +317,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto broadcast_to_bits(operand_type op) -> u8 {
+	[[nodiscard]] inline auto broadcast_to_bits(operand_type op) -> u8 {
 		switch(op) {
 			case OP_B16: return 16;
 			case OP_B32: return 32;
@@ -326,7 +326,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto is_operand_mem(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_mem(operand_type op) -> bool {
 		switch(op) {
 			case OP_MEM:
 			case OP_TMEM:
@@ -360,7 +360,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto is_operand_reg(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_reg(operand_type op) -> bool {
 		switch(op) {
 			case OP_AL:
 			case OP_CL:
@@ -398,7 +398,7 @@ namespace baremetal::assembler {
 		}
 	}
 
-	inline auto is_extended_reg(const operand& op) -> bool {
+	[[nodiscard]] inline auto is_extended_reg(const operand& op) -> bool {
 		if(is_operand_reg(op.type)) {
 			return op.r > 7;
 		}
@@ -406,7 +406,7 @@ namespace baremetal::assembler {
 		return false;
 	}
 
-	inline auto is_low_gpr(const operand& op) -> bool {
+	[[nodiscard]] inline auto is_low_gpr(const operand& op) -> bool {
 		if(is_operand_reg(op.type) && op.type == OP_R8) {
 			return 
 				op.r == spl ||
@@ -419,7 +419,7 @@ namespace baremetal::assembler {
 	}
 
 
-	inline auto get_operand_bit_width(operand_type op) -> u16 {
+	[[nodiscard]] inline auto get_operand_bit_width(operand_type op) -> u16 {
 		switch(op) {
 			case OP_NONE:
 			case OP_MEM:
@@ -512,7 +512,7 @@ namespace baremetal::assembler {
 		return 0; // unreachable
 	}
 
-	inline auto is_operand_masked(operand_type op) -> bool {
+	[[nodiscard]] inline auto is_operand_masked(operand_type op) -> bool {
 		switch(op) {
 			case OP_M16_K:
 			case OP_M32_K:

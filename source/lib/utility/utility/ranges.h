@@ -20,7 +20,7 @@ namespace utility {
 	}
 
 	template<typename iterator_type>
-	auto distance(iterator_type begin, iterator_type end) -> u64 {
+	[[nodiscard]] auto distance(iterator_type begin, iterator_type end) -> u64 {
 		u64 diff = 0;
 
 		while(begin != end) {

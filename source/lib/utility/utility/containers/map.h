@@ -105,12 +105,12 @@ namespace utility {
 		}
 
 		template <typename q = value, enable_if_t<is_map_v<q>, bool> = true>
-		auto operator[](const key_type& k) -> q& {
+		[[nodiscard]] auto operator[](const key_type& k) -> q& {
 			return try_emplace(k).first->second;
 		}
 
 		template <typename q = value, enable_if_t<is_map_v<q>, bool> = true>
-		auto operator[](key_type&& k) -> q& {
+		[[nodiscard]] auto operator[](key_type&& k) -> q& {
 			return try_emplace(move(k)).first->second;
 		}
 
@@ -119,7 +119,7 @@ namespace utility {
 			return do_at(k);
 		}
 
-		auto contains(const key_type& k) const -> bool {
+		[[nodiscard]] auto contains(const key_type& k) const -> bool {
 			return find(k) != end();
 		}
 
@@ -211,6 +211,15 @@ namespace utility {
 		[[nodiscard]] auto get_size() const noexcept -> u64 {
 			return m_values.get_size();
 		}
+
+		[[nodiscard]] auto get_bucket_count() const noexcept -> u64 {
+			return m_num_buckets;
+		}
+
+		static constexpr auto get_max_bucket_count() noexcept -> u64 {
+			return max_size();
+		}
+
 		[[nodiscard]] auto is_full() const -> bool {
 			return get_size() > m_max_bucket_capacity;
 		}
@@ -224,12 +233,12 @@ namespace utility {
 		}
 	protected:
 		template <class... Args>
-		auto try_emplace(const key_type& k, Args&&... args) -> std::pair<iterator, bool> {
+		[[nodiscard]] auto try_emplace(const key_type& k, Args&&... args) -> std::pair<iterator, bool> {
 			return do_try_emplace(k, utility::forward<Args>(args)...);
 		}	
 
 		template <typename q = value, enable_if_t<is_map_v<q>, bool> = true>
-		auto do_at(const key_type& k) -> const q& {
+		[[nodiscard]] auto do_at(const key_type& k) -> const q& {
 			if(auto it = find(k); (end() != it)) {
 				return it->second;
 			}
@@ -241,7 +250,7 @@ namespace utility {
 		}
 
 		template <typename K, typename... Args>
-		auto do_try_emplace(K&& k, Args&&... args) -> std::pair<iterator, bool> {
+		[[nodiscard]] auto do_try_emplace(K&& k, Args&&... args) -> std::pair<iterator, bool> {
 			auto h = mixed_hash(k);
 			auto dist_and_fingerprint = dist_and_fingerprint_from_hash(h);
 			auto bucket_idx = bucket_idx_from_hash(h);
@@ -270,7 +279,7 @@ namespace utility {
 		}
 
 		template <typename... Args>
-		auto do_place_element(dist_and_fingerprint_type dist_and_fingerprint, value_idx_type bucket_idx, Args&&... args) -> std::pair<iterator, bool> {
+		[[nodiscard]] auto do_place_element(dist_and_fingerprint_type dist_and_fingerprint, value_idx_type bucket_idx, Args&&... args) -> std::pair<iterator, bool> {
 			m_values.emplace_back(utility::forward<Args>(args)...);
 			auto value_idx = static_cast<value_idx_type>(m_values.get_size() - 1);
 
@@ -284,7 +293,7 @@ namespace utility {
 			return { begin() + static_cast<u64>(value_idx), true };
 		}
 
-		auto do_find(const key& k) const -> const_iterator {
+		[[nodiscard]] auto do_find(const key& k) const -> const_iterator {
 			if(is_empty()) {
 				return end();
 			}
@@ -331,7 +340,7 @@ namespace utility {
 		}
 
 		void increase_size() {
-			if(m_max_bucket_capacity == max_bucket_count()) {
+			if(m_max_bucket_capacity == get_max_bucket_count()) {
 				m_values.pop_back();
 
 				ASSERT(false, "map ran into an overflow");
@@ -426,22 +435,14 @@ namespace utility {
 			return shifts;
 		}
 
-		static constexpr auto max_bucket_count() noexcept -> u64 {
-			return max_size();
-		}
-
-		auto bucket_count() const noexcept -> u64 {
-			return m_num_buckets;
-		}
-
 		void clear_buckets() {
 			if(m_buckets != nullptr) {
-				utility::memset(&*m_buckets, 0, sizeof(bucket) * bucket_count());
+				utility::memset(&*m_buckets, 0, sizeof(bucket) * get_bucket_count());
 			}
 		}
 
 		[[nodiscard]] static constexpr auto calc_num_buckets(u8 shifts) -> u64 {
-			return min(max_bucket_count(), u64{ 1 } << (64U - shifts));
+			return min(get_max_bucket_count(), u64{ 1 } << (64U - shifts));
 		}
 
 		void place_and_shift_up(bucket b, value_idx_type place) {
@@ -458,8 +459,8 @@ namespace utility {
 			m_num_buckets = calc_num_buckets(m_shifts);
 			m_buckets = static_cast<bucket*>(utility::malloc(m_num_buckets * sizeof(bucket)));
 
-			if(m_num_buckets == max_bucket_count()) {
-				m_max_bucket_capacity = max_bucket_count();
+			if(m_num_buckets == get_max_bucket_count()) {
+				m_max_bucket_capacity = get_max_bucket_count();
 			}
 			else {
 				m_max_bucket_capacity = static_cast<value_idx_type>(static_cast<float>(m_num_buckets) * default_max_load_factor);
@@ -474,7 +475,7 @@ namespace utility {
 			else {
 				m_shifts = other.m_shifts;
 				allocate_buckets_from_shift();
-				utility::memcpy(m_buckets, other.m_buckets, sizeof(bucket) * bucket_count());
+				utility::memcpy(m_buckets, other.m_buckets, sizeof(bucket) * get_bucket_count());
 			}
 		}
 	protected:

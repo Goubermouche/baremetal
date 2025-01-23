@@ -57,11 +57,11 @@ void display_version() {
 	utility::console::print("BASM version {} compiled on {}\n", g_version, __DATE__);
 }
 
-auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {
+[[nodiscard]] auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {
 	return utility::compare_strings(shortform, input) == 0 || utility::compare_strings(longform, input) == 0;
 }
 
-auto parse_output_format(const char* format) -> arguments::output_format_type {
+[[nodiscard]] auto parse_output_format(const char* format) -> arguments::output_format_type {
 	if(utility::compare_strings("bin", format) == 0) {
 		return arguments::OUT_BIN;
 	}
@@ -72,7 +72,7 @@ auto parse_output_format(const char* format) -> arguments::output_format_type {
 	return arguments::OUT_INVALID;
 }
 
-auto assemble(const arguments& args) -> i32 {
+[[nodiscard]] auto assemble(const arguments& args) -> i32 {
 	baremetal::assembler::frontend frontend(args.source);
 	const auto result = frontend.parse();
 

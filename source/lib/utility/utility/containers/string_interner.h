@@ -29,7 +29,7 @@ namespace utility {
 			return view;
 		}
 
-		auto contains(string_view string) const -> bool {
+		[[nodiscard]] auto contains(string_view string) const -> bool {
 			return m_strings.find(string) != m_strings.end();
 		}
 

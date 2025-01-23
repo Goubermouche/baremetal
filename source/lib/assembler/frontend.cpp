@@ -214,14 +214,10 @@ return false;
 				}
 				case TOK_MINUS: {
 					sign = true; 
-					m_lexer.get_next_token();
+					TRY(m_lexer.get_next_token());
 					EXPECT_TOKEN(TOK_NUMBER);
 				}
 				case TOK_NUMBER: {
-					// if(m_lexer.current_immediate.min_bits / 8 > bytes) {
-					// 	utility::console::print("warning: byte data exceeds bounds\n");
-					// }
-
 					u64 value = m_lexer.current_immediate.value;
 
 					if(sign) {
@@ -506,7 +502,7 @@ return false;
 		TRY(m_lexer.get_next_token());
 
 		switch(m_lexer.current) {
-			case TOK_LBRACKET: parse_memory_operand(type); break;
+			case TOK_LBRACKET: TRY(parse_memory_operand(type)); break;
 			default: return utility::error("unexpected token following type");
 		}
 

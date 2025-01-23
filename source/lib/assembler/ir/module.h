@@ -90,15 +90,15 @@ namespace baremetal::assembler {
 
 		void set_section(utility::string_view* name);
 	
-		auto get_global_symbol_position(utility::string_view* name) const -> u64;
-		auto get_symbol(utility::string_view* name) const -> section::symbol;
-		auto get_block_at_index(u64 i) const -> basic_block*;
-		auto get_block_count() const -> u64;
+		[[nodiscard]] auto get_global_symbol_position(utility::string_view* name) const -> u64;
+		[[nodiscard]] auto get_symbol(utility::string_view* name) const -> section::symbol;
+		[[nodiscard]] auto get_block_at_index(u64 i) const -> basic_block*;
+		[[nodiscard]] auto get_block_count() const -> u64;
 
 		void recalculate_block_sizes();
 		void print_section_info();
 
-		auto resolve_instruction(const instruction_data* data, const section& section, u64 position) const -> backend::code;
+		[[nodiscard]] auto resolve_instruction(const instruction_data* data, const section& section, u64 position) const -> backend::code;
 
 		utility::dynamic_array<section> sections;
 		context* ctx;

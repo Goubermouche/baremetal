@@ -1,5 +1,5 @@
 #pragma once
-#include <utility/types.h>
+#include <utility/containers/dynamic_string.h>
 
 namespace baremetal::assembler {
 	using namespace utility::types;
@@ -68,4 +68,17 @@ namespace baremetal::assembler {
 
 		u64 value;
 	};
+
+	[[nodiscard]] inline auto immediate_to_string(imm i) -> utility::dynamic_string {
+		utility::dynamic_string string;
+
+		if(i.sign) {
+			string.append("-{}", ~i.value + 1); // two's complement
+		}
+		else {
+			string.append("{}", i.value);
+		}
+	
+		return string;
+	}
 } // namespace baremetal::assembler

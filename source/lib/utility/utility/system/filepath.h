@@ -59,16 +59,6 @@ namespace utility {
 
 			return {};
 		}
-		[[nodiscard]] auto replace_extension(const dynamic_string& extension) const -> filepath {
-			const size_type last_dot_pos = m_data.find_last_of('.');
-
-			if(last_dot_pos != base_type::invalid_pos) {
-				return { m_data.substring(0, last_dot_pos + 1) + extension };
-			}
-
-			// no existing extension found
-			return *this;
-		}
 		
 		[[nodiscard]] auto is_directory() const -> bool {
 			return !m_data.is_empty() && m_data.get_last() == '/';
@@ -87,12 +77,12 @@ namespace utility {
 			return m_data.get_data();
 		}
 
-		friend auto operator+(const filepath& left, const filepath& right) -> filepath {
+		[[nodiscard]] friend auto operator+(const filepath& left, const filepath& right) -> filepath {
 			filepath result = left;
 			result.m_data += right.get_string();
 			return result;
 		}
-		friend auto operator/(const filepath& left, const filepath& right) -> filepath {
+		[[nodiscard]] friend auto operator/(const filepath& left, const filepath& right) -> filepath {
 			filepath result = left;
 
 			if(result.m_data.get_last() != '/') {
@@ -102,7 +92,7 @@ namespace utility {
 			result.m_data += right.get_string();
 			return result;
 		}
-		friend auto operator<(const filepath& left, const filepath& right) -> bool {
+		[[nodiscard]] friend auto operator<(const filepath& left, const filepath& right) -> bool {
 			size_type min_size = left.m_data.get_size() < right.m_data.get_size() ? left.m_data.get_size() : right.m_data.get_size();
 
 			for(size_t i = 0; i < min_size; ++i) {

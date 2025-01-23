@@ -121,12 +121,12 @@ namespace utility {
 	template<typename type>
 	struct hash {};
 
-#define DETAIL_CREATE_HASH_OPERATOR(type)                    \
-	template<>                                                 \
-	struct hash<type> {                                        \
-		auto operator()(const type& obj) const noexcept -> u64 { \
-			return compute_hash(static_cast<u64>(obj));            \
-		}                                                        \
+#define DETAIL_CREATE_HASH_OPERATOR(type)                                  \
+	template<>                                                               \
+	struct hash<type> {                                                      \
+		[[nodiscard]] auto operator()(const type& obj) const noexcept -> u64 { \
+			return compute_hash(static_cast<u64>(obj));                          \
+		}                                                                      \
 	}
 
 	DETAIL_CREATE_HASH_OPERATOR(i8);
@@ -147,7 +147,7 @@ namespace utility {
 
 	template<typename base_type>
 	struct hash<base_type*> {
-		auto operator()(const base_type* obj) const noexcept -> u64 {
+		[[nodiscard]] auto operator()(const base_type* obj) const noexcept -> u64 {
 			return compute_hash(reinterpret_cast<u64>(obj));
 		}
 	};

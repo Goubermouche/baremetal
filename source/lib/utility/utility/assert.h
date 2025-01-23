@@ -22,7 +22,7 @@
 #define SYSTEM_LINUX
 #else
 // unknown system
-#error "Unsupported platform!"
+#error "unsupported platform!"
 #endif
 
 #ifdef DEBUG_MODE

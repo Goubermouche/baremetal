@@ -83,7 +83,7 @@ namespace utility {
 			}
 		}	
 #endif
-		static auto read(const filepath& path) -> dynamic_array<filepath> {
+		[[nodiscard]] static auto read(const filepath& path) -> dynamic_array<filepath> {
 			dynamic_array<filepath> result;
 			DIR* dir = opendir(path.get_data());
 			struct dirent* entry;
@@ -101,7 +101,7 @@ namespace utility {
 			return result;
 		}
 
-		static auto exists(const filepath& path) -> bool {
+		[[nodiscard]] static auto exists(const filepath& path) -> bool {
 			DIR* dir = opendir(path.get_data());
 
 			if(dir) {
@@ -115,7 +115,7 @@ namespace utility {
 
 	struct file {
 #ifdef SYSTEM_WINDOWS
-		static auto exists(const filepath& path) -> bool {
+		[[nodiscard]] static auto exists(const filepath& path) -> bool {
 			const DWORD attr = GetFileAttributesA(path.get_data());
 
 			if(attr != INVALID_FILE_ATTRIBUTES) {
@@ -125,11 +125,11 @@ namespace utility {
 			return false;
 		}
 #endif
-		static auto exists(const filepath& path) -> bool {
+		[[nodiscard]] static auto exists(const filepath& path) -> bool {
 			struct stat buffer;
 			return (stat (path.get_data(), &buffer) == 0);
 		}
-		static auto get_file_line_count(const filepath& path) -> u64 {
+		[[nodiscard]] static auto get_file_line_count(const filepath& path) -> u64 {
 			FILE *file = fopen(path.get_data(), "rb");
 			ASSERT(file, "failed to open file '{}'\n", path);
 
@@ -160,7 +160,7 @@ namespace utility {
 			fclose(file);
 		}
 
-		static auto read(const filepath& path) -> dynamic_string {
+		[[nodiscard]] static auto read(const filepath& path) -> dynamic_string {
 			FILE* file = fopen(path.get_data(), "rb");
 			dynamic_string result;
 

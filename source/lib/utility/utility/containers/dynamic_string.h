@@ -393,7 +393,7 @@ namespace utility {
 			return *this;
 		}
 
-		friend auto operator+(const dynamic_string_base& left, const dynamic_string_base& right) ->dynamic_string_base {
+		[[nodiscard]] friend auto operator+(const dynamic_string_base& left, const dynamic_string_base& right) ->dynamic_string_base {
 			dynamic_string_base result = left;
 
 			result.reserve(result.m_size + right.get_size());
@@ -402,7 +402,7 @@ namespace utility {
 
 			return result;
 		}
-		friend auto operator+(const dynamic_string_base& left, element_type c) ->dynamic_string_base {
+		[[nodiscard]] friend auto operator+(const dynamic_string_base& left, element_type c) ->dynamic_string_base {
 			dynamic_string_base result = left;
 
 			result.reserve(result.m_size + 1);
@@ -412,7 +412,7 @@ namespace utility {
 
 			return result;
 		}
-		friend auto operator<(const dynamic_string_base& left, const dynamic_string_base& right) -> bool {
+		[[nodiscard]] friend auto operator<(const dynamic_string_base& left, const dynamic_string_base& right) -> bool {
 			size_type min_size = left.get_size() < right.get_size() ? left.get_size() : right.get_size();
 
 			for(size_t i = 0; i < min_size; ++i) {
@@ -468,7 +468,7 @@ namespace utility {
 
 	template<typename d, typename s>
 	struct hash<dynamic_string_base<d, s>> {
-		auto operator()(const dynamic_string_base<d, s>& obj) const noexcept -> u64 {
+		[[nodiscard]] auto operator()(const dynamic_string_base<d, s>& obj) const noexcept -> u64 {
 			return compute_hash(obj.get_data(), sizeof(char) * obj.get_size());
 		}
 	};
@@ -476,7 +476,7 @@ namespace utility {
 	using dynamic_string = dynamic_string_base<char, u64>;
 	using dynamic_string_w = dynamic_string_base<wchar_t, u64>;
 
-	inline auto string_to_string_w(const dynamic_string& str) -> dynamic_string_w {
+	[[nodiscard]] inline auto string_to_string_w(const dynamic_string& str) -> dynamic_string_w {
 		dynamic_string_w result;
 		result.resize(str.get_size());
 
@@ -488,7 +488,7 @@ namespace utility {
 		return result;
 	}
 
-	inline auto string_w_to_string(const dynamic_string_w& str) -> dynamic_string {
+	[[nodiscard]] inline auto string_w_to_string(const dynamic_string_w& str) -> dynamic_string {
 		dynamic_string result;
 		result.resize(str.get_size());
 

@@ -97,7 +97,7 @@ namespace utility {
 
 	template<typename d, typename s>
 	struct hash<string_view_base<d, s>> {
-		auto operator()(const string_view_base<d, s>& obj) const noexcept -> u64 {
+		[[nodiscard]] auto operator()(const string_view_base<d, s>& obj) const noexcept -> u64 {
 			return compute_hash(obj.get_data(), sizeof(char) * obj.get_size());
 		}
 	};

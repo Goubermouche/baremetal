@@ -3,7 +3,7 @@
 
 namespace baremetal::assembler::pass {
 	namespace detail {
-		auto get_instruction_using_magic(instruction_data* inst, const imm& imm_op) -> bool;
+		[[nodiscard]] auto get_instruction_using_magic(instruction_data* inst, const imm& imm_op) -> bool;
 		void optimize_instruction_size(instruction_data* inst);
 	} // namespace detail
 

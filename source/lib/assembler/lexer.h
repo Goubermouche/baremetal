@@ -320,7 +320,7 @@ namespace baremetal::assembler {
 	struct token {
 		token_type type;
 
-		friend auto operator==(token_type left, token right) {
+		[[nodiscard]] friend auto operator==(token_type left, token right) {
 			return left == right.type;
 		}
 
@@ -330,17 +330,10 @@ namespace baremetal::assembler {
 		};
 	};
 
-	struct token_buffer {
-		void print();
-		auto operator[](u64 i) -> token;
+	[[nodiscard]] auto is_mask_broadcast(mask_type mask) -> bool;
 
-		utility::dynamic_array<token> value;
-	};
-
-	auto is_mask_broadcast(mask_type mask) -> bool;
-
-	auto mask_to_k(mask_type mask) -> u8;
-	auto mask_to_broadcast_n(mask_type mask) -> u8;
+	[[nodiscard]] auto mask_to_k(mask_type mask) -> u8;
+	[[nodiscard]] auto mask_to_broadcast_n(mask_type mask) -> u8;
 
 	class lexer {
 	public:
@@ -355,20 +348,20 @@ namespace baremetal::assembler {
 		void set_text(const utility::dynamic_string& text);
 		void restore_safepoint(safepoint safepoint);
 
-		auto get_next_token() -> utility::result<token_type>;
-		auto create_safepoint() -> safepoint;
+		[[nodiscard]] auto get_next_token() -> utility::result<token_type>;
+		[[nodiscard]] auto create_safepoint() -> safepoint;
 	private:
-		auto get_next_char_escaped() -> char;
 		auto get_next_char() -> char;
-		auto is_at_end() -> bool;
+		[[nodiscard]] auto get_next_char_escaped() -> char;
+		[[nodiscard]] auto is_at_end() -> bool;
 
 		void consume_spaces();
 
-		auto get_next_token_identifier() -> utility::result<token_type>;
-		auto current_string_to_number() -> utility::result<token_type>;
-		auto get_next_token_comment() -> utility::result<token_type>;
-		auto get_next_token_string() -> utility::result<token_type>;
-		auto get_next_token_char() -> utility::result<token_type>;
+		[[nodiscard]] auto get_next_token_identifier() -> utility::result<token_type>;
+		[[nodiscard]] auto current_string_to_number() -> utility::result<token_type>;
+		[[nodiscard]] auto get_next_token_comment() -> utility::result<token_type>;
+		[[nodiscard]] auto get_next_token_string() -> utility::result<token_type>;
+		[[nodiscard]] auto get_next_token_char() -> utility::result<token_type>;
 	private:
 		utility::dynamic_string m_text;
 		char m_current_char;
@@ -379,13 +372,13 @@ namespace baremetal::assembler {
 		token_type current;
 	};
 
-	auto token_to_data_type(token_type token) -> data_type;
-	auto token_to_string(token_type token) -> const char*;
-	auto token_to_register(token_type token) -> reg;
+	[[nodiscard]] auto token_to_data_type(token_type token) -> data_type;
+	[[nodiscard]] auto token_to_string(token_type token) -> const char*;
+	[[nodiscard]] auto token_to_register(token_type token) -> reg;
 
-	auto string_to_token(const utility::dynamic_string& str) -> token_type;
+	[[nodiscard]] auto string_to_token(const utility::dynamic_string& str) -> token_type;
 
-	auto is_token_broadcast(token_type token) -> bool;
-	auto is_token_k(token_type token) -> bool;
+	[[nodiscard]] auto is_token_broadcast(token_type token) -> bool;
+	[[nodiscard]] auto is_token_k(token_type token) -> bool;
 } // namespace baremetal::assembler
 

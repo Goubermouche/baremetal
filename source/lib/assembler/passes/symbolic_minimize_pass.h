@@ -14,8 +14,8 @@ namespace baremetal::assembler::pass {
 			utility::dynamic_array<inst_variant> variants; 
 		};
 
-		auto collect_unresolved_symbols(const section& section) -> utility::dynamic_array<unresolved_symbol>;
-		auto fits_into_type(i64 value, operand_type type) -> bool;
+		[[nodiscard]] auto collect_unresolved_symbols(const section& section) -> utility::dynamic_array<unresolved_symbol>;
+		[[nodiscard]] auto fits_into_type(i64 value, operand_type type) -> bool;
 		
 		void shift_unresolved(utility::dynamic_array<unresolved_symbol>& unresolved, u64 position, i64 shift);
 		void shift_symbols(section& section, u64 position, i64 shift);

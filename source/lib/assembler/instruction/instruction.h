@@ -1,8 +1,6 @@
 #pragma once
 #include "assembler/instruction/operands/operands.h"
 
-#include <utility/assert.h>
-
 namespace baremetal::assembler {
 	enum extension : u8 {
 		EXT_NONE = 0b00000000,
@@ -94,7 +92,7 @@ namespace baremetal::assembler {
 	};
 
 	struct instruction { 
-		constexpr auto is_rex() const -> bool {
+		[[nodiscard]] constexpr auto is_rex() const -> bool {
 			switch(enc) { 
 				case ENC_NORMAL:
 				case ENC_NORMALD:
@@ -107,7 +105,7 @@ namespace baremetal::assembler {
 			}
 		}
 
-		constexpr auto is_vex_xop() const -> bool {
+		[[nodiscard]] constexpr auto is_vex_xop() const -> bool {
 			switch(enc) {
 				case ENC_XOP:
 				case ENC_XOP_VM:
@@ -126,7 +124,7 @@ namespace baremetal::assembler {
 			}
 		}
 
-		constexpr auto is_xop() const -> bool {
+		[[nodiscard]] constexpr auto is_xop() const -> bool {
 			switch(enc) {
 				case ENC_XOP:
 				case ENC_XOP_VM: return true;
@@ -134,7 +132,7 @@ namespace baremetal::assembler {
 			}
 		}
 
-		constexpr auto is_evex() const -> bool {
+		[[nodiscard]] constexpr auto is_evex() const -> bool {
 			switch(enc) {
 				case ENC_EVEX_RVM:
 				case ENC_EVEX_MVR:
@@ -147,37 +145,37 @@ namespace baremetal::assembler {
 			}
 		}
 
-		constexpr auto is_rexw() const -> bool {
+		[[nodiscard]] constexpr auto is_rexw() const -> bool {
 			return flags & 0b00000001;
 		}
 
-		constexpr auto is_l0() const -> bool {
-			ASSERT(is_vex_xop(), "invalid - expected a xop or vex instruction\n");
+		[[nodiscard]] constexpr auto is_l0() const -> bool {
+			ASSERT(is_vex_xop(), "invalid - expected an xop or vex instruction\n");
 			return (flags & 0b11000000) == 0b10000000;
 		}
 
-		constexpr auto is_l1() const -> bool {
-			ASSERT(is_vex_xop(), "invalid - expected a xop or vex instruction\n");
+		[[nodiscard]] constexpr auto is_l1() const -> bool {
+			ASSERT(is_vex_xop(), "invalid - expected an xop or vex instruction\n");
 			return (flags & 0b11000000) == 0b01000000;
 		}
 
-		constexpr auto is_map5() const -> bool {
+		[[nodiscard]] constexpr auto is_map5() const -> bool {
 			return (flags & 0b11000000) == 0b10000000;
 		}
 
-		constexpr auto is_map6() const -> bool {
+		[[nodiscard]] constexpr auto is_map6() const -> bool {
 			return (flags & 0b11000000) == 0b01000000;
 		}
 
-		constexpr auto is_ri() const -> bool {
+		[[nodiscard]] constexpr auto is_ri() const -> bool {
 			return flags & 0b00100000;
 		}
 
-		constexpr auto is_r() const -> bool {
+		[[nodiscard]] constexpr auto is_r() const -> bool {
 			return (flags & 0b00011110) == 0b00010100;
 		}
 
-		constexpr auto is_rm() const -> bool {
+		[[nodiscard]] constexpr auto is_rm() const -> bool {
 			u8 rm = flags & 0b00011110;
 
 			if(rm == 0b00010100) {
@@ -187,27 +185,27 @@ namespace baremetal::assembler {
 			return rm;
 		}
 
-		constexpr auto is_is4() const -> bool {
+		[[nodiscard]] constexpr auto is_is4() const -> bool {
 			return (flags & 0b00011110) == 0b00010010;
 		}
 
-		constexpr auto get_rm() const -> u8 {
+		[[nodiscard]] constexpr auto get_rm() const -> u8 {
 			return ((flags & 0b00011110) >> 1) - 1;
 		}
 
-		constexpr auto get_magic_kind() const -> u8 {
+		[[nodiscard]] constexpr auto get_magic_kind() const -> u8 {
 			return magic >> 14;
 		}
 
-		constexpr auto get_magic_index() const -> u16 {
+		[[nodiscard]] constexpr auto get_magic_index() const -> u16 {
 			return magic & 0b0011111111111111;
 		};
 
-		constexpr auto has_magic() const -> bool {
+		[[nodiscard]] constexpr auto has_magic() const -> bool {
 			return magic != utility::limits<u16>::max();
 		}
 
-		auto has_extended_vex(const operand* data) const -> bool {
+		[[nodiscard]] auto has_extended_vex(const operand* data) const -> bool {
 			for(u8 i = 0; i < operand_count; ++i) {
 				if(is_operand_large_reg(data[i].type) && data[i].r > 15) {
 					return true;
@@ -217,7 +215,7 @@ namespace baremetal::assembler {
 			return false;
 		}
 
-		constexpr auto get_map_select() const -> u8 {
+		[[nodiscard]] constexpr auto get_map_select() const -> u8 {
 			if(is_evex()) {
 				if(is_map6()) {
 					return 0b110; 
@@ -247,7 +245,7 @@ namespace baremetal::assembler {
 			return 0;
 		}
 
-		constexpr auto get_imp() const -> u8 {
+		[[nodiscard]] constexpr auto get_imp() const -> u8 {
 			if(prefix == OPERAND_SIZE_OVERRIDE) {
 				return 0b01;
 			}
@@ -263,7 +261,7 @@ namespace baremetal::assembler {
 			return 0;
 		}
 
-		constexpr auto get_l() const -> u8 {
+		[[nodiscard]] constexpr auto get_l() const -> u8 {
 			if(is_l1()) {
 				return true;
 			}
@@ -276,7 +274,7 @@ namespace baremetal::assembler {
 			return op_size == OPS_256;
 		}
 
-		constexpr auto get_evex_zero() const -> u8 {
+		[[nodiscard]] constexpr auto get_evex_zero() const -> u8 {
 			switch (operands[0]) {
 				case OP_XMM_KZ:	
 				case OP_YMM_KZ:	
@@ -285,7 +283,7 @@ namespace baremetal::assembler {
 			}
 		}
 
-		constexpr auto get_evex_operand_type() const -> u8 {
+		[[nodiscard]] constexpr auto get_evex_operand_type() const -> u8 {
 			if(op_size == OPS_256) {
 				return 0b00100000;
 			}
@@ -297,7 +295,7 @@ namespace baremetal::assembler {
 			return 0;
 		}
 
-		auto get_mem_operand() const -> u8 {
+		[[nodiscard]] auto get_mem_operand() const -> u8 {
 			if(is_operand_mem(operands[0])) { return 0; }
 			if(is_operand_mem(operands[1])) { return 1; }
 			if(is_operand_mem(operands[2])) { return 2; }
@@ -306,7 +304,7 @@ namespace baremetal::assembler {
 			return 0;
 		}
 
-		auto has_mem_operand() const -> bool {
+		[[nodiscard]] auto has_mem_operand() const -> bool {
 			if(is_operand_mem(operands[0])) { return true; }
 			if(is_operand_mem(operands[1])) { return true; }
 			if(is_operand_mem(operands[2])) { return true; }
@@ -315,7 +313,7 @@ namespace baremetal::assembler {
 			return false;
 		}
 
-		auto get_broadcast_operand() const -> u8 {
+		[[nodiscard]] auto get_broadcast_operand() const -> u8 {
 			if(is_operand_broadcast(operands[0])) { return 0; }
 			if(is_operand_broadcast(operands[1])) { return 1; }
 			if(is_operand_broadcast(operands[2])) { return 2; }
@@ -324,7 +322,7 @@ namespace baremetal::assembler {
 			return 0;
 		}
 
-		auto has_broadcast_operand() const -> bool {
+		[[nodiscard]] auto has_broadcast_operand() const -> bool {
 			if(is_operand_broadcast(operands[0])) { return true; }
 			if(is_operand_broadcast(operands[1])) { return true; }
 			if(is_operand_broadcast(operands[2])) { return true; }
@@ -333,7 +331,7 @@ namespace baremetal::assembler {
 			return false;
 		}
 
-		auto has_masked_operand() const -> bool {
+		[[nodiscard]] auto has_masked_operand() const -> bool {
 			if(is_operand_masked(operands[0])) { return true; }
 			//if(is_operand_masked(operands[1])) { return true; }
 			//if(is_operand_masked(operands[2])) { return true; }
@@ -353,7 +351,7 @@ namespace baremetal::assembler {
 		operand_type operands[4]; // operand types
 	};
 
-	static constexpr auto inst(
+	[[nodiscard]] static constexpr auto inst(
 		const char* name, 
 		encoding enc,
 		u8 prefix,
@@ -392,7 +390,7 @@ namespace baremetal::assembler {
 		return result;
 	}
 
-	inline auto inst_size_to_int(inst_size s) -> u16 {
+	[[nodiscard]] inline auto inst_size_to_int(inst_size s) -> u16 {
 		switch(s) {
 			case OPS_32:  return 32;
 			case OPS_64:  return 64;
@@ -411,7 +409,7 @@ namespace baremetal::assembler {
 	};
 
 	constexpr u32 INSTRUCTION_DB_SIZE = sizeof(g_instruction_db) / sizeof(instruction);
-	constexpr u8 MAX_INSTRUCTION_SIZE = 15;
+	constexpr u8 MAX_INSTRUCTION_SIZE = 15; // max size of an encoded instruction in bytes
 
 	static_assert(INSTRUCTION_DB_SIZE < 16384, "magic number limit reached");
 } // namespace baremetal::assembler
