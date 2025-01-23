@@ -3,6 +3,8 @@
 #include "assembler/ir/module.h"
 #include "assembler/lexer.h"
 
+#include <utility/system/file.h>
+
 namespace baremetal::assembler {
 	namespace detail {
 		auto mask_operand(operand_type op, mask_type mask) -> utility::result<operand_type>; 
@@ -14,11 +16,9 @@ namespace baremetal::assembler {
 
 	class frontend {
 	public:
-		frontend();
-
-		auto assemble(const utility::dynamic_string& source) -> utility::result<utility::dynamic_array<u8>>;
+		frontend(const utility::dynamic_string& source);
+		auto parse() -> utility::result<module>;
 	private:
-		auto parse() -> utility::result<void>;
 
 		// parsing
 		auto parse_reserve_memory() -> utility::result<void>;

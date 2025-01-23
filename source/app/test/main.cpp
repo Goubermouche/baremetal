@@ -1,8 +1,18 @@
 #include <utility/algorithms/sort.h>
 #include <utility/containers/set.h>
-#include <utility/system/file.h>
 
-#include "assembler/frontend.h"
+#include <assembler/frontend.h>
+
+// assembler passes
+// optimization
+#include <assembler/passes/cfg_analyze_pass.h>
+#include <assembler/passes/inst_size_minimize_pass.h>
+#include <assembler/passes/symbolic_minimize_pass.h>
+
+// emission
+#include <assembler/passes/emit/emit_binary_pass.h>
+#include <assembler/passes/emit/emit_elf_pass.h>
+#include <assembler/passes/emit/emit_cfg_pass.h>
 
 constexpr const char* g_version = "0.1.0";
 const utility::filepath g_test_path = "./tests";
@@ -32,7 +42,6 @@ auto get_all_groups() -> utility::set<utility::dynamic_string> {
 }
 
 auto run_test(const utility::filepath& path) -> test_result {
-	baremetal::assembler::frontend assembler;
 	
 	utility::dynamic_string test_text = utility::file::read(path);
 	utility::dynamic_string expected;
@@ -61,8 +70,9 @@ auto run_test(const utility::filepath& path) -> test_result {
 
 	expected = test_text.substring(expected_pos + 1, end_pos - expected_pos - 1);
 
-	// assemble the source file
-	const auto result = assembler.assemble(test_text);
+	// parse the source file
+	baremetal::assembler::frontend assembler(test_text);
+	const auto result = assembler.parse();
 
 	// check for assembly errors
 	if(result.has_error()) {
@@ -70,8 +80,17 @@ auto run_test(const utility::filepath& path) -> test_result {
 		return RES_FAIL;
 	}
 
+	// optimize the resulting module
+	auto module = result.get_value();
+
+	baremetal::assembler::pass::cfg_analyze(module);
+	baremetal::assembler::pass::inst_size_minimize(module);
+	baremetal::assembler::pass::symbolic_minimize(module);
+
+	utility::dynamic_array<u8> output = baremetal::assembler::pass::emit_binary(module);
+
 	// compare against the expected hex encoding
-	utility::dynamic_string hex_result = utility::bytes_to_string(result.get_value(), result.get_value().get_size());
+	utility::dynamic_string hex_result = utility::bytes_to_string(output, output.get_size());
 
 	if(hex_result != expected) {
 		utility::console::print_err("mismatch: {} - expected '{}', but got '{}'\n", path, expected, hex_result); 

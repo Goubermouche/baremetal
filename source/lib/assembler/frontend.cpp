@@ -5,13 +5,6 @@
 
 #include "assembler/ir/module.h"
 #include "assembler/lexer.h"
-#include "assembler/passes/cfg_analyze_pass.h"
-#include "assembler/passes/inst_size_minimize_pass.h"
-#include "assembler/passes/symbolic_minimize_pass.h"
-
-#include "assembler/passes/emit/emit_binary_pass.h"
-#include "assembler/passes/emit/emit_elf_pass.h"
-#include "assembler/passes/emit/emit_cfg_pass.h"
 
 #define EXPECT_TOKEN(expected)                                    \
   do {                                                            \
@@ -120,7 +113,7 @@ namespace baremetal::assembler {
 					inst.has_broadcast_operand() &&
 					broadcast_to_bits(inst.operands[inst.get_broadcast_operand()]) * broadcast_n != inst_size_to_int(inst.op_size)
 				) {
-					return false;
+return false;
 				}
 			}
 	
@@ -128,32 +121,11 @@ namespace baremetal::assembler {
 		}
 	} // namespace detail
 
-	frontend::frontend() : m_module(&m_context) {}
-
-	auto frontend::assemble(const utility::dynamic_string& source) -> utility::result<utility::dynamic_array<u8>> {
+	frontend::frontend(const utility::dynamic_string& source) : m_module(&m_context) {
 		m_lexer.set_text(source);
-		TRY(parse());
-
-		// apply optimizations
-		pass::cfg_analyze(m_module);
-		pass::inst_size_minimize(m_module);
-		pass::symbolic_minimize(m_module);
-
-		// m_module.print_section_info();
-
-		// emission
-		//auto graph  = pass::emit_control_flow_graph(m_module);
-		//utility::file::write("./cfg.dot", graph);
-
-		// auto elf = pass::emit_elf(m_module);
-		auto bin = pass::emit_binary(m_module);
-
-		// utility::file::write("./elf", elf);
-
-		return bin;
 	}
 
-	auto frontend::parse() -> utility::result<void> {
+	auto frontend::parse() -> utility::result<module> {
 		TRY(m_lexer.get_next_token());
 
 		while(m_lexer.current != TOK_EOF) {
@@ -173,7 +145,7 @@ namespace baremetal::assembler {
 
 		m_module.add_instruction_block(BB_INSTRUCTION);
 
-		return SUCCESS;
+		return m_module;
 	}
 
 	auto frontend::parse_reserve_memory() -> utility::result<void> {

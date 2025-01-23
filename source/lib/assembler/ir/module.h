@@ -78,6 +78,7 @@ namespace baremetal::assembler {
 	};
 
 	struct module {
+		module();
 		module(context* ctx);
 
 		void add_instruction(const operand* operands, u32 index, u8 size);

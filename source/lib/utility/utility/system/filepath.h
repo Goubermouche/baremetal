@@ -76,6 +76,9 @@ namespace utility {
 		[[nodiscard]] auto is_file() const -> bool {
 			return !is_directory();
 		}
+		[[nodiscard]] auto is_empty() const -> bool {
+			return m_data.is_empty();
+		}
 
 		[[nodiscard]] auto get_string() const -> const base_type& {
 			return m_data;

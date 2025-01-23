@@ -21,6 +21,8 @@ namespace baremetal::assembler {
 		}
 	}
 
+	module::module() {}
+
 	module::module(context* ctx) : ctx(ctx) {
 		set_section(ctx->strings.add(".text"));
 	}
