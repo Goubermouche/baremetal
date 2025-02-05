@@ -3,5 +3,5 @@
 
 bits 64
 
-data0 db "Hello; world"
-data1 db ';'
+data0 db "Hello; world" ; comment
+data1 db ';'            ; comment

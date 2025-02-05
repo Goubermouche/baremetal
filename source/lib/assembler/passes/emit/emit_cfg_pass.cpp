@@ -46,7 +46,7 @@ namespace baremetal::assembler::pass {
 
 		auto data_block_to_string(const basic_block* block, const section& section)  -> utility::dynamic_string {
 			constexpr u8 chars_per_line = 30;
-			const u64 line_count = ceil(static_cast<f32>(block->data.size) / static_cast<f32>(chars_per_line));
+			const u64 line_count = ceil(static_cast<f32>(block->size) / static_cast<f32>(chars_per_line));
 
 			utility::dynamic_string string;
 
@@ -58,7 +58,7 @@ namespace baremetal::assembler::pass {
 
 				// append a line of chars_per_line bytes
 				const u64 start = i * chars_per_line;
-				const u64 end = utility::min(block->data.size, start + chars_per_line);
+				const u64 end = utility::min(block->size, start + chars_per_line);
 
 				string.append("{} </td></tr>", utility::bytes_to_string(block->data.data + start, end - start, ' '));
 			}

@@ -39,8 +39,8 @@ namespace baremetal::assembler::pass {
 				}
 				else if(block->is_data_block()) {
 					// raw data block
-					bytes.insert(bytes.end(), block->data.data, block->data.data + block->data.size);
-					local_offset += block->data.size;
+					bytes.insert(bytes.end(), block->data.data, block->data.data + block->size);
+					local_offset += block->size;
 				}
 			}
 		}

@@ -94,7 +94,6 @@ namespace baremetal::assembler {
 	
 		// copy over the segment data
 		new_block->data.data = static_cast<u8*>(ctx->allocator.allocate(block_size));
-		new_block->data.size = data.get_size();
 
 		utility::memcpy(new_block->data.data, data.get_data(), block_size);
 
