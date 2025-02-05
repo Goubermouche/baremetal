@@ -143,7 +143,7 @@ return false;
 			}	
 		}
 
-		m_module.add_instruction_block(BB_INSTRUCTION);
+		m_module.commit_instruction_block(BB_INSTRUCTION);
 
 		return m_module;
 	}
@@ -247,7 +247,7 @@ return false;
 			TRY(m_lexer.get_next_token());
 		}
 
-		m_module.add_data_block(data);
+		m_module.commit_data_block(data);
 		TRY(m_lexer.get_next_token());
 
 		return SUCCESS;
@@ -335,10 +335,10 @@ return false;
 
 		// assemble the instruction and use that as the length
 		const auto code = backend::emit_instruction(m_instruction_i, m_operands);
-		m_module.add_instruction(m_operands, m_instruction_i, code.size);
+		m_module.stage_instruction(m_operands, m_instruction_i, code.size);
 	
 		if(is_jump_or_branch_inst(m_instruction_i)) {
-			m_module.add_instruction_block(BB_BRANCH);
+			m_module.commit_instruction_block(BB_BRANCH);
 		}
 	}
 
@@ -603,10 +603,7 @@ return false;
 
 	auto frontend::parse_label() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_COLON);
-
-		m_module.add_instruction_block(BB_INSTRUCTION);
-		m_module.add_label_block(m_current_identifier);
-
+		m_module.commit_label_block(m_current_identifier);
 		TRY(m_lexer.get_next_token());
 
 		return SUCCESS;

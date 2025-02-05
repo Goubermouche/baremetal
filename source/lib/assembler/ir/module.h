@@ -81,13 +81,15 @@ namespace baremetal::assembler {
 		module();
 		module(context* ctx);
 
-		void add_instruction(const operand* operands, u32 index, u8 size);
-		void add_symbol(utility::string_view* name, symbol_type type = SYM_REGULAR);
+		// module construction
+		void stage_instruction(const operand* operands, u32 index, u8 size);
 		
-		void add_instruction_block(basic_block_type ty);
-		void add_label_block(utility::string_view* name);
-		void add_data_block(const utility::dynamic_array<u8>& data);
+		void commit_instruction_block(basic_block_type ty);
+		void commit_label_block(utility::string_view* name);
+		void commit_data_block(const utility::dynamic_array<u8>& data);
 
+		// TODO: cleanup
+		void add_symbol(utility::string_view* name, symbol_type type = SYM_REGULAR);
 		void set_section(utility::string_view* name);
 	
 		[[nodiscard]] auto get_global_symbol_position(utility::string_view* name) const -> u64;
@@ -99,13 +101,18 @@ namespace baremetal::assembler {
 		void print_section_info();
 
 		[[nodiscard]] auto resolve_instruction(const instruction_data* data, const section& section, u64 position) const -> backend::code;
-
+	private:
+		void add_block(basic_block* block);
+	public:
 		utility::dynamic_array<section> sections;
 		context* ctx;
 	private:
-		u64 m_block_count = 0; // total block count
-		u64 m_section_index = 0;
+		u64 m_section_index = 0; // index of the current section, used when constructing the module
+		u64 m_block_count = 0;   // total block count, across all sections
 
-		utility::dynamic_array<instruction_data*> m_current_block;
+		// when creating the module instructions are added (staged) one by one (stage_instruction), once we're done
+		// with these instructions we submit (commit) the staged block and that way we finalize it
+		// staged -> commited -> finalized
+		utility::dynamic_array<instruction_data*> m_staged_block;
 	};
 } // namespace baremetal::assembler

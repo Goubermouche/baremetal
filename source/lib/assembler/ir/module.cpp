@@ -1,7 +1,5 @@
 #include "module.h"
-
 #include "assembler/backend.h"
-#include "assembler/instruction/instruction.h"
 
 #include <utility/algorithms/sort.h>
 
@@ -27,9 +25,9 @@ namespace baremetal::assembler {
 		set_section(ctx->strings.add(".text"));
 	}
 
-	void module::add_instruction(const operand* operands, u32 index, u8 size) {
+	void module::stage_instruction(const operand* operands, u32 index, u8 size) {
+		// allocate the new instruction
 		instruction_data* instruction = ctx->allocator.emplace<instruction_data>();
-
 		utility::memcpy(instruction->operands, operands, sizeof(operand) * 4);
 
 		instruction->index = index;
@@ -38,9 +36,89 @@ namespace baremetal::assembler {
 		// update the parent section
 		sections[m_section_index].offset += instruction->size;
 
-		// update the current block
-		m_current_block.push_back(instruction);
+		// update the staging block
+		m_staged_block.push_back(instruction);
 		sections[m_section_index].current_block_size += size;
+	}
+
+	void module::commit_instruction_block(basic_block_type ty) {
+		// commit all currently staged instructions
+		if(m_staged_block.is_empty()) { 
+			return; // no staged instructions
+		}
+
+		// allocate a new block for our commited instructions
+		auto new_block = ctx->allocator.emplace<basic_block>();
+		u64 inst_size = m_staged_block.get_size() * sizeof(instruction_data*);
+
+		new_block->type = ty;
+		new_block->size = sections[m_section_index].current_block_size;
+		
+		// copy over the staged instructions
+		new_block->instructions.data = static_cast<instruction_data**>(ctx->allocator.allocate(inst_size));
+		new_block->instructions.size = m_staged_block.get_size();
+
+		utility::memcpy(new_block->instructions.data, m_staged_block.get_data(), inst_size);
+
+		// update block offsets
+		sections[m_section_index].size += sections[m_section_index].current_block_size;
+
+		add_block(new_block);
+	}
+
+	void module::commit_label_block(utility::string_view* name) {
+		commit_instruction_block(BB_INSTRUCTION); // commit all staged instructions 
+		
+		// declare the label symbol
+		add_symbol(name);
+
+		// allocate a new block for the label
+		auto new_block = ctx->allocator.emplace<basic_block>();
+
+		new_block->type = BB_LABEL;
+		new_block->size = sections[m_section_index].current_block_size;
+		new_block->label.name = name;
+
+		add_block(new_block);
+	}
+
+	void module::commit_data_block(const utility::dynamic_array<u8>& data) {
+		commit_instruction_block(BB_INSTRUCTION); // commit all staged instructions 
+
+		// allocate a new block for the data segment
+		auto new_block = ctx->allocator.emplace<basic_block>();
+		const u64 block_size = data.get_size() * sizeof(u8);
+
+		new_block->type = BB_DATA;
+		new_block->size = data.get_size();
+	
+		// copy over the segment data
+		new_block->data.data = static_cast<u8*>(ctx->allocator.allocate(block_size));
+		new_block->data.size = data.get_size();
+
+		utility::memcpy(new_block->data.data, data.get_data(), block_size);
+
+		// update the section offset
+		sections[m_section_index].offset += data.get_size();
+		sections[m_section_index].size += data.get_size();
+
+		add_block(new_block);
+	}
+		
+	void module::add_block(basic_block* block) {
+		block->start_position = sections[m_section_index].current_block_position;
+		block->section_index = m_section_index;
+		
+		// update the block offset
+		sections[m_section_index].current_block_position += sections[m_section_index].current_block_size;
+		sections[m_section_index].current_block_size = 0;
+		
+		// add the new block
+		sections[m_section_index].blocks.push_back(block);
+		m_block_count++;
+
+		// reset the staging zone
+		m_staged_block.clear();
 	}
 
 	void module::add_symbol(utility::string_view* name, symbol_type type) {
@@ -50,75 +128,6 @@ namespace baremetal::assembler {
 		// symbols needed for ELF object files)
 		// TODO: check for multiple definitions here, return an error otherwise
 		current_section.symbols.insert({name, { current_section.offset, m_block_count, type }});
-	}
-
-	void module::add_instruction_block(basic_block_type ty) {
-		if(m_current_block.is_empty()) { 
-			return; 
-		}
-
-		auto new_block = ctx->allocator.emplace<basic_block>();
-		new_block->type = ty;
-
-		u64 memory_size = m_current_block.get_size() * sizeof(instruction_data*);
-		new_block->instructions.data = static_cast<instruction_data**>(ctx->allocator.allocate(memory_size));
-		new_block->instructions.size = m_current_block.get_size();
-		utility::memcpy(new_block->instructions.data, m_current_block.get_data(), memory_size);
-
-		new_block->size = sections[m_section_index].current_block_size;
-		new_block->start_position = sections[m_section_index].current_block_position;
-		new_block->section_index = m_section_index;
-	
-		sections[m_section_index].blocks.push_back(new_block);
-		sections[m_section_index].size += sections[m_section_index].current_block_size;
-		m_block_count++;
-
-		sections[m_section_index].current_block_position += sections[m_section_index].current_block_size;
-		sections[m_section_index].current_block_size = 0;
-		m_current_block.clear();
-	}
-
-	void module::add_label_block(utility::string_view* name) {
-		add_symbol(name);
-
-		auto new_block = ctx->allocator.emplace<basic_block>();
-		new_block->label.name = name;
-		new_block->type = BB_LABEL;
-
-		new_block->size = sections[m_section_index].current_block_size;
-		new_block->start_position = sections[m_section_index].current_block_position;
-		new_block->section_index = m_section_index;
-		sections[m_section_index].blocks.push_back(new_block);
-		m_block_count++;
-
-		sections[m_section_index].current_block_position += sections[m_section_index].current_block_size;
-		sections[m_section_index].current_block_size = 0;
-		m_current_block.clear();
-	}
-
-	void module::add_data_block(const utility::dynamic_array<u8>& data) {
-		// force a new block
-		add_instruction_block(BB_INSTRUCTION);
-
-		auto new_block = ctx->allocator.emplace<basic_block>();
-		new_block->type = BB_DATA;
-
-		new_block->data.data = static_cast<u8*>(ctx->allocator.allocate(data.get_size() * sizeof(u8)));
-		new_block->data.size = data.get_size();
-		utility::memcpy(new_block->data.data, data.get_data(), data.get_size() * sizeof(u8));
-
-		new_block->size = data.get_size();
-		new_block->start_position = sections[m_section_index].current_block_position;
-		new_block->section_index = m_section_index;
-		
-		sections[m_section_index].blocks.push_back(new_block);
-		sections[m_section_index].offset += data.get_size();
-		sections[m_section_index].size += data.get_size();
-
-		m_block_count++;
-
-		sections[m_section_index].current_block_position += data.get_size();
-		m_current_block.clear();
 	}
 
 	void module::set_section(utility::string_view* name) {
@@ -137,10 +146,7 @@ namespace baremetal::assembler {
 
 		// force a new block
 		if(new_index != m_section_index) {
-			if(!m_current_block.is_empty()) {
-				add_instruction_block(BB_INSTRUCTION);
-			}
-
+			commit_instruction_block(BB_INSTRUCTION);
 			m_section_index = new_index;
 		}
 	}
