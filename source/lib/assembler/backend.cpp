@@ -100,11 +100,11 @@ namespace baremetal::assembler {
 		// since our instructions are sorted alphabetically, we can just do a quick binary search
 		while(left <= right) {
 			u32 mid = (static_cast<u32>(left) + static_cast<u32>(right)) >> 1;
-			i32 cmp = utility::compare_strings(name, g_instruction_db[mid].name);
+			i32 cmp = utility::compare_strings(name, INSTRUCTION_DB[mid].name);
 
 			if(cmp == 0) {
 				// found an element with the specified name, loccate the first one
-				while(mid > 0 && utility::compare_strings(name, g_instruction_db[mid - 1].name) == 0) {
+				while(mid > 0 && utility::compare_strings(name, INSTRUCTION_DB[mid - 1].name) == 0) {
 					--mid;
 				}
 
@@ -134,9 +134,9 @@ namespace baremetal::assembler {
 
 	auto is_legal_variant(u32 a, u32 b, u8 operand_index) -> bool {
 		// check if instruction[a] == instruction[b]
-		const u8 operand_count = g_instruction_db[a].operand_count;
+		const u8 operand_count = INSTRUCTION_DB[a].operand_count;
 
-		if(utility::compare_strings(g_instruction_db[a].name, g_instruction_db[b].name) != 0) {
+		if(utility::compare_strings(INSTRUCTION_DB[a].name, INSTRUCTION_DB[b].name) != 0) {
 			return false;
 		}
 
@@ -145,29 +145,29 @@ namespace baremetal::assembler {
 				continue;
 			}
 
-			if(!is_legal_operand_variant(g_instruction_db[a].operands[i], g_instruction_db[b].operands[i])) {
+			if(!is_legal_operand_variant(INSTRUCTION_DB[a].operands[i], INSTRUCTION_DB[b].operands[i])) {
 				return false;
 			}
 		}
 
 		return 
-			is_operand_imm(g_instruction_db[b].operands[operand_index]) || 
-			is_operand_rel(g_instruction_db[b].operands[operand_index]) ||
-			is_operand_mem(g_instruction_db[b].operands[operand_index]); 
+			is_operand_imm(INSTRUCTION_DB[b].operands[operand_index]) || 
+			is_operand_rel(INSTRUCTION_DB[b].operands[operand_index]) ||
+			is_operand_mem(INSTRUCTION_DB[b].operands[operand_index]); 
 	}
 
 	auto backend::get_instruction_direct(u32 index, const operand* operands) -> const instruction* {
-		const instruction& first = g_instruction_db[index];
+		const instruction& first = INSTRUCTION_DB[index];
 		u8 operand_count = 0;
 	
 		for(operand_count = 0; operand_count< 4; ++operand_count) {
 			// we have an unresolved symbol as an operand, pick the biggest possible variant of this instruction
 			if(operands[operand_count].unknown) {
-				const instruction* largest_variant = &g_instruction_db[index];
+				const instruction* largest_variant = &INSTRUCTION_DB[index];
 				u32 current_index = index + 1;
 				
 				while(is_legal_variant(index, current_index, operand_count)) {
-					const instruction* current = &g_instruction_db[current_index];
+					const instruction* current = &INSTRUCTION_DB[current_index];
 
 					if(get_operand_bit_width(current->operands[operand_count]) > 
 						get_operand_bit_width(largest_variant->operands[operand_count])) {
@@ -185,8 +185,8 @@ namespace baremetal::assembler {
 			}
 		}
 	
-		while(utility::compare_strings(first.name, g_instruction_db[index].name) == 0) {
-			const instruction& other = g_instruction_db[index++];
+		while(utility::compare_strings(first.name, INSTRUCTION_DB[index].name) == 0) {
+			const instruction& other = INSTRUCTION_DB[index++];
 	
 			if(operand_count != other.operand_count) {
 				continue;
@@ -220,7 +220,7 @@ namespace baremetal::assembler {
 		u32 current_index = index;
 
 		while(is_legal_variant(index, current_index, unknown_index)) {
-			variants.push_back(g_instruction_db[current_index++].operands[unknown_index]);
+			variants.push_back(INSTRUCTION_DB[current_index++].operands[unknown_index]);
 		}
 
 		utility::stable_sort(variants.begin(), variants.end(), [=](auto a, auto b) {
@@ -247,7 +247,7 @@ namespace baremetal::assembler {
 		u32 current_index = index;
 
 		while(is_legal_variant(index, current_index, unknown_index)) {
-			variants.push_back({g_instruction_db[current_index].operands[unknown_index], current_index});
+			variants.push_back({INSTRUCTION_DB[current_index].operands[unknown_index], current_index});
 			current_index++;
 		}
 
@@ -544,12 +544,12 @@ namespace baremetal::assembler {
 		prefix[0] |= !(rex & 0b00000010) << 6;                  // ~X         [_X______] 
 		prefix[0] |= !(rex & 0b00000001) << 5;                  // ~B         [__X_____] 
 		prefix[0] |= !(modrm & 0b00010000) << 4;                // ~R'        [___X____]
-		prefix[0] |= m_inst->get_map_select();                  // map select [____0XXX]
+		prefix[0] |= m_inst->get_opcode_map();                  // map select [____0XXX]
 
 		prefix[1] |= static_cast<u8>((m_inst->is_rexw()) << 7); // W          [X_______]
 		prefix[1] |= get_instruction_vvvv() << 3;               // ~VVVV      [_XXXX___]
 		prefix[1] |= 0b1 << 2;                                  //            [_____1__]
-		prefix[1] |= m_inst->get_imp();                         // IMP        [______XX]
+		prefix[1] |= m_inst->get_additional_prefix();           // IMP        [______XX]
 
 		prefix[2] |= m_inst->get_evex_zero() << 7;              // zero mask  [X_______]
 		prefix[2] |= m_inst->get_evex_operand_type();           // size       [_XX_____]
@@ -609,10 +609,10 @@ namespace baremetal::assembler {
 
 		push_byte(0xc5); // two byte VEX prefix
 
-		prefix |= !(rex & 0b00000100) << 7;    // ~R    [X_______]
-		prefix |= get_instruction_vvvv() << 3; // ~vvvv [_XXXX___]
-		prefix |= m_inst->get_l() << 2;        // L     [_____X__]
-		prefix |= m_inst->get_imp();           // IMP   [______XX]
+		prefix |= !(rex & 0b00000100) << 7;         // ~R    [X_______]
+		prefix |= get_instruction_vvvv() << 3;      // ~vvvv [_XXXX___]
+		prefix |= m_inst->get_vector_length() << 2; // L     [_____X__]
+		prefix |= m_inst->get_additional_prefix();  // IMP   [______XX]
 
 		push_byte(prefix);
 	}
@@ -630,12 +630,12 @@ namespace baremetal::assembler {
 		prefix[0] |= !(rex & 0b00000100) << 7;                  // ~R         [X_______] 
 		prefix[0] |= !(rex & 0b00000010) << 6;                  // ~X         [_X______]
 		prefix[0] |= !(rex & 0b00000001) << 5;                  // ~B         [__X_____] 
-		prefix[0] |= m_inst->get_map_select();                  // map_select [___XXXXX]
+		prefix[0] |= m_inst->get_opcode_map();                  // map_select [___XXXXX]
 
 		prefix[1] |= static_cast<u8>((m_inst->is_rexw()) << 7); // W/E        [X_______]
 		prefix[1] |= get_instruction_vvvv() << 3;               // ~vvvv      [_XXXX___]
-		prefix[1] |= m_inst->get_l() << 2;                      // L          [_____X__]
-		prefix[1] |= m_inst->get_imp();                         // pp         [______XX]
+		prefix[1] |= m_inst->get_vector_length() << 2;          // L          [_____X__]
+		prefix[1] |= m_inst->get_additional_prefix();           // pp         [______XX]
 		
 		push_byte(prefix[0]);
 		push_byte(prefix[1]);

@@ -172,7 +172,7 @@ enum test_result : u8 {
 
 void display_help() {
 	utility::console::print(
-		"usage: test [-l|-h|-v|-p|-s test_names...|-g group_names...]\n"
+		"usage: test [-l|-h|-v|-p|-s <test_names...>|-g <group_names...>]\n"
 		"  -s --specific   specify one or more specific tests to run\n"
 		"  -v --version    print the test runner version number\n"
 		"  -g --group      specify one or more test groups to run\n"

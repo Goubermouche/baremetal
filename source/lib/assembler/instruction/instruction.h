@@ -1,3 +1,11 @@
+// contains the definition of an x64 instruction, the encoding itself is implemented
+// in lib/assembler/backend.cpp.
+//
+// some useful links: 
+// - https://wiki.osdev.org/X86-64_Instruction_Encoding
+// - https://en.wikipedia.org/wiki/VEX_prefix
+// - https://en.wikipedia.org/wiki/EVEX_prefix
+
 #pragma once
 #include "assembler/instruction/operands/operands.h"
 
@@ -21,6 +29,7 @@ namespace baremetal::assembler {
 		EXT_OP_R = 0b01000000, // opcode + r / opcode + i
 	};
 
+	// each instruction can have up to four (legacy) prefixes, one from each group
 	enum prefix : u8 {
 		// group 1 [______XX]
 		// group 2 [__XXXX__]
@@ -46,6 +55,7 @@ namespace baremetal::assembler {
 		ADDRESS_SIZE_OVERRIDE = 0b10000000
 	};
 
+	// instruction **operand** size, in bits
 	enum inst_size : u8 {
 		OPS_32,
 		OPS_64,
@@ -54,6 +64,9 @@ namespace baremetal::assembler {
 		OPS_512,
 	};
 
+	// encoding categories, they don't directly map into regular x64 instruction 
+	// categories as defined by the Intel ISA manual, since we solve some edge
+	// cases here
 	enum encoding : u8 {
 		ENC_R,
 		ENC_M,
@@ -61,7 +74,7 @@ namespace baremetal::assembler {
 		ENC_RM,
 		ENC_RMR,
 		ENC_NORMAL,
-		// NORMAL encoding, but interpret the first opcode byte as a separate instruction
+		// ENC_NORMAL but interpret the first opcode byte as a separate instruction
 		// used by instructions which are formed using two other instructions (ie. fsave)
 		ENC_NORMALD, 
 
@@ -86,6 +99,7 @@ namespace baremetal::assembler {
 		ENC_EVEX_VM,
 		ENC_EVEX_RMZ,
 		ENC_EVEX_M,
+
 		// XOP
 		ENC_XOP_VM,
 		ENC_XOP,
@@ -101,7 +115,7 @@ namespace baremetal::assembler {
 				case ENC_RM:
 				case ENC_RMR:
 				case ENC_R: return true;
-				default: return false;
+				default:    return false;
 			}
 		}
 
@@ -120,7 +134,7 @@ namespace baremetal::assembler {
 				case ENC_VEX_MVR:
 				case ENC_VEX_MVRR:
 				case ENC_VEX_VM: return true;
-				default: return false;
+				default:         return false;
 			}
 		}
 
@@ -128,7 +142,7 @@ namespace baremetal::assembler {
 			switch(enc) {
 				case ENC_XOP:
 				case ENC_XOP_VM: return true;
-				default: return false;
+				default:         return false;
 			}
 		}
 
@@ -141,30 +155,12 @@ namespace baremetal::assembler {
 				case ENC_EVEX_RMZ:
 				case ENC_EVEX_M:
 				case ENC_EVEX_RM: return true;
-				default: return false;
+				default:          return false;
 			}
 		}
 
 		[[nodiscard]] constexpr auto is_rexw() const -> bool {
 			return flags & 0b00000001;
-		}
-
-		[[nodiscard]] constexpr auto is_l0() const -> bool {
-			ASSERT(is_vex_xop(), "invalid - expected an xop or vex instruction\n");
-			return (flags & 0b11000000) == 0b10000000;
-		}
-
-		[[nodiscard]] constexpr auto is_l1() const -> bool {
-			ASSERT(is_vex_xop(), "invalid - expected an xop or vex instruction\n");
-			return (flags & 0b11000000) == 0b01000000;
-		}
-
-		[[nodiscard]] constexpr auto is_map5() const -> bool {
-			return (flags & 0b11000000) == 0b10000000;
-		}
-
-		[[nodiscard]] constexpr auto is_map6() const -> bool {
-			return (flags & 0b11000000) == 0b01000000;
 		}
 
 		[[nodiscard]] constexpr auto is_ri() const -> bool {
@@ -215,67 +211,56 @@ namespace baremetal::assembler {
 			return false;
 		}
 
-		[[nodiscard]] constexpr auto get_map_select() const -> u8 {
+		[[nodiscard]] constexpr auto get_opcode_map() const -> u8 {
+			// specify which opcode map a VEX/XOP/EVEX instruction should use
 			if(is_evex()) {
-				if(is_map6()) {
-					return 0b110; 
-				}
-	
-				if(is_map5()) {
-					return 0b101; 
-				}
+				if((flags & 0b11000000) == 0b10000000) { return 0b00101; } // map 5
+				if((flags & 0b11000000) == 0b01000000) { return 0b00110; } // map 6
 			}
 			
 			if(is_xop()) {
 				switch(enc) {
-					case ENC_XOP:    return 0b01001;
-					case ENC_XOP_VM: return 0b01010;
+					case ENC_XOP:    return 0b001001; // map 9
+					case ENC_XOP_VM: return 0b001010; // map 10 
 					default: ASSERT(false, "unknown xop encoding");
 				}
 			}
-	
+
+			// compact replacements for legacy 2B and 3B opcodes
 			switch((opcode & 0xffff00)) {
-				case 0x000000: return 0b000; 
-				case 0x000f00: return 0b001; 
-				case 0x0f3800: return 0b010;
-				case 0x0f3a00: return 0b011;
-				default: ASSERT(false, "unknown leading opcode 1 {}", opcode & 0xffff00);
+				case 0x000f00: return 0b00001; // map 1
+				case 0x0f3800: return 0b00010; // map 2
+				case 0x0f3a00: return 0b00011; // map 3
+				default: ASSERT(false, "unknown opcode for opcode map '{}; received", opcode & 0xffff00);
 			}
 	
 			return 0;
 		}
 
-		[[nodiscard]] constexpr auto get_imp() const -> u8 {
-			if(prefix == OPERAND_SIZE_OVERRIDE) {
-				return 0b01;
+		[[nodiscard]] constexpr auto get_additional_prefix() const -> u8 {
+			// additional prefix bytes for VEX/XOP/EVEX instructions
+			switch(prefix) {
+				case OPERAND_SIZE_OVERRIDE: return 0b01;
+				case REP:                   return 0b10;
+				case REPNE:                 return 0b11;
+				default:                    return 0;
 			}
-
-			if(prefix == REP) {
-				return 0b10;
-			}
-
-			if(prefix == REPNE) {
-				return 0b11;
-			}
-
-			return 0;
 		}
 
-		[[nodiscard]] constexpr auto get_l() const -> u8 {
-			if(is_l1()) {
-				return true;
+		[[nodiscard]] constexpr auto get_vector_length() const -> u8 {
+			ASSERT(is_vex_xop(), "invalid - expected an xop or vex instruction\n");
+			// vector length of a VEX/XOP instruction
+			// 0 = 128b XMM 
+			// 1 = 256b YMM
+			if((flags & 0b11000000) == 0b01000000) {
+				return true; // /l1 implies a 256b vector length
 			}
 
-			if(is_l0()) {
-				return false;
-			}
-
-			// vector length (0 = 128b, 1 = 256b)
 			return op_size == OPS_256;
 		}
 
 		[[nodiscard]] constexpr auto get_evex_zero() const -> u8 {
-			switch (operands[0]) {
+			switch(operands[0]) {
 				case OP_XMM_KZ:	
 				case OP_YMM_KZ:	
 				case OP_ZMM_KZ: return true; 
@@ -284,15 +269,11 @@ namespace baremetal::assembler {
 		}
 
 		[[nodiscard]] constexpr auto get_evex_operand_type() const -> u8 {
-			if(op_size == OPS_256) {
-				return 0b00100000;
+			switch(op_size) {
+				case OPS_512: return 0b01000000;
+				case OPS_256: return 0b00100000;
+				default:      return 0;
 			}
-	
-			if(op_size == OPS_512) {
-				return  0b01000000;
-			}
-	
-			return 0;
 		}
 
 		[[nodiscard]] auto get_mem_operand() const -> u8 {
@@ -333,9 +314,7 @@ namespace baremetal::assembler {
 
 		[[nodiscard]] auto has_masked_operand() const -> bool {
 			if(is_operand_masked(operands[0])) { return true; }
-			//if(is_operand_masked(operands[1])) { return true; }
-			//if(is_operand_masked(operands[2])) { return true; }
-			//if(is_operand_masked(operands[3])) { return true; }
+			// only the first operand can be masked
 
 			return false;
 		}
@@ -351,7 +330,7 @@ namespace baremetal::assembler {
 		operand_type operands[4]; // operand types
 	};
 
-	[[nodiscard]] static constexpr auto inst(
+	[[nodiscard]] constexpr auto inst(
 		const char* name, 
 		encoding enc,
 		u8 prefix,
@@ -403,12 +382,12 @@ namespace baremetal::assembler {
 		return 0; // unreachable
 	}
 
-	// main isntruction database
-	static constexpr instruction g_instruction_db[] = {
+	// instruction database, the instructions themselves are generated in tools/tablegen.js 
+	constexpr instruction INSTRUCTION_DB[] = {
 		#include "assembler/instruction/databases/database.inc"
 	};
 
-	constexpr u32 INSTRUCTION_DB_SIZE = sizeof(g_instruction_db) / sizeof(instruction);
+	constexpr u32 INSTRUCTION_DB_SIZE = sizeof(INSTRUCTION_DB) / sizeof(instruction);
 	constexpr u8 MAX_INSTRUCTION_SIZE = 15; // max size of an encoded instruction in bytes
 
 	static_assert(INSTRUCTION_DB_SIZE < 16384, "magic number limit reached");

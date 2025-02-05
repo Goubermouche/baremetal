@@ -41,7 +41,7 @@ struct arguments {
 
 void display_help() {
 	utility::console::print(
-		"usage: basm [-h|-v|[[-c outfile][-f format][-o outfile] filename]]\n"
+		"usage: basm [-h|-v|[[-c <outfile>][-f <format>][-o <outfile>] <filename>]]\n"
 		"  -v --version    print the BASM version number\n"
 		"  -o --output     write the output to outfile\n"
 		"  -f --format     select output file format { bin, elf } [bin]\n"

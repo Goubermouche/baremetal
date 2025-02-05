@@ -290,7 +290,7 @@ return false;
 
 		// locate the specific variant (dumb linear search in our specific group)
 		while(m_instruction_i < INSTRUCTION_DB_SIZE) {
-			const instruction& current = g_instruction_db[m_instruction_i]; 
+			const instruction& current = INSTRUCTION_DB[m_instruction_i]; 
 
 			// verify that the instruction names are the same and that we've not left our instruction group
 			if(*instruction_name != current.name) {
@@ -306,7 +306,7 @@ return false;
 			m_instruction_i++;
 		}
 
-		utility::console::print_err("'{}': ", g_instruction_db[start].name);
+		utility::console::print_err("'{}': ", INSTRUCTION_DB[start].name);
 		for(u8 i = 0; i < m_operand_i; ++i) {
 			utility::console::print_err("{} ", operand_type_to_string(m_operands[i].type));
 		}
@@ -370,9 +370,9 @@ return false;
 
 		// find the bn from the current instruction
 		while(index < INSTRUCTION_DB_SIZE) {
-			const instruction& current = g_instruction_db[index];
+			const instruction& current = INSTRUCTION_DB[index];
 
-			if(utility::compare_strings(g_instruction_db[m_instruction_i].name, current.name) != 0) {
+			if(utility::compare_strings(INSTRUCTION_DB[m_instruction_i].name, current.name) != 0) {
 				break;
 			}
 

@@ -22,7 +22,7 @@ You can find some basic examples in the [test directory](https://github.com/Goub
 ### Optimization
 - CFG analysis
 - Instruction size minimization
-- Symbollic size minimiazation
+- Symbollic size minimization
 
 ### Emission
 - Binary emission (.bin)

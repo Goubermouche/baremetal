@@ -177,7 +177,7 @@ namespace baremetal::assembler {
 	}
 
 	auto module::resolve_instruction(const instruction_data* data, const section& section, u64 position) const  -> backend::code {
-		const instruction* inst = &g_instruction_db[data->index];
+		const instruction* inst = &INSTRUCTION_DB[data->index];
 		static operand operands[4];
 
 		utility::memcpy(operands, data->operands, sizeof(operand) * 4);

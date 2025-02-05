@@ -34,7 +34,7 @@ namespace baremetal::assembler::pass {
 						auto last = variants.pop_back();
 						inst->operands[k].type = last.type;
 						inst->index = last.index;
-						inst->size = backend::emit_instruction(&g_instruction_db[inst->index], inst->operands).size;
+						inst->size = backend::emit_instruction(&INSTRUCTION_DB[inst->index], inst->operands).size;
 
 						// we can only optimize references to symbols in the same section
 						if(symbol_it == section.symbols.end()) {
@@ -125,7 +125,7 @@ namespace baremetal::assembler::pass {
 					// success, we can use the smaller variant
 					operand.type = new_type;
 
-					const instruction* inst = &g_instruction_db[current.variants.get_last().index];
+					const instruction* inst = &INSTRUCTION_DB[current.variants.get_last().index];
 					const u8 new_size = backend::emit_instruction(inst, current_inst->operands).size;
 
 					// update our symbol table to account for the difference in code length

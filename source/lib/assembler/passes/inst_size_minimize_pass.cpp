@@ -7,10 +7,10 @@ namespace baremetal::assembler::pass {
 	namespace detail {
 		auto get_instruction_using_magic(instruction_data* inst, const imm& imm_op) -> bool {
 			ASSERT(g_instruction_db[inst->index].has_magic(), "instruction does not have a magic number\n");
-			const u16 context_index = g_instruction_db[inst->index].get_magic_index();
+			const u16 context_index = INSTRUCTION_DB[inst->index].get_magic_index();
 
 			// switch on the context kind
-			switch(g_instruction_db[inst->index].get_magic_kind()) {
+			switch(INSTRUCTION_DB[inst->index].get_magic_kind()) {
 				case 0: {
 					// if we have a destination which uses a 64 bit register, and an operand which fits into 32 bits or
 					// less we can look for a smaller destination
@@ -80,7 +80,7 @@ namespace baremetal::assembler::pass {
 			u8 legal_variants_index = 0;
 	
 			// some instructions have a special optimization index, check if we have it
-			if(g_instruction_db[inst->index].has_magic() && has_unresolved == false) {
+			if(INSTRUCTION_DB[inst->index].has_magic() && has_unresolved == false) {
 				if(get_instruction_using_magic(inst, imm_op)) {
 					return;
 				}
@@ -98,8 +98,8 @@ namespace baremetal::assembler::pass {
 			// one (ie. an ax register). In these cases we lose the guarantee of them being sorted
 			// from smallest to biggest immediate operands, hence we have to sort them.
 			utility::stable_sort(legal_variants, legal_variants + legal_variants_index, [=](auto a, auto b) {
-				const instruction* a_inst = &g_instruction_db[a];
-				const instruction* b_inst = &g_instruction_db[b];
+				const instruction* a_inst = &INSTRUCTION_DB[a];
+				const instruction* b_inst = &INSTRUCTION_DB[b];
 	
 				const u16 a_width = get_operand_bit_width(a_inst->operands[operand_index]);
 				const u16 b_width = get_operand_bit_width(b_inst->operands[operand_index]);
@@ -117,7 +117,7 @@ namespace baremetal::assembler::pass {
 			// multiple legal variants, determine the best one (since our data is sorted from smallest
 			// source operands to largest, we can exit as soon as we get a valid match)
 			for(u32 index : legal_variants) {
-				const instruction* curr = &g_instruction_db[index];
+				const instruction* curr = &INSTRUCTION_DB[index];
 
 				const u16 src_bits = get_operand_bit_width(curr->operands[operand_index]);
 				const u16 dst_bits = get_operand_bit_width(curr->operands[0]);
@@ -159,7 +159,7 @@ namespace baremetal::assembler::pass {
 					if(inst->index != old_index) {
 						// HACK: recalculate the size, this needs to be done in a different way
 						u8 old_size = inst->size;
-						inst->size = backend::emit_instruction(&g_instruction_db[inst->index], inst->operands).size;
+						inst->size = backend::emit_instruction(&INSTRUCTION_DB[inst->index], inst->operands).size;
 	
 						if(old_size > inst->size) {
 							ASSERT(inst->size <= old_size, "[inst minimize]: minimized instruction is bigger than the original variant {} -> {}\n", old_size, inst->size);
