@@ -48,6 +48,7 @@ namespace baremetal::assembler {
 
 		// TODO: hack, we only insert a symbol the first time (temporary workaround for global 
 		// symbols needed for ELF object files)
+		// TODO: check for multiple definitions here, return an error otherwise
 		current_section.symbols.insert({name, { current_section.offset, m_block_count, type }});
 	}
 

@@ -6,7 +6,7 @@
 namespace baremetal::assembler::pass {
 	namespace detail {
 		auto get_instruction_using_magic(instruction_data* inst, const imm& imm_op) -> bool {
-			ASSERT(g_instruction_db[inst->index].has_magic(), "instruction does not have a magic number\n");
+			ASSERT(INSTRUCTION_DB[inst->index].has_magic(), "instruction does not have a magic number\n");
 			const u16 context_index = INSTRUCTION_DB[inst->index].get_magic_index();
 
 			// switch on the context kind

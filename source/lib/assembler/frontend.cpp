@@ -191,6 +191,7 @@ return false;
 			default: ASSERT(false, "unreachable\n");
 		}
 
+		// TODO: check for multiple definitions
 		TRY(m_lexer.get_next_token());
 		utility::dynamic_array<u8> data;
 
