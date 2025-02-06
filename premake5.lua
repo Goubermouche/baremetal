@@ -12,7 +12,7 @@ function get_version()
 	if commit_count_handle then commit_count_handle:close() end
 	commit_count = commit_count:gsub("%s+", "")
 
-	return string.format("\"0.%s.%s\"", tag_count, commit_count)
+	return string.format("\"%s.%s\"", tag_count, commit_count)
 end
 
 workspace "assembler"

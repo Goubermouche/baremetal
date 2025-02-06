@@ -56,13 +56,20 @@ jobs:
     - name: Build the project
       run: make config=release -j -B
     
-    - name: Create new tag
+    - name: Determine tag name
       id: tag
       run: |
-        TAG_NAME="nightly-$(date +'%Y-%m-%d')"
+        TAG_COUNT=$(git tag | wc -l | tr -d ' ')
+        LAST_TAG=$(git rev-list --tags --no-walk --max-count=1)
+        if [ -z "$LAST_TAG" ]; then
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+        else
+          COMMIT_COUNT=$(git rev-list "$LAST_TAG"..HEAD --count)
+        fi
+        TAG_NAME="nightly ($TAG_COUNT.$COMMIT_COUNT)"
         echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
-        git tag $TAG_NAME
-        git push origin $TAG_NAME
+        git tag "$TAG_NAME"
+        git push origin "$TAG_NAME"
     
     - name: Upload nightly build artifact
       uses: softprops/action-gh-release@v2
@@ -70,4 +77,3 @@ jobs:
         tag_name: ${{ env.TAG_NAME }}
         files: ./output/bin/basm/basm
         generate_release_notes: true
-
