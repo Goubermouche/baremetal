@@ -1,11 +1,18 @@
-function get_git_commit_count()
-	local handle = io.popen("git rev-list --count HEAD 2>/dev/null")
-	if handle then
-		local result = handle:read("*a")
-		handle:close()
-		return result:gsub("%s+", "")
-	end
-	return "0"
+function get_version()
+	-- MAJOR.TAG_COUNT.COMMIT_COUNT_IN_LAST_TAG
+	-- total number of tags
+	local tag_count_handle = io.popen("git tag | wc -l 2>/dev/null")
+	local tag_count = tag_count_handle and tag_count_handle:read("*a") or "0"
+	if tag_count_handle then tag_count_handle:close() end
+	tag_count = tag_count:gsub("%s+", "")
+
+	-- total number of commits since the last tag
+	local commit_count_handle = io.popen("git rev-list  `git rev-list --tags --no-walk --max-count=1`..HEAD --count 2>/dev/null")
+	local commit_count = commit_count_handle and commit_count_handle:read("*a") or "0"
+	if commit_count_handle then commit_count_handle:close() end
+	commit_count = commit_count:gsub("%s+", "")
+
+	return string.format("\"0.%s.%s\"", tag_count, commit_count)
 end
 
 workspace "assembler"
@@ -20,9 +27,7 @@ workspace "assembler"
 	startproject "tests"
 	warnings "High"
 
-	local patch_version = get_git_commit_count()
-	local version = "0.1." .. patch_version
-	defines { "VERSION=\"" .. version .. "\"" }
+	defines { "VERSION=" .. get_version() }
 
 	filter "configurations:Release"
 		defines { "NDEBUG" }
