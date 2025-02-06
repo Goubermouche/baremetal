@@ -66,7 +66,7 @@ jobs:
         else
           COMMIT_COUNT=$(git rev-list "$LAST_TAG"..HEAD --count)
         fi
-        TAG_NAME="nightly ($TAG_COUNT.$COMMIT_COUNT)"
+        TAG_NAME="v$TAG_COUNT.$COMMIT_COUNT.nightly"
         echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
         git tag "$TAG_NAME"
         git push origin "$TAG_NAME"
