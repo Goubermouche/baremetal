@@ -176,8 +176,11 @@ return false;
 	}
 
 	auto frontend::parse_define_memory() -> utility::result<void> {
+		// define mem doesn't have to have a symbol associated with it
+		// TODO: this is currently only possible by using the 'times' keyword, make unnamed memory
+		//       defines a regular thing
 		if(m_current_identifier) {
-			m_module.add_symbol(m_current_identifier);
+			TRY(m_module.declare_symbol(m_current_identifier));
 		}
 
 		bool sign = false;
@@ -592,7 +595,7 @@ return false;
 		EXPECT_TOKEN(TOK_IDENTIFIER);
 
 		// utility::console::print("global symbol: '{}'\n", m_lexer.current_string);
-		m_module.add_symbol(m_context.strings.add(m_lexer.current_string), SYM_GLOBAL);
+		// m_module.add_symbol(m_context.strings.add(m_lexer.current_string), SYM_GLOBAL);
 
 		TRY(m_lexer.get_next_token());
 		return SUCCESS;
@@ -600,9 +603,11 @@ return false;
 
 	auto frontend::parse_label() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_COLON);
-		m_module.commit_label_block(m_current_identifier);
+		TRY(m_module.declare_symbol(m_current_identifier));
 		TRY(m_lexer.get_next_token());
 
+		m_module.commit_label_block(m_current_identifier);
+		
 		return SUCCESS;
 	}
 	

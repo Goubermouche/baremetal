@@ -68,9 +68,6 @@ namespace baremetal::assembler {
 
 	void module::commit_label_block(utility::string_view* name) {
 		commit_instruction_block(BB_INSTRUCTION); // commit all staged instructions 
-		
-		// declare the label symbol
-		add_symbol(name);
 
 		// allocate a new block for the label
 		auto new_block = ctx->allocator.emplace<basic_block>();
@@ -120,18 +117,13 @@ namespace baremetal::assembler {
 		m_staged_block.clear();
 	}
 
-	void module::add_symbol(utility::string_view* name, symbol_type type) {
-		section& current_section = sections[m_section_index];
-
-		// TODO: hack, we only insert a symbol the first time (temporary workaround for global 
-		// symbols needed for ELF object files)
-		// TODO: check for multiple definitions here, return an error otherwise
-		current_section.symbols.insert({name, { current_section.offset, m_block_count, type }});
-	}
-
 	void module::set_section(utility::string_view* name) {
+		// sets the current section_index to be that of the section with the specified name,
+		// if no section with that name exists a new one is allocated
 		u64 new_index = sections.get_size();
 
+		// look for an already existing section with the specified name, a simple linear seach
+		// will do since we won't have that many sections
 		for(u64 i = 0; i < sections.get_size(); ++i) {
 			if(name == sections[i].name) {
 				new_index = i;
@@ -139,15 +131,30 @@ namespace baremetal::assembler {
 			}
 		}
 
+		// no section with the specified name was found, create a new one
 		if(new_index == sections.get_size()) {
-			sections.push_back({.name = name });
+			sections.push_back({ .name = name });
 		}
 
-		// force a new block
-		if(new_index != m_section_index) {
-			commit_instruction_block(BB_INSTRUCTION);
-			m_section_index = new_index;
+		// commit the currently staged instructions, we don't want basic blocks to
+		// cross section boundaries
+		commit_instruction_block(BB_INSTRUCTION);
+		m_section_index = new_index;
+	}
+
+	auto module::declare_symbol(utility::string_view* name, symbol_type type) -> utility::result<void> {
+		section& current_section = sections[m_section_index];
+	
+		// add the new symbol
+		const section::symbol symbol = { current_section.offset, m_block_count, type };
+		const auto result = current_section.symbols.insert({ name, symbol });
+
+		// detect symbol redeclaration
+		if(result.second == false) {
+			return utility::error("symbol has already been declared before");
 		}
+
+		return SUCCESS;
 	}
 
 	void module::print_section_info() {

@@ -18,6 +18,8 @@
 #include "assembler/context.h"
 #include "assembler/backend.h"
 
+#include <utility/result.h>
+
 namespace baremetal::assembler {
 	using namespace utility::types;
 
@@ -102,11 +104,13 @@ namespace baremetal::assembler {
 		void commit_instruction_block(basic_block_type ty);
 		void commit_label_block(utility::string_view* name);
 		void commit_data_block(const utility::dynamic_array<u8>& data);
+		
+		[[nodiscard]] auto declare_symbol(utility::string_view* name, symbol_type type = SYM_REGULAR) -> utility::result<void>;
+		// TODO: predeclare_symbol for global symbols
 
-		// TODO: cleanup
-		void add_symbol(utility::string_view* name, symbol_type type = SYM_REGULAR);
 		void set_section(utility::string_view* name);
-	
+
+		// misc
 		[[nodiscard]] auto get_global_symbol_position(utility::string_view* name) const -> u64;
 		[[nodiscard]] auto get_symbol(utility::string_view* name) const -> section::symbol;
 		[[nodiscard]] auto get_block_at_index(u64 i) const -> basic_block*;
@@ -119,7 +123,7 @@ namespace baremetal::assembler {
 	private:
 		void add_block(basic_block* block);
 	public:
-		utility::dynamic_array<section> sections;
+		utility::dynamic_array<section> sections; // all sections, in order of declaration ([0] = '.text') 
 		context* ctx;
 	private:
 		u64 m_section_index = 0; // index of the current section, used when constructing the module
