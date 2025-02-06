@@ -13,8 +13,6 @@
 #include <assembler/passes/emit/emit_elf_pass.h>
 #include <assembler/passes/emit/emit_cfg_pass.h>
 
-constexpr const char* g_version = "0.1.0";
-
 using namespace utility::types;
 
 #define MISSING_ARG_VERIFY()                                                                                           \
@@ -56,7 +54,7 @@ void display_help() {
 }
 
 void display_version() {
-	utility::console::print("BASM version {} compiled on {}\n", g_version, __DATE__);
+	utility::console::print("BASM version {} compiled on {}\n", VERSION, __DATE__);
 }
 
 [[nodiscard]] auto compare_commands(const char* shortform, const char* longform, const char* input) -> bool {

@@ -1,3 +1,13 @@
+function get_git_commit_count()
+	local handle = io.popen("git rev-list --count HEAD 2>/dev/null")
+	if handle then
+		local result = handle:read("*a")
+		handle:close()
+		return result:gsub("%s+", "")
+	end
+	return "0"
+end
+
 workspace "assembler"
 	architecture "x64"
 	cppdialect "C++20"
@@ -9,6 +19,10 @@ workspace "assembler"
 	buildoptions("-std=gnu++20", "-g", "-pedantic", "-Wall", "-Werror")
 	startproject "tests"
 	warnings "High"
+
+	local patch_version = get_git_commit_count()
+	local version = "0.1." .. patch_version
+	defines { "VERSION=\"" .. version .. "\"" }
 
 	filter "configurations:Release"
 		defines { "NDEBUG" }

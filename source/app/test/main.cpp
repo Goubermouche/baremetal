@@ -15,7 +15,6 @@
 #include <assembler/passes/emit/emit_elf_pass.h>
 #include <assembler/passes/emit/emit_cfg_pass.h>
 
-constexpr const char* g_version = "0.1.0";
 const utility::filepath g_test_path = "./tests";
 
 using namespace utility::types;
@@ -187,7 +186,7 @@ void display_help() {
 }
 
 void display_version() {
-	utility::console::print("test runner version {} compiled on {}\n", g_version, __DATE__);
+	utility::console::print("test runner version {} compiled on {}\n", VERSION, __DATE__);
 }
 
 void list_tests() {
