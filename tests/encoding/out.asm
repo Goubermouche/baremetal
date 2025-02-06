@@ -1,5 +1,7 @@
 ; expect: e600e601e664e67fe68066e70066e70166e76466e77f66e780e700e701e764e77fe780ee66efef
 
+bits 64
+
 out 0, al
 out 1, al
 out 100, al

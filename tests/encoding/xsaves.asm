@@ -1,5 +1,7 @@
 ; expect: 0fc72c25000000000fc72c25ff0000000fc72df9ffffff0fc72df80000000fc72df8ff00000fc7280fc7280fc7a8ffff0000410fc7afffff00000fc72c300fc7ac30ffff0000410fc7ac37ffff0000420fc7ac38ffff00000fc7ac70f2ff0f000fc7acb0f4ff0f000fc7acf0f8ff0f000fc7acc4f8ff0f00410fc7acc7f8ff0f00420fc7acfcf8ff0f00430fc7acfef8ff0f00
 
+bits 64
+
 xsaves [0x0]
 xsaves [0xFF]
 xsaves [rel $ + 0x0]

@@ -1,5 +1,7 @@
 ; expect: 9bdd3425000000009bdd3425ff0000009bdd35f9ffffff9bdd35f80000009bdd35f8ff00009bdd309bdd309bddb0ffff00009b41ddb7ffff00009bdd34309bddb430ffff00009b41ddb437ffff00009b42ddb438ffff00009bddb470f2ff0f009bddb4b0f4ff0f009bddb4f0f8ff0f009bddb4c4f8ff0f009b41ddb4c7f8ff0f009b42ddb4fcf8ff0f009b43ddb4fef8ff0f00
 
+bits 64
+
 fsave [0x0]
 fsave [0xFF]
 fsave [rel $ + 0x0]

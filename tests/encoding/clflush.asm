@@ -1,5 +1,7 @@
 ; expect: 0fae3c25000000000fae3c25ff0000000fae3df9ffffff0fae3df80000000fae3df8ff00000fae380fae380faeb8ffff0000410faebfffff00000fae3c300faebc30ffff0000410faebc37ffff0000420faebc38ffff00000faebc70f2ff0f000faebcb0f4ff0f000faebcf0f8ff0f000faebcc4f8ff0f00410faebcc7f8ff0f00420faebcfcf8ff0f00430faebcfef8ff0f00
 
+bits 64
+
 clflush [0x0]
 clflush [0xFF]
 clflush [rel $ + 0x0]

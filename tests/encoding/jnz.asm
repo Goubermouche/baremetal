@@ -1,7 +1,10 @@
-; expect: 75fe75ff757d0f85f4ffffff0f85efffffff0f8568ffffff0f8561000000
+; expect: 75fe75ff0f857affffff757d0f85eeffffff0f85e9ffffff0f8562ffffff0f855b000000
+
+bits 64
 
 jnz $+0
 jnz $+1
+jnz $+-128
 jnz $+127
 jnz 0
 jnz 1

@@ -1,5 +1,7 @@
 ; expect: f30faed9f30faedbf3410faedff3480faed9f3480faedbf3490faedf
 
+bits 64
+
 wrgsbase ecx
 wrgsbase ebx
 wrgsbase r15d

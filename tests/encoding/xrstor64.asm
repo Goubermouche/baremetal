@@ -1,5 +1,7 @@
 ; expect: 480fae2c2500000000480fae2c25ff000000480fae2df8ffffff480fae2df7000000480fae2df7ff0000480fae28480fae28480faea8ffff0000490faeafffff0000480fae2c30480faeac30ffff0000490faeac37ffff00004a0faeac38ffff0000480faeac70f2ff0f00480faeacb0f4ff0f00480faeacf0f8ff0f00480faeacc4f8ff0f00490faeacc7f8ff0f004a0faeacfcf8ff0f004b0faeacfef8ff0f00
 
+bits 64
+
 xrstor64 [0x0]
 xrstor64 [0xFF]
 xrstor64 [rel $ + 0x0]

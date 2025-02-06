@@ -1,5 +1,7 @@
 ; expect: 0fc70c25000000000fc70c25ff0000000fc70df9ffffff0fc70df80000000fc70df8ff00000fc7080fc7080fc788ffff0000410fc78fffff00000fc70c300fc78c30ffff0000410fc78c37ffff0000420fc78c38ffff00000fc78c70f2ff0f000fc78cb0f4ff0f000fc78cf0f8ff0f000fc78cc4f8ff0f00410fc78cc7f8ff0f00420fc78cfcf8ff0f00430fc78cfef8ff0f00
 
+bits 64
+
 cmpxchg8b qword [0x0]
 cmpxchg8b qword [0xFF]
 cmpxchg8b qword [rel $ + 0x0]

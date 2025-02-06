@@ -1,5 +1,7 @@
 ; expect: df242500000000df2425ff000000df25faffffffdf25f9000000df25f9ff0000df20df20dfa0ffff000041dfa7ffff0000df2430dfa430ffff000041dfa437ffff000042dfa438ffff0000dfa470f2ff0f00dfa4b0f4ff0f00dfa4f0f8ff0f00dfa4c4f8ff0f0041dfa4c7f8ff0f0042dfa4fcf8ff0f0043dfa4fef8ff0f00
 
+bits 64
+
 fbld tword [0x0]
 fbld tword [0xFF]
 fbld tword [rel $ + 0x0]

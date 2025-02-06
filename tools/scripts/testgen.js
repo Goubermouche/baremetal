@@ -160,9 +160,8 @@ function generate_combinations(inst) {
 		['rel8', [ '0', '1', '-128', '127' ]],
 		['rel16', [ '0', '1', '-128', '127' ]],
 		['rel32', [ '0', '1', '-128', '127' ]],
-		// TODO: negative rip-relative operands are broken
-		['rel8_rip', [ '$+0', '$+1', /*'$+-128',*/ '$+127' ]],
-		['rel16_rip', [ '$+0', '$+1', /*'$+-128',*/ '$+127' ]],
+		['rel8_rip', [ '$+0', '$+1', '$+-128', '$+127' ]],
+		['rel16_rip', [ '$+0', '$+1', '$+-128', '$+127' ]],
 		['moff8', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
 		['moff16', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
 		['moff32', ['[qword 0]', '[qword 0xFF]', '[qword 0xFFFF]', '[qword 0xFFFFFFFF]', '[qword 0xFFFFFFFFFFFFFFFF]']],
@@ -316,7 +315,7 @@ function main() {
 						chunk.forEach((test, j) => {
 							const test_path = path.join(process.argv[3], `/${test.name}.asm`);
 							const test_instructions = test.test;
-							const test_text = `; expect: ${message.data[j]}\n\n${test_instructions}`;
+							const test_text = `; expect: ${message.data[j]}\n\nbits 64\n\n${test_instructions}\n`;
 
 							utility.write_file(test_path, test_text);
 						});

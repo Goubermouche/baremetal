@@ -1,5 +1,7 @@
 ; expect: dd342500000000dd3425ff000000dd35faffffffdd35f9000000dd35f9ff0000dd30dd30ddb0ffff000041ddb7ffff0000dd3430ddb430ffff000041ddb437ffff000042ddb438ffff0000ddb470f2ff0f00ddb4b0f4ff0f00ddb4f0f8ff0f00ddb4c4f8ff0f0041ddb4c7f8ff0f0042ddb4fcf8ff0f0043ddb4fef8ff0f00
 
+bits 64
+
 fnsave [0x0]
 fnsave [0xFF]
 fnsave [rel $ + 0x0]

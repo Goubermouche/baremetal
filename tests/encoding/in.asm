@@ -1,5 +1,7 @@
 ; expect: e400e401e464e47fe48066e50066e50166e56466e57f66e580e500e501e564e57fe580ec66eded
 
+bits 64
+
 in al, 0
 in al, 1
 in al, 100

@@ -531,7 +531,9 @@ return false;
 			TRY(m_lexer.get_next_token());
 			EXPECT_TOKEN(TOK_NUMBER);
 
-			rip_rel.immediate = imm(-1 * static_cast<i64>(m_lexer.current_immediate.value));
+			// HACK: all instructions which use a negative rip-relative operand are 4 bytes long, we can
+			//       just subtract that and treat these instructions as their rel32 variants
+			rip_rel.immediate = imm(-1 * static_cast<i64>(m_lexer.current_immediate.value - 4));
 		} 
 		else {
 			EXPECT_TOKEN(TOK_NUMBER);

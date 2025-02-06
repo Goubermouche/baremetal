@@ -1,5 +1,7 @@
 ; expect: cbca0000ca0100ca8813caff7fca0080ca7f00ca80ff
 
+bits 64
+
 retf 
 retf 0
 retf 1
