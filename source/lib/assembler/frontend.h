@@ -21,13 +21,14 @@ namespace baremetal::assembler {
 		[[nodiscard]] auto parse() -> utility::result<module>;
 	private:
 		// parsing
+		[[nodiscard]] auto parse_define_memory(utility::string_view* symbol = nullptr) -> utility::result<void>;
+		[[nodiscard]] auto parse_instruction(utility::string_view* symbol) -> utility::result<void>;
+		[[nodiscard]] auto parse_label(utility::string_view* symbol) -> utility::result<void>;
+		
 		[[nodiscard]] auto parse_reserve_memory() -> utility::result<void>;
-		[[nodiscard]] auto parse_define_memory() -> utility::result<void>;
-		[[nodiscard]] auto parse_instruction() -> utility::result<void>;
 		[[nodiscard]] auto parse_identifier() -> utility::result<void>;
 		[[nodiscard]] auto parse_section() -> utility::result<void>;
 		[[nodiscard]] auto parse_global() -> utility::result<void>;
-		[[nodiscard]] auto parse_label() -> utility::result<void>;
 		[[nodiscard]] auto parse_times() -> utility::result<void>;
 		[[nodiscard]] auto parse_bits() -> utility::result<void>;
 	
@@ -49,9 +50,6 @@ namespace baremetal::assembler {
 		context m_context;
 		module m_module;
 		lexer m_lexer;
-
-		// parsing
-		utility::string_view* m_current_identifier;
 
 		// instruction parsing
 		u32 m_instruction_i;

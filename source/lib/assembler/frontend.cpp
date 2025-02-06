@@ -126,16 +126,14 @@ return false;
 	}
 
 	auto frontend::parse() -> utility::result<module> {
-		TRY(m_lexer.get_next_token());
+		TRY(m_lexer.get_next_token()); // prime the first token
 
 		while(m_lexer.current != TOK_EOF) {
-			m_current_identifier = nullptr;
-
 			// top-level directives
 			switch(m_lexer.current) {
 				case TOK_NEWLINE:           TRY(m_lexer.get_next_token()); break;
 				case TOK_RESB ... TOK_RESQ: TRY(parse_reserve_memory()); break;
-				case TOK_DB ... TOK_DQ:     TRY(parse_define_memory()); break;
+				case TOK_DB ... TOK_DQ:     TRY(parse_define_memory()); break; // unnamed memory define
 				case TOK_IDENTIFIER:        TRY(parse_identifier()); break;
 				case TOK_SECTION:           TRY(parse_section()); break;
 				case TOK_GLOBAL:            TRY(parse_global()); break;
@@ -177,10 +175,10 @@ return false;
 		return SUCCESS;
 	}
 
-	auto frontend::parse_define_memory() -> utility::result<void> {
+	auto frontend::parse_define_memory(utility::string_view* symbol) -> utility::result<void> {
 		// define mem doesn't have to have a symbol associated with it
-		if(m_current_identifier) {
-			TRY(m_module.declare_symbol(m_current_identifier));
+		if(symbol) {
+			TRY(m_module.declare_symbol(symbol));
 		}
 
 		bool sign = false;
@@ -256,12 +254,12 @@ return false;
 		return SUCCESS;
 	}
 	
-	auto frontend::parse_instruction() -> utility::result<void> {
-		u32 start = m_instruction_i = backend::get_instruction_by_name(m_current_identifier->get_data());
-		utility::string_view* instruction_name = m_current_identifier;
+	auto frontend::parse_instruction(utility::string_view* symbol) -> utility::result<void> {
+		// locate the first instruction with the specified mnemonic
+		const u32 start = m_instruction_i = backend::get_instruction_by_name(symbol->get_data());
 
 		if(m_instruction_i == utility::limits<u32>::max()) {
-			ASSERT(false, "[PASS 1]: unknown instruction '{}' specified\n", *m_current_identifier);
+			ASSERT(false, "unknown instruction '{}' specified\n", *symbol);
 		}
 
 		// ensure our destination is clean
@@ -292,18 +290,18 @@ return false;
 			TRY(m_lexer.get_next_token());
 		}
 
-		// locate the specific variant (dumb linear search in our specific group)
+		// locate the specific variant (dumb linear search in our specific mnemonic group)
 		while(m_instruction_i < INSTRUCTION_DB_SIZE) {
 			const instruction& current = INSTRUCTION_DB[m_instruction_i]; 
 
 			// verify that the instruction names are the same and that we've not left our instruction group
-			if(*instruction_name != current.name) {
+			if(*symbol != current.name) {
 				break;
 			}
 
 			// verify that the current instruction matches the provided operands
 			if(detail::is_operand_match(current, m_operands, m_broadcast_n, m_operand_i)) {
-				assemble_instruction(&current);
+				assemble_instruction(&current); // matching instruction found, stage it
 				return SUCCESS;
 			}
 
@@ -317,7 +315,7 @@ return false;
 
 		utility::console::print_err("\n");
 
-		return utility::error("invalid operand combination for instruction");
+		return utility::error("invalid operand combination for the specified instruction");
 	}
 
 	void frontend::assemble_instruction(const instruction* inst) {
@@ -331,7 +329,7 @@ return false;
 			m_operands[i].type = inst->operands[i];
 		}
 
-		// assemble the instruction and use that as the length
+		// assemble the instruction and use that as the size 
 		const auto code = backend::emit_instruction(m_instruction_i, m_operands);
 		m_module.stage_instruction(m_operands, m_instruction_i, code.size);
 
@@ -451,9 +449,11 @@ return false;
 	}
 
 	auto frontend::parse_identifier_operand() -> utility::result<void> {
+		// TODO: add support for multiple symbolic operands per instruction
 		m_unresolved_index = m_operand_i;
 		m_operands[m_operand_i++] = operand(m_context.strings.add(m_lexer.current_string)); 
 		TRY(m_lexer.get_next_token());
+
 		return SUCCESS;
 	}
 
@@ -461,10 +461,12 @@ return false;
 		if(m_lexer.current == TOK_MINUS) {
 			TRY(m_lexer.get_next_token());
 			EXPECT_TOKEN(TOK_NUMBER);
+
 			m_operands[m_operand_i++] = operand(imm(-static_cast<i64>(m_lexer.current_immediate.value))); 
 		}
 		else {
 			EXPECT_TOKEN(TOK_NUMBER);
+
 			m_operands[m_operand_i++] = operand(m_lexer.current_immediate); 
 		}
 
@@ -554,7 +556,6 @@ return false;
 		}
 
 		m_operands[m_operand_i++] = rip_rel;
-
 		TRY(m_lexer.get_next_token());
 
 		return SUCCESS;
@@ -562,15 +563,13 @@ return false;
 
 	auto frontend::parse_identifier() -> utility::result<void> {
 		EXPECT_TOKEN(TOK_IDENTIFIER);
-		m_current_identifier = m_context.strings.add(m_lexer.current_string);
-
+		utility::string_view* identifier = m_context.strings.add(m_lexer.current_string);
 		TRY(m_lexer.get_next_token());
 
-		// utility::console::print("{}  {}\n", *m_current_identifier, token_to_string(m_current_token.type));
 		switch(m_lexer.current) {
-			case TOK_DB ... TOK_DQ: return parse_define_memory();
-			case TOK_COLON:         return parse_label();
-			default:                return parse_instruction();
+			case TOK_DB ... TOK_DQ: return parse_define_memory(identifier);
+			case TOK_COLON:         return parse_label(identifier);
+			default:                return parse_instruction(identifier);
 		}
 
 		return SUCCESS;
@@ -602,12 +601,13 @@ return false;
 		return SUCCESS;
 	}
 
-	auto frontend::parse_label() -> utility::result<void> {
+	auto frontend::parse_label(utility::string_view* symbol) -> utility::result<void> {
 		EXPECT_TOKEN(TOK_COLON);
-		TRY(m_module.declare_symbol(m_current_identifier));
+
+		TRY(m_module.declare_symbol(symbol));
 		TRY(m_lexer.get_next_token());
 
-		m_module.commit_label_block(m_current_identifier);
+		m_module.commit_label_block(symbol);
 		
 		return SUCCESS;
 	}
@@ -616,21 +616,19 @@ return false;
 		EXPECT_TOKEN(TOK_TIMES);
 		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_NUMBER);
-		u64 times = m_lexer.current_immediate.value;
-		auto safepoint = m_lexer.create_safepoint();
 
+		const u64 times = m_lexer.current_immediate.value;
+		const auto safepoint = m_lexer.create_safepoint();
+
+		// revisit the current line 'times' times
 		for(u64 i = 0; i < times; ++i) {
 			m_lexer.restore_safepoint(safepoint);
-			TRY(m_lexer.get_next_token());
+			TRY(m_lexer.get_next_token()); // prime the first token
 
 			switch(m_lexer.current) {
-				case TOK_IDENTIFIER: {
-					m_current_identifier = m_context.strings.add(m_lexer.current_string);
-					TRY(m_lexer.get_next_token());
-					TRY(parse_instruction());
-					break; 
-				}
-				case TOK_DB ... TOK_DQ: TRY(parse_define_memory()); break;
+				case TOK_RESB ... TOK_RESQ: TRY(parse_reserve_memory()); break;
+				case TOK_DB ... TOK_DQ:     TRY(parse_define_memory()); break; // unnamed memory define
+				case TOK_IDENTIFIER:        TRY(parse_identifier()); break;
 				default: ASSERT(false, "unexpected times token: {}\n", token_to_string(m_lexer.current)); 
 			}
 		}
@@ -641,6 +639,7 @@ return false;
 	}
 
 	auto frontend::parse_bits() -> utility::result<void> {
+		// TODO: currently unused, used for the sake of test compatibility
 		EXPECT_TOKEN(TOK_BITS);
 		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_NUMBER);
@@ -654,13 +653,13 @@ return false;
 		mem& memory = op.memory;
 		imm current_imm;
 
-		memory.displacement = 0;
-
 		bool displacement_set = false;
 		bool scale_mode = false;
 		bool imm_set = false;
 		bool negate = false;
 
+		memory.displacement = 0;
+		
 		// entry
 		while(true) {
 			switch(m_lexer.current) {
@@ -821,7 +820,7 @@ return false;
 					if(memory.has_index && memory.has_base) {
 						if(memory.index.type != memory.base.type) {
 							if(!is_gp_reg(memory.index) && !is_gp_reg(memory.base)) {
-								return utility::error("invalid combination of register types in memory");
+								return utility::error("invalid combination of register types in memory operand");
 							}
 						}
 					}
@@ -894,7 +893,9 @@ return false;
 		// parse the second mask operand '{z}'
 		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_Z);
+
 		result = static_cast<mask_type>(result + 8);
+
 		TRY(m_lexer.get_next_token());
 		EXPECT_TOKEN(TOK_RBRACE);
 		TRY(m_lexer.get_next_token());
