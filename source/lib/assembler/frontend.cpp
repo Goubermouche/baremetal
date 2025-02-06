@@ -131,9 +131,11 @@ return false;
 		while(m_lexer.current != TOK_EOF) {
 			m_current_identifier = nullptr;
 
+			// top-level directives
 			switch(m_lexer.current) {
 				case TOK_NEWLINE:           TRY(m_lexer.get_next_token()); break;
 				case TOK_RESB ... TOK_RESQ: TRY(parse_reserve_memory()); break;
+				case TOK_DB ... TOK_DQ:     TRY(parse_define_memory()); break;
 				case TOK_IDENTIFIER:        TRY(parse_identifier()); break;
 				case TOK_SECTION:           TRY(parse_section()); break;
 				case TOK_GLOBAL:            TRY(parse_global()); break;
@@ -177,8 +179,6 @@ return false;
 
 	auto frontend::parse_define_memory() -> utility::result<void> {
 		// define mem doesn't have to have a symbol associated with it
-		// TODO: this is currently only possible by using the 'times' keyword, make unnamed memory
-		//       defines a regular thing
 		if(m_current_identifier) {
 			TRY(m_module.declare_symbol(m_current_identifier));
 		}
@@ -334,7 +334,8 @@ return false;
 		// assemble the instruction and use that as the length
 		const auto code = backend::emit_instruction(m_instruction_i, m_operands);
 		m_module.stage_instruction(m_operands, m_instruction_i, code.size);
-	
+
+		// force a branch block
 		if(is_jump_or_branch_inst(m_instruction_i)) {
 			m_module.commit_instruction_block(BB_BRANCH);
 		}
