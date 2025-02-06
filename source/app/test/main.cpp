@@ -1,5 +1,6 @@
 #include <utility/algorithms/sort.h>
 #include <utility/containers/set.h>
+#include <utility/system/file.h>
 
 #include <assembler/frontend.h>
 

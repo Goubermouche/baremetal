@@ -1,3 +1,5 @@
+#include <utility/system/file.h>
+
 #include <assembler/frontend.h>
 
 // assembler passes

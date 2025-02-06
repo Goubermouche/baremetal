@@ -3,8 +3,6 @@
 #include "assembler/ir/module.h"
 #include "assembler/lexer.h"
 
-#include <utility/system/file.h>
-
 namespace baremetal::assembler {
 	namespace detail {
 		[[nodiscard]] auto mask_operand(operand_type op, mask_type mask) -> utility::result<operand_type>; 
