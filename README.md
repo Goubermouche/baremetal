@@ -75,4 +75,6 @@ The following commands are intended to be used to aid the developer when manipul
 
 ## Known bugs
 - CFG output differs from the binary output in certain cases.
+- Higher order vm64_ instructions have broken encodings (add more vm____ tests).
+
 
