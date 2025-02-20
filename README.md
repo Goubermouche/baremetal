@@ -73,3 +73,6 @@ The following commands are intended to be used to aid the developer when manipul
 - The original instruction database has been ported from the [AsmJit](https://asmjit.com/) project, although it has been slightly modified. 
 - Massive thanks to [Martins](https://github.com/mmozeiko), ratchetfreak, codaaaaaa, and others from the [HMN](https://handmade.network/) for guiding me through the pitfalls of x86/64.
 
+## Known bugs
+- CFG output differs from the binary output in certain cases.
+
