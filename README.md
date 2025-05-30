@@ -16,7 +16,7 @@ $ premake5 gmake
 $ make
 $ ./output/bin/test/test
 ```
-You can find some basic examples in the [test directory](https://github.com/Goubermouche/baremetal/tree/9518f94700ad6063948b9d898aa79ae6f607219a/source).
+You can find some basic examples in the [test directory](https://github.com/Goubermouche/baremetal/tree/main/tests).
 
 ## Supported passes
 ### Optimization
